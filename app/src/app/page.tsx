@@ -12,10 +12,49 @@ export default function Home() {
   const [selectedNetwork, setSelectedNetwork] = useState('Sepolia')
 
   const networks = [
-    { name: 'Sepolia', connected: true },
-    { name: 'Base', connected: false },
-    { name: 'Ethereum', connected: false },
-    { name: 'BSC', connected: false }
+    { 
+      name: 'Sepolia', 
+      connected: true,
+      logo: (
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#627EEA"/>
+          <path d="M12 4L7 12l5 3 5-3-5-8z" fill="white" opacity="0.6"/>
+          <path d="M7 12l5 3 5-3-5 5-5-5z" fill="white"/>
+        </svg>
+      )
+    },
+    { 
+      name: 'Base', 
+      connected: false,
+      logo: (
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#0052FF"/>
+          <path d="M12 8v8M8 12h8" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      )
+    },
+    { 
+      name: 'Ethereum', 
+      connected: false,
+      logo: (
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#627EEA"/>
+          <path d="M12 4L7 12l5 3 5-3-5-8z" fill="white" opacity="0.8"/>
+          <path d="M7 12l5 3 5-3-5 5-5-5z" fill="white"/>
+        </svg>
+      )
+    },
+    { 
+      name: 'BSC', 
+      connected: false,
+      logo: (
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#F0B90B"/>
+          <path d="M8 12h8M12 8v8" stroke="#1E2026" strokeWidth="2.5" strokeLinecap="round"/>
+          <circle cx="12" cy="12" r="1.5" fill="#1E2026"/>
+        </svg>
+      )
+    }
   ]
 
   const features = [
@@ -156,7 +195,10 @@ export default function Home() {
                 className="glass px-4 py-2 rounded-lg text-sm font-semibold hover:border-[#E8523D]/30 transition-all flex items-center gap-2"
               >
                 <span className="text-[#9AA4B2]">Switch Networks</span>
-                <span className="text-white">{selectedNetwork}</span>
+                <div className="flex items-center gap-2">
+                  {networks.find(n => n.name === selectedNetwork)?.logo}
+                  <span className="text-white">{selectedNetwork}</span>
+                </div>
                 <span className="text-green-400 text-xs">● Connected</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -164,7 +206,7 @@ export default function Home() {
               </button>
 
               {showNetworkDropdown && (
-                <div className="absolute top-full right-0 mt-2 w-56 glass rounded-xl overflow-hidden border border-[#E8523D]/20">
+                <div className="absolute top-full right-0 mt-2 w-64 glass rounded-xl overflow-hidden border border-[#E8523D]/20">
                   {networks.map((network) => (
                     <button
                       key={network.name}
@@ -176,7 +218,10 @@ export default function Home() {
                         network.name === selectedNetwork ? 'bg-white/5' : ''
                       }`}
                     >
-                      <span className="text-white font-medium">{network.name}</span>
+                      <div className="flex items-center gap-3">
+                        {network.logo}
+                        <span className="text-white font-medium">{network.name}</span>
+                      </div>
                       {network.connected && (
                         <span className="text-green-400 text-xs flex items-center gap-1">
                           <span className="w-2 h-2 rounded-full bg-green-400"></span>
