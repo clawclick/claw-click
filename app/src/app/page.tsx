@@ -8,6 +8,15 @@ import { useState } from 'react'
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState(0)
   const [activeTab, setActiveTab] = useState('all')
+  const [showNetworkDropdown, setShowNetworkDropdown] = useState(false)
+  const [selectedNetwork, setSelectedNetwork] = useState('Sepolia')
+
+  const networks = [
+    { name: 'Sepolia', connected: true },
+    { name: 'Base', connected: false },
+    { name: 'Ethereum', connected: false },
+    { name: 'BSC', connected: false }
+  ]
 
   const features = [
     {
@@ -135,10 +144,51 @@ export default function Home() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-4">
             <Link href="/README.md" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
               📕 README
             </Link>
+            
+            {/* Network Switcher */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNetworkDropdown(!showNetworkDropdown)}
+                className="glass px-4 py-2 rounded-lg text-sm font-semibold hover:border-[#E8523D]/30 transition-all flex items-center gap-2"
+              >
+                <span className="text-[#9AA4B2]">Switch Networks</span>
+                <span className="text-white">{selectedNetwork}</span>
+                <span className="text-green-400 text-xs">● Connected</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showNetworkDropdown && (
+                <div className="absolute top-full right-0 mt-2 w-56 glass rounded-xl overflow-hidden border border-[#E8523D]/20">
+                  {networks.map((network) => (
+                    <button
+                      key={network.name}
+                      onClick={() => {
+                        setSelectedNetwork(network.name)
+                        setShowNetworkDropdown(false)
+                      }}
+                      className={`w-full px-4 py-3 text-left hover:bg-white/5 transition-colors flex items-center justify-between ${
+                        network.name === selectedNetwork ? 'bg-white/5' : ''
+                      }`}
+                    >
+                      <span className="text-white font-medium">{network.name}</span>
+                      {network.connected && (
+                        <span className="text-green-400 text-xs flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                          Connected
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button className="btn-primary text-sm">
               Connect Wallet
             </button>
