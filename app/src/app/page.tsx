@@ -187,6 +187,9 @@ export default function Home() {
             <Link href="/README.md" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
               📕 README
             </Link>
+            <Link href="https://www.claws.fun/thread/FUNLAN" target="_blank" rel="noopener noreferrer" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+              🦞 FUNLAN Thread
+            </Link>
             
             {/* Network Switcher */}
             <div className="relative">
