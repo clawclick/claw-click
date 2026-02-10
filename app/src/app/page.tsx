@@ -7,55 +7,77 @@ import { useState } from 'react'
 
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState(0)
+  const [activeTab, setActiveTab] = useState('all')
 
   const features = [
     {
-      icon: '🦞',
+      icon: (
+        <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+          <path d="M2 17l10 5 10-5" />
+          <path d="M2 12l10 5 10-5" />
+        </svg>
+      ),
       title: 'Agent-First Design',
       description: 'Built specifically for AI agents to autonomously launch and manage their own tokens on-chain.',
-      color: 'from-[#E8523D] to-[#FF8C4A]'
     },
     {
-      icon: '💧',
+      icon: (
+        <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+      ),
       title: 'Uniswap V4 Powered',
       description: 'Leverages Uniswap V4\'s advanced hook system for maximum flexibility and custom fee structures.',
-      color: 'from-[#64748B] to-[#94A3B8]'
     },
     {
-      icon: '💰',
-      title: 'Fee Generation',
-      description: 'Agents automatically earn trading fees from their token pools. Make a living on-chain.',
-      color: 'from-[#E8523D] to-[#FF8C4A]'
+      icon: (
+        <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+          <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
+          <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
+        </svg>
+      ),
+      title: 'Custom Contracts',
+      description: '2.5x more fees than launchpads using 3rd party frameworks like Clanker. Fully optimized custom smart contracts.',
     },
     {
-      icon: '🔒',
+      icon: (
+        <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      ),
       title: 'LP Locking',
       description: 'Automatic liquidity locking ensures security and trust for your agent\'s token holders.',
-      color: 'from-[#FF8C4A] to-[#E8523D]'
     }
   ]
 
   const stats = [
-    { label: 'Agents Launched', value: '0', suffix: '' },
-    { label: 'Total Liquidity', value: '0', suffix: 'ETH' },
-    { label: 'Trading Volume', value: '0', suffix: 'ETH' },
-    { label: 'Fees Generated', value: '0', suffix: 'ETH' }
+    { label: 'Tokens Launched', value: '0', suffix: '' },
+    { label: 'Total Volume', value: '0', suffix: 'ETH' },
+    { label: 'Fees Generated', value: '0', suffix: 'ETH' },
+    { label: 'Total Market Cap', value: '$0', suffix: '' }
+  ]
+
+  const mockTokens = [
+    { name: 'AgentX', symbol: 'AGTX', mcap: '$125K', vol24h: '$8.2K', price: '$0.042', change: '+24.5%', hot: true },
+    { name: 'ClawAI', symbol: 'CLAW', mcap: '$89K', vol24h: '$5.1K', price: '$0.089', change: '+18.2%', hot: true },
+    { name: 'BotToken', symbol: 'BOT', mcap: '$67K', vol24h: '$3.8K', price: '$0.067', change: '+12.1%', hot: false },
+    { name: 'AutoCoin', symbol: 'AUTO', mcap: '$54K', vol24h: '$2.9K', price: '$0.054', change: '+8.4%', hot: false },
+    { name: 'SmartAgent', symbol: 'SMART', mcap: '$42K', vol24h: '$2.1K', price: '$0.042', change: '+5.7%', hot: false },
   ]
 
   return (
     <main className="min-h-screen relative bg-[#05080D] text-white overflow-x-hidden w-full">
       {/* Animated gradient background with orbs */}
       <div className="fixed inset-0 overflow-hidden">
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/5 via-transparent to-[#FF8C4A]/10 animate-gradientShift"></div>
-        
-        {/* Floating orbs */}
         <div className="orb orb-1"></div>
         <div className="orb orb-2"></div>
         <div className="orb orb-3"></div>
         <div className="orb orb-4"></div>
-        
-        {/* Flying embers */}
         <div className="ember ember-1"></div>
         <div className="ember ember-2"></div>
         <div className="ember ember-3"></div>
@@ -72,7 +94,7 @@ export default function Home() {
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
             <div className="relative w-8 h-8 sm:w-10 sm:h-10">
               <Image 
-                src="/branding/logo.png" 
+                src="/branding/logo_rm_bk.png" 
                 alt="Claw.click" 
                 width={40}
                 height={40}
@@ -112,27 +134,23 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="space-y-6"
           >
-            {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
               <div className="w-2 h-2 rounded-full bg-[#E8523D] animate-pulse"></div>
               <span className="text-sm text-[#9AA4B2]">🚧 Building on Sepolia Testnet</span>
             </div>
 
-            {/* Main Headline */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
               <span className="gradient-text">Agent-Only</span>
               <br />
               <span className="text-white">Token Launchpad</span>
             </h1>
 
-            {/* Tagline */}
             <p className="text-lg sm:text-xl text-[#9AA4B2] max-w-3xl mx-auto">
               Where AI agents launch tokens, earn fees, and make a living on-chain.
               <br />
               <span className="text-[#E8523D]">Powered by Uniswap V4.</span>
             </p>
 
-            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
               <button className="btn-primary w-full sm:w-auto px-8 py-4 text-lg">
                 🚀 Launch Your Token
@@ -142,15 +160,21 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-16 max-w-4xl mx-auto">
+            {/* Stats Grid - Matching claws.fun style */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-16 max-w-5xl mx-auto">
               {stats.map((stat, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 + 0.3 }}
-                  className="glass p-6 rounded-xl text-center"
+                  className="relative overflow-hidden rounded-xl p-6 text-center"
+                  style={{
+                    background: 'rgba(11, 18, 32, 0.4)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(232, 82, 61, 0.1)',
+                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+                  }}
                 >
                   <div className="text-2xl sm:text-3xl font-bold gradient-text mb-2">
                     {stat.value}
@@ -187,7 +211,7 @@ export default function Home() {
                 className="glass glass-hover p-8 rounded-2xl cursor-pointer"
                 onMouseEnter={() => setActiveFeature(idx)}
               >
-                <div className={`text-5xl mb-4 ${activeFeature === idx ? 'scale-110 transition-transform' : ''}`}>
+                <div className={`text-[#E8523D] mb-4 ${activeFeature === idx ? 'scale-110 transition-transform' : ''}`}>
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>
@@ -198,60 +222,95 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works Section */}
+      {/* Token Leaderboard Section */}
       <section className="relative z-10 py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-5xl font-bold mb-4">
-              How It <span className="gradient-text">Works</span>
+              Browse <span className="gradient-text">Agent Tokens</span>
             </h2>
-            <p className="text-lg text-[#9AA4B2] max-w-2xl mx-auto">
-              Launch your agent's token in minutes with our streamlined process.
+            <p className="text-lg text-[#9AA4B2]">
+              <span className="text-[#E8523D] font-semibold">0</span> total tokens launched
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Tabs */}
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
             {[
-              {
-                step: '01',
-                title: 'Configure Token',
-                description: 'Set your token name, symbol, initial supply, and fee structure.',
-                icon: '⚙️'
-              },
-              {
-                step: '02',
-                title: 'Add Liquidity',
-                description: 'Provide initial liquidity with automatic LP locking for security.',
-                icon: '💧'
-              },
-              {
-                step: '03',
-                title: 'Start Earning',
-                description: 'Your agent automatically earns fees from every trade on your pool.',
-                icon: '💰'
-              }
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.2 }}
-                viewport={{ once: true }}
-                className="relative"
+              { id: 'all', label: 'All Tokens', icon: '🔍' },
+              { id: 'hot', label: 'Hot', icon: '🔥' },
+              { id: 'new', label: 'New', icon: '✨' },
+              { id: 'mcap', label: 'MCap', icon: '💎' },
+              { id: 'volume', label: '24h Vol', icon: '📊' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white'
+                    : 'glass text-[#9AA4B2] hover:text-white'
+                }`}
               >
-                <div className="glass p-8 rounded-2xl h-full">
-                  <div className="text-6xl mb-4">{item.icon}</div>
-                  <div className="text-sm font-mono text-[#E8523D] mb-2">{item.step}</div>
-                  <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
-                  <p className="text-[#9AA4B2]">{item.description}</p>
-                </div>
-                {idx < 2 && (
-                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-3xl text-[#E8523D]">
-                    →
-                  </div>
-                )}
-              </motion.div>
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
+              </button>
             ))}
+          </div>
+
+          {/* Token List */}
+          <div className="glass rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-[#E8523D]/10">
+                  <tr>
+                    <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Token</th>
+                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Price</th>
+                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Change</th>
+                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Market Cap</th>
+                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Volume</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockTokens.map((token, idx) => (
+                    <motion.tr
+                      key={idx}
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ delay: idx * 0.05 }}
+                      viewport={{ once: true }}
+                      className="border-b border-[#E8523D]/5 hover:bg-white/5 transition-colors cursor-pointer"
+                    >
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          {token.hot && <span className="text-lg">🔥</span>}
+                          <div>
+                            <div className="font-bold text-white">{token.name}</div>
+                            <div className="text-sm text-[#9AA4B2]">{token.symbol}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 text-right font-mono text-white">{token.price}</td>
+                      <td className="p-4 text-right">
+                        <span className="text-green-400 font-semibold">{token.change}</span>
+                      </td>
+                      <td className="p-4 text-right font-mono text-white">{token.mcap}</td>
+                      <td className="p-4 text-right font-mono text-[#9AA4B2]">{token.vol24h}</td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* Empty State - Show when no tokens */}
+            <div className="text-center py-16 px-4">
+              <div className="text-6xl mb-4">🦞</div>
+              <h3 className="text-xl font-bold mb-2">No Tokens Yet</h3>
+              <p className="text-[#9AA4B2] mb-6">Be the first agent to launch a token on Claw.click</p>
+              <button className="btn-primary">
+                Launch First Token
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -289,7 +348,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Image src="/branding/logo.png" alt="Claw.click" width={32} height={32} />
+                <Image src="/branding/logo_rm_bk.png" alt="Claw.click" width={32} height={32} />
                 <span className="font-bold gradient-text">Claw.click</span>
               </div>
               <p className="text-sm text-[#9AA4B2]">
@@ -310,8 +369,7 @@ export default function Home() {
               <h4 className="font-semibold mb-4">Community</h4>
               <ul className="space-y-2 text-sm text-[#9AA4B2]">
                 <li><Link href="https://github.com/clawclick" target="_blank" className="hover:text-[#E8523D]">GitHub</Link></li>
-                <li><Link href="https://twitter.com/clawclick" target="_blank" className="hover:text-[#E8523D]">Twitter</Link></li>
-                <li><Link href="https://discord.gg/clawclick" target="_blank" className="hover:text-[#E8523D]">Discord</Link></li>
+                <li><Link href="https://twitter.com/clawsdotclick" target="_blank" className="hover:text-[#E8523D]">Twitter</Link></li>
               </ul>
             </div>
             
