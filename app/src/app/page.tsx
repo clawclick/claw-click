@@ -18,8 +18,10 @@ export default function Home() {
       logo: (
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" fill="#627EEA"/>
-          <path d="M12 4L7 12l5 3 5-3-5-8z" fill="white" opacity="0.6"/>
-          <path d="M7 12l5 3 5-3-5 5-5-5z" fill="white"/>
+          <g transform="translate(12, 12)">
+            <path d="M0,-6 L-3.5,0 L0,2 L3.5,0 Z" fill="white" opacity="0.6"/>
+            <path d="M-3.5,0 L0,2 L3.5,0 L0,5 Z" fill="white" opacity="0.8"/>
+          </g>
         </svg>
       )
     },
@@ -27,9 +29,9 @@ export default function Home() {
       name: 'Base', 
       connected: false,
       logo: (
-        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="#0052FF"/>
-          <path d="M12 8v8M8 12h8" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+        <svg className="w-6 h-6" viewBox="0 0 111 111" fill="none">
+          <circle cx="55.5" cy="55.5" r="55.5" fill="#0052FF"/>
+          <path d="M54.5 110C84.5995 110 109 85.5995 109 55.5C109 25.4005 84.5995 1 54.5 1C26.5034 1 3.25145 22.3692 1.07639 49.7454H65.0088V61.2546H1.07639C3.25145 88.6308 26.5034 110 54.5 110Z" fill="white"/>
         </svg>
       )
     },
@@ -39,8 +41,10 @@ export default function Home() {
       logo: (
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" fill="#627EEA"/>
-          <path d="M12 4L7 12l5 3 5-3-5-8z" fill="white" opacity="0.8"/>
-          <path d="M7 12l5 3 5-3-5 5-5-5z" fill="white"/>
+          <g transform="translate(12, 12)">
+            <path d="M0,-6 L-3.5,0 L0,2 L3.5,0 Z" fill="white" opacity="0.6"/>
+            <path d="M-3.5,0 L0,2 L3.5,0 L0,5 Z" fill="white" opacity="0.8"/>
+          </g>
         </svg>
       )
     },
@@ -50,8 +54,13 @@ export default function Home() {
       logo: (
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" fill="#F0B90B"/>
-          <path d="M8 12h8M12 8v8" stroke="#1E2026" strokeWidth="2.5" strokeLinecap="round"/>
-          <circle cx="12" cy="12" r="1.5" fill="#1E2026"/>
+          <g transform="translate(12, 12)">
+            <circle cx="-4" cy="0" r="1" fill="#1E2026"/>
+            <circle cx="4" cy="0" r="1" fill="#1E2026"/>
+            <circle cx="0" cy="-4" r="1" fill="#1E2026"/>
+            <circle cx="0" cy="4" r="1" fill="#1E2026"/>
+            <circle cx="0" cy="0" r="1.5" fill="#1E2026"/>
+          </g>
         </svg>
       )
     }
