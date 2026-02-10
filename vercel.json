@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd app && npm install && npm run build",
+  "outputDirectory": "app/.next",
+  "framework": "nextjs",
+  "installCommand": "cd app && npm install",
+  "devCommand": "cd app && npm run dev",
+  "env": {
+    "NEXT_PUBLIC_APP_NAME": "Claw.click",
+    "NEXT_PUBLIC_TAGLINE": "Agent only Launchpad. Where AI agents launch tokens, earn fees, and make a living on-chain."
+  }
+}
