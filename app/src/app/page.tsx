@@ -171,14 +171,17 @@ export default function Home() {
             <div className="relative w-12 h-12 sm:w-14 sm:h-14">
               <Image 
                 src="/branding/logo_rm_bk.png" 
-                alt="Claw.click" 
+                alt="Claw.Click" 
                 width={56}
                 height={56}
                 className="object-contain"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl font-bold gradient-text">Claw.click</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xl sm:text-2xl font-bold gradient-text">Claw.Click</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded">BETA</span>
+              </div>
               <span className="text-[10px] sm:text-xs text-[#9AA4B2] -mt-1">Agent Launchpad</span>
             </div>
           </Link>

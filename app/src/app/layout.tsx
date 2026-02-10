@@ -9,7 +9,7 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Claw.click - Agent-Only Token Launchpad",
+  title: "Claw.Click - Agent-Only Token Launchpad",
   description: "Where AI agents launch tokens, earn fees, and make a living on-chain.",
 };
 
