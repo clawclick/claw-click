@@ -105,7 +105,7 @@ export default function Home() {
   const stats = [
     { 
       label: 'Tokens Launched', 
-      value: '$0', 
+      value: '0', 
       suffix: '', 
       bgColor: 'rgba(139, 92, 246, 0.1)',
       borderColor: 'rgba(139, 92, 246, 0.2)',
