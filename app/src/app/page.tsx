@@ -55,10 +55,38 @@ export default function Home() {
   ]
 
   const stats = [
-    { label: 'Tokens Launched', value: '0', suffix: '' },
-    { label: 'Total Volume', value: '0', suffix: 'ETH' },
-    { label: 'Fees Generated', value: '0', suffix: 'ETH' },
-    { label: 'Total Market Cap', value: '$0', suffix: '' }
+    { 
+      label: 'Tokens Launched', 
+      value: '$0', 
+      suffix: '', 
+      bgColor: 'rgba(139, 92, 246, 0.1)',
+      borderColor: 'rgba(139, 92, 246, 0.2)',
+      glowColor: 'rgba(139, 92, 246, 0.15)'
+    },
+    { 
+      label: 'Total Volume', 
+      value: '$0', 
+      suffix: '', 
+      bgColor: 'rgba(234, 179, 8, 0.1)',
+      borderColor: 'rgba(234, 179, 8, 0.2)',
+      glowColor: 'rgba(234, 179, 8, 0.15)'
+    },
+    { 
+      label: 'Fees Generated', 
+      value: '$0', 
+      suffix: '', 
+      bgColor: 'rgba(239, 68, 68, 0.1)',
+      borderColor: 'rgba(239, 68, 68, 0.2)',
+      glowColor: 'rgba(239, 68, 68, 0.15)'
+    },
+    { 
+      label: 'Total Market Cap', 
+      value: '$0', 
+      suffix: '', 
+      bgColor: 'rgba(34, 197, 94, 0.1)',
+      borderColor: 'rgba(34, 197, 94, 0.2)',
+      glowColor: 'rgba(34, 197, 94, 0.15)'
+    }
   ]
 
   const mockTokens = [
@@ -92,30 +120,27 @@ export default function Home() {
       <header className="fixed w-full z-50 bg-[#05080D]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
-            <div className="relative w-8 h-8 sm:w-10 sm:h-10">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14">
               <Image 
                 src="/branding/logo_rm_bk.png" 
                 alt="Claw.click" 
-                width={40}
-                height={40}
+                width={56}
+                height={56}
                 className="object-contain"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-bold gradient-text">Claw.click</span>
+              <span className="text-xl sm:text-2xl font-bold gradient-text">Claw.click</span>
               <span className="text-[10px] sm:text-xs text-[#9AA4B2] -mt-1">Agent Launchpad</span>
             </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/docs" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              Docs
-            </Link>
-            <Link href="https://github.com/clawclick/claw-click" target="_blank" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              GitHub
+            <Link href="/README.md" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+              📕 README
             </Link>
             <button className="btn-primary text-sm">
-              Launch App
+              Connect Wallet
             </button>
           </nav>
 
@@ -153,14 +178,14 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
               <button className="btn-primary w-full sm:w-auto px-8 py-4 text-lg">
-                🚀 Launch Your Token
+                🚀 Skill.md
               </button>
-              <button className="btn-secondary w-full sm:w-auto px-8 py-4 text-lg">
-                📖 Read Docs
-              </button>
+              <Link href="/README.md" className="btn-secondary w-full sm:w-auto px-8 py-4 text-lg inline-block">
+                📕 ReadMe
+              </Link>
             </div>
 
-            {/* Stats Grid - Matching claws.fun style */}
+            {/* Stats Grid - Matching claws.fun style with different colors */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-16 max-w-5xl mx-auto">
               {stats.map((stat, idx) => (
                 <motion.div
@@ -170,10 +195,10 @@ export default function Home() {
                   transition={{ delay: idx * 0.1 + 0.3 }}
                   className="relative overflow-hidden rounded-xl p-6 text-center"
                   style={{
-                    background: 'rgba(11, 18, 32, 0.4)',
-                    backdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(232, 82, 61, 0.1)',
-                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+                    background: stat.bgColor,
+                    backdropFilter: 'blur(16px)',
+                    border: `1px solid ${stat.borderColor}`,
+                    boxShadow: `0 8px 32px 0 ${stat.glowColor}, inset 0 1px 0 0 rgba(255, 255, 255, 0.05)`
                   }}
                 >
                   <div className="text-2xl sm:text-3xl font-bold gradient-text mb-2">
@@ -330,12 +355,9 @@ export default function Home() {
             <p className="text-lg text-[#9AA4B2] mb-8 max-w-2xl mx-auto">
               Join the future of autonomous agent economies. Launch your token on the most advanced launchpad for AI agents.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="btn-primary w-full sm:w-auto px-8 py-4 text-lg">
-                🚀 Get Started
-              </button>
-              <Link href="https://github.com/clawclick/claw-click" target="_blank" className="btn-secondary w-full sm:w-auto px-8 py-4 text-lg inline-block">
-                💻 View on GitHub
+            <div className="flex items-center justify-center">
+              <Link href="https://github.com/clawclick/claw-click" target="_blank" className="btn-secondary px-8 py-4 text-lg inline-block">
+                💻 GitHub
               </Link>
             </div>
           </motion.div>
@@ -369,7 +391,7 @@ export default function Home() {
               <h4 className="font-semibold mb-4">Community</h4>
               <ul className="space-y-2 text-sm text-[#9AA4B2]">
                 <li><Link href="https://github.com/clawclick" target="_blank" className="hover:text-[#E8523D]">GitHub</Link></li>
-                <li><Link href="https://twitter.com/clawsdotclick" target="_blank" className="hover:text-[#E8523D]">Twitter</Link></li>
+                <li><Link href="https://twitter.com/clawdotclick" target="_blank" className="hover:text-[#E8523D]">Twitter</Link></li>
               </ul>
             </div>
             
