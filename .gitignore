@@ -46,3 +46,5 @@ broadcast/
 # Misc
 *.bak
 *.tmp
+
+.vercel
