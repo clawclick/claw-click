@@ -107,7 +107,7 @@ export default function Home() {
   ]
 
   return (
-    <main className="min-h-screen relative bg-[#05080D] text-white overflow-x-hidden w-full">
+    <main className="min-h-screen relative bg-[#1a1a1a] text-white overflow-x-hidden w-full">
       {/* Animated gradient background with orbs */}
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/5 via-transparent to-[#FF8C4A]/10 animate-gradientShift"></div>
@@ -126,7 +126,7 @@ export default function Home() {
       </div>
 
       {/* Header */}
-      <header className="fixed w-full z-50 bg-[#05080D]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
+      <header className="fixed w-full z-50 bg-[#1a1a1a]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
             <div className="relative w-12 h-12 sm:w-14 sm:h-14">
