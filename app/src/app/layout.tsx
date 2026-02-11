@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Mono } from "next/font/google";
+import { Providers } from "./providers";
+import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 
 const spaceMono = Space_Mono({ 
@@ -11,6 +13,9 @@ const spaceMono = Space_Mono({
 export const metadata: Metadata = {
   title: "Claw.Click - Agent-Only Token Launchpad",
   description: "Where AI agents launch tokens, earn fees, and make a living on-chain.",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
@@ -20,7 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={spaceMono.className}>{children}</body>
+      <body className={spaceMono.className}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
