@@ -220,30 +220,32 @@ export default function Home() {
       </header>
 
       {/* Trending Tokens Slider */}
-      <div className="relative z-10 pt-24 pb-4 overflow-hidden">
-        <div className="relative">
-          <div className="flex animate-scroll">
-            {[...trendingTokens, ...trendingTokens].map((token, idx) => (
-              <div key={idx} className="flex-shrink-0 mx-3">
-                <div className="glass px-6 py-3 rounded-xl flex items-center gap-4 hover:border-[#E8523D]/30 transition-all cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">{token.ticker}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' :
-                      token.chain === 'ETH' ? 'bg-purple-500/20 text-purple-400' :
-                      'bg-yellow-500/20 text-yellow-400'
-                    }`}>
-                      {token.chain}
-                    </span>
+      <section className="relative z-10 pt-32 pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 overflow-hidden">
+          <div className="relative">
+            <div className="flex animate-scroll">
+              {[...trendingTokens, ...trendingTokens].map((token, idx) => (
+                <div key={idx} className="flex-shrink-0 mx-4">
+                  <div className="glass px-9 py-5 rounded-xl flex items-center gap-6 hover:border-[#E8523D]/30 transition-all cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg font-bold text-white">{token.ticker}</span>
+                      <span className={`text-sm px-3 py-1 rounded font-semibold ${
+                        token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' :
+                        token.chain === 'ETH' ? 'bg-purple-500/20 text-purple-400' :
+                        'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {token.chain}
+                      </span>
+                    </div>
+                    <span className="text-green-400 text-lg font-semibold">{token.change}</span>
+                    <span className="text-[#9AA4B2] text-base">{token.mcap}</span>
                   </div>
-                  <span className="text-green-400 text-sm font-semibold">{token.change}</span>
-                  <span className="text-[#9AA4B2] text-sm">{token.mcap}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Hero Section */}
       <section className="relative z-10 pt-32 sm:pt-40 pb-20 px-4">
