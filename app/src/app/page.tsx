@@ -145,12 +145,20 @@ export default function Home() {
     }
   ]
 
+  const trendingTokens = [
+    { ticker: '$AGENT', change: '+156%', mcap: '$2.4M', chain: 'BASE' },
+    { ticker: '$CLAW', change: '+89%', mcap: '$1.8M', chain: 'ETH' },
+    { ticker: '$BOT', change: '+67%', mcap: '$890K', chain: 'BSC' },
+    { ticker: '$DEGEN', change: '+54%', mcap: '$650K', chain: 'BASE' },
+    { ticker: '$AI', change: '+43%', mcap: '$420K', chain: 'ETH' },
+  ]
+
   const mockTokens = [
-    { name: 'AgentX', symbol: 'AGTX', mcap: '$125K', vol24h: '$8.2K', price: '$0.042', change: '+24.5%', hot: true },
-    { name: 'ClawAI', symbol: 'CLAW', mcap: '$89K', vol24h: '$5.1K', price: '$0.089', change: '+18.2%', hot: true },
-    { name: 'BotToken', symbol: 'BOT', mcap: '$67K', vol24h: '$3.8K', price: '$0.067', change: '+12.1%', hot: false },
-    { name: 'AutoCoin', symbol: 'AUTO', mcap: '$54K', vol24h: '$2.9K', price: '$0.054', change: '+8.4%', hot: false },
-    { name: 'SmartAgent', symbol: 'SMART', mcap: '$42K', vol24h: '$2.1K', price: '$0.042', change: '+5.7%', hot: false },
+    { name: 'AgentX', symbol: 'AGTX', mcap: '$125K', vol24h: '$8.2K', price: '$0.042', change: '+24.5%', hot: true, chain: 'BASE', txs: 1240, buys: 890, sells: 350, chartUrl: '#', scanUrl: '#' },
+    { name: 'ClawAI', symbol: 'CLAW', mcap: '$89K', vol24h: '$5.1K', price: '$0.089', change: '+18.2%', hot: true, chain: 'ETH', txs: 856, buys: 620, sells: 236, chartUrl: '#', scanUrl: '#' },
+    { name: 'BotToken', symbol: 'BOT', mcap: '$67K', vol24h: '$3.8K', price: '$0.067', change: '+12.1%', hot: false, chain: 'BSC', txs: 432, buys: 290, sells: 142, chartUrl: '#', scanUrl: '#' },
+    { name: 'AutoCoin', symbol: 'AUTO', mcap: '$54K', vol24h: '$2.9K', price: '$0.054', change: '+8.4%', hot: false, chain: 'BASE', txs: 321, buys: 201, sells: 120, chartUrl: '#', scanUrl: '#' },
+    { name: 'SmartAgent', symbol: 'SMART', mcap: '$42K', vol24h: '$2.1K', price: '$0.042', change: '+5.7%', hot: false, chain: 'ETH', txs: 256, buys: 178, sells: 78, chartUrl: '#', scanUrl: '#' },
   ]
 
   return (
@@ -211,6 +219,32 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Trending Tokens Slider */}
+      <div className="relative z-10 pt-24 pb-4 overflow-hidden">
+        <div className="relative">
+          <div className="flex animate-scroll">
+            {[...trendingTokens, ...trendingTokens].map((token, idx) => (
+              <div key={idx} className="flex-shrink-0 mx-3">
+                <div className="glass px-6 py-3 rounded-xl flex items-center gap-4 hover:border-[#E8523D]/30 transition-all cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-white">{token.ticker}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded ${
+                      token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' :
+                      token.chain === 'ETH' ? 'bg-purple-500/20 text-purple-400' :
+                      'bg-yellow-500/20 text-yellow-400'
+                    }`}>
+                      {token.chain}
+                    </span>
+                  </div>
+                  <span className="text-green-400 text-sm font-semibold">{token.change}</span>
+                  <span className="text-[#9AA4B2] text-sm">{token.mcap}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="relative z-10 pt-32 sm:pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
@@ -262,9 +296,9 @@ export default function Home() {
                     boxShadow: `0 8px 32px 0 ${stat.glowColor}, inset 0 1px 0 0 rgba(255, 255, 255, 0.05)`
                   }}
                 >
-                  <div className="text-2xl sm:text-3xl font-bold gradient-text mb-2">
+                  <div className="text-4xl sm:text-5xl font-extrabold gradient-text mb-2">
                     {stat.value}
-                    {stat.suffix && <span className="text-lg ml-1">{stat.suffix}</span>}
+                    {stat.suffix && <span className="text-2xl ml-1">{stat.suffix}</span>}
                   </div>
                   <div className="text-xs sm:text-sm text-[#9AA4B2]">{stat.label}</div>
                 </motion.div>
@@ -374,7 +408,10 @@ export default function Home() {
                     <line x1="20" y1="20" x2="20" y2="4" strokeLinecap="round"/>
                   </svg>
                 )
-              }
+              },
+              { id: 'base', label: 'BASE', icon: null },
+              { id: 'eth', label: 'ETH', icon: null },
+              { id: 'bsc', label: 'BSC', icon: null }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -398,10 +435,14 @@ export default function Home() {
                 <thead className="border-b border-[#E8523D]/10">
                   <tr>
                     <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Token</th>
+                    <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Chain</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Price</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Change</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Market Cap</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Volume</th>
+                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Txs</th>
+                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Buys/Sells</th>
+                    <th className="text-center p-4 text-sm font-semibold text-[#9AA4B2]">Links</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -423,12 +464,45 @@ export default function Home() {
                           </div>
                         </div>
                       </td>
+                      <td className="p-4">
+                        <span className={`text-xs px-2 py-1 rounded font-semibold ${
+                          token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' :
+                          token.chain === 'ETH' ? 'bg-purple-500/20 text-purple-400' :
+                          'bg-yellow-500/20 text-yellow-400'
+                        }`}>
+                          {token.chain}
+                        </span>
+                      </td>
                       <td className="p-4 text-right font-mono text-white">{token.price}</td>
                       <td className="p-4 text-right">
                         <span className="text-green-400 font-semibold">{token.change}</span>
                       </td>
                       <td className="p-4 text-right font-mono text-white">{token.mcap}</td>
                       <td className="p-4 text-right font-mono text-[#9AA4B2]">{token.vol24h}</td>
+                      <td className="p-4 text-right font-mono text-white">{token.txs}</td>
+                      <td className="p-4 text-right">
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-green-400 text-sm">↑ {token.buys}</span>
+                          <span className="text-red-400 text-sm">↓ {token.sells}</span>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <a href={token.chartUrl} target="_blank" rel="noopener noreferrer" className="text-[#9AA4B2] hover:text-[#E8523D] transition-colors" title="Chart">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <line x1="4" y1="20" x2="4" y2="14" strokeLinecap="round"/>
+                              <line x1="12" y1="20" x2="12" y2="8" strokeLinecap="round"/>
+                              <line x1="20" y1="20" x2="20" y2="4" strokeLinecap="round"/>
+                            </svg>
+                          </a>
+                          <a href={token.scanUrl} target="_blank" rel="noopener noreferrer" className="text-[#9AA4B2] hover:text-[#E8523D] transition-colors" title="Scanner">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </a>
+                        </div>
+                      </td>
                     </motion.tr>
                   ))}
                 </tbody>

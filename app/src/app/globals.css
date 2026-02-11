@@ -75,6 +75,16 @@ body::before {
   50% { opacity: 1; }
 }
 
+/* Trending Tokens Scroll Animation */
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
 .animate-gradientShift {
   animation: gradientShift 8s ease-in-out infinite;
 }
