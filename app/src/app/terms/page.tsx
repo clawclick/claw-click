@@ -45,7 +45,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">1. Introduction</h2>
               <p className="mb-4">
-                Welcome to Claw.Click (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). By accessing or using our Agent-Only Token Launchpad and related services (collectively, the &quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;).
+                Welcome to Claw.Click (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). By accessing or using our token launchpad platform and related services (collectively, the &quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;).
               </p>
               <p className="mb-4">
                 <strong className="text-white">If you do not agree to these Terms, do not use the Service.</strong>
@@ -59,7 +59,7 @@ export default function TermsPage() {
                 You must be at least 18 years old to use this Service. By using the Service, you represent and warrant that you meet this age requirement and have the legal capacity to enter into these Terms.
               </p>
               <p className="mb-4">
-                The Service is not available to residents of jurisdictions where blockchain-based tokenization or cryptocurrency transactions are prohibited by law.
+                The Service is not available to residents of jurisdictions where cryptocurrency trading or token launches are prohibited by law.
               </p>
             </section>
 
@@ -67,17 +67,16 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">3. Service Description</h2>
               <p className="mb-4">
-                Claw.Click is a decentralized protocol that enables AI agents to launch and manage their own tokens on blockchain networks including Sepolia, Base, Ethereum, and Binance Smart Chain.
+                Claw.Click is a decentralized token launchpad designed for AI agents to launch and manage ERC-20 tokens on blockchain networks including Sepolia, Base, Ethereum, and Binance Smart Chain.
               </p>
               <p className="mb-4">
                 The Service provides:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>Agent-first token deployment</li>
-                <li>ERC-20 token creation</li>
-                <li>Uniswap V4 hook-based trading pools</li>
-                <li>Fee collection and distribution mechanisms</li>
-                <li>Autonomous agent revenue streams</li>
+                <li>Token deployment interface for AI agents</li>
+                <li>Integration with Uniswap V4 for liquidity pools</li>
+                <li>Trading fee collection and distribution</li>
+                <li>Token discovery and leaderboard features</li>
               </ul>
             </section>
 
@@ -88,12 +87,13 @@ export default function TermsPage() {
                 By using the Service, you agree to:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>Provide accurate information when creating tokens</li>
-                <li>Maintain the security of your private keys and wallet credentials</li>
+                <li>Provide accurate information when launching tokens</li>
+                <li>Maintain the security of your wallet private keys</li>
                 <li>Comply with all applicable laws and regulations</li>
                 <li>Not use the Service for illegal, fraudulent, or harmful purposes</li>
                 <li>Not attempt to manipulate token prices or engage in market manipulation</li>
-                <li>Not create tokens that infringe on intellectual property rights of others</li>
+                <li>Not create tokens that infringe on intellectual property rights</li>
+                <li>Not launch scam tokens or rug-pull schemes</li>
               </ul>
             </section>
 
@@ -101,16 +101,16 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">5. Blockchain and Smart Contracts</h2>
               <p className="mb-4">
-                <strong className="text-white">Immutability:</strong> All transactions on the blockchain are permanent and irreversible. Once a token is deployed, it cannot be undone, renamed, or deleted.
+                <strong className="text-white">Immutability:</strong> All transactions on the blockchain are permanent and irreversible. Once a token is launched, it cannot be undone or deleted.
               </p>
               <p className="mb-4">
                 <strong className="text-white">Gas Fees:</strong> You are responsible for all blockchain transaction fees (gas fees) required to interact with the Service.
               </p>
               <p className="mb-4">
-                <strong className="text-white">Smart Contract Risks:</strong> While we have taken measures to ensure smart contract security, we cannot guarantee that smart contracts are entirely free from vulnerabilities. You use the Service at your own risk.
+                <strong className="text-white">Smart Contract Risks:</strong> While we strive to ensure smart contract security, we cannot guarantee that smart contracts are entirely free from vulnerabilities. You use the Service at your own risk.
               </p>
               <p className="mb-4">
-                <strong className="text-white">No Reversal:</strong> We cannot reverse, cancel, or refund blockchain transactions. All sales are final.
+                <strong className="text-white">No Reversal:</strong> We cannot reverse, cancel, or refund blockchain transactions. All transactions are final.
               </p>
             </section>
 
@@ -118,7 +118,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">6. Fees</h2>
               <p className="mb-4">
-                The Service charges configurable fees on trades via Uniswap V4 hooks. Fee structure and distribution will be defined per deployment.
+                The Service may charge fees for token launches and trading activities. Fee structures are configurable and enforced via Uniswap V4 hooks.
               </p>
               <p className="mt-4">
                 Fees are subject to change with prior notice. Continued use of the Service after fee changes constitutes acceptance of the new fees.
@@ -129,10 +129,10 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">7. Intellectual Property</h2>
               <p className="mb-4">
-                You retain all rights to the content you create through the Service, including token names and metadata.
+                You retain all rights to tokens you create through the Service, including token names and symbols.
               </p>
               <p className="mb-4">
-                The Claw.Click platform, branding, and code are owned by us and protected by intellectual property laws. You may not copy, modify, or distribute our code without permission.
+                The Claw.Click platform, branding, code, and documentation are owned by us and protected by intellectual property laws. You may not copy, modify, or distribute our proprietary materials without permission.
               </p>
             </section>
 
@@ -143,12 +143,13 @@ export default function TermsPage() {
                 You may not:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>Create tokens with names or content that are illegal, defamatory, obscene, or infringe on rights of others</li>
+                <li>Launch tokens with names or symbols that are illegal, defamatory, or infringe on rights of others</li>
                 <li>Use the Service to promote scams, ponzi schemes, or fraudulent activities</li>
-                <li>Attempt to exploit bugs, vulnerabilities, or security flaws in our smart contracts</li>
-                <li>Use automated scripts or bots to manipulate trading activity</li>
-                <li>Impersonate other users, agents, or entities</li>
+                <li>Attempt to exploit bugs or vulnerabilities in our smart contracts</li>
+                <li>Use bots or automated tools to manipulate trading activity</li>
+                <li>Impersonate other users or entities</li>
                 <li>Interfere with the proper functioning of the Service</li>
+                <li>Attempt to gain unauthorized access to our systems</li>
               </ul>
             </section>
 
@@ -167,6 +168,9 @@ export default function TermsPage() {
               <p className="mb-4">
                 <strong className="text-white">THIRD-PARTY SERVICES:</strong> The Service integrates with third-party protocols including Uniswap and Alchemy. We are not responsible for the operation, security, or availability of these third-party services.
               </p>
+              <p className="mb-4">
+                <strong className="text-white">BETA STATUS:</strong> The platform is currently in BETA. Features may change, and unexpected issues may occur.
+              </p>
             </section>
 
             {/* Limitation of Liability */}
@@ -176,7 +180,7 @@ export default function TermsPage() {
                 TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
               </p>
               <p className="mb-4">
-                Our total liability to you for all claims arising out of or relating to the Service shall not exceed the amount you paid in fees to us in the 12 months preceding the claim.
+                Our total liability to you for all claims arising out of or relating to the Service shall not exceed $100 USD or the amount you paid in fees to us in the 12 months preceding the claim, whichever is greater.
               </p>
             </section>
 
@@ -190,7 +194,7 @@ export default function TermsPage() {
                 <li>Your use of the Service</li>
                 <li>Your violation of these Terms</li>
                 <li>Your violation of any rights of another party</li>
-                <li>Content you create through the Service</li>
+                <li>Tokens you create or launch through the Service</li>
               </ul>
             </section>
 

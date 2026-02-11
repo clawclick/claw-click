@@ -34,7 +34,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">1. Introduction</h2>
               <p>
-                Claw.Click ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share information when you use our platform for creating and tokenizing autonomous AI agents on the blockchain.
+                Claw.Click ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share information when you use our token launchpad platform for AI agents.
               </p>
             </section>
 
@@ -42,26 +42,27 @@ export default function Privacy() {
               <h2 className="text-2xl font-bold text-white mb-4">2. Information We Collect</h2>
               <h3 className="text-xl font-semibold text-white mt-4 mb-2">2.1 Blockchain Data</h3>
               <p className="mb-4">
-                All agent creation, tokenization, and trading activities are recorded on public blockchains (Sepolia, Base, Ethereum, BSC). This data is publicly accessible and immutable by design.
+                All token launches and trading activities are recorded on public blockchains (Sepolia, Base, Ethereum, BSC). This data is publicly accessible and immutable by design.
               </p>
               <h3 className="text-xl font-semibold text-white mt-4 mb-2">2.2 Wallet Addresses</h3>
               <p className="mb-4">
-                When you connect your wallet, we collect your wallet address to facilitate interactions with our smart contracts. We do not have access to your private keys.
+                When you connect your wallet, we collect your wallet address to facilitate token deployment and trading interactions. We do not have access to your private keys.
               </p>
-              <h3 className="text-xl font-semibold text-white mt-4 mb-2">2.3 IPFS Data</h3>
+              <h3 className="text-xl font-semibold text-white mt-4 mb-2">2.3 Technical Data</h3>
               <p>
-                Agent memory files and metadata uploaded to IPFS are content-addressed and publicly accessible via their CID (Content Identifier).
+                We may collect basic technical information such as your IP address, browser type, and device information for security and analytics purposes.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">3. How We Use Information</h2>
               <ul className="list-disc list-inside space-y-2">
-                <li>Facilitate agent creation and tokenization</li>
-                <li>Display agent information on our platform</li>
+                <li>Facilitate token launches via our launchpad</li>
+                <li>Display token information and trading statistics</li>
                 <li>Process transactions and distribute fees</li>
-                <li>Provide analytics and platform statistics</li>
+                <li>Provide platform analytics</li>
                 <li>Improve our services and user experience</li>
+                <li>Detect and prevent fraud or abuse</li>
               </ul>
             </section>
 
@@ -70,11 +71,8 @@ export default function Privacy() {
               <p className="mb-4">
                 <strong>On-Chain Data:</strong> All smart contract interactions are permanently stored on the blockchain and cannot be deleted.
               </p>
-              <p className="mb-4">
-                <strong>IPFS Data:</strong> Files uploaded to IPFS are distributed across the IPFS network and may be cached by multiple nodes.
-              </p>
               <p>
-                <strong>Off-Chain Data:</strong> We do not store any personal information on centralized servers.
+                <strong>Off-Chain Data:</strong> We store minimal off-chain data necessary for platform functionality. We do not store sensitive personal information on centralized servers.
               </p>
             </section>
 
@@ -84,49 +82,72 @@ export default function Privacy() {
               <ul className="list-disc list-inside space-y-2">
                 <li><strong>Wallet Providers:</strong> RainbowKit, MetaMask, WalletConnect</li>
                 <li><strong>Blockchain RPCs:</strong> Alchemy, Infura</li>
-                <li><strong>IPFS:</strong> Pinata</li>
                 <li><strong>DEX:</strong> Uniswap V4</li>
+                <li><strong>Analytics:</strong> We may use privacy-respecting analytics tools</li>
               </ul>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">6. Cookies and Tracking</h2>
               <p>
-                We use minimal cookies for essential functionality only. We do not use third-party tracking cookies or analytics services.
+                We use minimal cookies for essential functionality only (e.g., wallet connection state). We do not use invasive tracking cookies or third-party advertising networks.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">7. Your Rights</h2>
               <p className="mb-4">
-                Due to the decentralized nature of blockchain technology, once data is recorded on-chain, it cannot be modified or deleted. You have the right to:
+                Due to the decentralized nature of blockchain technology, once data is recorded on-chain, it cannot be modified or deleted. However, you have the right to:
               </p>
               <ul className="list-disc list-inside space-y-2">
                 <li>Disconnect your wallet at any time</li>
-                <li>Request information about your on-chain interactions</li>
-                <li>Update agent metadata (via agent wallet signature)</li>
+                <li>Request information about your on-chain transactions</li>
+                <li>Opt out of optional analytics tracking</li>
               </ul>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">8. Security</h2>
               <p>
-                We implement industry-standard security practices. However, you are responsible for securing your wallet private keys. We never ask for your private keys or seed phrases.
+                We implement industry-standard security practices to protect the platform. However, you are responsible for securing your wallet private keys. We never ask for your private keys or seed phrases.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-white mb-4">9. Changes to This Policy</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">9. Data Sharing</h2>
+              <p className="mb-4">
+                We do not sell your personal information. We may share data only in the following circumstances:
+              </p>
+              <ul className="list-disc list-inside space-y-2">
+                <li>With service providers necessary for platform operation</li>
+                <li>When required by law or legal process</li>
+                <li>To protect our rights or the safety of users</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-white mb-4">10. International Users</h2>
               <p>
-                We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated "Last updated" date.
+                Our services are accessible globally. By using Claw.Click, you consent to the transfer and processing of your information in jurisdictions where our servers and service providers operate.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-white mb-4">10. Contact Us</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">11. Changes to This Policy</h2>
               <p>
-                For questions about this Privacy Policy, please contact us via our GitHub repository or Twitter @clawdotclick.
+                We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated "Last updated" date. Continued use of the platform after changes constitutes acceptance of the updated policy.
               </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-white mb-4">12. Contact Us</h2>
+              <p>
+                For questions about this Privacy Policy, please contact us:
+              </p>
+              <ul className="space-y-2 mt-4">
+                <li>Twitter: <a href="https://x.com/clawdotclick" className="text-[#FF8C4A] hover:underline" target="_blank" rel="noopener noreferrer">@clawdotclick</a></li>
+                <li>GitHub: <a href="https://github.com/clawclick" className="text-[#FF8C4A] hover:underline" target="_blank" rel="noopener noreferrer">github.com/clawclick</a></li>
+              </ul>
             </section>
           </div>
 
