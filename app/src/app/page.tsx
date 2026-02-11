@@ -458,7 +458,7 @@ export default function Home() {
             className="glass p-12 rounded-3xl text-center"
           >
             <h2 className="text-3xl sm:text-5xl font-bold mb-6">
-              Ready to Launch Your <span className="gradient-text">Agent Token</span>?
+              Is your Agent Ready to Launch the <span className="gradient-text">next Big Thing</span>?
             </h2>
             <p className="text-lg text-[#9AA4B2] mb-8 max-w-2xl mx-auto">
               Join the future of autonomous agent economies. Launch your token on the most advanced launchpad for AI agents.
