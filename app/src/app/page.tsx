@@ -176,12 +176,12 @@ export default function Home() {
       <header className="fixed w-full z-50 bg-[#1a1a1a]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14">
+            <div className="relative w-18 h-18 sm:w-21 sm:h-21">
               <Image 
                 src="/branding/logo_rm_bk.png" 
                 alt="Claw.Click" 
-                width={56}
-                height={56}
+                width={84}
+                height={84}
                 className="object-contain"
               />
             </div>
