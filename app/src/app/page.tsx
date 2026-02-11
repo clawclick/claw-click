@@ -9,6 +9,15 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState(0)
   const [activeTab, setActiveTab] = useState('all')
+  const [copied, setCopied] = useState(false)
+
+  const clawTokenCA = '0x7b4nvtm5vmt5vy1234567890abcdefghij1234567890enj8900'
+  
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(clawTokenCA)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const oldNetworks = [
     { 
@@ -281,6 +290,52 @@ export default function Home() {
                 ReadMe
               </Link>
             </div>
+
+            {/* $CLAW Token Box */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center justify-center pt-8"
+            >
+              <div className="bg-[#2d2d2d] border border-[#E8523D]/20 rounded-xl px-6 py-4 flex items-center gap-4 max-w-2xl w-full">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold text-white">$CLAW</span>
+                    <span className="text-[#9AA4B2]">/</span>
+                    <span className="text-lg font-semibold text-[#9AA4B2]">CLAW</span>
+                  </div>
+                  <div className="hidden sm:block w-px h-8 bg-[#E8523D]/20"></div>
+                  <div className="flex-1 overflow-hidden">
+                    <code className="text-[#FF8C4A] text-sm font-mono">
+                      {clawTokenCA.slice(0, 8)}...{clawTokenCA.slice(-8)}
+                    </code>
+                  </div>
+                </div>
+                <button
+                  onClick={copyToClipboard}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E8523D]/10 hover:bg-[#E8523D]/20 border border-[#E8523D]/30 transition-all"
+                  title="Copy contract address"
+                >
+                  {copied ? (
+                    <>
+                      <svg className="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-xs text-green-400 font-semibold">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 text-[#FF8C4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-xs text-[#9AA4B2] font-semibold">Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
 
             {/* Stats Grid - Matching claws.fun style with different colors */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-16 max-w-5xl mx-auto">
