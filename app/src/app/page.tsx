@@ -156,7 +156,7 @@ export default function Home() {
   return (
     <main className="min-h-screen relative bg-[#1a1a1a] text-white overflow-x-hidden w-full">
       {/* Animated gradient background with orbs */}
-      <div className="fixed inset-0 overflow-hidden">
+      <div className="fixed inset-0 overflow-hidden z-[2]">
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/5 via-transparent to-[#FF8C4A]/10 animate-gradientShift"></div>
         <div className="orb orb-1"></div>
         <div className="orb orb-2"></div>
@@ -323,22 +323,69 @@ export default function Home() {
           {/* Tabs */}
           <div className="flex flex-wrap justify-center gap-3 mb-8">
             {[
-              { id: 'all', label: 'All Tokens', icon: '🔍' },
-              { id: 'hot', label: 'Hot', icon: '🔥' },
-              { id: 'new', label: 'New', icon: '✨' },
-              { id: 'mcap', label: 'MCap', icon: '💎' },
-              { id: 'volume', label: '24h Vol', icon: '📊' }
+              { 
+                id: 'all', 
+                label: 'All Tokens', 
+                icon: (
+                  <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )
+              },
+              { 
+                id: 'hot', 
+                label: 'Hot', 
+                icon: (
+                  <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C12 2 8 6 8 10C8 13.31 10.69 16 14 16C17.31 16 20 13.31 20 10C20 6 16 2 16 2C16 2 15 4 14 6C13 4 12 2 12 2Z" opacity="0.8"/>
+                    <path d="M12 22C8.5 22 5 19.5 5 15C5 12 7 10 9 9C9 9 8.5 11 10 13C11 11 12 9 12 9C14 10 16 12 16 15C16 19.5 15.5 22 12 22Z"/>
+                  </svg>
+                )
+              },
+              { 
+                id: 'new', 
+                label: 'New', 
+                icon: (
+                  <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" opacity="0.8"/>
+                    <path d="M18 4L19 6.5L21.5 7.5L19 8.5L18 11L17 8.5L14.5 7.5L17 6.5L18 4Z"/>
+                  </svg>
+                )
+              },
+              { 
+                id: 'mcap', 
+                label: 'MCap', 
+                icon: (
+                  <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" strokeLinejoin="round"/>
+                    <path d="M2 17L12 22L22 17" strokeLinejoin="round"/>
+                    <path d="M2 12L12 17L22 12" strokeLinejoin="round"/>
+                  </svg>
+                )
+              },
+              { 
+                id: 'volume', 
+                label: '24h Vol', 
+                icon: (
+                  <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="4" y1="20" x2="4" y2="14" strokeLinecap="round"/>
+                    <line x1="12" y1="20" x2="12" y2="8" strokeLinecap="round"/>
+                    <line x1="20" y1="20" x2="20" y2="4" strokeLinecap="round"/>
+                  </svg>
+                )
+              }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+                className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white'
                     : 'glass text-[#9AA4B2] hover:text-white'
                 }`}
               >
-                <span className="mr-2">{tab.icon}</span>
+                {tab.icon}
                 {tab.label}
               </button>
             ))}
