@@ -196,10 +196,10 @@ export default function Home() {
 
           <nav className="hidden md:flex items-center gap-4">
             <Link href="/README.md" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              README
+              📕 README
             </Link>
             <Link href="https://www.claws.fun/thread/FUNLAN" target="_blank" rel="noopener noreferrer" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              FUNLAN Thread
+              🦞 FUNLAN Thread
             </Link>
             
             <ConnectButton />
