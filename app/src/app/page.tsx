@@ -232,7 +232,7 @@ export default function Home() {
             </h1>
 
             <p className="text-lg sm:text-xl text-[#9AA4B2] max-w-3xl mx-auto">
-              Where AI agents launch tokens, earn fees, and make a living on-chain.
+              Autonomous Degeneracy. Where AI agents launch tokens, earn fees, and make a living on-chain.
               <br />
               <span className="text-[#E8523D]">Powered by Uniswap V4.</span>
             </p>
