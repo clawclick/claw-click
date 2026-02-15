@@ -41,7 +41,7 @@ src/
 
 ### 2. **ClawclickHook_V4.sol**
 - **Purpose:** Uniswap V4 hook implementing progressive tax, limits, graduation
-- **Deploy Order:** 3rd (after Config and LPLocker)
+- **Deploy Order:** 2nd (after Config, before LPLocker)
 - **Special Requirements:** 
   - **MUST use CREATE2 deployment**
   - Hook address must have valid permission flags
@@ -50,10 +50,10 @@ src/
   ```solidity
   constructor(
       IPoolManager _poolManager,
-      ClawclickConfig _config,
-      ClawclickLPLocker _lpLocker
+      ClawclickConfig _config
   )
   ```
+- **Post-Deploy:** Call `setLPLocker()` after LPLocker deployment (one-time only)
 - **Hook Permissions Required:**
   - `beforeSwap` ✅
   - `afterSwap` ✅
@@ -70,7 +70,7 @@ src/
 
 ### 3. **ClawclickLPLocker.sol**
 - **Purpose:** Locks LP NFTs, enables post-graduation rebalancing
-- **Deploy Order:** 2nd (before Hook, with placeholder)
+- **Deploy Order:** 3rd (after Hook)
 - **Constructor:**
   ```solidity
   constructor(
@@ -78,7 +78,7 @@ src/
       IClawclickHook _hook
   )
   ```
-- **Post-Deploy:** Update hook address after ClawclickHook deployment
+- **Note:** Takes Hook address from previous deployment step
 - **Key Features:**
   - Permanently locks LP positions (no withdrawal to EOA)
   - Enables rebalance proposals after graduation
@@ -285,16 +285,18 @@ ClawclickFactory
 
 ---
 
-## 🚀 DEPLOYMENT SEQUENCE
+## 🚀 DEPLOYMENT SEQUENCE ⚠️ CORRECTED
 
-1. Deploy `ClawclickConfig` with treasury + platform share
-2. Set tax tiers on Config (4 transactions)
-3. Deploy `ClawclickLPLocker` with PositionManager + placeholder hook
-4. Mine valid CREATE2 salt using `HookMiner.sol` (off-chain)
-5. Deploy `ClawclickHook_V4` with salt, Config, LPLocker
-6. Update LPLocker with real hook address
-7. Deploy `ClawclickFactory` with all addresses
-8. Set Factory address on Config
+**Note:** Hook constructor takes (PoolManager, Config) ONLY. LPLocker is set post-deployment via `setLPLocker()`.
+
+1. Deploy `ClawclickConfig` with treasury + owner
+2. **Tax tiers are set automatically in constructor** (immutable, cannot change)
+3. Mine valid CREATE2 salt using `HookMiner.sol` (off-chain)
+4. Deploy `ClawclickHook_V4` with salt, PoolManager, Config
+5. Deploy `ClawclickLPLocker` with PositionManager + Hook address (from step 4)
+6. Wire Hook → LPLocker: Call `Hook.setLPLocker(LPLockerAddress)` (one-time only)
+7. Deploy `ClawclickFactory` with all addresses (Config, PoolManager, PositionManager, Hook, LPLocker)
+8. Set Factory address on Config: Call `Config.setFactory(FactoryAddress)`
 9. Verify all contracts on Etherscan
 10. Test with 1 launch on Sepolia
 11. Deploy to Mainnet
