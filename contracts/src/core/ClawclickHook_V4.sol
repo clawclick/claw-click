@@ -406,8 +406,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         
         PoolId poolId = key.toId();
         
-        // Determine base tax from starting MCAP
-        uint256 baseTax = _getBaseTaxForMcap(startMcap);
+        // Determine base tax from starting MCAP (via Config tax tiers)
+        uint256 baseTax = config.getStartingTax(startMcap);
         
         launches[poolId] = Launch({
             token: token,
@@ -741,25 +741,10 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     }
     
     /**
-     * @notice Get base tax for starting MCAP
-     * @dev Maps MCAP to starting tax tier
-     * @param startMcap Starting MCAP in ETH (wei)
-     * @return baseTax Base tax in bps
+     * NOTE: _getBaseTaxForMcap() was removed - now uses ClawclickConfig.getStartingTax()
+     * Tax tiers are defined in ClawclickConfig and are immutable after deployment.
+     * This eliminates duplicate definitions and ensures single source of truth.
      */
-    function _getBaseTaxForMcap(uint256 startMcap) internal pure returns (uint256 baseTax) {
-        uint256 mcapInEth = startMcap / 1 ether;
-        
-        if (mcapInEth >= 10) return 500;   // 5%
-        if (mcapInEth >= 9) return 1000;   // 10%
-        if (mcapInEth >= 8) return 1500;   // 15%
-        if (mcapInEth >= 7) return 2000;   // 20%
-        if (mcapInEth >= 6) return 2500;   // 25%
-        if (mcapInEth >= 5) return 3000;   // 30%
-        if (mcapInEth >= 4) return 3500;   // 35%
-        if (mcapInEth >= 3) return 4000;   // 40%
-        if (mcapInEth >= 2) return 4500;   // 45%
-        return 5000;  // 50% (1 ETH)
-    }
     
     /**
      * @notice Get maxTx limit
