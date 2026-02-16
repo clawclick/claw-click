@@ -20,6 +20,11 @@ import {ClawclickConfig} from "./ClawclickConfig.sol";
 import {ClawclickHook} from "./ClawclickHook_V4.sol";
 import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
 
+/// @notice Permit2 interface for allowance management
+interface IPermit2 {
+    function approve(address token, address spender, uint160 amount, uint48 expiration) external;
+}
+
 /**
  * @title ClawclickFactory
  * @notice Factory for creating MCAP-initialized Uniswap v4 token launches
@@ -48,6 +53,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /*//////////////////////////////////////////////////////////////
                                 CONSTANTS
     //////////////////////////////////////////////////////////////*/
+    
+    /// @notice Permit2 contract address (canonical deployment)
+    address constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     
     /// @notice Total supply per token (1 billion with 18 decimals)
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 1e18;
@@ -413,6 +421,10 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // Approve both PoolManager (for settlement) and PositionManager (for liquidity operations)
         ClawclickToken(token).approve(address(poolManager), TOTAL_SUPPLY);
         ClawclickToken(token).approve(address(positionManager), TOTAL_SUPPLY);
+        // Approve Permit2 (required by PositionManager)
+        ClawclickToken(token).approve(PERMIT2, type(uint256).max);
+        // Set Permit2 allowance for PositionManager (max amount, far future expiration)
+        IPermit2(PERMIT2).approve(token, address(positionManager), type(uint160).max, type(uint48).max);
         
         // For out-of-range positions below price:
         // - amount0 (ETH) = 0

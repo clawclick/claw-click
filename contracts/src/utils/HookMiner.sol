@@ -40,8 +40,8 @@ library HookMiner {
         bytes32 initCodeHash = keccak256(initCode);
 
         // 2^14 space = 16384 possibilities
-        // Searching 100k gives comfortable margin
-        for (uint256 i = 0; i < 100_000; i++) {
+        // Searching 1M for better coverage
+        for (uint256 i = 0; i < 1_000_000; i++) {
             salt = bytes32(i);
             hookAddress = computeCreate2Address(deployer, salt, initCodeHash);
 

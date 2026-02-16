@@ -31,7 +31,8 @@ contract MineHook is Script {
 
     function run() external view {
 
-        address deployer = vm.envAddress("DEPLOYER");
+        // Foundry's CREATE2 deployer (used by vm.broadcast with salt)
+        address deployer = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
         address poolManager = 0xE03A1074c86CFeDd5C142C4F04F1a1536e203543;
         address config = vm.envAddress("CONFIG");
 
