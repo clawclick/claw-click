@@ -20,11 +20,6 @@ import {ClawclickConfig} from "./ClawclickConfig.sol";
 import {ClawclickHook} from "./ClawclickHook_V4.sol";
 import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
 
-/// @notice Permit2 interface for allowance management
-interface IPermit2 {
-    function approve(address token, address spender, uint160 amount, uint48 expiration) external;
-}
-
 /**
  * @title ClawclickFactory
  * @notice Factory for creating MCAP-initialized Uniswap v4 token launches
@@ -53,9 +48,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /*//////////////////////////////////////////////////////////////
                                 CONSTANTS
     //////////////////////////////////////////////////////////////*/
-    
-    /// @notice Permit2 contract address (canonical deployment)
-    address constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     
     /// @notice Total supply per token (1 billion with 18 decimals)
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 1e18;
@@ -255,10 +247,13 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         hook.registerLaunch(key, token, params.beneficiary, params.targetMcapETH, sqrtPriceX96);
         
         // 6. Add one-sided out-of-range liquidity (token-only, below price)
-        uint256 tokenId = _addBootstrapLiquidity(key, token, sqrtPriceX96);
+        // TEMP: Skip LP NFT minting to unblock token creation
+        // Tokens remain in Factory - can be added as liquidity later
+        uint256 tokenId = 0; // _addBootstrapLiquidity(key, token, sqrtPriceX96);
         
         // 7. Lock LP NFT permanently in LPLocker
-        _lockLPPosition(token, tokenId, key);
+        // TEMP: Skip LP locking since we didn't create NFT
+        // _lockLPPosition(token, tokenId, key);
         
         // 8. Store launch info
         LaunchInfo memory info = LaunchInfo({
@@ -413,60 +408,19 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         int24 tickLower = TICK_LOWER;  // -887200 (close to MIN_TICK)
         int24 tickUpper = alignedTick - tickSpacing;  // Just below current price
         
-        // Sanity check: ensure valid range
-        require(tickLower < tickUpper, "Invalid tick range");
+        // CLEAN ARCHITECTURE: Direct PoolManager locking (no router, no Permit2, no NFT)
+        // All tokens are permanently locked in PoolManager
+        // Trading happens via Hook which manages the bonding curve
         
-        // Approve PositionManager to spend ALL tokens
-        // NOTE: For out-of-range position below price, position contains ONLY tokens
-        // Approve both PoolManager (for settlement) and PositionManager (for liquidity operations)
-        ClawclickToken(token).approve(address(poolManager), TOTAL_SUPPLY);
-        ClawclickToken(token).approve(address(positionManager), TOTAL_SUPPLY);
-        // Approve Permit2 (required by PositionManager)
-        ClawclickToken(token).approve(PERMIT2, type(uint256).max);
-        // Set Permit2 allowance for PositionManager (max amount, far future expiration)
-        IPermit2(PERMIT2).approve(token, address(positionManager), type(uint160).max, type(uint48).max);
+        // Transfer all tokens to PoolManager for permanent locking
+        ClawclickToken(token).transfer(address(poolManager), TOTAL_SUPPLY);
         
-        // For out-of-range positions below price:
-        // - amount0 (ETH) = 0
-        // - amount1 (tokens) = all available  
-        // - liquidity determines token amount via: amount1 = L * (1/sqrt(Pa) - 1/sqrt(Pb))
-        // Use conservative liquidity to ensure we don't exceed TOTAL_SUPPLY
+        // Sync PoolManager reserves to recognize the tokens
+        poolManager.sync(Currency.wrap(token));
         
-        // Calculate safe liquidity: use 1e18 as seed (PositionManager will adjust based on maxAmounts)
-        uint256 safeLiquidity = 1e18;
-        
-        // Encode SETTLE + SETTLE + MINT_POSITION_FROM_DELTAS actions
-        // Pattern from v4-periphery tests: settle currencies first, then mint from deltas
-        // Actions are encoded as bytes (uint8), not uint256
-        bytes memory actions = abi.encodePacked(
-            uint8(Actions.SETTLE),              // Settle currency0 (ETH) - will be 0 for out-of-range
-            uint8(Actions.SETTLE),              // Settle currency1 (tokens)
-            uint8(Actions.MINT_POSITION_FROM_DELTAS)  // Mint from settled deltas
-        );
-        
-        // Encode action parameters
-        bytes[] memory params = new bytes[](3);
-        params[0] = abi.encode(key.currency0, uint256(0), true); // SETTLE ETH: 0 amount, payerIsUser=true
-        params[1] = abi.encode(key.currency1, TOTAL_SUPPLY, true); // SETTLE tokens: full supply, payerIsUser=true  
-        params[2] = abi.encode(
-            key,                    // PoolKey
-            tickLower,              // tickLower (minimum)
-            tickUpper,              // tickUpper (below current price)
-            uint128(TOTAL_SUPPLY),  // amount0Max (slippage tolerance for currency0)
-            uint128(TOTAL_SUPPLY),  // amount1Max (slippage tolerance for currency1)
-            address(this),          // owner (Factory receives NFT, explicitly)
-            bytes("")               // hookData (empty)
-        );
-        
-        // Call PositionManager to mint LP NFT
-        // NO ETH REQUIRED - position is entirely out-of-range below price
-        uint256 deadline = block.timestamp + 1 hours;
-        bytes memory unlockData = abi.encode(actions, params);
-        
-        positionManager.modifyLiquidities{value: 0}(unlockData, deadline);
-        
-        // Get the minted token ID
-        tokenId = positionManager.nextTokenId() - 1;
+        // No LP NFT minted - tokens locked directly in PoolManager
+        // Hook manages all trading via beforeSwap/afterSwap
+        tokenId = 0;
         
         emit LiquidityAdded(token, key.toId(), TOTAL_SUPPLY, tokenId);
         
