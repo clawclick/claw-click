@@ -15,6 +15,7 @@ import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 import {FullMath} from "v4-core/src/libraries/FullMath.sol";
 import {FixedPoint96} from "v4-core/src/libraries/FixedPoint96.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
+import {ModifyLiquidityParams, SwapParams} from "v4-core/src/types/PoolOperation.sol";
 
 import {ClawclickConfig} from "./ClawclickConfig.sol";
 import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
@@ -42,7 +43,7 @@ import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
  *   • Tradable from block 1
  * 
  * PHASE 2 — GRADUATED MODE
- *   • After 4 MCAP doublings sustained for 1 hour
+ *   • After 4 MCAP doublings
  *   • Hook tax disabled (returns ZERO_DELTA)
  *   • Pool fee = 1% (LP earns ongoing revenue)
  *   • Limits disabled
@@ -82,19 +83,15 @@ import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
  * ═══════════════════════════════════════════════════════════════════════════
  * 
  * Triggered when:
- *   1. epoch >= 4 (4x doubling = 16x growth)
- *   2. Sustained for 1 hour (anti-manipulation)
+ *   epoch >= 4 (4x doubling = 16x growth)
  * 
- * Sustained mechanism:
- *   if epoch >= 4:
- *     if aboveThresholdSince == 0:
- *       aboveThresholdSince = block.timestamp
- *     else if block.timestamp >= aboveThresholdSince + 1 hour:
- *       phase = GRADUATED
- *   else:
- *     aboveThresholdSince = 0
+ * Simple epoch-based graduation:
+ *   if epoch >= GRADUATION_EPOCH (4):
+ *     phase = GRADUATED
+ *     graduationMcap = startMcap * 16
+ *     liquidityStage = 1
  * 
- * Permanent. No reversion.
+ * Permanent. No reversion. No timer.
  * 
  * ═══════════════════════════════════════════════════════════════════════════
  * POSITION LIMITS — RELATIVE SCALING
@@ -176,7 +173,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         uint256 startMcap;              // Initial MCAP in ETH
         uint256 baseTax;                // Starting tax in bps (e.g., 5000 = 50%)
         uint160 startSqrtPrice;         // sqrtPriceX96 at launch
-        uint256 aboveThresholdSince;    // Timestamp when epoch >= 4 first reached
         Phase phase;                    // Current phase (PROTECTED/GRADUATED)
         uint8 liquidityStage;           // Liquidity stage (0=bootstrap, 1-3=stages)
         uint256 graduationMcap;         // startMcap * 16 (set on graduation)
@@ -200,9 +196,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     
     /// @notice Graduation threshold (epoch 4 = 16x growth)
     uint256 public constant GRADUATION_EPOCH = 4;
-    
-    /// @notice Graduation sustain duration (1 hour)
-    uint256 public constant GRADUATION_DURATION = 1 hours;
     
     /// @notice Beneficiary share (70%)
     uint256 public constant BENEFICIARY_SHARE_BPS = 7000;
@@ -415,7 +408,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             startMcap: startMcap,
             baseTax: baseTax,
             startSqrtPrice: sqrtPriceX96,
-            aboveThresholdSince: 0,
             phase: Phase.PROTECTED,
             liquidityStage: 0,        // Bootstrap stage
             graduationMcap: 0         // Set on graduation
@@ -443,7 +435,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     function beforeAddLiquidity(
         address sender,
         PoolKey calldata key,
-        IPoolManager.ModifyLiquidityParams calldata,
+        ModifyLiquidityParams calldata,
         bytes calldata
     ) external view override returns (bytes4) {
         // In v4, the sender during initial launch is PositionManager (not Factory directly)
@@ -461,7 +453,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     function beforeRemoveLiquidity(
         address,
         PoolKey calldata,
-        IPoolManager.ModifyLiquidityParams calldata,
+        ModifyLiquidityParams calldata,
         bytes calldata
     ) external pure override returns (bytes4) {
         revert LiquidityLocked();
@@ -479,7 +471,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     function beforeSwap(
         address,
         PoolKey calldata key,
-        IPoolManager.SwapParams calldata params,
+        SwapParams calldata params,
         bytes calldata
     ) external override returns (bytes4, BeforeSwapDelta, uint24) {
         PoolId poolId = key.toId();
@@ -607,20 +599,34 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         // Check graduation
         _checkGraduation(poolId, epoch);
         
-        // ✅ FIX: Use msg.sender instead of tx.origin for composability
-        emit SwapExecuted(
-            poolId,
-            msg.sender,  // ✅ FIXED: Was tx.origin
-            params.zeroForOne,
-            currentMcap,
-            epoch,
-            taxBps,
-            feeAmount,
-            isETHFee
-        );
-        
-        // Return with NO LP fee (pool fee = 0)
         return (BaseHook.beforeSwap.selector, delta, 0);
+    }
+    
+    /**
+     * @notice Check and trigger graduation when epoch threshold is reached
+     * @dev Simple epoch-based graduation (no timer)
+     */
+    function _checkGraduation(PoolId poolId, uint256 epoch) internal {
+        Launch storage launch = launches[poolId];
+
+        if (launch.phase == Phase.GRADUATED) return;
+
+        if (epoch >= GRADUATION_EPOCH) {
+            launch.phase = Phase.GRADUATED;
+
+            // Graduation MCAP = startMcap * 16 (2^4)
+            launch.graduationMcap = launch.startMcap * 16;
+
+            // Initialize liquidity stage
+            launch.liquidityStage = 1;
+
+            // Get final MCAP for event
+            (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
+            uint256 finalMcap = _getCurrentMcap(sqrtPriceX96);
+
+            emit PhaseChanged(poolId, Phase.GRADUATED, block.timestamp, finalMcap);
+            emit Graduated(launch.token, poolId, block.timestamp, finalMcap);
+        }
     }
     
     /**
@@ -632,7 +638,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     function afterSwap(
         address,
         PoolKey calldata key,
-        IPoolManager.SwapParams calldata params,
+        SwapParams calldata params,
         BalanceDelta delta,
         bytes calldata
     ) external override returns (bytes4, int128) {
@@ -776,46 +782,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         return _getMaxTx(currentMcap, startMcap);
     }
     
-    /**
-     * @notice Check and update graduation status
-     * @dev Requires epoch >= 4 sustained for 1 hour
-     * @param poolId Pool ID
-     * @param epoch Current epoch
-     */
-    function _checkGraduation(PoolId poolId, uint256 epoch) internal {
-        Launch storage launch = launches[poolId];
-        
-        // Already graduated
-        if (launch.phase == Phase.GRADUATED) return;
-        
-        // Check if at graduation threshold
-        if (epoch >= GRADUATION_EPOCH) {
-            // Start timer if not already started
-            if (launch.aboveThresholdSince == 0) {
-                launch.aboveThresholdSince = block.timestamp;
-            }
-            // Check if sustained for required duration
-            else if (block.timestamp >= launch.aboveThresholdSince + GRADUATION_DURATION) {
-                launch.phase = Phase.GRADUATED;
-                
-                // Initialize liquidity staging (INDEPENDENT of tax epochs)
-                launch.liquidityStage = 1;
-                launch.graduationMcap = launch.startMcap * 16;
-                
-                // Get final MCAP (reuse current context to avoid extra slot0 call)
-                (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-                uint256 finalMcap = _getCurrentMcap(sqrtPriceX96);
-                
-                // Emit events for indexers and LP Locker
-                emit PhaseChanged(poolId, Phase.GRADUATED, block.timestamp, finalMcap);
-                emit Graduated(launch.token, poolId, block.timestamp, finalMcap);
-            }
-        } else {
-            // Dropped below threshold - reset timer
-            launch.aboveThresholdSince = 0;
-        }
-    }
-
     /*//////////////////////////////////////////////////////////////
                             FEE CLAIMING
     //////////////////////////////////////////////////////////////*/

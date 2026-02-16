@@ -410,6 +410,8 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         
         // Approve PositionManager to spend ALL tokens
         // NOTE: For out-of-range position below price, position contains ONLY tokens
+        // Approve both PoolManager (for settlement) and PositionManager (for liquidity operations)
+        ClawclickToken(token).approve(address(poolManager), TOTAL_SUPPLY);
         ClawclickToken(token).approve(address(positionManager), TOTAL_SUPPLY);
         
         // For out-of-range positions below price:
@@ -421,19 +423,26 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // Calculate safe liquidity: use 1e18 as seed (PositionManager will adjust based on maxAmounts)
         uint256 safeLiquidity = 1e18;
         
-        // Encode MINT_POSITION action
-        bytes memory actions = abi.encodePacked(uint256(Actions.MINT_POSITION));
+        // Encode SETTLE + SETTLE + MINT_POSITION_FROM_DELTAS actions
+        // Pattern from v4-periphery tests: settle currencies first, then mint from deltas
+        // Actions are encoded as bytes (uint8), not uint256
+        bytes memory actions = abi.encodePacked(
+            uint8(Actions.SETTLE),              // Settle currency0 (ETH) - will be 0 for out-of-range
+            uint8(Actions.SETTLE),              // Settle currency1 (tokens)
+            uint8(Actions.MINT_POSITION_FROM_DELTAS)  // Mint from settled deltas
+        );
         
-        // Encode mint parameters
-        bytes[] memory params = new bytes[](1);
-        params[0] = abi.encode(
+        // Encode action parameters
+        bytes[] memory params = new bytes[](3);
+        params[0] = abi.encode(key.currency0, uint256(0), true); // SETTLE ETH: 0 amount, payerIsUser=true
+        params[1] = abi.encode(key.currency1, TOTAL_SUPPLY, true); // SETTLE tokens: full supply, payerIsUser=true  
+        params[2] = abi.encode(
             key,                    // PoolKey
             tickLower,              // tickLower (minimum)
             tickUpper,              // tickUpper (below current price)
-            safeLiquidity,          // liquidity (conservative seed value)
-            uint128(0),             // amount0Max (0 ETH for out-of-range below price)
-            uint128(TOTAL_SUPPLY),  // amount1Max (use all available tokens)
-            address(this),          // owner (Factory receives NFT)
+            uint128(TOTAL_SUPPLY),  // amount0Max (slippage tolerance for currency0)
+            uint128(TOTAL_SUPPLY),  // amount1Max (slippage tolerance for currency1)
+            address(this),          // owner (Factory receives NFT, explicitly)
             bytes("")               // hookData (empty)
         );
         
@@ -487,6 +496,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         premiumFee = _premiumFee;
         microFee = _microFee;
         emit FeesUpdated(_premiumFee, _microFee);
+    }
+
+    /**
+     * @notice Approve PositionManager to manage LP positions on behalf of Factory
+     * @dev Must be called once after deployment to enable liquidity operations
+     */
+    function approvePositionManager() external onlyOwner {
+        IERC721(address(positionManager)).setApprovalForAll(address(this), true);
     }
 
     /*//////////////////////////////////////////////////////////////

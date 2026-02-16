@@ -1,71 +1,72 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Hooks} from "v4-core/src/libraries/Hooks.sol";
-
 /**
  * @title HookMiner
- * @notice Utility to find CREATE2 salts for valid hook addresses
- * @dev Based on Uniswap V4 hook address validation rules
- * 
- * ⚠️ WARNING: OFF-CHAIN ONLY ⚠️
- * 
- * ✅ FIX #14: This library is for OFF-CHAIN use ONLY
- * 
- * DO NOT call from on-chain contracts:
- *   - Uses unbounded loops (10M iterations)
- *   - Will run out of gas
- *   - Should be used in scripts/tests only
- * 
- * Proper usage:
- *   1. Run offline in a Foundry script
- *   2. Pre-compute the salt
- *   3. Hardcode salt in deployment script
+ * @notice Finds CREATE2 salts for hook addresses with required permission bits
+ * @dev OFF-CHAIN ONLY - uses unbounded loops
+ *
+ * IMPORTANT:
+ * Uniswap v4 validates hooks using:
+ *
+ *   if ((uint160(hookAddress) & requiredFlags) != requiredFlags) revert;
+ *
+ * Therefore:
+ *   A valid hook address must satisfy:
+ *
+ *   (uint160(address) & requiredFlags) == requiredFlags
+ *
+ * We DO NOT mask bottom 14 bits.
+ * We DO NOT require exact equality.
+ * We ONLY require required bits to be set.
  */
 library HookMiner {
     /**
-     * @notice Mines a salt that produces a hook address with the required permissions
-     * @dev OFF-CHAIN ONLY - DO NOT CALL FROM CONTRACTS
-     * @param deployer The address that will deploy the hook
-     * @param flags The required hook permission flags
+     * @notice Mines a salt that produces a hook address with required permission bits
+     * @param deployer The CREATE2 deployer address
+     * @param requiredFlags The required permission flags bitmap
      * @param creationCode The contract creation bytecode
-     * @param constructorArgs The ABI-encoded constructor arguments
-     * @return hookAddress The computed hook address
-     * @return salt The CREATE2 salt that produces the valid address
+     * @param constructorArgs ABI-encoded constructor arguments
+     * @return hookAddress The valid hook address found
+     * @return salt The CREATE2 salt that produces this address
      */
     function find(
         address deployer,
-        uint160 flags,
+        uint160 requiredFlags,
         bytes memory creationCode,
         bytes memory constructorArgs
     ) internal view returns (address hookAddress, bytes32 salt) {
-        // Combine creation code and constructor args
         bytes memory initCode = abi.encodePacked(creationCode, constructorArgs);
         bytes32 initCodeHash = keccak256(initCode);
-        
-        // Try different salts until we find a valid hook address
-        // Exact match is rare - need large search space
-        for (uint256 i = 0; i < 10_000_000; i++) {
+
+        // 2^14 space = 16384 possibilities
+        // Searching 100k gives comfortable margin
+        for (uint256 i = 0; i < 100_000; i++) {
             salt = bytes32(i);
-            
-            // Compute CREATE2 address
             hookAddress = computeCreate2Address(deployer, salt, initCodeHash);
-            
-            // Check if address satisfies required flags
-            if (isValidHookAddress(hookAddress, flags)) {
+
+            if (isValidHookAddress(hookAddress, requiredFlags)) {
                 return (hookAddress, salt);
             }
         }
-        
-        revert("HookMiner: Failed to find valid salt");
+
+        revert("HookMiner: No valid salt found");
     }
-    
+
     /**
-     * @notice Computes the CREATE2 address
-     * @param deployer The deployer address
-     * @param salt The CREATE2 salt
-     * @param initCodeHash The keccak256 hash of the init code
-     * @return The computed CREATE2 address
+     * @notice Validates hook address against required permission flags
+     * @dev Must match Uniswap v4 PoolManager logic exactly
+     */
+    function isValidHookAddress(
+        address hookAddress,
+        uint160 requiredFlags
+    ) internal pure returns (bool) {
+        // REQUIRED: All required bits must be present
+        return (uint160(hookAddress) & requiredFlags) == requiredFlags;
+    }
+
+    /**
+     * @notice Computes CREATE2 address
      */
     function computeCreate2Address(
         address deployer,
@@ -86,19 +87,5 @@ library HookMiner {
                 )
             )
         );
-    }
-    
-    /**
-     * @notice Validates if a hook address satisfies the required permission flags
-     * @param hookAddress The hook address to validate
-     * @param requiredFlags The required permission flags
-     * @return true if the address is valid
-     */
-    function isValidHookAddress(address hookAddress, uint160 requiredFlags) internal pure returns (bool) {
-        // Extract the permission bits from the address (bottom 15 bits)
-        uint160 addressFlags = uint160(hookAddress) & uint160(0x7FFF);
-        
-        // Flags must match EXACTLY (not just contain required flags)
-        return addressFlags == requiredFlags;
     }
 }

@@ -7,6 +7,7 @@ import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
 import {BeforeSwapDelta} from "v4-core/src/types/BeforeSwapDelta.sol";
 import {Hooks} from "v4-core/src/libraries/Hooks.sol";
+import {ModifyLiquidityParams, SwapParams} from "v4-core/src/types/PoolOperation.sol";
 
 /**
  * @title BaseHook
@@ -37,7 +38,7 @@ abstract contract BaseHook is IHooks {
     function beforeAddLiquidity(
         address,
         PoolKey calldata,
-        IPoolManager.ModifyLiquidityParams calldata,
+        ModifyLiquidityParams calldata,
         bytes calldata
     ) external virtual onlyPoolManager returns (bytes4) {
         return IHooks.beforeAddLiquidity.selector;
@@ -46,7 +47,7 @@ abstract contract BaseHook is IHooks {
     function afterAddLiquidity(
         address,
         PoolKey calldata,
-        IPoolManager.ModifyLiquidityParams calldata,
+        ModifyLiquidityParams calldata,
         BalanceDelta,
         BalanceDelta,
         bytes calldata
@@ -57,7 +58,7 @@ abstract contract BaseHook is IHooks {
     function beforeRemoveLiquidity(
         address,
         PoolKey calldata,
-        IPoolManager.ModifyLiquidityParams calldata,
+        ModifyLiquidityParams calldata,
         bytes calldata
     ) external virtual onlyPoolManager returns (bytes4) {
         return IHooks.beforeRemoveLiquidity.selector;
@@ -66,7 +67,7 @@ abstract contract BaseHook is IHooks {
     function afterRemoveLiquidity(
         address,
         PoolKey calldata,
-        IPoolManager.ModifyLiquidityParams calldata,
+        ModifyLiquidityParams calldata,
         BalanceDelta,
         BalanceDelta,
         bytes calldata
@@ -77,7 +78,7 @@ abstract contract BaseHook is IHooks {
     function beforeSwap(
         address,
         PoolKey calldata,
-        IPoolManager.SwapParams calldata,
+        SwapParams calldata,
         bytes calldata
     ) external virtual onlyPoolManager returns (bytes4, BeforeSwapDelta, uint24) {
         return (IHooks.beforeSwap.selector, BeforeSwapDelta.wrap(0), 0);
@@ -86,7 +87,7 @@ abstract contract BaseHook is IHooks {
     function afterSwap(
         address,
         PoolKey calldata,
-        IPoolManager.SwapParams calldata,
+        SwapParams calldata,
         BalanceDelta,
         bytes calldata
     ) external virtual onlyPoolManager returns (bytes4, int128) {
