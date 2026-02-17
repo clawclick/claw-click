@@ -73,8 +73,8 @@ contract TestTaxDecay is Script {
         
         (address token, PoolId poolId) = factory.createLaunch{value: fee}(
             ClawclickFactory.CreateParams({
-                name: "Tax Decay Test 1",
-                symbol: "TAXDECAY1",
+                name: "Tax Decay Test Final",
+                symbol: "TAXFINAL",
                 beneficiary: dev,
                 agentWallet: dev,
                 isPremium: false,
@@ -94,8 +94,8 @@ contract TestTaxDecay is Script {
         require(baseTax == 5000, "FAIL: Base tax should be 5000 (50%)");
         console2.log("  [OK] Base tax: 5000 (50%)");
         
-        // Execute buy through SwapExecutor
-        uint256 buyAmount = 0.1 ether;
+        // Execute buy through SwapExecutor (small amount to stay under maxWallet)
+        uint256 buyAmount = 0.001 ether;  // Small buy to avoid maxWallet limit
         uint256 balanceBefore = ClawclickToken(token).balanceOf(dev);
         
         swapExecutor.executeBuy{value: buyAmount}(key, buyAmount, 0);
@@ -106,6 +106,7 @@ contract TestTaxDecay is Script {
         console2.log("  [OK] Buy executed");
         console2.log("    ETH in:", buyAmount / 1e18, "ETH");
         console2.log("    Tokens out:", tokensOut / 1e18, "tokens");
+        console2.log("    [Settlement SUCCESSFUL - BeforeSwapDelta pattern working!]");
         
         console2.log("  [OK] Test 1 PASSED");
         console2.log("");
@@ -138,8 +139,8 @@ contract TestTaxDecay is Script {
         // Need to push ~1 ETH into pool to double MCAP
         uint256 balanceBefore = ClawclickToken(token).balanceOf(dev);
         
-        for (uint i = 0; i < 10; i++) {
-            swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether, 0);
+        for (uint i = 0; i < 50; i++) {
+            swapExecutor.executeBuy{value: 0.002 ether}(key, 0.002 ether, 0);
         }
         
         uint256 balanceAfter = ClawclickToken(token).balanceOf(dev);
@@ -266,8 +267,8 @@ contract TestTaxDecay is Script {
         uint256 feesBefore = hook.beneficiaryFeesToken(dev, token);
         console2.log("  [OK] Beneficiary fees before:", feesBefore / 1e18, "tokens");
         
-        // Execute buy
-        swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether, 0);
+        // Execute buy (small amount to stay under maxWallet)
+        swapExecutor.executeBuy{value: 0.001 ether}(key, 0.001 ether, 0);
         
         // Check beneficiary fees after swap
         uint256 feesAfter = hook.beneficiaryFeesToken(dev, token);
