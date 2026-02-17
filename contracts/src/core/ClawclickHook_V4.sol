@@ -419,26 +419,24 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     }
     
     function beforeAddLiquidity(
-        address sender,
+        address,
         PoolKey calldata,
         ModifyLiquidityParams calldata,
         bytes calldata
     ) external view override returns (bytes4) {
-        // Factory-only liquidity control: adjustable repositioning model
-        // Only Factory (via PositionManager) can add liquidity
-        if (sender != config.factory()) revert NotFactory();
+        // Allow all liquidity operations - security enforced by NFT ownership (Factory owns NFT)
+        // Hook's job is to enforce trading rules, not liquidity management
         return this.beforeAddLiquidity.selector;
     }
     
     function beforeRemoveLiquidity(
-        address sender,
+        address,
         PoolKey calldata,
         ModifyLiquidityParams calldata,
         bytes calldata
     ) external view override returns (bytes4) {
-        // Factory-only liquidity control: adjustable repositioning model
-        // Only Factory (via PositionManager) can remove liquidity
-        if (sender != config.factory()) revert NotFactory();
+        // Allow all liquidity operations - security enforced by NFT ownership (Factory owns NFT)
+        // Hook's job is to enforce trading rules, not liquidity management  
         return this.beforeRemoveLiquidity.selector;
     }
     

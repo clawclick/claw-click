@@ -13,10 +13,10 @@ import "../src/core/ClawclickFactory.sol";
 contract ActivatePool is Script {
     using PoolIdLibrary for PoolKey;
     
-    ClawclickFactory factory = ClawclickFactory(0xA26Acea207cE95797fa6303eAF0bB191b802e77f);
+    ClawclickFactory factory = ClawclickFactory(0xdCCb09e463C160c67e9075794bcE1F29a6C8C7A4);
     IPositionManager positionManager = IPositionManager(0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4);
     
-    address token = 0x39702408153fF3F389fe7b96A0A710175EFf90A0;
+    address token = 0x005C870142072b7425541327F65733f668CC7989;
     address hook = 0xEbe6420f6aA7Bc53A2079160D6f0B116F45B37c0;
     
     function run() external {

@@ -15,6 +15,7 @@ import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
 import {Actions} from "v4-periphery/src/libraries/Actions.sol";
 import {IAllowanceTransfer} from "permit2/src/interfaces/IAllowanceTransfer.sol";
+import {LiquidityAmounts} from "v4-periphery/src/libraries/LiquidityAmounts.sol";
 
 import {ClawclickToken} from "./ClawclickToken.sol";
 import {ClawclickConfig} from "./ClawclickConfig.sol";
@@ -381,7 +382,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
      */
     function activatePool(
         PoolKey calldata key
-    ) external payable {
+    ) external payable nonReentrant {
         PoolId poolId = key.toId();
         require(!poolActivated[poolId], "Already activated");
         require(msg.value > 0, "ETH required");
@@ -429,6 +430,20 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 tokenAmount = _calculateTokenAmountFromETH(key, ethAmount);
         address token = Currency.unwrap(key.currency1);
         
+        // Calculate liquidity using LiquidityAmounts library
+        uint160 sqrtPriceLowerX96 = TickMath.getSqrtPriceAtTick(tickLower);
+        uint160 sqrtPriceUpperX96 = TickMath.getSqrtPriceAtTick(tickUpper);
+        
+        uint128 liquidity = LiquidityAmounts.getLiquidityForAmounts(
+            sqrtPriceX96,
+            sqrtPriceLowerX96,
+            sqrtPriceUpperX96,
+            ethAmount,
+            tokenAmount
+        );
+        
+        require(liquidity > 0, "Liquidity must be > 0");
+        
         // Approve Permit2
         ClawclickToken(token).approve(PERMIT2, tokenAmount);
         IAllowanceTransfer(PERMIT2).approve(
@@ -450,7 +465,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             key,
             tickLower,
             tickUpper,
-            uint256(0), // liquidity auto-calculated
+            uint256(liquidity), // Calculated liquidity
             uint128(ethAmount),
             uint128(tokenAmount),
             address(this), // Factory keeps NFT
