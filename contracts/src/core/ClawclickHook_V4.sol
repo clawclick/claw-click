@@ -455,13 +455,11 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     }
     
     /**
-     * @notice Main hook logic - applies tax or returns zero delta based on phase
-     * @dev Called before every swap
+     * @notice Pre-swap checks and validations
+     * @dev Called before every swap - performs safety checks only, NO fee collection
      * 
-     * 🔥 CRITICAL FIX #1: Removed tx.origin → Use params for tracking
-     * 🔥 CRITICAL FIX #2: Properly handle exact-input vs exact-output
-     * 🔥 CRITICAL FIX #3: Separate ETH and Token fee accounting
-     * 🔥 CRITICAL FIX #4: Explicit epoch cap in place
+     * ✅ V4 PATTERN: Always return ZERO delta
+     * ✅ Fee collection happens in afterSwap() with explicit poolManager.take()
      */
     function beforeSwap(
         address,
@@ -518,33 +516,20 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         }
         
         // ═══════════════════════════════════════════════════════════════════════
-        // PHASE 1 (PROTECTED): Apply hook tax
+        // PHASE 1 (PROTECTED): Validate limits only
         // ═══════════════════════════════════════════════════════════════════════
         
         // Get current MCAP
         (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
         uint256 currentMcap = _getCurrentMcap(sqrtPriceX96);
         
-        // Calculate epoch
-        uint256 epoch = _getEpoch(currentMcap, launch.startMcap);
-        
-        // Calculate tax
-        uint256 taxBps = _calculateTax(launch.baseTax, epoch);
-        
-        // ✅ FIX: Properly extract input amount based on swap type
-        // For exact-input: amountSpecified > 0 (user specifies input amount)
-        // For exact-output: amountSpecified < 0 (user specifies output amount)
+        // ✅ Extract input amount based on swap type
         uint256 inputAmount;
         bool isExactInput = params.amountSpecified > 0;
         
         if (isExactInput) {
-            // Exact input: user specifies how much they're selling
             inputAmount = uint256(params.amountSpecified);
         } else {
-            // Exact output: user specifies how much they want to receive
-            // For fee calculation on exact output, we need to consider the input will be higher
-            // We'll apply the fee to the specified output amount as a conservative estimate
-            // The actual input will be: output / (1 - fee/10000) but we simplify here
             inputAmount = uint256(-params.amountSpecified);
         }
         
@@ -555,57 +540,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         uint256 maxTx = _getMaxTx(currentMcap, launch.startMcap);
         if (inputAmount > maxTx) revert ExceedsMaxTx();
         
-        // Calculate fee
-        uint256 feeAmount = (inputAmount * taxBps) / BPS;
-        
-        // ✅ SECURITY: Explicit bounds check for BeforeSwapDelta cast safety
-        // BeforeSwapDelta uses int128, so feeAmount must fit in int128
-        // Mathematical bound: feeAmount <= (1e27 * 5000) / 10000 = 5e26 < int128.max (1.7e38)
-        // We enforce explicitly to prevent any truncation
-        require(feeAmount <= uint256(int256(type(int128).max)), "Fee overflow");
-        
-        // Safe cast through int256 to int128 (no truncation after bounds check above)
-        // forge-lint: disable-next-line(unsafe-typecast)
-        int128 feeDelta = int128(int256(feeAmount));
-        
-        // ✅ FIX: Fee delta semantics
-        // Positive delta in specified currency = hook takes tokens FROM user
-        // We take fee in the INPUT currency (what user is selling)
-        BeforeSwapDelta delta;
-        bool isETHFee;
-        
-        if (params.zeroForOne) {
-            // Buy (ETH → Token): take fee in ETH (currency0)
-            // Positive amount0 = hook takes ETH from user
-            delta = toBeforeSwapDelta(feeDelta, 0);
-            isETHFee = true;
-        } else {
-            // Sell (Token → ETH): take fee in Token (currency1)
-            // Positive amount1 = hook takes Token from user
-            delta = toBeforeSwapDelta(0, feeDelta);
-            isETHFee = false;
-        }
-        
-        // ✅ FIX: Separate fee accounting by currency
-        uint256 beneficiaryShare = (feeAmount * BENEFICIARY_SHARE_BPS) / BPS;
-        uint256 platformShare = feeAmount - beneficiaryShare;
-        
-        if (isETHFee) {
-            // ETH fees
-            beneficiaryFeesETH[launch.beneficiary] += beneficiaryShare;
-            platformFeesETH += platformShare;
-        } else {
-            // Token fees
-            beneficiaryFeesToken[launch.beneficiary][launch.token] += beneficiaryShare;
-            platformFeesToken[launch.token] += platformShare;
-        }
-        
-        emit FeesCollected(poolId, feeAmount, beneficiaryShare, platformShare, isETHFee);
-        
-        // Check graduation
-        _checkGraduation(poolId, epoch);
-        
-        return (BaseHook.beforeSwap.selector, delta, 0);
+        // ✅ Return ZERO delta - fees collected in afterSwap()
+        return (BaseHook.beforeSwap.selector, toBeforeSwapDelta(0, 0), 0);
     }
     
     /**
@@ -636,10 +572,12 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     }
     
     /**
-     * @notice Enforce maxWallet limit
-     * @dev Called after swap completes (output amount now known)
+     * @notice Collect tax and enforce maxWallet limit
+     * @dev Called after swap completes - THIS IS WHERE TAX COLLECTION HAPPENS
      * 
-     * ✅ FIX: Use msg.sender instead of tx.origin
+     * ✅ V4 PATTERN: Use poolManager.take() for explicit settlement
+     * ✅ Tax is collected AFTER swap, not before
+     * ✅ No delta modification - settlement via take()
      */
     function afterSwap(
         address,
@@ -651,40 +589,95 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         PoolId poolId = key.toId();
         Launch storage launch = launches[poolId];
         
-        // Skip if graduated (limits disabled)
+        // Skip all hook logic during dev override
+        if (activationInProgress[poolId]) {
+            return (BaseHook.afterSwap.selector, 0);
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════════
+        // GRADUATED PHASE: No tax, no limits
+        // ═══════════════════════════════════════════════════════════════════════
         if (launch.phase == Phase.GRADUATED) {
             return (BaseHook.afterSwap.selector, 0);
         }
         
-        // Only enforce on buys (ETH → Token)
-        if (!params.zeroForOne) {
-            return (BaseHook.afterSwap.selector, 0);
+        // ═══════════════════════════════════════════════════════════════════════
+        // PROTECTED PHASE: Collect tax + enforce limits
+        // ═══════════════════════════════════════════════════════════════════════
+        
+        // Determine swap direction and input amount from delta
+        bool isBuy = params.zeroForOne;  // ETH → Token
+        
+        // Extract input amount (what user actually spent)
+        uint256 inputAmount;
+        Currency feeCurrency;
+        
+        if (isBuy) {
+            // Buy: ETH in (amount0), tokens out (amount1)
+            // amount0 is negative (pool gave ETH), so we take absolute value
+            int128 amount0 = delta.amount0();
+            inputAmount = uint256(int256(-amount0));  // Convert negative to positive
+            feeCurrency = key.currency0;  // ETH
+        } else {
+            // Sell: tokens in (amount1), ETH out (amount0)
+            // amount1 is negative (pool gave tokens), so we take absolute value
+            int128 amount1 = delta.amount1();
+            inputAmount = uint256(int256(-amount1));  // Convert negative to positive
+            feeCurrency = key.currency1;  // Token
         }
         
-        // Get current MCAP for limit calculation
+        // Get current MCAP and epoch
         (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
         uint256 currentMcap = _getCurrentMcap(sqrtPriceX96);
+        uint256 epoch = _getEpoch(currentMcap, launch.startMcap);
         
-        // Calculate maxWallet
-        uint256 maxWallet = _getMaxWallet(currentMcap, launch.startMcap);
+        // Calculate tax
+        uint256 taxBps = _calculateTax(launch.baseTax, epoch);
+        uint256 feeAmount = (inputAmount * taxBps) / BPS;
         
-        // ✅ FIX: Use msg.sender instead of tx.origin
-        // Update user balance (output is delta amount1 for buy)
-        
-        // ✅ DEFENSIVE: Check delta is positive before casting
-        // For buys (zeroForOne=true), amount1 should be positive (tokens out)
-        // But we check defensively to prevent underflow
-        int128 deltaAmount1 = delta.amount1();
-        if (deltaAmount1 <= 0) {
-            return (BaseHook.afterSwap.selector, 0);
+        // ✅ CRITICAL: Collect tax via poolManager.take()
+        // This explicitly transfers tokens/ETH from pool to hook contract
+        if (feeAmount > 0) {
+            poolManager.take(feeCurrency, address(this), feeAmount);
+            
+            // Update accounting
+            uint256 beneficiaryShare = (feeAmount * BENEFICIARY_SHARE_BPS) / BPS;
+            uint256 platformShare = feeAmount - beneficiaryShare;
+            
+            if (isBuy) {
+                // ETH fees
+                beneficiaryFeesETH[launch.beneficiary] += beneficiaryShare;
+                platformFeesETH += platformShare;
+            } else {
+                // Token fees
+                beneficiaryFeesToken[launch.beneficiary][launch.token] += beneficiaryShare;
+                platformFeesToken[launch.token] += platformShare;
+            }
+            
+            emit FeesCollected(poolId, feeAmount, beneficiaryShare, platformShare, isBuy);
         }
         
-        uint256 tokensReceived = uint256(int256(deltaAmount1));
-        uint256 newBalance = userBalances[poolId][msg.sender] + tokensReceived;
+        // Check graduation
+        _checkGraduation(poolId, epoch);
         
-        if (newBalance > maxWallet) revert ExceedsMaxWallet();
-        
-        userBalances[poolId][msg.sender] = newBalance;
+        // ═══════════════════════════════════════════════════════════════════════
+        // Enforce maxWallet on buys
+        // ═══════════════════════════════════════════════════════════════════════
+        if (isBuy) {
+            // Get current MCAP for limit calculation
+            uint256 maxWallet = _getMaxWallet(currentMcap, launch.startMcap);
+            
+            // Calculate tokens received (amount1 is positive for buys)
+            int128 deltaAmount1 = delta.amount1();
+            if (deltaAmount1 > 0) {
+                uint256 tokensReceived = uint256(int256(deltaAmount1));
+                uint256 newBalance = userBalances[poolId][msg.sender] + tokensReceived;
+                
+                if (newBalance > maxWallet) revert ExceedsMaxWallet();
+                
+                userBalances[poolId][msg.sender] = newBalance;
+            }
+        }
         
         return (BaseHook.afterSwap.selector, 0);
     }
