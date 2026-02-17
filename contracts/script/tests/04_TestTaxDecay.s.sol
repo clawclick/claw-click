@@ -96,17 +96,16 @@ contract TestTaxDecay is Script {
         
         // Execute buy through SwapExecutor
         uint256 buyAmount = 0.1 ether;
-        uint256 tokensOut = swapExecutor.executeBuy{value: buyAmount}(key, buyAmount);
+        uint256 balanceBefore = ClawclickToken(token).balanceOf(dev);
+        
+        swapExecutor.executeBuy{value: buyAmount}(key, buyAmount, 0);
+        
+        uint256 balanceAfter = ClawclickToken(token).balanceOf(dev);
+        uint256 tokensOut = balanceAfter - balanceBefore;
         
         console2.log("  [OK] Buy executed");
         console2.log("    ETH in:", buyAmount / 1e18, "ETH");
         console2.log("    Tokens out:", tokensOut / 1e18, "tokens");
-        
-        // Withdraw tokens from SwapExecutor to dev for validation
-        if (tokensOut > 0) {
-            swapExecutor.withdrawToken(token, dev, tokensOut);
-            console2.log("  [OK] Tokens withdrawn to dev");
-        }
         
         console2.log("  [OK] Test 1 PASSED");
         console2.log("");
@@ -137,11 +136,14 @@ contract TestTaxDecay is Script {
         
         // Buy until 2x MCAP reached
         // Need to push ~1 ETH into pool to double MCAP
-        uint256 totalBought = 0;
+        uint256 balanceBefore = ClawclickToken(token).balanceOf(dev);
+        
         for (uint i = 0; i < 10; i++) {
-            uint256 tokensOut = swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether);
-            totalBought += tokensOut;
+            swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether, 0);
         }
+        
+        uint256 balanceAfter = ClawclickToken(token).balanceOf(dev);
+        uint256 totalBought = balanceAfter - balanceBefore;
         
         console2.log("  [OK] Bought tokens to reach 2x MCAP");
         console2.log("    Total tokens bought:", totalBought / 1e18);
@@ -182,7 +184,7 @@ contract TestTaxDecay is Script {
         
         // Buy aggressively to reach 4x MCAP (~3 ETH)
         for (uint i = 0; i < 30; i++) {
-            swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether);
+            swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether, 0);
         }
         
         console2.log("  [OK] Bought tokens to reach 4x MCAP");
@@ -222,7 +224,7 @@ contract TestTaxDecay is Script {
         
         // Buy massively to reach 8x MCAP (~7 ETH)
         for (uint i = 0; i < 70; i++) {
-            swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether);
+            swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether, 0);
         }
         
         console2.log("  [OK] Bought tokens to reach 8x MCAP");
@@ -265,7 +267,7 @@ contract TestTaxDecay is Script {
         console2.log("  [OK] Beneficiary fees before:", feesBefore / 1e18, "tokens");
         
         // Execute buy
-        swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether);
+        swapExecutor.executeBuy{value: 0.1 ether}(key, 0.1 ether, 0);
         
         // Check beneficiary fees after swap
         uint256 feesAfter = hook.beneficiaryFeesToken(dev, token);
