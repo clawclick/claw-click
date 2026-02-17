@@ -422,9 +422,12 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         int24 currentTick = TickMath.getTickAtSqrtPrice(sqrtPriceX96);
         int24 spacing = key.tickSpacing;
         
+        // Align current tick to tickSpacing
+        int24 alignedTick = (currentTick / spacing) * spacing;
+        
         // Tight range: ±1 spacing around current price
-        int24 tickLower = currentTick - spacing;
-        int24 tickUpper = currentTick + spacing;
+        int24 tickLower = alignedTick - spacing;
+        int24 tickUpper = alignedTick + spacing;
         
         // Calculate balanced token amount
         uint256 tokenAmount = _calculateTokenAmountFromETH(key, ethAmount);
