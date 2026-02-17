@@ -10,7 +10,7 @@ contract DeployHook is Script {
 
     function run() external {
 
-        uint256 pk = vm.envUint("PRIVATE_KEY");
+        uint256 pk = vm.envUint("TESTING_DEV_WALLET_PK");
         bytes32 salt = vm.envBytes32("HOOK_SALT");
 
         address poolManager = 0xE03A1074c86CFeDd5C142C4F04F1a1536e203543;

@@ -247,6 +247,9 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     
     /// @notice Rebalancing guard (prevents recursion during autonomous rebalance)
     bool private _rebalancing;
+    
+    /// @notice Dev activation override flag (bypass tax + limits during dev seed buy)
+    mapping(PoolId => bool) public activationInProgress;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -405,6 +408,17 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         emit LaunchCreated(poolId, token, beneficiary, startMcap, baseTax);
     }
     
+    /**
+     * @notice Set activation override flag (dev seed buy in progress)
+     * @dev Only callable by factory
+     * @param poolId Pool ID
+     * @param inProgress True to bypass restrictions, false to re-enable
+     */
+    function setActivationInProgress(PoolId poolId, bool inProgress) external {
+        if (msg.sender != config.factory()) revert NotFactory();
+        activationInProgress[poolId] = inProgress;
+    }
+    
     /*//////////////////////////////////////////////////////////////
                             HOOK CALLBACKS
     //////////////////////////////////////////////////////////////*/
@@ -458,6 +472,11 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         PoolId poolId = key.toId();
         Launch storage launch = launches[poolId];
         if (launch.token == address(0)) revert LaunchNotFound();
+        
+        // ✅ DEV OVERRIDE: Bypass all restrictions during dev seed buy
+        if (activationInProgress[poolId]) {
+            return (BaseHook.beforeSwap.selector, toBeforeSwapDelta(0, 0), 0);
+        }
         
         // First-buy activation check: pool must be activated before swaps
         IClawclickFactory factory = IClawclickFactory(config.factory());
@@ -651,7 +670,16 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         
         // ✅ FIX: Use msg.sender instead of tx.origin
         // Update user balance (output is delta amount1 for buy)
-        uint256 tokensReceived = uint256(int256(delta.amount1()));
+        
+        // ✅ DEFENSIVE: Check delta is positive before casting
+        // For buys (zeroForOne=true), amount1 should be positive (tokens out)
+        // But we check defensively to prevent underflow
+        int128 deltaAmount1 = delta.amount1();
+        if (deltaAmount1 <= 0) {
+            return (BaseHook.afterSwap.selector, 0);
+        }
+        
+        uint256 tokensReceived = uint256(int256(deltaAmount1));
         uint256 newBalance = userBalances[poolId][msg.sender] + tokensReceived;
         
         if (newBalance > maxWallet) revert ExceedsMaxWallet();

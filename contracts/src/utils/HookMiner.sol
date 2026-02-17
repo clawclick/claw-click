@@ -56,13 +56,40 @@ library HookMiner {
     /**
      * @notice Validates hook address against required permission flags
      * @dev Must match Uniswap v4 PoolManager logic exactly
+     * 
+     * CRITICAL: Uniswap v4 encodes hook permissions in the BOTTOM 14 bits of the address:
+     * - Bit 13: beforeInitialize
+     * - Bit 12: afterInitialize
+     * - Bit 11: beforeAddLiquidity
+     * - Bit 10: afterAddLiquidity
+     * - Bit 9: beforeRemoveLiquidity
+     * - Bit 8: afterRemoveLiquidity
+     * - Bit 7: beforeSwap
+     * - Bit 6: afterSwap
+     * - Bit 5: beforeDonate
+     * - Bit 4: afterDonate
+     * - Bit 3: beforeSwapReturnDelta
+     * - Bit 2: afterSwapReturnDelta
+     * - Bit 1: afterAddLiquidityReturnDelta
+     * - Bit 0: afterRemoveLiquidityReturnDelta
+     * 
+     * The bottom 14 bits MUST match exactly.
      */
     function isValidHookAddress(
         address hookAddress,
         uint160 requiredFlags
     ) internal pure returns (bool) {
-        // REQUIRED: All required bits must be present
-        return (uint160(hookAddress) & requiredFlags) == requiredFlags;
+        // ALL_HOOK_MASK from Hooks.sol = (1 << 14) - 1 = 0x3FFF
+        uint160 ALL_HOOK_MASK = 0x3FFF;
+        
+        // Extract bottom 14 bits from address
+        uint160 addressPermBits = uint160(hookAddress) & ALL_HOOK_MASK;
+        
+        // Extract bottom 14 bits from required flags
+        uint160 requiredPermBits = requiredFlags & ALL_HOOK_MASK;
+        
+        // MUST MATCH EXACTLY
+        return addressPermBits == requiredPermBits;
     }
 
     /**

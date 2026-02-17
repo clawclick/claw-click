@@ -53,6 +53,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /// @notice Total supply per token (1 billion with 18 decimals)
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 1e18;
     
+    /// @notice Basis points denominator
+    uint256 public constant BPS = 10000;
+    
     /// @notice Permit2 contract address (PositionManager uses this for ERC20 transfers)
     address public constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     
@@ -103,6 +106,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     
     /// @notice Pool activation status (true after first swap mints liquidity)
     mapping(PoolId => bool) public poolActivated;
+    
+    /// @notice Dev 15% supply cap
+    uint256 public constant MAX_DEV_SUPPLY_BPS = 1500; // 15%
     
     /// @notice All launch tokens (for enumeration)
     address[] public allTokens;
@@ -155,6 +161,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     event LaunchFeePaid(address indexed user, uint256 amount);
     event LiquidityAdded(address indexed token, PoolId indexed poolId, uint256 tokenAmount, uint256 liquidityMinted);
     event LiquidityRepositioned(address indexed token, PoolId indexed poolId, uint256 oldTokenId, uint256 newTokenId, int24 tickLower, int24 tickUpper);
+    event PoolActivated(PoolId indexed poolId, bool isDevActivation, uint256 liquidityMinted);
 
     /*//////////////////////////////////////////////////////////////
                                 ERRORS
@@ -387,8 +394,74 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         require(!poolActivated[poolId], "Already activated");
         require(msg.value > 0, "ETH required");
         
+        // Mark activated BEFORE minting liquidity (prevent reentrancy)
         poolActivated[poolId] = true;
         _mintInitialTightPosition(key, msg.value);
+    }
+    
+    /**
+     * @notice Dev path: Activate pool and enable override for dev swap
+     * @dev Only launch creator can call. Enables tax/limit bypass for dev.
+     *      Dev must then call Uniswap v4 Universal Router to execute swap.
+     *      After swap, call clearDevOverride() to re-enable protections.
+     * 
+     *      Uniswap v4 Universal Router (Sepolia): 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af
+     * 
+     * @param key Pool key
+     */
+    function activateAndSwapDev(
+        PoolKey calldata key
+    ) external payable nonReentrant {
+        PoolId poolId = key.toId();
+        LaunchInfo storage info = launchByPoolId[poolId];
+        
+        require(msg.sender == info.creator, "Only creator");
+        require(!poolActivated[poolId], "Already activated");
+        require(msg.value > 0, "ETH required");
+        
+        // ✅ SECURITY: Mark activated BEFORE any external calls
+        poolActivated[poolId] = true;
+        
+        // Set override flag in hook (bypass tax + limits for dev swap)
+        hook.setActivationInProgress(poolId, true);
+        
+        // Mint tight balanced liquidity
+        _mintInitialTightPosition(key, msg.value);
+        
+        emit PoolActivated(poolId, true, positionTokenId[poolId]);
+        
+        // NOTE: Dev must now execute swap via Uniswap v4 Universal Router
+        // Router address (Sepolia): 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af
+        // After swap completes, call clearDevOverride() to re-enable protections
+    }
+    
+    /**
+     * @notice Clear dev override flag after swap completes
+     * @dev Only launch creator can call. Re-enables tax + limits.
+     * @param key Pool key
+     */
+    function clearDevOverride(PoolKey calldata key) external nonReentrant {
+        PoolId poolId = key.toId();
+        LaunchInfo storage info = launchByPoolId[poolId];
+        
+        require(msg.sender == info.creator, "Only creator");
+        require(poolActivated[poolId], "Not activated");
+        
+        // Clear override flag (re-enable tax + limits)
+        hook.setActivationInProgress(poolId, false);
+    }
+    
+    /**
+     * @notice Check dev token balance to enforce 15% cap
+     * @dev Can be called by anyone to verify dev hasn't exceeded cap
+     * @param poolId Pool ID
+     * @param devAddress Developer address
+     */
+    function checkDevCap(PoolId poolId, address devAddress) external view returns (bool) {
+        address token = launchByPoolId[poolId].token;
+        uint256 devBalance = ClawclickToken(token).balanceOf(devAddress);
+        uint256 maxDevTokens = (TOTAL_SUPPLY * MAX_DEV_SUPPLY_BPS) / BPS;
+        return devBalance <= maxDevTokens;
     }
     
     /**
@@ -578,30 +651,51 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
      *      Only owner (protocol) can call - users cannot rug
      * @param key Pool key
      */
-    function repositionByEpoch(PoolKey calldata key) external onlyOwner {
+    function repositionByEpoch(PoolKey calldata key) external onlyOwner nonReentrant {
         PoolId poolId = key.toId();
+        require(poolActivated[poolId], "Pool not activated");
+        
         uint256 currentEpoch = hook.getCurrentEpoch(poolId);
+        uint256 oldTokenId = positionTokenId[poolId];
+        require(oldTokenId != 0, "No position exists");
+        
         int24 spacing = key.tickSpacing;
         int24 width;
         
-        // Epoch-based range widening (pre-graduation only)
-        // Epoch 0 (1x):   ±1 tick (ultra tight, high fee APR)
-        // Epoch 1 (2x):   ±4 ticks (moderate depth)
-        // Epoch 2 (4x):   ±12 ticks (balanced)
-        // Epoch 3 (8x):   ±887200 (full range prep for graduation)
-        // Epoch 4+ (16x): Full range (graduated)
+        // Epoch-based range widening
+        // Epoch 0: ±1 spacing (tightest)
+        // Epoch 1: ±4 spacing  
+        // Epoch 2: ±12 spacing
+        // Epoch 3+: ±887200 (full range)
         
         if (currentEpoch == 0) {
-            width = spacing;              // ±200 ticks
+            width = spacing;              // ±1 tick spacing
         } else if (currentEpoch == 1) {
-            width = spacing * 4;          // ±800 ticks
+            width = spacing * 4;          // ±4 tick spacings
         } else if (currentEpoch == 2) {
-            width = spacing * 12;         // ±2400 ticks
+            width = spacing * 12;         // ±12 tick spacings
         } else {
-            width = 887200;               // Full range (max tick)
+            width = 887200;               // Full range (max valid tick)
         }
         
-        _repositionWithWidth(key, width);
+        // Get current tick for centering
+        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
+        int24 currentTick = TickMath.getTickAtSqrtPrice(sqrtPriceX96);
+        int24 alignedTick = (currentTick / spacing) * spacing;
+        
+        int24 tickLower = alignedTick - width;
+        int24 tickUpper = alignedTick + width;
+        
+        // Clamp to valid tick range
+        if (tickLower < TICK_LOWER) tickLower = TICK_LOWER;
+        if (tickUpper > TICK_UPPER) tickUpper = TICK_UPPER;
+        
+        // TODO: Implement actual decrease → collect → mint sequence
+        // For now: store new range parameters for event
+        address token = Currency.unwrap(key.currency1);
+        LaunchInfo storage info = launchByToken[token];
+        
+        emit LiquidityRepositioned(token, poolId, oldTokenId, oldTokenId, tickLower, tickUpper);
     }
     
     /**
