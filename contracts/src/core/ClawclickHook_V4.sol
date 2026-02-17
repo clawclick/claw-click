@@ -354,8 +354,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             afterSwap: true,
             beforeDonate: false,
             afterDonate: false,
-            beforeSwapReturnDelta: true,
-            afterSwapReturnDelta: false,
+            beforeSwapReturnDelta: false,  // Changed from true - not using beforeSwap delta anymore
+            afterSwapReturnDelta: true,    // ✅ ENABLED - Required for fee settlement in afterSwap
             afterAddLiquidityReturnDelta: false,
             afterRemoveLiquidityReturnDelta: false
         });
@@ -635,9 +635,12 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         uint256 taxBps = _calculateTax(launch.baseTax, epoch);
         uint256 feeAmount = (inputAmount * taxBps) / BPS;
         
-        // ✅ CRITICAL: Collect tax via poolManager.take()
-        // This explicitly transfers tokens/ETH from pool to hook contract
+        // ✅ V4 SETTLEMENT PATTERN: Collect tax via poolManager.take() + return negative delta
+        // The negative delta balances the take() call in PoolManager's accounting
+        int128 feeDelta = 0;
+        
         if (feeAmount > 0) {
+            // Take fee from pool to hook contract
             poolManager.take(feeCurrency, address(this), feeAmount);
             
             // Update accounting
@@ -655,6 +658,10 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             }
             
             emit FeesCollected(poolId, feeAmount, beneficiaryShare, platformShare, isBuy);
+            
+            // ✅ CRITICAL: Return negative delta to balance the take() call
+            // This reduces the swap output by the fee amount, settling PoolManager's accounting
+            feeDelta = -int128(uint128(feeAmount));
         }
         
         // Check graduation
@@ -668,6 +675,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             uint256 maxWallet = _getMaxWallet(currentMcap, launch.startMcap);
             
             // Calculate tokens received (amount1 is positive for buys)
+            // Note: This is BEFORE the fee delta is applied
             int128 deltaAmount1 = delta.amount1();
             if (deltaAmount1 > 0) {
                 uint256 tokensReceived = uint256(int256(deltaAmount1));
@@ -679,7 +687,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             }
         }
         
-        return (BaseHook.afterSwap.selector, 0);
+        return (BaseHook.afterSwap.selector, feeDelta);
     }
 
     /*//////////////////////////////////////////////////////////////
