@@ -47,6 +47,10 @@ interface IClawclickFactory {
     // Admin functions
     function setFees(uint256 _premiumFee, uint256 _microFee) external;
     
+    // First-buy activation
+    function poolActivated(PoolId poolId) external view returns (bool);
+    function activatePool(PoolKey calldata key) external payable;
+    
     // Immutables
     function hook() external view returns (address);
     function poolManager() external view returns (address);

@@ -18,6 +18,7 @@ import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 import {ModifyLiquidityParams, SwapParams} from "v4-core/src/types/PoolOperation.sol";
 
 import {ClawclickConfig} from "./ClawclickConfig.sol";
+import {IClawclickFactory} from "../interfaces/IClawclickFactory.sol";
 
 /**
  * @title ClawclickHook - Deep Sea Engine v4 Hybrid Launch Model
@@ -316,6 +317,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     error ProtocolPaused();
     error NoFeesToClaim();
     error NotTreasury();
+    error PoolNotActivated();
     error TransferFailed();
     error LiquidityLocked();
     error ExceedsMaxTx();
@@ -458,6 +460,12 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         PoolId poolId = key.toId();
         Launch storage launch = launches[poolId];
         if (launch.token == address(0)) revert LaunchNotFound();
+        
+        // First-buy activation check: pool must be activated before swaps
+        IClawclickFactory factory = IClawclickFactory(config.factory());
+        if (!factory.poolActivated(poolId)) {
+            revert PoolNotActivated();
+        }
         
         // ✅ Defensive: Explicit phase validation
         require(
