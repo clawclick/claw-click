@@ -5,6 +5,7 @@ import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {Currency} from "v4-core/src/types/Currency.sol";
 import {SwapParams} from "v4-core/src/types/PoolOperation.sol";
+import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 
 interface IPoolSwapTest {
     struct TestSettings {
@@ -45,7 +46,7 @@ contract SwapExecutor {
         SwapParams memory params = SwapParams({
             zeroForOne: true,  // ETH (currency0) → Token (currency1)
             amountSpecified: -int256(amountIn),  // Negative = exact input
-            sqrtPriceLimitX96: 0  // No price limit
+            sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1  // No price limit (allow full slippage)
         });
         
         IPoolSwapTest.TestSettings memory settings = IPoolSwapTest.TestSettings({
@@ -75,7 +76,7 @@ contract SwapExecutor {
         SwapParams memory params = SwapParams({
             zeroForOne: false,  // Token (currency1) → ETH (currency0)
             amountSpecified: -int256(amountIn),  // Negative = exact input
-            sqrtPriceLimitX96: 0  // No price limit
+            sqrtPriceLimitX96: TickMath.MAX_SQRT_PRICE - 1  // No price limit (allow full slippage)
         });
         
         IPoolSwapTest.TestSettings memory settings = IPoolSwapTest.TestSettings({
