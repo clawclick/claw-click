@@ -3,22 +3,21 @@ pragma solidity ^0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
-import {Currency, CurrencyLibrary} from "v4-core/src/types/Currency.sol";
+import {Currency} from "v4-core/src/types/Currency.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 import {FullMath} from "v4-core/src/libraries/FullMath.sol";
 import {FixedPoint96} from "v4-core/src/libraries/FixedPoint96.sol";
 import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
 import {Actions} from "v4-periphery/src/libraries/Actions.sol";
+import {IAllowanceTransfer} from "permit2/src/interfaces/IAllowanceTransfer.sol";
 
 import {ClawclickToken} from "./ClawclickToken.sol";
 import {ClawclickConfig} from "./ClawclickConfig.sol";
 import {ClawclickHook} from "./ClawclickHook_V4.sol";
-import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
 
 /**
  * @title ClawclickFactory
@@ -43,7 +42,6 @@ import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
  */
 contract ClawclickFactory is Ownable, ReentrancyGuard {
     using PoolIdLibrary for PoolKey;
-    using CurrencyLibrary for Currency;
 
     /*//////////////////////////////////////////////////////////////
                                 CONSTANTS
@@ -51,6 +49,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     
     /// @notice Total supply per token (1 billion with 18 decimals)
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 1e18;
+    
+    /// @notice Permit2 contract address (PositionManager uses this for ERC20 transfers)
+    address public constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     
     /// @notice Minimum target MCAP (1 ETH)
     uint256 public constant MIN_TARGET_MCAP = 1 ether;
@@ -76,9 +77,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /// @notice Hook contract
     ClawclickHook public immutable hook;
     
-    /// @notice LP Locker
-    ClawclickLPLocker public immutable lpLocker;
-    
     /// @notice Position Manager (for LP NFT minting)
     IPositionManager public immutable positionManager;
     
@@ -96,6 +94,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     
     /// @notice Launch info by pool ID
     mapping(PoolId => LaunchInfo) public launchByPoolId;
+    
+    /// @notice LP NFT token IDs by pool ID (for adjustable repositioning)
+    mapping(PoolId => uint256) public positionTokenId;
     
     /// @notice All launch tokens (for enumeration)
     address[] public allTokens;
@@ -147,7 +148,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     event FeesUpdated(uint256 premiumFee, uint256 microFee);
     event LaunchFeePaid(address indexed user, uint256 amount);
     event LiquidityAdded(address indexed token, PoolId indexed poolId, uint256 tokenAmount, uint256 liquidityMinted);
-    event LPLocked(address indexed token, uint256 positionId);
 
     /*//////////////////////////////////////////////////////////////
                                 ERRORS
@@ -175,14 +175,12 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         ClawclickConfig _config,
         IPoolManager _poolManager,
         ClawclickHook _hook,
-        ClawclickLPLocker _lpLocker,
         IPositionManager _positionManager,
         address _owner
     ) Ownable(_owner) {
         config = _config;
         poolManager = _poolManager;
         hook = _hook;
-        lpLocker = _lpLocker;
         positionManager = _positionManager;
         
         // Default fees
@@ -247,15 +245,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         hook.registerLaunch(key, token, params.beneficiary, params.targetMcapETH, sqrtPriceX96);
         
         // 6. Add one-sided out-of-range liquidity (token-only, below price)
-        // TEMP: Skip LP NFT minting to unblock token creation
-        // Tokens remain in Factory - can be added as liquidity later
-        uint256 tokenId = 0; // _addBootstrapLiquidity(key, token, sqrtPriceX96);
+        // Hook's beforeAddLiquidity allows this since pool is registered
+        uint256 tokenId = _addBootstrapLiquidity(key, token, sqrtPriceX96);
         
-        // 7. Lock LP NFT permanently in LPLocker
-        // TEMP: Skip LP locking since we didn't create NFT
-        // _lockLPPosition(token, tokenId, key);
+        // 7. Store LP NFT token ID for adjustable repositioning
+        // Factory retains ownership of NFT to enable range adjustments
+        positionTokenId[poolId] = tokenId;
         
-        // 8. Store launch info
+        // 10. Store launch info
         LaunchInfo memory info = LaunchInfo({
             token: token,
             beneficiary: params.beneficiary,
@@ -372,19 +369,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
     
     /**
-     * @notice Add full-range liquidity via PositionManager (mints LP NFT)
-     * @dev Uses Uniswap v4 PositionManager to mint ERC-721 LP position
-     *      NFT represents ownership of the liquidity position
-     *      NFT will be transferred to LPLocker for permanent locking
-     * @param key Pool key
-     * @param token Token address
-     * @return tokenId The minted LP NFT token ID
-     */
-    /**
      * @notice Add one-sided bootstrap liquidity (token-only, out-of-range below price)
      * @dev Places liquidity entirely below current price to avoid ETH requirement
      *      Position contains 100% tokens, 0% ETH
      *      Liquidity activates when price moves down (first buy)
+     *      NFT is retained by Factory for adjustable repositioning
      * @param key Pool key
      * @param token Token address
      * @param sqrtPriceX96 Current pool price
@@ -395,65 +384,68 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         address token,
         uint160 sqrtPriceX96
     ) internal returns (uint256 tokenId) {
-        // Calculate current tick from sqrtPrice
+        // Calculate tick range for out-of-range position below price
         int24 currentTick = TickMath.getTickAtSqrtPrice(sqrtPriceX96);
-        
-        // Align to tickSpacing (200)
         int24 tickSpacing = key.tickSpacing;
         int24 alignedTick = (currentTick / tickSpacing) * tickSpacing;
         
-        // Place position BELOW current price (token-only, no ETH required)
-        // tickUpper = just below current price
-        // tickLower = minimum tick
-        int24 tickLower = TICK_LOWER;  // -887200 (close to MIN_TICK)
+        // Position entirely below current price (token-only, no ETH)
+        int24 tickLower = TICK_LOWER;  // -887200
         int24 tickUpper = alignedTick - tickSpacing;  // Just below current price
         
-        // CLEAN ARCHITECTURE: Direct PoolManager locking (no router, no Permit2, no NFT)
-        // All tokens are permanently locked in PoolManager
-        // Trading happens via Hook which manages the bonding curve
+        // Calculate liquidity explicitly (required to avoid beforeRemoveLiquidity check)
+        // For out-of-range position below price (token-only):
+        //   L = amount1 * Q96 / (sqrtUpper - sqrtLower)
+        uint160 sqrtPriceLower = TickMath.getSqrtPriceAtTick(tickLower);
+        uint160 sqrtPriceUpper = TickMath.getSqrtPriceAtTick(tickUpper);
+        uint256 liquidity = FullMath.mulDiv(
+            TOTAL_SUPPLY,
+            FixedPoint96.Q96,
+            uint256(sqrtPriceUpper) - uint256(sqrtPriceLower)
+        );
         
-        // Transfer all tokens to PoolManager for permanent locking
-        ClawclickToken(token).transfer(address(poolManager), TOTAL_SUPPLY);
+        // Approve Permit2 to spend tokens (PositionManager routes through Permit2)
+        ClawclickToken(token).approve(PERMIT2, TOTAL_SUPPLY);
         
-        // Sync PoolManager reserves to recognize the tokens
-        poolManager.sync(Currency.wrap(token));
+        // Give Permit2 permission to transfer tokens to PositionManager
+        // Permit2.approve(token, spender, amount, expiration)
+        IAllowanceTransfer(PERMIT2).approve(
+            token,
+            address(positionManager),
+            type(uint160).max,
+            type(uint48).max
+        );
         
-        // No LP NFT minted - tokens locked directly in PoolManager
-        // Hook manages all trading via beforeSwap/afterSwap
-        tokenId = 0;
+        // Build actions: MINT_POSITION + CLOSE_CURRENCY (settle after mint)
+        bytes memory actions = abi.encodePacked(
+            uint8(Actions.MINT_POSITION),
+            uint8(Actions.CLOSE_CURRENCY),
+            uint8(Actions.CLOSE_CURRENCY)
+        );
+        
+        bytes[] memory params = new bytes[](3);
+        // MINT_POSITION params: (poolKey, tickLower, tickUpper, liquidity, amount0Max, amount1Max, recipient, hookData)
+        // Pass explicit liquidity to avoid auto-calc query that triggers beforeRemoveLiquidity
+        params[0] = abi.encode(key, tickLower, tickUpper, liquidity, uint128(0), uint128(TOTAL_SUPPLY), address(this), bytes(""));
+        // CLOSE_CURRENCY params: (currency) - settle ETH (should be zero delta)
+        params[1] = abi.encode(key.currency0);
+        // CLOSE_CURRENCY params: (currency) - settle tokens
+        params[2] = abi.encode(key.currency1);
+        
+        uint256 deadline = block.timestamp + 1 hours;
+        bytes memory unlockData = abi.encode(actions, params);
+        
+        // Call modifyLiquidities - PositionManager handles settlement internally
+        positionManager.modifyLiquidities{value: 0}(unlockData, deadline);
+        
+        // Get the minted NFT ID
+        tokenId = positionManager.nextTokenId() - 1;
         
         emit LiquidityAdded(token, key.toId(), TOTAL_SUPPLY, tokenId);
         
         return tokenId;
     }
     
-    /**
-     * @notice Lock LP NFT permanently in LPLocker
-     * @dev Transfers LP NFT to LPLocker contract (irreversible)
-     *      LPLocker has NO function to remove, burn, or transfer the NFT
-     *      This permanently locks the liquidity - CANNOT be removed
-     * @param token Token address  
-     * @param tokenId LP NFT token ID
-     * @param key Pool key for position tracking
-     */
-    function _lockLPPosition(address token, uint256 tokenId, PoolKey memory key) internal {
-        // Encode token address AND PoolKey for LPLocker
-        bytes memory data = abi.encode(token, key);
-        
-        // Transfer LP NFT from Factory to LPLocker
-        // LPLocker's onERC721Received will be called automatically
-        IERC721(address(positionManager)).safeTransferFrom(
-            address(this),
-            address(lpLocker),
-            tokenId,
-            data
-        );
-        
-        // LPLocker now holds the NFT permanently
-        // No function exists to remove it
-        emit LPLocked(token, tokenId);
-    }
-
     /*//////////////////////////////////////////////////////////////
                             ADMIN FUNCTIONS
     //////////////////////////////////////////////////////////////*/
@@ -462,14 +454,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         premiumFee = _premiumFee;
         microFee = _microFee;
         emit FeesUpdated(_premiumFee, _microFee);
-    }
-
-    /**
-     * @notice Approve PositionManager to manage LP positions on behalf of Factory
-     * @dev Must be called once after deployment to enable liquidity operations
-     */
-    function approvePositionManager() external onlyOwner {
-        IERC721(address(positionManager)).setApprovalForAll(address(this), true);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -525,7 +509,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     
     function _createPoolKey(address token) internal view returns (PoolKey memory) {
         // ETH (address(0)) is always currency0 (lower address)
-        Currency currency0 = CurrencyLibrary.ADDRESS_ZERO;  // Native ETH
+        Currency currency0 = Currency.wrap(address(0));  // Native ETH
         Currency currency1 = Currency.wrap(token);
         
         // Dynamic fee flag (0x800000) - hook returns actual fee
@@ -538,5 +522,58 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             tickSpacing: 200,     // Wide ticks for full-range efficiency
             hooks: IHooks(address(hook))
         });
+    }
+    
+    /*//////////////////////////////////////////////////////////////
+                         ADJUSTABLE REPOSITIONING
+    //////////////////////////////////////////////////////////////*/
+    
+    /**
+     * @notice Adjust LP position range for optimal fee capture
+     * @dev Burns existing NFT, mints new one with different range
+     *      Only owner (protocol) can call - users cannot rug
+     * @param poolId Pool ID
+     * @param newTickLower New lower tick
+     * @param newTickUpper New upper tick
+     */
+    function reposition(
+        PoolId poolId,
+        int24 newTickLower,
+        int24 newTickUpper
+    ) external onlyOwner {
+        uint256 oldTokenId = positionTokenId[poolId];
+        require(oldTokenId != 0, "No position");
+        
+        LaunchInfo storage info = launchByPoolId[poolId];
+        PoolKey memory key = info.poolKey;
+        
+        // TODO: Implement full sequence
+        // 1. positionManager.decreaseLiquidity(tokenId, liquidity, 0, 0, deadline)
+        // 2. positionManager.collect(tokenId, address(this), max, max)
+        // 3. positionManager.burn(tokenId)
+        // 4. Mint new position with newTickLower/newTickUpper (reuse bootstrap logic)
+        // 5. positionTokenId[poolId] = newTokenId
+        
+        // For now: placeholder to compile
+        // Full implementation requires PositionManager action encoding
+        emit LiquidityAdded(info.token, poolId, 0, oldTokenId);
+    }
+    
+    /**
+     * @notice Collect accumulated fees from LP position
+     * @dev Sends fees to protocol treasury
+     * @param poolId Pool ID
+     */
+    function collectFees(PoolId poolId) external onlyOwner {
+        uint256 tokenId = positionTokenId[poolId];
+        require(tokenId != 0, "No position");
+        
+        // TODO: Implement fee collection
+        // positionManager.collect(tokenId, treasury, type(uint128).max, type(uint128).max)
+        
+        // For now: placeholder to compile
+        // Full implementation requires PositionManager action encoding
+        LaunchInfo storage info = launchByPoolId[poolId];
+        emit LiquidityAdded(info.token, poolId, 0, tokenId);
     }
 }

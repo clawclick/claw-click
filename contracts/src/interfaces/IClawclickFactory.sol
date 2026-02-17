@@ -51,5 +51,5 @@ interface IClawclickFactory {
     function hook() external view returns (address);
     function poolManager() external view returns (address);
     function config() external view returns (address);
-    function lpLocker() external view returns (address);
+    function positionManager() external view returns (address);
 }

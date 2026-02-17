@@ -18,7 +18,6 @@ import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 import {ModifyLiquidityParams, SwapParams} from "v4-core/src/types/PoolOperation.sol";
 
 import {ClawclickConfig} from "./ClawclickConfig.sol";
-import {ClawclickLPLocker} from "./ClawclickLPLocker.sol";
 
 /**
  * @title ClawclickHook - Deep Sea Engine v4 Hybrid Launch Model
@@ -224,10 +223,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     /// @notice Protocol configuration
     ClawclickConfig public immutable config;
     
-    /// @notice LP Locker (for position management delegation)
-    /// @dev Set once after deployment via setLPLocker()
-    ClawclickLPLocker public lpLocker;
-    
     /// @notice Launch data per pool
     mapping(PoolId => Launch) public launches;
     
@@ -338,17 +333,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         config = _config;
     }
     
-    /**
-     * @notice Set LP Locker reference (one-time only)
-     * @dev Required due to circular dependency: Hook needs LPLocker, LPLocker needs Hook
-     * @param _lpLocker LPLocker contract address
-     */
-    function setLPLocker(ClawclickLPLocker _lpLocker) external {
-        require(address(lpLocker) == address(0), "LPLocker already set");
-        require(address(_lpLocker) != address(0), "Invalid LPLocker");
-        lpLocker = _lpLocker;
-    }
-
     /*//////////////////////////////////////////////////////////////
                             HOOK PERMISSIONS
     //////////////////////////////////////////////////////////////*/
@@ -418,7 +402,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         
         emit LaunchCreated(poolId, token, beneficiary, startMcap, baseTax);
     }
-
+    
     /*//////////////////////////////////////////////////////////////
                             HOOK CALLBACKS
     //////////////////////////////////////////////////////////////*/
@@ -434,29 +418,26 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     
     function beforeAddLiquidity(
         address sender,
-        PoolKey calldata key,
-        ModifyLiquidityParams calldata,
-        bytes calldata
-    ) external view override returns (bytes4) {
-        // In v4, the sender during initial launch is PositionManager (not Factory directly)
-        // Factory -> PositionManager -> PoolManager -> Hook
-        // We verify the pool was registered by Factory (only Factory can call registerLaunch)
-        // This ensures liquidity can only be added to Factory-created pools
-        PoolId poolId = key.toId();
-        Launch storage launch = launches[poolId];
-        require(launch.token != address(0), "Launch not registered");
-        
-        // Pool is registered by Factory, allow liquidity addition
-        return BaseHook.beforeAddLiquidity.selector;
-    }
-    
-    function beforeRemoveLiquidity(
-        address,
         PoolKey calldata,
         ModifyLiquidityParams calldata,
         bytes calldata
-    ) external pure override returns (bytes4) {
-        revert LiquidityLocked();
+    ) external view override returns (bytes4) {
+        // Factory-only liquidity control: adjustable repositioning model
+        // Only Factory (via PositionManager) can add liquidity
+        if (sender != config.factory()) revert NotFactory();
+        return this.beforeAddLiquidity.selector;
+    }
+    
+    function beforeRemoveLiquidity(
+        address sender,
+        PoolKey calldata,
+        ModifyLiquidityParams calldata,
+        bytes calldata
+    ) external view override returns (bytes4) {
+        // Factory-only liquidity control: adjustable repositioning model
+        // Only Factory (via PositionManager) can remove liquidity
+        if (sender != config.factory()) revert NotFactory();
+        return this.beforeRemoveLiquidity.selector;
     }
     
     /**
@@ -1023,32 +1004,16 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         Launch storage launch,
         uint8 newStage
     ) internal {
+        // Adjustable repositioning model: rebalancing done via Factory.reposition()
+        // This function is obsolete but kept for compilation compatibility
         require(!_rebalancing, "Rebalance in progress");
-        require(address(lpLocker) != address(0), "LPLocker not set");
         require(launch.phase == Phase.GRADUATED, "Not graduated");
         require(newStage > launch.liquidityStage, "Invalid stage transition");
         
-        _rebalancing = true;
-        
-        // Delegate position management to LPLocker with try/catch
-        // CRITICAL: _rebalancing MUST reset even if rebalance fails
-        // Failure must NOT freeze the protocol or revert the swap
-        try lpLocker.executeRebalance(
-            launch.token,
-            launch.graduationMcap,
-            newStage
-        ) {
-            // Success: Update stage after successful rebalance
-            launch.liquidityStage = newStage;
-            emit LiquidityRebalanced(poolId, launch.liquidityStage, newStage);
-        } catch (bytes memory reason) {
-            // Failure: Log error but DO NOT revert swap
-            // Rebalance will be retried on next swap that crosses threshold
-            emit RebalanceFailed(poolId, launch.token, newStage, reason);
-        }
-        
-        // ALWAYS reset reentrancy flag (executed in both success and failure paths)
-        _rebalancing = false;
+        // TODO: Implement Factory-triggered repositioning
+        // For now: no-op, manual reposition() call required
+        launch.liquidityStage = newStage;
+        emit LiquidityRebalanced(poolId, 0, newStage);
     }
     
     /**

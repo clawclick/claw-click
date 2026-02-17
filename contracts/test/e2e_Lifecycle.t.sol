@@ -15,7 +15,7 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 
 import "../src/core/ClawclickConfig.sol";
 import "../src/core/ClawclickHook_V4.sol";
-import "../src/core/ClawclickLPLocker.sol";
+// LPLocker removed
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickToken.sol";
 
@@ -52,7 +52,7 @@ contract E2ELifecycleTest is Test, IUnlockCallback {
     // Core contracts
     ClawclickConfig config;
     ClawclickHook hook;
-    ClawclickLPLocker locker;
+// LPLocker removed
     ClawclickFactory factory;
 
     // Test accounts
@@ -136,20 +136,15 @@ contract E2ELifecycleTest is Test, IUnlockCallback {
         assertTrue(perms.afterSwap, "afterSwap");
         console.log("OK Permissions validated");
 
-        // Deploy Locker
-        locker = new ClawclickLPLocker(address(positionManager), address(hook), deployer);
-        console.log("OK Locker:", address(locker));
+// LPLocker removed
+// LPLocker removed
+// LPLocker removed
 
-        // Link hook to locker
-        hook.setLPLocker(locker);
-        console.log("OK Hook <-> Locker linked");
-
-        // Deploy Factory
+// LPLocker removed
         factory = new ClawclickFactory(
             config,
             poolManager,
             hook,
-            locker,
             positionManager,
             deployer
         );

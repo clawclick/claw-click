@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
 import "../src/core/ClawclickFactory.sol";
-import "../src/core/ClawclickLPLocker.sol";
+// LPLocker removed in adjustable model
 import "../src/core/ClawclickHook_V4.sol";
 import "../src/core/ClawclickConfig.sol";
 import "v4-core/src/interfaces/IPoolManager.sol";
@@ -23,19 +23,13 @@ contract DeployLockerAndFactory is Script {
 
         vm.startBroadcast(pk);
 
-        ClawclickLPLocker locker = new ClawclickLPLocker(
-            positionManager,
-            hookAddr,
-            msg.sender
-        );
-
-        ClawclickHook(hookAddr).setLPLocker(locker);
+        // LP Locker removed in adjustable repositioning model
+        // Factory retains NFT ownership for range adjustments
 
         ClawclickFactory factory = new ClawclickFactory(
             ClawclickConfig(configAddr),
             IPoolManager(poolManager),
             ClawclickHook(hookAddr),
-            locker,
             IPositionManager(positionManager),
             msg.sender
         );
@@ -44,8 +38,7 @@ contract DeployLockerAndFactory is Script {
 
         vm.stopBroadcast();
 
-        console2.log("=== LOCKER + FACTORY DEPLOYED ===");
-        console2.log("Locker:", address(locker));
+        console2.log("=== FACTORY DEPLOYED (NO LOCKER) ===");
         console2.log("Factory:", address(factory));
     }
 }

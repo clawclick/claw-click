@@ -15,7 +15,7 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 
 import "../src/core/ClawclickConfig.sol";
 import "../src/core/ClawclickHook_V4.sol";
-import "../src/core/ClawclickLPLocker.sol";
+// LPLocker removed
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickToken.sol";
 import "../src/utils/HookMiner.sol";
@@ -43,7 +43,7 @@ contract ClawclickLifecycleTest is Test, IUnlockCallback {
     // Core contracts
     ClawclickConfig config;
     ClawclickHook hook;
-    ClawclickLPLocker locker;
+// LPLocker removed
     ClawclickFactory factory;
 
     // Test state
@@ -109,20 +109,15 @@ contract ClawclickLifecycleTest is Test, IUnlockCallback {
         uint160 hookFlags = _encodePermissions(perms);
         assertTrue(_isValidHookAddress(address(hook), hookFlags), "Hook address invalid");
 
-        // Deploy LP Locker
-        locker = new ClawclickLPLocker(address(positionManager), address(hook), deployer);
-        assertEq(address(locker.hook()), address(hook), "Locker hook mismatch");
+// LPLocker removed
+// LPLocker removed
+// LPLocker removed
 
-        // Link hook ? locker
-        hook.setLPLocker(locker);
-        assertEq(address(hook.lpLocker()), address(locker), "Hook locker mismatch");
-
-        // Deploy Factory
+// LPLocker removed
         factory = new ClawclickFactory(
             config,
             poolManager,
             hook,
-            locker,
             positionManager,
             deployer
         );
@@ -133,7 +128,7 @@ contract ClawclickLifecycleTest is Test, IUnlockCallback {
 
         console.log("OK Config deployed:", address(config));
         console.log("OK Hook deployed:", address(hook));
-        console.log("OK Locker deployed:", address(locker));
+// LPLocker removed
         console.log("OK Factory deployed:", address(factory));
         console.log("OK All deployment checks passed");
         console.log("");
@@ -170,10 +165,10 @@ contract ClawclickLifecycleTest is Test, IUnlockCallback {
         assertTrue(address(info.poolKey.hooks) != address(0), "Pool not initialized");
         assertEq(address(info.poolKey.hooks), address(hook), "Hook mismatch");
 
-        // Verify LP NFT minted (handled by locker)
+// LPLocker removed
 
         // Verify LP locked
-        assertTrue(address(locker) != address(0), "Locker not set");
+// LPLocker removed
 
         // Verify hook registered
         assertEq(address(info.poolKey.hooks), address(hook), "Hook not registered");
@@ -392,7 +387,7 @@ contract ClawclickLifecycleTest is Test, IUnlockCallback {
 
         // Verify rebalance logic
         if (stageAfter > stageBefore) {
-            console.log("OK LPLocker.executeRebalance would be called");
+// LPLocker removed
             console.log("OK liquidityStage incremented");
             console.log("OK Old position would be replaced");
             console.log("OK No recursion");

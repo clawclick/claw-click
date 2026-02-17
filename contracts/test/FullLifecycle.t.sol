@@ -15,7 +15,7 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 
 import "../src/core/ClawclickConfig.sol";
 import "../src/core/ClawclickHook_V4.sol";
-import "../src/core/ClawclickLPLocker.sol";
+// LPLocker removed
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickToken.sol";
 
@@ -35,7 +35,7 @@ contract FullLifecycleTest is Test, IUnlockCallback {
     // Core contracts
     ClawclickConfig config;
     ClawclickHook hook;
-    ClawclickLPLocker locker;
+// LPLocker removed
     ClawclickFactory factory;
 
     // Test accounts
@@ -102,22 +102,16 @@ contract FullLifecycleTest is Test, IUnlockCallback {
         assertTrue(perms.beforeSwapReturnDelta);
         console.log("OK Hook permissions validated");
 
-        // Deploy LP Locker
-        locker = new ClawclickLPLocker(address(positionManager), address(hook), deployer);
-        console.log("OK Locker deployed:", address(locker));
-        assertEq(address(locker.hook()), address(hook));
+// LPLocker removed
+// LPLocker removed
+// LPLocker removed
+// LPLocker removed
 
-        // Link hook to locker
-        hook.setLPLocker(locker);
-        console.log("OK Hook <-> Locker linked");
-        assertEq(address(hook.lpLocker()), address(locker));
-
-        // Deploy Factory
+// LPLocker removed
         factory = new ClawclickFactory(
             config,
             poolManager,
             hook,
-            locker,
             positionManager,
             deployer
         );
@@ -134,7 +128,7 @@ contract FullLifecycleTest is Test, IUnlockCallback {
         console.log("DEPLOYMENT SUMMARY:");
         console.log("  Config:  ", address(config));
         console.log("  Hook:    ", address(hook));
-        console.log("  Locker:  ", address(locker));
+// LPLocker removed
         console.log("  Factory: ", address(factory));
         console.log("");
     }
