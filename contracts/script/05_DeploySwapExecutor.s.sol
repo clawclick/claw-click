@@ -17,6 +17,6 @@ contract DeploySwapExecutor is Script {
         
         console2.log("=== SWAPEXECUTOR DEPLOYED ===");
         console2.log("SwapExecutor:", address(swapExecutor));
-        console2.log("UniversalRouter:", swapExecutor.UNIVERSAL_ROUTER());
+        console2.log("PoolSwapTest:", swapExecutor.POOL_SWAP_TEST());
     }
 }
