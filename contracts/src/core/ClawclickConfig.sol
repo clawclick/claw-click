@@ -23,6 +23,30 @@ contract ClawclickConfig is Ownable {
     
     /// @notice Maximum platform share (50%)
     uint256 public constant MAX_PLATFORM_SHARE_BPS = 5000;
+    
+    /*//////////////////////////////////////////////////////////////
+                        MULTI-POSITION CONSTANTS
+    //////////////////////////////////////////////////////////////*/
+    
+    /// @notice Bootstrap ETH requirement ($2 minimum)
+    uint256 public constant MIN_BOOTSTRAP_ETH = 0.001 ether;
+    
+    /// @notice Position overlap percentage (5% = 500 bps)
+    uint256 public constant POSITION_OVERLAP_BPS = 500;
+    
+    /// @notice Token allocations per position (basis points, sum = 100%)
+    /// @dev [P1, P2, P3, P4, P5] = [75%, 18.75%, 4.6875%, 1.171875%, 0.390625%]
+    uint256 public constant POSITION_1_ALLOCATION_BPS = 75000;   // 75.0000%
+    uint256 public constant POSITION_2_ALLOCATION_BPS = 18750;   // 18.7500%
+    uint256 public constant POSITION_3_ALLOCATION_BPS = 4688;    // 4.6875%
+    uint256 public constant POSITION_4_ALLOCATION_BPS = 1172;    // 1.1719%
+    uint256 public constant POSITION_5_ALLOCATION_BPS = 390;     // 0.3906%
+    
+    /// @notice Position retirement offset (retire positions X steps behind)
+    uint256 public constant RETIREMENT_OFFSET = 2;
+    
+    /// @notice MCAP multiplier per position (16x per position = 4 doublings)
+    uint256 public constant POSITION_MCAP_MULTIPLIER = 16;
 
     /*//////////////////////////////////////////////////////////////
                                 STATE

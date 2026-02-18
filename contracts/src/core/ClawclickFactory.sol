@@ -103,14 +103,22 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /// @notice Launch info by pool ID
     mapping(PoolId => LaunchInfo) public launchByPoolId;
     
-    /// @notice LP NFT token IDs by pool ID
-    mapping(PoolId => uint256) public positionTokenId;
+    /// @notice Pool state (multi-position tracking)
+    mapping(PoolId => PoolState) public poolStates;
     
-    /// @notice Pool activation status (true after first swap mints liquidity)
-    mapping(PoolId => bool) public poolActivated;
-    
-    /// @notice Last epoch at which repositioning was performed
-    mapping(PoolId => uint256) public lastRepositionedEpoch;
+    struct PoolState {
+        address token;
+        address beneficiary;
+        uint256 startingMCAP;           // Initial MCAP at launch
+        uint256 graduationMCAP;         // 16x starting MCAP
+        uint256 totalSupply;            // Token total supply
+        uint256[5] positionTokenIds;    // NFT token IDs for all 5 positions
+        bool[5] positionMinted;         // Track which positions exist
+        bool[5] positionRetired;        // Track which positions are withdrawn
+        uint256 recycledETH;            // ETH from withdrawn positions
+        bool activated;                 // Pool has been activated
+        bool graduated;                 // Reached 16x MCAP
+    }
     
     /// @notice Dev 15% supply cap
     uint256 public constant MAX_DEV_SUPPLY_BPS = 1500; // 15%
@@ -167,6 +175,8 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     event LiquidityAdded(address indexed token, PoolId indexed poolId, uint256 tokenAmount, uint256 liquidityMinted);
     event LiquidityRepositioned(address indexed token, PoolId indexed poolId, uint256 oldTokenId, uint256 newTokenId, int24 tickLower, int24 tickUpper);
     event PoolActivated(PoolId indexed poolId, bool isDevActivation, uint256 liquidityMinted);
+    event PositionMinted(PoolId indexed poolId, uint256 indexed positionIndex, uint256 tokenId, uint256 tokenAmount);
+    event PositionRetired(PoolId indexed poolId, uint256 indexed positionIndex, uint256 tokenId, uint256 ethRecovered, uint256 tokensRecovered);
 
     /*//////////////////////////////////////////////////////////////
                                 ERRORS
@@ -213,6 +223,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     
     /**
      * @notice Create a new token launch with deterministic MCAP-based price
+     * @dev New multi-position system: Mints P1 only at launch, others lazily minted
      * @param params Launch parameters including target MCAP
      * @return token The created token address
      * @return poolId The pool ID for the token/ETH pair
@@ -226,13 +237,16 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // Check protocol state
         if (config.paused()) revert ProtocolPaused();
         
-        // Validate fee
+        // Validate fee + bootstrap requirement
         uint256 requiredFee = params.isPremium ? premiumFee : microFee;
-        if (msg.value < requiredFee) revert InsufficientFee();
+        uint256 minBootstrap = config.MIN_BOOTSTRAP_ETH();
+        uint256 totalRequired = requiredFee + minBootstrap;
+        
+        if (msg.value < totalRequired) revert InsufficientFee();
         
         // Refund excess ETH
-        if (msg.value > requiredFee) {
-            (bool ok,) = msg.sender.call{value: msg.value - requiredFee}("");
+        if (msg.value > totalRequired) {
+            (bool ok,) = msg.sender.call{value: msg.value - totalRequired}("");
             require(ok, "Refund failed");
         }
         
@@ -260,13 +274,40 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // 4. Initialize pool at calculated price
         poolManager.initialize(key, sqrtPriceX96);
         
-        // 5. Register launch with hook (BEFORE adding liquidity)
+        // 5. Register launch with hook
         hook.registerLaunch(key, token, params.beneficiary, params.targetMcapETH, sqrtPriceX96);
         
-        // 6. Pool initialized with NO liquidity - awaits first-buy activation
-        // First swap will trigger Factory.activatePool() which mints balanced position
+        // 6. Calculate position ranges
+        uint256 totalSupply = TOTAL_SUPPLY;
+        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
+            _calculatePositionRanges(params.targetMcapETH, totalSupply);
         
-        // 7. Store launch info
+        // 7. Mint P1 only (75% tokens + bootstrap ETH)
+        uint256 p1TokenId = _mintPositionViaManager(
+            key,
+            tickLowers[0],
+            tickUppers[0],
+            allocations[0],
+            minBootstrap
+        );
+        
+        // 8. Store pool state
+        PoolState memory poolState = PoolState({
+            token: token,
+            beneficiary: params.beneficiary,
+            startingMCAP: params.targetMcapETH,
+            graduationMCAP: params.targetMcapETH * config.POSITION_MCAP_MULTIPLIER(),
+            totalSupply: totalSupply,
+            positionTokenIds: [p1TokenId, 0, 0, 0, 0],
+            positionMinted: [true, false, false, false, false],
+            positionRetired: [false, false, false, false, false],
+            recycledETH: 0,
+            activated: true,  // Activated immediately with bootstrap
+            graduated: false
+        });
+        poolStates[poolId] = poolState;
+        
+        // 9. Store launch info
         LaunchInfo memory info = LaunchInfo({
             token: token,
             beneficiary: params.beneficiary,
@@ -287,9 +328,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         allTokens.push(token);
         totalLaunches++;
         
-        // 9. Send launch fee to treasury
+        // 10. Send launch fee to treasury
         (bool success,) = config.treasury().call{value: requiredFee}("");
         if (!success) revert FeeTransferFailed();
+        
+        emit LiquidityAdded(token, poolId, allocations[0], p1TokenId);
         
         emit TokenLaunched(
             token,
@@ -379,148 +422,207 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     }
 
     /*//////////////////////////////////////////////////////////////
-                         LIQUIDITY PROVISION (POSITIONMANAGER)
-    //////////////////////////////////////////////////////////////*/
-    
-    /*//////////////////////////////////////////////////////////////
-                        FIRST-BUY ACTIVATION
+                    MULTI-POSITION LIQUIDITY SYSTEM
     //////////////////////////////////////////////////////////////*/
     
     /**
-     * @notice Activate pool by minting balanced tight position
-     * @dev Anyone can activate by providing ETH (uses Factory's tokens for balance)
-     *      Must be called before first swap, otherwise swaps will revert
-     * @param key Pool key
-     */
-    function activatePool(
-        PoolKey calldata key
-    ) external payable nonReentrant {
-        PoolId poolId = key.toId();
-        require(!poolActivated[poolId], "Already activated");
-        require(msg.value > 0, "ETH required");
-        
-        // Mark activated BEFORE minting liquidity (prevent reentrancy)
-        poolActivated[poolId] = true;
-        _mintInitialTightPosition(key, msg.value);
-    }
-    
-    /**
-     * @notice Dev path: Activate pool and enable override for dev swap
-     * @dev Only launch creator can call. Enables tax/limit bypass for dev.
-     *      Dev must then call Uniswap v4 Universal Router to execute swap.
-     *      After swap, call clearDevOverride() to re-enable protections.
+     * @notice Calculate all 5 position ranges with 5% overlap
+     * @dev Position ranges:
+     *      P1: startMCAP → 16x (epochs 1-4, hook tax phase)
+     *      P2: 16x → 256x (graduation, LP fee active)
+     *      P3: 256x → 4,096x
+     *      P4: 4,096x → 65,536x
+     *      P5: 65,536x → infinity
      * 
-     *      Uniswap v4 Universal Router (Sepolia): 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af
-     * 
-     * @param key Pool key
+     * @param startingMCAP Initial MCAP in ETH
+     * @param totalSupply Token total supply
+     * @return tickLowers Lower tick bounds for all 5 positions
+     * @return tickUppers Upper tick bounds for all 5 positions
+     * @return tokenAllocations Token amounts for all 5 positions
      */
-    function activateAndSwapDev(
-        PoolKey calldata key
-    ) external payable nonReentrant {
-        PoolId poolId = key.toId();
-        LaunchInfo storage info = launchByPoolId[poolId];
+    function _calculatePositionRanges(
+        uint256 startingMCAP,
+        uint256 totalSupply
+    ) internal view returns (
+        int24[5] memory tickLowers,
+        int24[5] memory tickUppers,
+        uint256[5] memory tokenAllocations
+    ) {
+        // Token allocations (geometric decay: 75%, 18.75%, 4.6875%, 1.1719%, 0.3906%)
+        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / (config.BPS() * 10);
+        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / (config.BPS() * 10);
+        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / (config.BPS() * 10);
+        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / (config.BPS() * 10);
+        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / (config.BPS() * 10);
         
-        require(msg.sender == info.creator, "Only creator");
-        require(!poolActivated[poolId], "Already activated");
-        require(msg.value > 0, "ETH required");
+        // MCAP milestones (16x, 256x, 4096x, 65536x)
+        uint256 multiplier = config.POSITION_MCAP_MULTIPLIER();
+        uint256[5] memory mcapMilestones = [
+            startingMCAP * multiplier,                    // P1 end: 16x
+            startingMCAP * multiplier * multiplier,       // P2 end: 256x
+            startingMCAP * multiplier * multiplier * multiplier,  // P3 end: 4096x
+            startingMCAP * multiplier * multiplier * multiplier * multiplier,  // P4 end: 65536x
+            type(uint256).max                             // P5 end: infinity
+        ];
         
-        // ✅ SECURITY: Mark activated BEFORE any external calls
-        poolActivated[poolId] = true;
+        uint256 overlapBps = config.POSITION_OVERLAP_BPS();
         
-        // Set override flag in hook (bypass tax + limits for dev swap)
-        hook.setActivationInProgress(poolId, true);
+        // Calculate tick ranges with 5% overlap
+        for (uint256 i = 0; i < 5; i++) {
+            if (i == 0) {
+                // P1: starts at initial MCAP
+                tickLowers[i] = _mcapToTick(startingMCAP, totalSupply);
+            } else {
+                // P2-P5: start 5% before previous end (overlap)
+                uint256 lowerMCAP = (mcapMilestones[i-1] * (BPS - overlapBps)) / BPS;
+                tickLowers[i] = _mcapToTick(lowerMCAP, totalSupply);
+            }
+            
+            if (i == 4) {
+                // P5: ends at max tick (infinity)
+                tickUppers[i] = TICK_UPPER;
+            } else {
+                // P1-P4: end 5% after milestone (overlap)
+                uint256 upperMCAP = (mcapMilestones[i] * (BPS + overlapBps)) / BPS;
+                tickUppers[i] = _mcapToTick(upperMCAP, totalSupply);
+            }
+            
+            // Ensure tick spacing alignment
+            int24 spacing = 200; // tickSpacing for dynamic fee pools
+            tickLowers[i] = (tickLowers[i] / spacing) * spacing;
+            tickUppers[i] = (tickUppers[i] / spacing) * spacing;
+            
+            // Bounds check
+            if (tickLowers[i] < TICK_LOWER) tickLowers[i] = TICK_LOWER;
+            if (tickUppers[i] > TICK_UPPER) tickUppers[i] = TICK_UPPER;
+        }
         
-        // Mint tight balanced liquidity
-        _mintInitialTightPosition(key, msg.value);
-        
-        emit PoolActivated(poolId, true, positionTokenId[poolId]);
-        
-        // NOTE: Dev must now execute swap via Uniswap v4 Universal Router
-        // Router address (Sepolia): 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af
-        // After swap completes, call clearDevOverride() to re-enable protections
+        return (tickLowers, tickUppers, tokenAllocations);
     }
     
     /**
-     * @notice Clear dev override flag after swap completes
-     * @dev Only launch creator can call. Re-enables tax + limits.
-     * @param key Pool key
+     * @notice Convert MCAP to tick
+     * @dev MCAP = price × totalSupply
+     *      price = MCAP / totalSupply (in ETH per token)
+     *      sqrtPriceX96 = sqrt(inverted_price) * 2^96
+     *      tick = log1.0001(sqrtPrice)
      */
-    function clearDevOverride(PoolKey calldata key) external nonReentrant {
-        PoolId poolId = key.toId();
-        LaunchInfo storage info = launchByPoolId[poolId];
+    function _mcapToTick(
+        uint256 mcap,
+        uint256 totalSupply
+    ) internal pure returns (int24) {
+        // Calculate inverted ratio (token/ETH = totalSupply/MCAP)
+        uint256 ratioX96 = FullMath.mulDiv(totalSupply, FixedPoint96.Q96, mcap);
         
-        require(msg.sender == info.creator, "Only creator");
-        require(poolActivated[poolId], "Not activated");
+        // Take square root
+        uint256 sqrtRatioX48 = _sqrt(ratioX96);
         
-        // Clear override flag (re-enable tax + limits)
-        hook.setActivationInProgress(poolId, false);
+        // Scale to Q96
+        uint256 sqrtPriceX96 = sqrtRatioX48 * (1 << 48);
+        
+        // Convert to tick
+        int24 tick = TickMath.getTickAtSqrtPrice(uint160(sqrtPriceX96));
+        
+        return tick;
     }
     
     /**
-     * @notice Check dev token balance to enforce 15% cap
-     * @dev Can be called by anyone to verify dev hasn't exceeded cap
-     * @param poolId Pool ID
-     * @param devAddress Developer address
+     * @notice Mint next position (called by Hook at epoch 2 of each position)
+     * @dev Only Hook can trigger lazy minting
+     * @param poolId Pool identifier
+     * @param positionIndex Position index (0-4)
      */
-    function checkDevCap(PoolId poolId, address devAddress) external view returns (bool) {
-        address token = launchByPoolId[poolId].token;
-        uint256 devBalance = ClawclickToken(token).balanceOf(devAddress);
-        uint256 maxDevTokens = (TOTAL_SUPPLY * MAX_DEV_SUPPLY_BPS) / BPS;
-        return devBalance <= maxDevTokens;
-    }
-    
-    /**
-     * @notice Calculate token amount for balanced mint given ETH amount
-     * @dev tokenAmount = ethAmount * (sqrtPrice^2 / 2^192)
-     */
-    function _calculateTokenAmountFromETH(
-        PoolKey memory key,
-        uint256 ethAmount
-    ) internal view returns (uint256 tokenAmount) {
-        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(key.toId());
-
-        uint256 intermediate = FullMath.mulDiv(
-            ethAmount,
-            uint256(sqrtPriceX96),
-            uint256(1 << 96)
+    function mintNextPosition(
+        PoolId poolId,
+        uint256 positionIndex
+    ) external nonReentrant {
+        require(msg.sender == address(hook), "Only hook");
+        PoolState storage state = poolStates[poolId];
+        require(positionIndex < 5, "Invalid position");
+        require(!state.positionMinted[positionIndex], "Already minted");
+        
+        // Get pre-calculated ranges
+        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
+            _calculatePositionRanges(state.startingMCAP, state.totalSupply);
+        
+        // Get pool key
+        LaunchInfo memory info = launchByPoolId[poolId];
+        
+        // Add recycled ETH if available
+        uint256 ethToAdd = state.recycledETH;
+        state.recycledETH = 0;
+        
+        // Mint position via V4 PositionManager
+        uint256 tokenId = _mintPositionViaManager(
+            info.poolKey,
+            tickLowers[positionIndex],
+            tickUppers[positionIndex],
+            allocations[positionIndex],
+            ethToAdd
         );
-
-        tokenAmount = FullMath.mulDiv(
-            intermediate,
-            uint256(sqrtPriceX96),
-            uint256(1 << 96)
-        );
+        
+        // Store NFT token ID
+        state.positionTokenIds[positionIndex] = tokenId;
+        state.positionMinted[positionIndex] = true;
+        
+        emit PositionMinted(poolId, positionIndex, tokenId, allocations[positionIndex]);
     }
-
+    
     /**
-     * @notice Mint initial concentrated NFT position for epoch 0
-     * @dev Uses PositionManager (factory owns LP NFT)
+     * @notice Retire old position and recycle ETH
+     * @dev Only Hook can trigger retirement
+     * @param poolId Pool identifier
+     * @param positionIndex Position index to retire (0-4)
      */
-    function _mintInitialTightPosition(
+    function retireOldPosition(
+        PoolId poolId,
+        uint256 positionIndex
+    ) external nonReentrant {
+        require(msg.sender == address(hook), "Only hook");
+        PoolState storage state = poolStates[poolId];
+        require(positionIndex < 5, "Invalid position");
+        require(state.positionMinted[positionIndex], "Not minted");
+        require(!state.positionRetired[positionIndex], "Already retired");
+        
+        uint256 tokenId = state.positionTokenIds[positionIndex];
+        require(tokenId != 0, "Invalid token ID");
+        
+        // Withdraw liquidity from position
+        (uint256 ethRecovered, uint256 tokensRecovered) = _withdrawPositionViaManager(tokenId);
+        
+        // Store recycled ETH for next position
+        state.recycledETH += ethRecovered;
+        
+        // Mark as retired
+        state.positionRetired[positionIndex] = true;
+        
+        emit PositionRetired(poolId, positionIndex, tokenId, ethRecovered, tokensRecovered);
+    }
+    
+    /**
+     * @notice Internal: Mint position via V4 PositionManager
+     * @param key Pool key
+     * @param tickLower Lower tick bound
+     * @param tickUpper Upper tick bound
+     * @param tokenAmount Token amount
+     * @param ethAmount ETH amount
+     * @return tokenId NFT token ID of minted position
+     */
+    function _mintPositionViaManager(
         PoolKey memory key,
+        int24 tickLower,
+        int24 tickUpper,
+        uint256 tokenAmount,
         uint256 ethAmount
-    ) internal {
-        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(key.toId());
-        int24 currentTick = TickMath.getTickAtSqrtPrice(sqrtPriceX96);
-        int24 spacing = key.tickSpacing;
-        
-        // Align current tick to tickSpacing
-        int24 alignedTick = (currentTick / spacing) * spacing;
-        
-        // Wide initial range: ±140 spacings around current price
-        int24 tickLower = alignedTick - spacing * 140;
-        int24 tickUpper = alignedTick + spacing * 140;
-        if (tickLower < TICK_LOWER) tickLower = TICK_LOWER;
-        if (tickUpper > TICK_UPPER) tickUpper = TICK_UPPER;
-        
-        // Calculate balanced token amount
-        uint256 tokenAmount = _calculateTokenAmountFromETH(key, ethAmount);
+    ) internal returns (uint256 tokenId) {
         address token = Currency.unwrap(key.currency1);
         
-        // Calculate liquidity
+        // Get current price for liquidity calculation
+        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(key.toId());
         uint160 sqrtPriceLowerX96 = TickMath.getSqrtPriceAtTick(tickLower);
         uint160 sqrtPriceUpperX96 = TickMath.getSqrtPriceAtTick(tickUpper);
         
+        // Calculate liquidity
         uint128 liquidity = LiquidityAmounts.getLiquidityForAmounts(
             sqrtPriceX96,
             sqrtPriceLowerX96,
@@ -531,7 +633,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         
         require(liquidity > 0, "Liquidity must be > 0");
         
-        // Approve Permit2 then PositionManager pull rights
+        // Approve tokens for Permit2 and PositionManager
         ClawclickToken(token).approve(PERMIT2, tokenAmount);
         IAllowanceTransfer(PERMIT2).approve(
             token,
@@ -539,14 +641,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             type(uint160).max,
             type(uint48).max
         );
-
+        
         // Build PositionManager mint actions
         bytes memory actions = abi.encodePacked(
             uint8(Actions.MINT_POSITION),
             uint8(Actions.CLOSE_CURRENCY),
             uint8(Actions.CLOSE_CURRENCY)
         );
-
+        
         bytes[] memory params = new bytes[](3);
         params[0] = abi.encode(
             key,
@@ -560,17 +662,111 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         );
         params[1] = abi.encode(key.currency0);
         params[2] = abi.encode(key.currency1);
-
+        
         bytes memory unlockData = abi.encode(actions, params);
         uint256 deadline = block.timestamp + 1 hours;
-
+        
+        // Execute mint
         IPositionManager(positionManager).modifyLiquidities{value: ethAmount}(unlockData, deadline);
+        
+        // Get newly minted token ID
+        tokenId = IPositionManager(positionManager).nextTokenId() - 1;
+        
+        return tokenId;
+    }
+    
+    /**
+     * @notice Internal: Withdraw position via V4 PositionManager
+     * @param tokenId NFT token ID to withdraw
+     * @return ethAmount ETH recovered
+     * @return tokenAmount Tokens recovered
+     */
+    function _withdrawPositionViaManager(
+        uint256 tokenId
+    ) internal returns (uint256 ethAmount, uint256 tokenAmount) {
+        // Get position liquidity
+        uint128 liquidity = IPositionManager(positionManager).getPositionLiquidity(tokenId);
+        require(liquidity > 0, "No liquidity");
+        
+        // Get position info for pool key
+        PositionInfo info = IPositionManager(positionManager).positionInfo(tokenId);
+        PoolKey memory key; // Need to reconstruct from position info
+        // Note: This is simplified - actual implementation needs to get poolKey from position
+        
+        uint256 ethBefore = address(this).balance;
+        address token = Currency.unwrap(key.currency1);
+        uint256 tokenBefore = ClawclickToken(token).balanceOf(address(this));
+        
+        // Build withdraw actions (decrease + collect + burn)
+        bytes memory actions = abi.encodePacked(
+            uint8(Actions.DECREASE_LIQUIDITY),
+            uint8(Actions.BURN_POSITION),
+            uint8(Actions.CLOSE_CURRENCY),
+            uint8(Actions.CLOSE_CURRENCY)
+        );
+        
+        bytes[] memory params = new bytes[](4);
+        params[0] = abi.encode(tokenId, uint256(liquidity), uint128(0), uint128(0), bytes(""));
+        params[1] = abi.encode(tokenId, uint128(0), uint128(0), bytes(""));
+        params[2] = abi.encode(key.currency0);
+        params[3] = abi.encode(key.currency1);
+        
+        bytes memory unlockData = abi.encode(actions, params);
+        uint256 deadline = block.timestamp + 1 hours;
+        
+        // Execute withdraw
+        IPositionManager(positionManager).modifyLiquidities(unlockData, deadline);
+        
+        // Calculate recovered amounts
+        ethAmount = address(this).balance - ethBefore;
+        tokenAmount = ClawclickToken(token).balanceOf(address(this)) - tokenBefore;
+        
+        return (ethAmount, tokenAmount);
+    }
 
-        uint256 tokenId = IPositionManager(positionManager).nextTokenId() - 1;
-        positionTokenId[key.toId()] = tokenId;
-        lastRepositionedEpoch[key.toId()] = hook.getCurrentEpoch(key.toId());
-
-        emit LiquidityAdded(token, key.toId(), tokenAmount, tokenId);
+    /*//////////////////////////////////////////////////////////////
+                         LIQUIDITY PROVISION (POSITIONMANAGER)
+    //////////////////////////////////////////////////////////////*/
+    
+    /*//////////////////////////////////////////////////////////////
+                         DEPRECATED (OLD SYSTEM)
+    //////////////////////////////////////////////////////////////*/
+    
+    /**
+     * @notice DEPRECATED - Pools are now activated at launch with bootstrap ETH
+     * @dev Kept for interface compatibility but reverts
+     */
+    function activatePool(PoolKey calldata) external payable {
+        revert("Pools activated at launch");
+    }
+    
+    /**
+     * @notice DEPRECATED - Dev activation no longer needed
+     * @dev Kept for interface compatibility but reverts
+     */
+    function activateAndSwapDev(PoolKey calldata) external payable {
+        revert("Use regular launch flow");
+    }
+    
+    /**
+     * @notice DEPRECATED - No dev override in new system
+     * @dev Kept for interface compatibility but reverts
+     */
+    function clearDevOverride(PoolKey calldata) external {
+        revert("No dev override in new system");
+    }
+    
+    /**
+     * @notice Check dev token balance to enforce 15% cap
+     * @dev Can be called by anyone to verify dev hasn't exceeded cap
+     * @param poolId Pool ID
+     * @param devAddress Developer address
+     */
+    function checkDevCap(PoolId poolId, address devAddress) external view returns (bool) {
+        address token = poolStates[poolId].token;
+        uint256 devBalance = ClawclickToken(token).balanceOf(devAddress);
+        uint256 maxDevTokens = (TOTAL_SUPPLY * MAX_DEV_SUPPLY_BPS) / BPS;
+        return devBalance <= maxDevTokens;
     }
     
     /*//////////////////////////////////////////////////////////////
@@ -652,148 +848,50 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     }
     
     /*//////////////////////////////////////////////////////////////
-                         NFT REPOSITIONING (SAFE)
+                         LP FEE COLLECTION
     //////////////////////////////////////////////////////////////*/
-
+    
     /**
-     * @notice Reposition LP NFT based on current epoch width policy
-     * @dev Safety: decrease+burn+mint are in one atomic modifyLiquidities call.
-     *      If mint fails, entire tx reverts and old position remains intact.
+     * @notice Collect accrued LP fees from a specific position to treasury
+     * @param poolId Pool identifier
+     * @param positionIndex Position index (0-4)
      */
-    function repositionByEpoch(PoolKey calldata key) external onlyOwner nonReentrant {
-        PoolId poolId = key.toId();
-        require(poolActivated[poolId], "Pool not activated");
-
-        uint256 oldTokenId = positionTokenId[poolId];
-        require(oldTokenId != 0, "No position exists");
-
-        uint256 currentEpoch = hook.getCurrentEpoch(poolId);
-        int24 spacing = key.tickSpacing;
-        int24 width;
-
-        // Graduated pools get full-range LP — no more epoch transitions,
-        // tax is 0%, so it behaves as a normal AMM pool.
-        if (hook.isGraduated(poolId)) {
-            width = TICK_UPPER;  // will be clamped to [TICK_LOWER, TICK_UPPER]
-        } else {
-            // Epoch-based widening: wide ranges that grow each epoch
-            if (currentEpoch == 0) {
-                width = spacing * 140;        // ±140 tick spacings
-            } else if (currentEpoch == 1) {
-                width = spacing * 160;        // ±160 tick spacings
-            } else if (currentEpoch == 2) {
-                width = spacing * 180;        // ±180 tick spacings
-            } else {
-                width = TICK_UPPER;           // Full range
-            }
-        }
-
-        _repositionWithWidth(key, width);
-        lastRepositionedEpoch[poolId] = currentEpoch;
-    }
-
-    /**
-     * @notice Internal safe NFT reposition (atomic)
-     * @dev Never leaves pool without LP: all actions are one transaction.
-     */
-    function _repositionWithWidth(PoolKey memory key, int24 width) internal {
-        PoolId poolId = key.toId();
-        uint256 oldTokenId = positionTokenId[poolId];
-        require(oldTokenId != 0, "No position");
-
-        uint128 oldLiquidity = IPositionManager(positionManager).getPositionLiquidity(oldTokenId);
-        require(oldLiquidity > 0, "No liquidity");
-
-        int24 tickLower;
-        int24 tickUpper;
-
-        if (width >= TICK_UPPER) {
-            // Full-range position (graduation) — skip aligned-tick math
-            tickLower = TICK_LOWER;
-            tickUpper = TICK_UPPER;
-        } else {
-            (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-            int24 currentTick = TickMath.getTickAtSqrtPrice(sqrtPriceX96);
-            int24 spacing = key.tickSpacing;
-            int24 alignedTick = (currentTick / spacing) * spacing;
-
-            tickLower = alignedTick - width;
-            tickUpper = alignedTick + width;
-            if (tickLower < TICK_LOWER) tickLower = TICK_LOWER;
-            if (tickUpper > TICK_UPPER) tickUpper = TICK_UPPER;
-        }
-
-        if (tickLower >= tickUpper) revert InvalidParams();
-
-        // Atomic sequence: decrease old -> burn old -> mint new from deltas -> close currencies
-        bytes memory actions = abi.encodePacked(
-            uint8(Actions.DECREASE_LIQUIDITY),
-            uint8(Actions.BURN_POSITION),
-            uint8(Actions.MINT_POSITION_FROM_DELTAS),
-            uint8(Actions.CLOSE_CURRENCY),
-            uint8(Actions.CLOSE_CURRENCY)
-        );
-
-        bytes[] memory params = new bytes[](5);
-        params[0] = abi.encode(oldTokenId, uint256(oldLiquidity), uint128(0), uint128(0), bytes(""));
-        params[1] = abi.encode(oldTokenId, uint128(0), uint128(0), bytes(""));
-        params[2] = abi.encode(
-            key,
-            tickLower,
-            tickUpper,
-            uint128(type(uint128).max),
-            uint128(type(uint128).max),
-            address(this),
-            bytes("")
-        );
-        params[3] = abi.encode(key.currency0);
-        params[4] = abi.encode(key.currency1);
-
-        bytes memory unlockData = abi.encode(actions, params);
-        uint256 deadline = block.timestamp + 1 hours;
-
-        IPositionManager(positionManager).modifyLiquidities(unlockData, deadline);
-
-        uint256 newTokenId = IPositionManager(positionManager).nextTokenId() - 1;
-        require(newTokenId != 0, "Invalid new position");
-        positionTokenId[poolId] = newTokenId;
-
-        address token = Currency.unwrap(key.currency1);
-        emit LiquidityRepositioned(token, poolId, oldTokenId, newTokenId, tickLower, tickUpper);
-    }
-
-    /**
-     * @notice Collect accrued LP fees to treasury
-     */
-    function collectFees(PoolId poolId) external onlyOwner nonReentrant {
-        uint256 tokenId = positionTokenId[poolId];
+    function collectFeesFromPosition(PoolId poolId, uint256 positionIndex) external onlyOwner nonReentrant {
+        PoolState storage state = poolStates[poolId];
+        require(positionIndex < 5, "Invalid position");
+        require(state.positionMinted[positionIndex], "Position not minted");
+        require(!state.positionRetired[positionIndex], "Position retired");
+        
+        uint256 tokenId = state.positionTokenIds[positionIndex];
         require(tokenId != 0, "No position");
-
+        
         LaunchInfo storage info = launchByPoolId[poolId];
         PoolKey memory key = info.poolKey;
-
+        
         uint256 ethBefore = address(this).balance;
         uint256 tokenBefore = ClawclickToken(info.token).balanceOf(address(this));
-
+        
+        // Collect fees without removing liquidity
         bytes memory actions = abi.encodePacked(
             uint8(Actions.DECREASE_LIQUIDITY),
             uint8(Actions.CLOSE_CURRENCY),
             uint8(Actions.CLOSE_CURRENCY)
         );
-
+        
         bytes[] memory params = new bytes[](3);
         params[0] = abi.encode(tokenId, uint256(0), uint128(0), uint128(0), bytes(""));
         params[1] = abi.encode(key.currency0);
         params[2] = abi.encode(key.currency1);
-
+        
         bytes memory unlockData = abi.encode(actions, params);
         uint256 deadline = block.timestamp + 1 hours;
-
+        
         IPositionManager(positionManager).modifyLiquidities(unlockData, deadline);
-
+        
         uint256 ethGained = address(this).balance - ethBefore;
         uint256 tokenGained = ClawclickToken(info.token).balanceOf(address(this)) - tokenBefore;
-
+        
+        // Send fees to treasury
         if (ethGained > 0) {
             (bool ok,) = config.treasury().call{value: ethGained}("");
             require(ok, "ETH transfer failed");
@@ -801,49 +899,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         if (tokenGained > 0) {
             ClawclickToken(info.token).transfer(config.treasury(), tokenGained);
         }
-    }
-
-    /**
-     * @notice Check if reposition is needed
-     * @dev Trigger conditions:
-     *      1. Graduated pool that hasn't been repositioned to full range yet
-     *      2. currentTick within 5 spacings of LP boundary (tick proximity)
-     */
-    function needsReposition(PoolId poolId) external view returns (bool needed, uint256 currentEpoch, uint256 lastEpoch) {
-        currentEpoch = hook.getCurrentEpoch(poolId);
-        lastEpoch = lastRepositionedEpoch[poolId];
-
-        uint256 tokenId = positionTokenId[poolId];
-        if (tokenId == 0) {
-            needed = currentEpoch > lastEpoch;
-            return (needed, currentEpoch, lastEpoch);
-        }
-
-        // Graduated pools always need one final reposition to full range
-        if (hook.isGraduated(poolId)) {
-            PositionInfo gInfo = IPositionManager(positionManager).positionInfo(tokenId);
-            // Already full-range? No need.
-            needed = gInfo.tickLower() != TICK_LOWER || gInfo.tickUpper() != TICK_UPPER;
-            return (needed, currentEpoch, lastEpoch);
-        }
-
-        PositionInfo info = IPositionManager(positionManager).positionInfo(tokenId);
-        int24 tickLower = info.tickLower();
-        int24 tickUpper = info.tickUpper();
-
-        // If position is fully exhausted (price moved past range), always reposition
-        uint128 liq = IPositionManager(positionManager).getPositionLiquidity(tokenId);
-        if (liq == 0) {
-            needed = true;
-            return (needed, currentEpoch, lastEpoch);
-        }
-
-        PoolKey memory key = launchByPoolId[poolId].poolKey;
-        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-        int24 currentTick = TickMath.getTickAtSqrtPrice(sqrtPriceX96);
-        int24 buffer = key.tickSpacing * 5;
-
-        needed = currentTick >= tickUpper - buffer || currentTick <= tickLower + buffer;
     }
 
     receive() external payable {}
