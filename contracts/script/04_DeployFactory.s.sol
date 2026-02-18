@@ -26,7 +26,7 @@ contract DeployFactory is Script {
             ClawclickConfig(configAddr),
             IPoolManager(poolManager),
             ClawclickHook(hookAddr),
-            IPositionManager(positionManager),
+            positionManager,
             vm.addr(pk)
         );
 

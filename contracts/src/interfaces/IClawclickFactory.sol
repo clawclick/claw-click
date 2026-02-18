@@ -53,6 +53,18 @@ interface IClawclickFactory {
     function activateAndSwapDev(PoolKey calldata key) external payable;
 
     /*//////////////////////////////////////////////////////////////
+                        REPOSITIONING
+    //////////////////////////////////////////////////////////////*/
+
+    function repositionByEpoch(PoolKey calldata key) external;
+
+    function lastRepositionedEpoch(PoolId poolId) external view returns (uint256);
+
+    function needsReposition(PoolId poolId) external view returns (bool needed, uint256 currentEpoch, uint256 lastEpoch);
+
+    function collectFees(PoolId poolId) external;
+
+    /*//////////////////////////////////////////////////////////////
                             VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 

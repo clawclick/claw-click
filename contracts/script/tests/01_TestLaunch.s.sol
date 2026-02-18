@@ -44,7 +44,7 @@ contract TestLaunch is Script {
         // Load deployed contract addresses
         config = ClawclickConfig(vm.envAddress("CONFIG"));
         hook = ClawclickHook(payable(vm.envAddress("HOOK")));
-        factory = ClawclickFactory(vm.envAddress("FACTORY"));
+        factory = ClawclickFactory(payable(vm.envAddress("FACTORY")));
         
         deployerPk = vm.envUint("TESTING_DEV_WALLET_PK");
         deployer = vm.addr(deployerPk);
