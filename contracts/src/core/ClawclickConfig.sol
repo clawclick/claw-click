@@ -18,8 +18,13 @@ contract ClawclickConfig is Ownable {
                                 CONSTANTS
     //////////////////////////////////////////////////////////////*/
     
-    /// @notice Basis points denominator (100% = 10000)
+    /// @notice Standard basis points denominator (100% = 10000)
+    /// @dev Used for fees, shares, overlaps, limits
     uint256 public constant BPS = 10000;
+    
+    /// @notice Extended basis points for token allocations (100% = 100000)
+    /// @dev Provides finer granularity for geometric decay allocations
+    uint256 public constant EXTENDED_BPS = 100000;
     
     /// @notice Maximum platform share (50%)
     uint256 public constant MAX_PLATFORM_SHARE_BPS = 5000;

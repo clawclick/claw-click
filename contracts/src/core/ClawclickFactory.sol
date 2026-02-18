@@ -455,12 +455,12 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256[5] memory tokenAllocations
     ) {
         // Token allocations (geometric decay: 75%, 18.75%, 4.6875%, 1.1719%, 0.3906%)
-        // FIX: Divide by BPS only, not BPS * 10
-        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / config.BPS();
-        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / config.BPS();
-        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / config.BPS();
-        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / config.BPS();
-        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / config.BPS();
+        // Uses EXTENDED_BPS (100000) for finer granularity
+        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / config.EXTENDED_BPS();
         
         // MCAP milestones (16x, 256x, 4096x, 65536x) with overflow protection
         uint256 multiplier = config.POSITION_MCAP_MULTIPLIER();

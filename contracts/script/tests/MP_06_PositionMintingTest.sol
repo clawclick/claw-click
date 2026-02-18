@@ -132,9 +132,9 @@ contract MP_06_PositionMintingTest is Test {
         console2.log("=== P2 TOKEN ALLOCATION ===");
         
         uint256 p2Bps = config.POSITION_2_ALLOCATION_BPS();  // 18750
-        uint256 p2Tokens = (TOTAL_SUPPLY * p2Bps) / config.BPS();
+        uint256 p2Tokens = (TOTAL_SUPPLY * p2Bps) / config.EXTENDED_BPS();
         
-        uint256 expected = (TOTAL_SUPPLY * 18750) / 10000;  // 18.75%
+        uint256 expected = (TOTAL_SUPPLY * 18750) / 100000;  // 18.75%
         
         console2.log("P2 allocation:", p2Bps, "bps");
         console2.log("P2 tokens:", p2Tokens);
@@ -152,7 +152,7 @@ contract MP_06_PositionMintingTest is Test {
         console2.log("=== P3 TOKEN ALLOCATION ===");
         
         uint256 p3Bps = config.POSITION_3_ALLOCATION_BPS();  // 4688
-        uint256 p3Tokens = (TOTAL_SUPPLY * p3Bps) / config.BPS();
+        uint256 p3Tokens = (TOTAL_SUPPLY * p3Bps) / config.EXTENDED_BPS();
         
         console2.log("P3 allocation:", p3Bps, "bps");
         console2.log("P3 tokens:", p3Tokens);
@@ -170,7 +170,7 @@ contract MP_06_PositionMintingTest is Test {
         console2.log("=== P4 TOKEN ALLOCATION ===");
         
         uint256 p4Bps = config.POSITION_4_ALLOCATION_BPS();  // 1172
-        uint256 p4Tokens = (TOTAL_SUPPLY * p4Bps) / config.BPS();
+        uint256 p4Tokens = (TOTAL_SUPPLY * p4Bps) / config.EXTENDED_BPS();
         
         console2.log("P4 allocation:", p4Bps, "bps");
         console2.log("P4 tokens:", p4Tokens);
@@ -188,7 +188,7 @@ contract MP_06_PositionMintingTest is Test {
         console2.log("=== P5 TOKEN ALLOCATION ===");
         
         uint256 p5Bps = config.POSITION_5_ALLOCATION_BPS();  // 390
-        uint256 p5Tokens = (TOTAL_SUPPLY * p5Bps) / config.BPS();
+        uint256 p5Tokens = (TOTAL_SUPPLY * p5Bps) / config.EXTENDED_BPS();
         
         console2.log("P5 allocation:", p5Bps, "bps");
         console2.log("P5 tokens:", p5Tokens);
