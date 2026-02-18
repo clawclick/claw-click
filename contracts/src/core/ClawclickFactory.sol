@@ -67,10 +67,10 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /// @notice Maximum target MCAP (10 ETH)
     uint256 public constant MAX_TARGET_MCAP = 10 ether;
     
-    /// @notice Full range tick bounds (valid for tickSpacing=200)
-    /// @dev Must be multiples of tickSpacing: -887220 % 200 != 0, so we use -887200
-    int24 public constant TICK_LOWER = -887200; // Closest valid tick to MIN_TICK (-887272)
-    int24 public constant TICK_UPPER = 887200;  // Closest valid tick to MAX_TICK (887272)
+    /// @notice Full range tick bounds (valid for tickSpacing=60)
+    /// @dev Must be multiples of tickSpacing: -887220 % 60 = 0 ✓
+    int24 public constant TICK_LOWER = -887220; // Closest valid tick to MIN_TICK (-887272)
+    int24 public constant TICK_UPPER = 887220;  // Closest valid tick to MAX_TICK (887272)
 
     /*//////////////////////////////////////////////////////////////
                                 STATE
@@ -105,6 +105,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     
     /// @notice Pool state (multi-position tracking)
     mapping(PoolId => PoolState) public poolStates;
+    
+    /// @notice Position token ID to Pool ID mapping (for position management)
+    mapping(uint256 => PoolId) public tokenIdToPoolId;
     
     struct PoolState {
         address token;
@@ -307,6 +310,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         });
         poolStates[poolId] = poolState;
         
+        // Store reverse mapping for P1
+        tokenIdToPoolId[p1TokenId] = poolId;
+        
         // 9. Store launch info
         LaunchInfo memory info = LaunchInfo({
             token: token,
@@ -449,20 +455,33 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256[5] memory tokenAllocations
     ) {
         // Token allocations (geometric decay: 75%, 18.75%, 4.6875%, 1.1719%, 0.3906%)
-        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / (config.BPS() * 10);
-        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / (config.BPS() * 10);
-        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / (config.BPS() * 10);
-        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / (config.BPS() * 10);
-        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / (config.BPS() * 10);
+        // FIX: Divide by BPS only, not BPS * 10
+        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / config.BPS();
+        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / config.BPS();
+        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / config.BPS();
+        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / config.BPS();
+        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / config.BPS();
         
-        // MCAP milestones (16x, 256x, 4096x, 65536x)
+        // MCAP milestones (16x, 256x, 4096x, 65536x) with overflow protection
         uint256 multiplier = config.POSITION_MCAP_MULTIPLIER();
+        uint256 p1End = startingMCAP * multiplier;
+        require(p1End >= startingMCAP, "P1 overflow");
+        
+        uint256 p2End = p1End * multiplier;
+        require(p2End >= p1End, "P2 overflow");
+        
+        uint256 p3End = p2End * multiplier;
+        require(p3End >= p2End, "P3 overflow");
+        
+        uint256 p4End = p3End * multiplier;
+        require(p4End >= p3End, "P4 overflow");
+        
         uint256[5] memory mcapMilestones = [
-            startingMCAP * multiplier,                    // P1 end: 16x
-            startingMCAP * multiplier * multiplier,       // P2 end: 256x
-            startingMCAP * multiplier * multiplier * multiplier,  // P3 end: 4096x
-            startingMCAP * multiplier * multiplier * multiplier * multiplier,  // P4 end: 65536x
-            type(uint256).max                             // P5 end: infinity
+            p1End,              // P1 end: 16x
+            p2End,              // P2 end: 256x
+            p3End,              // P3 end: 4096x
+            p4End,              // P4 end: 65536x
+            type(uint256).max   // P5 end: infinity
         ];
         
         uint256 overlapBps = config.POSITION_OVERLAP_BPS();
@@ -488,7 +507,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             }
             
             // Ensure tick spacing alignment
-            int24 spacing = 200; // tickSpacing for dynamic fee pools
+            int24 spacing = 60; // Standard tick spacing for dynamic fee pools
             tickLowers[i] = (tickLowers[i] / spacing) * spacing;
             tickUppers[i] = (tickUppers[i] / spacing) * spacing;
             
@@ -561,9 +580,10 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             ethToAdd
         );
         
-        // Store NFT token ID
+        // Store NFT token ID and mapping
         state.positionTokenIds[positionIndex] = tokenId;
         state.positionMinted[positionIndex] = true;
+        tokenIdToPoolId[tokenId] = poolId;  // Store reverse mapping for withdrawal
         
         emit PositionMinted(poolId, positionIndex, tokenId, allocations[positionIndex]);
     }
@@ -688,10 +708,12 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint128 liquidity = IPositionManager(positionManager).getPositionLiquidity(tokenId);
         require(liquidity > 0, "No liquidity");
         
-        // Get position info for pool key
-        PositionInfo info = IPositionManager(positionManager).positionInfo(tokenId);
-        PoolKey memory key; // Need to reconstruct from position info
-        // Note: This is simplified - actual implementation needs to get poolKey from position
+        // FIX: Get PoolKey from stored mapping
+        PoolId poolId = tokenIdToPoolId[tokenId];
+        require(poolId != PoolId.wrap(bytes32(0)), "PoolId not found");
+        
+        LaunchInfo storage launch = launchByPoolId[poolId];
+        PoolKey memory key = launch.poolKey;
         
         uint256 ethBefore = address(this).balance;
         address token = Currency.unwrap(key.currency1);
@@ -855,7 +877,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             currency0: currency0,
             currency1: currency1,
             fee: dynamicFeeFlag,
-            tickSpacing: 200,     // Wide ticks for full-range efficiency
+            tickSpacing: 60,     // Standard tick spacing for dynamic fee pools
             hooks: IHooks(address(hook))
         });
     }

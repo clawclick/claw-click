@@ -64,9 +64,9 @@ contract ClawclickConfig is Ownable {
     /// @notice Paused state
     bool public paused;
     
-    /// @notice Tax tier configuration: targetMcapETH => startingTaxBps
-    /// @dev Immutable once set during deployment (deterministic for users)
-    mapping(uint256 => uint256) public taxTiers;
+    /// @notice Base tax rate for all launches (50% = 5000 bps)
+    /// @dev Fixed rate, decays via epoch system in Hook
+    uint256 public constant BASE_TAX_BPS = 5000;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -96,26 +96,6 @@ contract ClawclickConfig is Ownable {
         
         treasury = _treasury;
         platformShareBps = 3000; // 30% platform share
-        
-        // Initialize default tax tiers
-        _initializeTaxTiers();
-    }
-    
-    /**
-     * @notice Initialize tax tier mapping
-     * @dev Called once during construction
-     */
-    function _initializeTaxTiers() internal {
-        taxTiers[1 ether] = 5000;   // 1 ETH → 50%
-        taxTiers[2 ether] = 4500;   // 2 ETH → 45%
-        taxTiers[3 ether] = 4000;   // 3 ETH → 40%
-        taxTiers[4 ether] = 3500;   // 4 ETH → 35%
-        taxTiers[5 ether] = 3000;   // 5 ETH → 30%
-        taxTiers[6 ether] = 2500;   // 6 ETH → 25%
-        taxTiers[7 ether] = 2000;   // 7 ETH → 20%
-        taxTiers[8 ether] = 1500;   // 8 ETH → 15%
-        taxTiers[9 ether] = 1000;   // 9 ETH → 10%
-        taxTiers[10 ether] = 500;   // 10 ETH → 5%
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -144,13 +124,6 @@ contract ClawclickConfig is Ownable {
         emit PausedUpdated(_paused);
         paused = _paused;
     }
-    
-    /**
-     * @notice Tax tiers are IMMUTABLE after deployment
-     * @dev Removed setTaxTier() to prevent post-launch manipulation
-     *      This ensures users have deterministic tax rates at launch time
-     *      Tax tiers cannot be changed by owner - guarantees security
-     */
 
     /*//////////////////////////////////////////////////////////////
                             VIEW FUNCTIONS
@@ -172,8 +145,9 @@ contract ClawclickConfig is Ownable {
         return !paused;
     }
     
-    /// @notice Get starting tax for a target MCAP
-    function getStartingTax(uint256 targetMcapETH) external view returns (uint256) {
-        return taxTiers[targetMcapETH];
+    /// @notice Get starting tax (fixed 50% for all launches)
+    /// @dev Tax decays via epoch system in Hook: 50% → 25% → 12.5% → 6.25%
+    function getStartingTax(uint256) external pure returns (uint256) {
+        return BASE_TAX_BPS;
     }
 }
