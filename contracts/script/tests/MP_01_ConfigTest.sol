@@ -48,7 +48,7 @@ contract MP_01_ConfigTest is Test {
         console2.log("  P5:", p5, "bps");
         console2.log("  TOTAL:", total, "bps");
         
-        assertEq(total, config.BPS(), "Token allocations do not sum to 100%");
+        assertEq(total, 100000, "Token allocations do not sum to 100,000 bps");
         console2.log("[PASS] Token allocations sum to exactly 100%");
     }
     

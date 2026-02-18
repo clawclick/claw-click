@@ -41,7 +41,7 @@ contract MP_10_GasOptimizationTest is Test {
         
         console2.log("Old system (upfront minting):");
         console2.log("  Launch: Creates all 5 positions");
-        console2.log("  Gas cost: ~1.5M (5 positions × 300k)");
+        console2.log("  Gas cost: ~1.5M (5 positions  300k)");
         console2.log("  Wasted if token fails early");
         console2.log("");
         
@@ -111,7 +111,7 @@ contract MP_10_GasOptimizationTest is Test {
         console2.log("  Required: repositionByEpoch() calls");
         console2.log("  Gas per rebalance: ~400k");
         console2.log("  Frequency: Every 4 epochs (16x growth)");
-        console2.log("  2k -> 128M = 5 positions × 400k = 2M gas");
+        console2.log("  2k -> 128M = 5 positions  400k = 2M gas");
         console2.log("");
         
         console2.log("New system (automatic):");
@@ -189,7 +189,7 @@ contract MP_10_GasOptimizationTest is Test {
         console2.log("  Launch: +50k gas (one-time)");
         console2.log("  Each mint: -20k gas (savings)");
         console2.log("  Break-even: 2.5 mints");
-        console2.log("  Total lifecycle: +50k - (20k × 4) = -30k (net savings)");
+        console2.log("  Total lifecycle: +50k - (20k  4) = -30k (net savings)");
         console2.log("");
         
         int256 netGas = 50_000 - (20_000 * 4);
@@ -286,7 +286,7 @@ contract MP_10_GasOptimizationTest is Test {
         console2.log("  P2 retire: 185k");
         console2.log("  P3 retire: 185k");
         console2.log("  Swaps (100x @ 170k): 17M");
-        console2.log("  ─────────────────");
+        console2.log("  ");
         console2.log("  Total: ~19M gas");
         console2.log("");
         
@@ -306,7 +306,8 @@ contract MP_10_GasOptimizationTest is Test {
         console2.log("");
         console2.log("Old system: ~21M gas");
         console2.log("New system: ~19M gas");
-        console2.log("Savings:", savings, "gas (", savingsPercent, "%)");
+        console2.log("Savings:", savings, "gas");
+        console2.log("Percentage:", savingsPercent, "%");
         
         assertTrue(savingsPercent > 5, "Should save >5% lifecycle gas");
         
@@ -463,3 +464,4 @@ contract MP_10_GasOptimizationTest is Test {
         console2.log("==============================================");
     }
 }
+
