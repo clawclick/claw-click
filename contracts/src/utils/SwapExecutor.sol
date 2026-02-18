@@ -58,7 +58,7 @@ contract SwapExecutor {
             key,
             params,
             settings,
-            bytes("")  // No hook data
+            abi.encode(msg.sender)  // Pass trader address for maxWallet tracking
         );
         
         // Tokens automatically sent to msg.sender by PoolSwapTest
@@ -88,7 +88,7 @@ contract SwapExecutor {
             key,
             params,
             settings,
-            bytes("")  // No hook data
+            abi.encode(msg.sender)  // Pass trader address for maxWallet tracking
         );
         
         // ETH automatically sent to msg.sender by PoolSwapTest
