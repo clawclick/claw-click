@@ -791,6 +791,19 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         return launchByPoolId[poolId];
     }
     
+    function poolActivated(PoolId poolId) external view returns (bool) {
+        return poolStates[poolId].activated;
+    }
+    
+    function positionTokenId(PoolId poolId) external view returns (uint256) {
+        // Return P1 token ID for backward compatibility with tests
+        return poolStates[poolId].positionTokenIds[0];
+    }
+    
+    function getPositionTokenIds(PoolId poolId) external view returns (uint256[5] memory) {
+        return poolStates[poolId].positionTokenIds;
+    }
+    
     function getAllTokens() external view returns (address[] memory) {
         return allTokens;
     }
