@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
+import "forge-std/console2.sol";
 import "../../src/core/ClawclickFactory.sol";
 import "../../src/core/ClawclickConfig.sol";
 import "../../src/core/ClawclickHook_V4.sol";

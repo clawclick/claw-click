@@ -710,7 +710,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         
         // FIX: Get PoolKey from stored mapping
         PoolId poolId = tokenIdToPoolId[tokenId];
-        require(poolId != PoolId.wrap(bytes32(0)), "PoolId not found");
+        require(PoolId.unwrap(poolId) != bytes32(0), "PoolId not found");
         
         LaunchInfo storage launch = launchByPoolId[poolId];
         PoolKey memory key = launch.poolKey;
