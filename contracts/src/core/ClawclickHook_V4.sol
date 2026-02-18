@@ -603,6 +603,22 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         
         // Check for epoch advancement (MCAP doubled from last epoch)
         if (currentMCAP >= progress.lastEpochMCAP * 2) {
+            // ═══════ CHECK GRADUATION BEFORE ADVANCING (critical timing) ═══════
+            // Graduation happens at end of P1 epoch 4 (when reaching 16x MCAP)
+            if (progress.currentPosition == 1 && 
+                progress.currentEpoch == 4 && 
+                currentMCAP >= launch.startMcap * 16 &&
+                !progress.graduated) {
+                
+                progress.graduated = true;
+                launch.phase = Phase.GRADUATED;
+                launch.graduationMcap = currentMCAP;
+                
+                emit Graduated(launch.token, poolId, block.timestamp, currentMCAP);
+                emit PhaseChanged(poolId, Phase.GRADUATED, block.timestamp, currentMCAP);
+            }
+            
+            // NOW advance epoch
             progress.currentEpoch++;
             progress.lastEpochMCAP = currentMCAP;
             
@@ -636,20 +652,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
                     }
                 }
             }
-        }
-        
-        // ═══════ CHECK FOR GRADUATION (end of P1 epoch 4) ═══════
-        if (progress.currentPosition == 1 && 
-            progress.currentEpoch == 4 && 
-            currentMCAP >= launch.startMcap * 16 &&
-            !progress.graduated) {
-            
-            progress.graduated = true;
-            launch.phase = Phase.GRADUATED;
-            launch.graduationMcap = currentMCAP;
-            
-            emit Graduated(launch.token, poolId, block.timestamp, currentMCAP);
-            emit PhaseChanged(poolId, Phase.GRADUATED, block.timestamp, currentMCAP);
         }
         
         // ═══════ MAX WALLET ENFORCEMENT (P1 only) ═══════
