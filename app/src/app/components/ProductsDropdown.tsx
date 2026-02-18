@@ -51,7 +51,7 @@ export default function ProductsDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors flex items-center gap-1"
       >
-        🦞 Products
+        🎁 Products
         <svg 
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
           fill="none" 
