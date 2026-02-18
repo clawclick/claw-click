@@ -132,7 +132,7 @@ contract MP_03_LaunchTest is Test {
     function test_P1TokenAllocation() public view {
         console2.log("=== P1 TOKEN ALLOCATION TEST ===");
         
-        uint256 p1Allocation = (TOTAL_SUPPLY * 75000) / 10000;  // 75%
+        uint256 p1Allocation = (TOTAL_SUPPLY * 75000) / 100000;  // 75%
         
         console2.log("Expected P1 tokens:", p1Allocation);
         console2.log("(75% of", TOTAL_SUPPLY, ")");
