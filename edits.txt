@@ -1,0 +1,100 @@
+Change Log
+
+Files Changed: 5 modified
+
+
+FILE 1: ClawclickHook_V4.sol
+
+Bug Fix 1 — CurrencyNotSettled
+- Added _pendingFeeAmount and _pendingFeeIsETH private mappings
+- beforeSwap now stores the fee amount/type in these mappings
+- afterSwap calls poolManager.take() to withdraw the hook's fee credits before unlock finishes
+- Without this fix, every swap reverted with CurrencyNotSettled
+
+Bug Fix 2 — Inverted exact-input check
+- Changed params.amountSpecified > 0 to params.amountSpecified < 0
+- v4 convention: negative = exact input, positive = exact output
+- Was backwards, causing wrong fee calculation on every swap
+
+Bug Fix 3 — Wrong BeforeSwapDelta slot for sells
+- Sells used toBeforeSwapDelta(0, feeDelta) — fee in unspecified slot
+- Changed to always use toBeforeSwapDelta(feeDelta, 0) — fee in specified slot
+- The first slot is always the specified currency regardless of direction
+- Without this fix, sells charged zero tax
+
+Bug Fix 4 — msg.sender is always PoolManager
+- afterSwap used msg.sender for maxWallet tracking
+- In v4 hooks, msg.sender is always the PoolManager contract, not the trader
+- Now decodes actual trader address from hookData parameter: abi.decode(hookData, (address))
+- Fallback to msg.sender if hookData is empty (backward compat)
+
+Feature — Auto-reposition try-catch
+- After maxWallet enforcement in afterSwap, computes current epoch
+- Checks factory.lastRepositionedEpoch(poolId) — if epoch advanced, calls factory.repositionFromHook(key)
+- Wrapped in try-catch: if reposition fails, emits RebalanceFailed(poolId, token, 0, reason)
+- Swap always succeeds regardless of reposition outcome
+- Keeper bot listens for RebalanceFailed events and retries manually
+
+
+FILE 2: ClawclickFactory.sol
+
+New mapping — lastRepositionedEpoch
+- mapping(PoolId => uint256) public lastRepositionedEpoch
+- Tracks which epoch each pool was last repositioned at
+- Used by hook to decide if auto-reposition is needed
+
+Implemented — repositionByEpoch (was TODO stub)
+- Was: emitted a fake event without moving liquidity
+- Now: full 3-step PositionManager sequence:
+  1. DECREASE_LIQUIDITY (withdraw all liquidity from old position)
+  2. BURN_POSITION (destroy old NFT)
+  3. MINT_POSITION (create new position at wider range with CLOSE_CURRENCY)
+- Also updates lastRepositionedEpoch after successful reposition
+
+Implemented — collectFees (was TODO stub)
+- Was: placeholder comment, did nothing
+- Now: DECREASE_LIQUIDITY with 0 liquidity (fee collection only)
+- Snapshots ETH/token balances before and after
+- Forwards the delta to treasury via ETH transfer and token transfer
+
+New function — repositionFromHook
+- Same reposition logic as repositionByEpoch
+- Access: require(msg.sender == address(hook)) instead of onlyOwner
+- Guard: require(currentEpoch > lastRepositionedEpoch[poolId])
+- Called by hook's afterSwap via try-catch during swaps
+
+New function — needsReposition (view)
+- Returns (bool needed, uint256 currentEpoch, uint256 lastEpoch)
+- For keeper bots and UI to check if a pool needs repositioning
+
+Added — receive() external payable
+- Factory needs to accept ETH back from PositionManager during DECREASE_LIQUIDITY operations
+
+Removed — _repositionWithWidth internal function
+- Was a dead TODO stub that did nothing
+- Replaced by the real implementation in repositionByEpoch
+
+
+FILE 3: SwapExecutor.sol
+
+hookData change (2 lines)
+- executeBuy: bytes("") → abi.encode(msg.sender)
+- executeSell: bytes("") → abi.encode(msg.sender)
+- Passes real trader address to hook for maxWallet tracking (Bug Fix 4)
+
+
+FILE 4: IClawclickFactory.sol
+
+3 new function signatures added:
+- repositionFromHook(PoolKey calldata key) external
+- lastRepositionedEpoch(PoolId poolId) external view returns (uint256)
+- needsReposition(PoolId poolId) external view returns (bool, uint256, uint256)
+
+
+FILE 5: 01_TestLaunch.s.sol
+
+1 line — payable cast
+- ClawclickFactory(vm.envAddress("FACTORY")) → ClawclickFactory(payable(vm.envAddress("FACTORY")))
+- Required because Factory now has receive(), making it a payable address
+
+

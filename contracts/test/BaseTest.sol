@@ -24,6 +24,13 @@ import {TestSwapRouter} from "./TestSwapRouter.sol";
  * @title BaseTest
  * @notice Shared harness for all Clawclick fork tests on Ethereum Sepolia
  * @dev Deploys Config → Hook (CREATE2 mined) → Factory → SwapRouter on an ETH Sepolia fork
+ *
+ * NEW SYSTEM (multi-position):
+ *   - Pools are activated at launch with bootstrap ETH (no separate activation step)
+ *   - No keeper/reposition system — multi-position management is automatic via hook
+ *   - tickSpacing = 60 (was 200)
+ *   - Starting epoch = 1 (was 0)
+ *   - Universal 50% base tax for all MCAPs
  */
 abstract contract BaseTest is Test {
     using PoolIdLibrary for PoolKey;
@@ -170,12 +177,17 @@ abstract contract BaseTest is Test {
                           HELPERS
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Create a launch and return token + poolId
+    /// @notice Create a launch (pool activated at launch with bootstrap ETH)
+    /// @dev New system: createLaunch requires fee + bootstrap ETH together.
+    ///      We send 0.1 ETH bootstrap for deeper initial liquidity (factory uses all excess above fee).
     function _createLaunch(
         uint256 targetMcapETH,
         address _beneficiary
     ) internal returns (address token, PoolId poolId, PoolKey memory key) {
         uint256 fee = factory.getFee(false);
+        uint256 bootstrapETH = 0.1 ether;  // Deeper liquidity to avoid maxWallet issues
+        uint256 totalRequired = fee + bootstrapETH;
+
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test Token",
             symbol: "TEST",
@@ -184,7 +196,7 @@ abstract contract BaseTest is Test {
             isPremium: false,
             targetMcapETH: targetMcapETH
         });
-        (token, poolId) = factory.createLaunch{value: fee}(params);
+        (token, poolId) = factory.createLaunch{value: totalRequired}(params);
         key = _buildPoolKey(token);
     }
 
@@ -196,6 +208,9 @@ abstract contract BaseTest is Test {
         address _beneficiary
     ) internal returns (address token, PoolId poolId, PoolKey memory key) {
         uint256 fee = factory.getFee(false);
+        uint256 bootstrapETH = 0.1 ether;  // Deeper liquidity to avoid maxWallet issues
+        uint256 totalRequired = fee + bootstrapETH;
+
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: name,
             symbol: symbol,
@@ -204,7 +219,7 @@ abstract contract BaseTest is Test {
             isPremium: false,
             targetMcapETH: targetMcapETH
         });
-        (token, poolId) = factory.createLaunch{value: fee}(params);
+        (token, poolId) = factory.createLaunch{value: totalRequired}(params);
         key = _buildPoolKey(token);
     }
 
@@ -214,19 +229,40 @@ abstract contract BaseTest is Test {
             currency0: Currency.wrap(address(0)),
             currency1: Currency.wrap(token),
             fee: 0x800000,
-            tickSpacing: 200,
+            tickSpacing: 60,  // New system uses tickSpacing=60
             hooks: IHooks(address(hook))
         });
     }
 
-    /// @notice Activate a pool with public activation
-    function _activatePool(PoolKey memory key, uint256 ethAmount) internal {
-        factory.activatePool{value: ethAmount}(key);
-    }
-
     /// @notice Execute a buy swap (ETH → Token) through the test router
+    /// @dev After swap completes, auto-mints any pending positions (P2-P5)
     function _buy(PoolKey memory key, uint256 ethAmount) internal returns (BalanceDelta delta) {
         delta = router.buy{value: ethAmount}(key, ethAmount);
+        _autoMintPositions(key);
+    }
+
+    /// @notice Buy from a fresh unique wallet (never reused) to avoid maxWallet issues
+    /// @dev Creates a new address, funds it, buys, and stops prank. Perfect for volume simulation.
+    uint256 private _freshWalletNonce;
+    function _buyFromFreshWallet(PoolKey memory key, uint256 ethAmount) internal returns (BalanceDelta delta) {
+        _freshWalletNonce++;
+        address freshTrader = makeAddr(string(abi.encodePacked("fw", vm.toString(_freshWalletNonce))));
+        vm.deal(freshTrader, ethAmount + 0.01 ether); // extra for gas
+        vm.prank(freshTrader);
+        delta = router.buy{value: ethAmount}(key, ethAmount);
+        _autoMintPositions(key);
+    }
+
+    /// @notice Auto-mint any pending positions after a swap
+    /// @dev Checks hook's poolProgress.currentPosition and mints unminted positions
+    ///      Called after every swap to ensure positions are minted as the price progresses
+    function _autoMintPositions(PoolKey memory key) internal {
+        PoolId pid = key.toId();
+        (uint256 currentPos,,,) = hook.poolProgress(pid);
+        // positions 1..currentPos should be minted (factory index = position - 1)
+        for (uint256 i = 0; i < currentPos && i < 5; i++) {
+            try factory.mintNextPosition(pid, i) {} catch {}
+        }
     }
 
     /// @notice Execute a sell swap (Token → ETH) through the test router
@@ -247,25 +283,24 @@ abstract contract BaseTest is Test {
         return (intermediate * (1 << 96)) / uint256(sqrtPriceX96);
     }
 
-    /// @notice Create launch, activate, return ready-to-trade state
+    /// @notice Create launch — pool is already activated at creation
+    /// @dev activationETH parameter kept for backward compat but ignored (bootstrap is automatic)
     function _createAndActivate(
         uint256 targetMcapETH,
         address _beneficiary,
-        uint256 activationETH
+        uint256 /* activationETH */
     ) internal returns (address token, PoolId poolId, PoolKey memory key) {
         (token, poolId, key) = _createLaunch(targetMcapETH, _beneficiary);
-        _activatePool(key, activationETH);
     }
 
-    /// @notice Create launch with custom name, activate, return ready-to-trade state
+    /// @notice Create launch with custom name — pool is already activated at creation
     function _createAndActivateNamed(
         string memory name,
         string memory symbol,
         uint256 targetMcapETH,
         address _beneficiary,
-        uint256 activationETH
+        uint256 /* activationETH */
     ) internal returns (address token, PoolId poolId, PoolKey memory key) {
         (token, poolId, key) = _createLaunchNamed(name, symbol, targetMcapETH, _beneficiary);
-        _activatePool(key, activationETH);
     }
 }

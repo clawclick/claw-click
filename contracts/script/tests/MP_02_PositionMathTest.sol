@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
+import "forge-std/console2.sol";
 import "../../src/core/ClawclickFactory.sol";
 import "../../src/core/ClawclickConfig.sol";
 import "../../src/core/ClawclickHook_V4.sol";
@@ -63,11 +64,11 @@ contract MP_02_PositionMathTest is Test {
     function test_TokenAllocations() public view {
         console2.log("=== TOKEN ALLOCATION TEST ===");
         
-        uint256 p1Expected = (TOTAL_SUPPLY * 75000) / 10000;  // 75%
-        uint256 p2Expected = (TOTAL_SUPPLY * 18750) / 10000;  // 18.75%
-        uint256 p3Expected = (TOTAL_SUPPLY * 4688) / 10000;   // 4.688%
-        uint256 p4Expected = (TOTAL_SUPPLY * 1172) / 10000;   // 1.172%
-        uint256 p5Expected = (TOTAL_SUPPLY * 390) / 10000;    // 0.390%
+        uint256 p1Expected = (TOTAL_SUPPLY * 75000) / 100000;  // 75%
+        uint256 p2Expected = (TOTAL_SUPPLY * 18750) / 100000;  // 18.75%
+        uint256 p3Expected = (TOTAL_SUPPLY * 4688) / 100000;   // 4.688%
+        uint256 p4Expected = (TOTAL_SUPPLY * 1172) / 100000;   // 1.172%
+        uint256 p5Expected = (TOTAL_SUPPLY * 390) / 100000;    // 0.390%
         
         console2.log("Expected allocations:");
         console2.log("  P1:", p1Expected, "(75.00%)");

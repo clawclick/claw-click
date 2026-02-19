@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
+import "forge-std/console2.sol";
 import "../../src/core/ClawclickConfig.sol";
 
 /**
@@ -40,14 +41,14 @@ contract MP_01_ConfigTest is Test {
         uint256 total = p1 + p2 + p3 + p4 + p5;
         
         console2.log("Position Allocations:");
-        console2.log("  P1:", p1, "bps (", (p1 * 100) / config.BPS(), "%)");
-        console2.log("  P2:", p2, "bps (", (p2 * 100) / config.BPS(), "%)");
-        console2.log("  P3:", p3, "bps (", (p3 * 100) / config.BPS(), "%)");
-        console2.log("  P4:", p4, "bps (", (p4 * 100) / config.BPS(), "%)");
-        console2.log("  P5:", p5, "bps (", (p5 * 100) / config.BPS(), "%)");
+        console2.log("  P1:", p1, "bps");
+        console2.log("  P2:", p2, "bps");
+        console2.log("  P3:", p3, "bps");
+        console2.log("  P4:", p4, "bps");
+        console2.log("  P5:", p5, "bps");
         console2.log("  TOTAL:", total, "bps");
         
-        assertEq(total, config.BPS(), "Token allocations do not sum to 100%");
+        assertEq(total, 100000, "Token allocations do not sum to 100,000 bps");
         console2.log("[PASS] Token allocations sum to exactly 100%");
     }
     
@@ -61,7 +62,7 @@ contract MP_01_ConfigTest is Test {
         console2.log("[PASS] All individual allocations correct");
     }
     
-    /// @notice TEST 3: Verify geometric decay (each position ÷ 4)
+    /// @notice TEST 3: Verify geometric decay (each position  4)
     function test_GeometricDecay() public view {
         uint256 p1 = config.POSITION_1_ALLOCATION_BPS();
         uint256 p2 = config.POSITION_2_ALLOCATION_BPS();
@@ -71,17 +72,17 @@ contract MP_01_ConfigTest is Test {
         
         // P2 should be approximately P1 / 4
         uint256 expectedP2 = p1 / 4;
-        assertApproxEqRel(p2, expectedP2, 0.01e18, "P2 not ≈ P1/4");
+        assertApproxEqRel(p2, expectedP2, 0.01e18, "P2 not approx P1/4");
         
         // P3 should be approximately P2 / 4
         uint256 expectedP3 = p2 / 4;
-        assertApproxEqRel(p3, expectedP3, 0.01e18, "P3 not ≈ P2/4");
+        assertApproxEqRel(p3, expectedP3, 0.01e18, "P3 not approx P2/4");
         
         // P4 should be approximately P3 / 4
         uint256 expectedP4 = p3 / 4;
-        assertApproxEqRel(p4, expectedP4, 0.01e18, "P4 not ≈ P3/4");
+        assertApproxEqRel(p4, expectedP4, 0.01e18, "P4 not approx P3/4");
         
-        console2.log("[PASS] Geometric decay verified (each position ÷ 4)");
+        console2.log("[PASS] Geometric decay verified (each position  4)");
     }
     
     /*//////////////////////////////////////////////////////////////
@@ -196,3 +197,4 @@ contract MP_01_ConfigTest is Test {
         console2.log("==============================================");
     }
 }
+

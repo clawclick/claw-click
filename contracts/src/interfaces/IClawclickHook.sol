@@ -73,6 +73,11 @@ interface IClawclickHook {
         view
         returns (bool);
 
+    function poolProgress(PoolId poolId)
+        external
+        view
+        returns (uint256 currentPosition, uint256 currentEpoch, uint256 lastEpochMCAP, bool graduated);
+
     function isGraduatedByToken(address token)
         external
         view

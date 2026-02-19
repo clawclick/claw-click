@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
+import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {Currency} from "v4-core/src/types/Currency.sol";
 import {SwapParams} from "v4-core/src/types/PoolOperation.sol";
@@ -28,10 +29,13 @@ interface IERC20 {
 
 /**
  * @title SwapExecutor
- * @notice Test utility for executing swaps via PoolSwapTest contract
- * @dev Uses Uniswap v4's official test contract for Sepolia testing
+ * @notice Swap utility for executing swaps via PoolSwapTest contract
+ * @dev Position auto-mint is handled by the hook via modifyLiquiditiesWithoutUnlock.
+ *      No auto-mint logic needed in the executor.
  */
 contract SwapExecutor {
+    using PoolIdLibrary for PoolKey;
+
     address public constant POOL_SWAP_TEST = 0x9B6b46e2c869aa39918Db7f52f5557FE577B6eEe;
     IPoolSwapTest internal constant swapTest = IPoolSwapTest(POOL_SWAP_TEST);
     
@@ -44,9 +48,9 @@ contract SwapExecutor {
         require(msg.value == amountIn, "Bad ETH");
         
         SwapParams memory params = SwapParams({
-            zeroForOne: true,  // ETH (currency0) → Token (currency1)
-            amountSpecified: -int256(amountIn),  // Negative = exact input
-            sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1  // No price limit (allow full slippage)
+            zeroForOne: true,
+            amountSpecified: -int256(amountIn),
+            sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
         });
         
         IPoolSwapTest.TestSettings memory settings = IPoolSwapTest.TestSettings({
@@ -58,10 +62,8 @@ contract SwapExecutor {
             key,
             params,
             settings,
-            abi.encode(msg.sender)  // Pass trader address for maxWallet tracking
+            abi.encode(msg.sender)
         );
-        
-        // Tokens automatically sent to msg.sender by PoolSwapTest
     }
     
     /* ==================== SELL ==================== */
@@ -74,9 +76,9 @@ contract SwapExecutor {
         IERC20(token).approve(POOL_SWAP_TEST, amountIn);
         
         SwapParams memory params = SwapParams({
-            zeroForOne: false,  // Token (currency1) → ETH (currency0)
-            amountSpecified: -int256(amountIn),  // Negative = exact input
-            sqrtPriceLimitX96: TickMath.MAX_SQRT_PRICE - 1  // No price limit (allow full slippage)
+            zeroForOne: false,
+            amountSpecified: -int256(amountIn),
+            sqrtPriceLimitX96: TickMath.MAX_SQRT_PRICE - 1
         });
         
         IPoolSwapTest.TestSettings memory settings = IPoolSwapTest.TestSettings({
@@ -88,11 +90,9 @@ contract SwapExecutor {
             key,
             params,
             settings,
-            abi.encode(msg.sender)  // Pass trader address for maxWallet tracking
+            abi.encode(msg.sender)
         );
-        
-        // ETH automatically sent to msg.sender by PoolSwapTest
     }
-    
+
     receive() external payable {}
 }

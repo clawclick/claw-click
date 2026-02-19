@@ -324,6 +324,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < 5; i++) {
             tokenIdToPoolId[posTokenIds[i]] = poolId;
         }
+
         
         // 9. Store launch info
         LaunchInfo memory info = LaunchInfo({
@@ -467,13 +468,13 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256[5] memory tokenAllocations
     ) {
         // Token allocations (geometric decay: 75%, 18.75%, 4.6875%, 1.1719%, 0.3906%)
-        // Allocations sum to 100,000 (i.e. per 100k basis), so divide by BPS * 10
-        uint256 allocDenom = config.BPS() * 10; // 100,000
-        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / allocDenom;
-        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / allocDenom;
-        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / allocDenom;
-        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / allocDenom;
-        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / allocDenom;
+        // Uses EXTENDED_BPS (100000) for finer granularity
+        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / config.EXTENDED_BPS();
+
         
         // MCAP milestones (16x, 256x, 4096x, 65536x) with overflow protection
         uint256 multiplier = config.POSITION_MCAP_MULTIPLIER();
