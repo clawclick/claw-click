@@ -87,14 +87,13 @@ contract FullFlowLiveTest is Script {
         // ════════════════════════════════════════════════════════════
         console2.log("=== 2. CREATE LAUNCH (1 ETH MCAP = 50% tax) ===");
 
-        uint256 fee = factory.getFee(false);
-        (address token, PoolId poolId) = factory.createLaunch{value: fee}(
+        uint256 bootstrap = 0.001 ether;  // $2 bootstrap
+        (address token, PoolId poolId) = factory.createLaunch{value: bootstrap}(
             ClawclickFactory.CreateParams({
                 name: "Graduation Token",
                 symbol: "GRAD",
                 beneficiary: deployer,
                 agentWallet: deployer,
-                isPremium: false,
                 targetMcapETH: 1 ether
             })
         );
@@ -103,10 +102,9 @@ contract FullFlowLiveTest is Script {
         console2.log("");
 
         // ════════════════════════════════════════════════════════════
-        //  3. ACTIVATE POOL  (1 ETH, full-range liquidity)
+        //  3. POOL ACTIVATED  (automatically with bootstrap liquidity)
         // ════════════════════════════════════════════════════════════
-        console2.log("=== 3. ACTIVATE POOL (1 ETH) ===");
-        factory.activatePool{value: 1 ether}(key);
+        console2.log("=== 3. POOL ACTIVATED (bootstrap) ===");
         _logState(poolId, "Post-activation");
 
         // ════════════════════════════════════════════════════════════

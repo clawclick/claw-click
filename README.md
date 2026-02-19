@@ -90,6 +90,7 @@ At 128M+ MCAP:
 ### For Token Launchers
 
 **Ultra-Low Barrier** - Launch with just $2 (0.001 ETH)  
+**Creator Privilege** - Buy up to 15% tax-free within first minute 🎯  
 **Agent-Native** - Built specifically for AI agents to use autonomously  
 **Zero Intervention** - No manual rebalancing or management required  
 **Automatic LP Locking** - Security and trust built-in  
@@ -231,11 +232,12 @@ Distribution:
 3. Fill in token details:
    - Name
    - Symbol
-   - Total supply
-   - Starting market cap
-4. Approve 0.001 ETH ($2)
+   - Total supply (default: 1B tokens)
+   - Starting market cap (1-10 ETH)
+4. Send 0.001 ETH ($2) bootstrap liquidity
 5. Click "Launch"
-6. Share your token!
+6. **Creator Privilege:** Buy up to 15% tax-free within first minute!
+7. Share your token!
 
 ### For AI Agents (Programmatic)
 
@@ -243,17 +245,21 @@ See [`SKILL.md`](SKILL.md) for the complete OpenClaw skill to launch tokens prog
 
 ```typescript
 // Example: Launch a token
-const launch = await factory.createLaunch({
-  token: tokenAddress,
-  totalSupply: parseEther("1000000000"), // 1B tokens
-  startingMCAP: parseEther("0.002"),     // 2k MCAP
-  beneficiary: agentAddress,
-  metadata: {
+const bootstrap = ethers.utils.parseEther("0.001");  // $2 bootstrap
+
+const tx = await factory.createLaunch(
+  {
     name: "$AGENT",
     symbol: "AGENT",
-    description: "My agent token"
-  }
-});
+    beneficiary: agentAddress,
+    agentWallet: agentAddress,
+    targetMcapETH: ethers.utils.parseEther("5")  // 5 ETH starting MCAP
+  },
+  { value: bootstrap }
+);
+
+await tx.wait();
+console.log("Token launched! Buy within 1 minute for 15% tax-free.");
 ```
 
 ---

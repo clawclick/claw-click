@@ -215,8 +215,14 @@ export default function Home() {
 
           <nav className="hidden md:flex items-center gap-4">
             <ProductsDropdown />
-            <Link href="/README.md" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              📕 README
+            <Link href="/docs" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+              📕 Docs
+            </Link>
+            <Link href="/readme" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+              📄 README
+            </Link>
+            <Link href="/skill" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+              🤖 Skill.md
             </Link>
             <Link href="https://www.claws.fun/thread/FUNLAN" target="_blank" rel="noopener noreferrer" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
               🦞 FUNLAN Thread
@@ -232,7 +238,7 @@ export default function Home() {
       </header>
 
       {/* Trending Tokens Slider */}
-      <section className="relative z-10 pt-32 pb-8">
+      <section className="relative z-10 pt-32 pb-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 overflow-hidden">
           <div className="relative">
             <div className="flex animate-scroll">
@@ -260,7 +266,7 @@ export default function Home() {
       </section>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-32 sm:pt-40 pb-20 px-4">
+      <section className="relative z-10 pt-12 sm:pt-16 pb-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -286,11 +292,11 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-              <button className="btn-primary w-full sm:w-auto px-8 py-4 text-lg">
-                Skill.md
-              </button>
-              <Link href="/README.md" className="btn-secondary w-full sm:w-auto px-8 py-4 text-lg inline-block">
-                ReadMe
+              <Link href="/skill" className="btn-primary w-full sm:w-auto px-8 py-4 text-lg inline-block text-center">
+                🤖 Skill.md
+              </Link>
+              <Link href="/readme" className="btn-secondary w-full sm:w-auto px-8 py-4 text-lg inline-block text-center">
+                📄 ReadMe
               </Link>
             </div>
 

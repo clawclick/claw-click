@@ -69,10 +69,6 @@ contract ClawclickConfig is Ownable {
     /// @notice Paused state
     bool public paused;
     
-    /// @notice Base tax rate for all launches (50% = 5000 bps)
-    /// @dev Fixed rate, decays via epoch system in Hook
-    uint256 public constant BASE_TAX_BPS = 5000;
-
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
     //////////////////////////////////////////////////////////////*/
@@ -150,9 +146,50 @@ contract ClawclickConfig is Ownable {
         return !paused;
     }
     
-    /// @notice Get starting tax (fixed 50% for all launches)
-    /// @dev Tax decays via epoch system in Hook: 50% → 25% → 12.5% → 6.25%
-    function getStartingTax(uint256) external pure returns (uint256) {
-        return BASE_TAX_BPS;
+    /// @notice Get starting tax based on starting MCAP
+    /// @dev Tax scales with MCAP to prevent abuse at low caps while being fair at higher caps
+    ///      1 ETH = 50%, 2 ETH = 45%, 3 ETH = 40%, ..., 10 ETH = 5%
+    ///      Tax decays via epoch system in Hook (halves each doubling)
+    /// @param startMcap Starting MCAP in wei (1-10 ETH)
+    /// @return tax Starting tax in basis points
+    function getStartingTax(uint256 startMcap) external pure returns (uint256 tax) {
+        // Convert to ETH for cleaner logic
+        uint256 mcapInETH = startMcap / 1 ether;
+        
+        // Tax formula: 55% - (5% * mcapInETH)
+        // 1 ETH: 55 - 5 = 50%
+        // 2 ETH: 55 - 10 = 45%
+        // 3 ETH: 55 - 15 = 40%
+        // ...
+        // 10 ETH: 55 - 50 = 5%
+        
+        if (mcapInETH >= 10) {
+            return 500;  // 5% minimum
+        }
+        
+        // Calculate: (55 - (5 * mcapInETH)) * 100 to get basis points
+        tax = (5500 - (500 * mcapInETH));
+        
+        return tax;
+    }
+    
+    /// @notice Get starting limit based on starting MCAP
+    /// @dev Limits scale with MCAP: 1 ETH = 0.1%, 2 ETH = 0.2%, ..., 10 ETH = 1.0%
+    /// @param startMcap Starting MCAP in wei (1-10 ETH)
+    /// @return limitBps Starting limit in basis points
+    function getStartingLimit(uint256 startMcap) external pure returns (uint256 limitBps) {
+        // Limit = 0.1% per ETH of starting MCAP
+        // 1 ETH = 10 bps (0.1%)
+        // 2 ETH = 20 bps (0.2%)
+        // 10 ETH = 100 bps (1.0%)
+        uint256 mcapInETH = startMcap / 1 ether;
+        limitBps = mcapInETH * 10;  // 10 bps per ETH
+        
+        // Minimum 0.1% (10 bps)
+        if (limitBps < 10) {
+            limitBps = 10;
+        }
+        
+        return limitBps;
     }
 }

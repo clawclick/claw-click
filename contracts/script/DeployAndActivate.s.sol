@@ -7,6 +7,7 @@ import "../src/core/ClawclickHook_V4.sol";
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickToken.sol";
 import "../src/utils/HookMiner.sol";
+import "../src/utils/BootstrapETH.sol";
 import "../test/TestSwapRouter.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
@@ -72,38 +73,34 @@ contract DeployAndActivate is Script {
         );
         require(address(hook) == predicted, "Hook addr mismatch");
 
-        // 3. Factory
+        // 3. Factory (no BootstrapETH for testing)
         ClawclickFactory factory = new ClawclickFactory(
-            config, IPoolManager(POOL_MANAGER), hook,
-            POSITION_MANAGER, deployer
+            config, 
+            IPoolManager(POOL_MANAGER), 
+            hook,
+            IPositionManager(POSITION_MANAGER), 
+            BootstrapETH(payable(address(0))),  // No bootstrap for testing
+            deployer  // owner
         );
         config.setFactory(address(factory));
 
         // 4. Router
         TestSwapRouter router = new TestSwapRouter(IPoolManager(POOL_MANAGER));
 
-        // 5. Create launch (1 ETH target MCAP, 0.01 ETH activation — beforeSwap reposition)
-        uint256 fee = factory.getFee(false);
-        (address token, PoolId poolId) = factory.createLaunch{value: fee}(
+        // 5. Create launch (1 ETH target MCAP, 0.001 ETH bootstrap)
+        uint256 bootstrap = 0.001 ether;
+        (address token, PoolId poolId) = factory.createLaunch{value: bootstrap}(
             ClawclickFactory.CreateParams({
                 name: "GradTestRepos",
                 symbol: "GRADR",
                 beneficiary: deployer,
                 agentWallet: deployer,
-                isPremium: false,
                 targetMcapETH: 1 ether
             })
         );
 
-        // 6. Activate pool with 1 ETH (proper liquidity for wide LP range)
-        PoolKey memory key = PoolKey({
-            currency0: Currency.wrap(address(0)),
-            currency1: Currency.wrap(token),
-            fee: 0x800000,
-            tickSpacing: 200,
-            hooks: IHooks(address(hook))
-        });
-        factory.activatePool{value: 1 ether}(key);
+        // 6. Pool is automatically activated with bootstrap liquidity
+        // No manual activation needed in new system
 
         vm.stopBroadcast();
 

@@ -21,6 +21,7 @@ interface IClawclickFactory {
         uint256 createdBlock;
         string name;
         string symbol;
+        bool isPremium;
     }
 
     struct CreateParams {
@@ -28,6 +29,7 @@ interface IClawclickFactory {
         string symbol;
         address beneficiary;
         address agentWallet;
+        bool isPremium;
         uint256 targetMcapETH;
     }
 
@@ -74,6 +76,12 @@ interface IClawclickFactory {
 
     function totalLaunches() external view returns (uint256);
 
+    function premiumFee() external view returns (uint256);
+
+    function microFee() external view returns (uint256);
+
+    function getFee(bool isPremium) external view returns (uint256);
+
     function previewSqrtPrice(uint256 targetMcapETH)
         external
         pure
@@ -83,7 +91,7 @@ interface IClawclickFactory {
                             ADMIN
     //////////////////////////////////////////////////////////////*/
 
-    function clearDevOverride(PoolId poolId) external;
+    function setFees(uint256 _premiumFee, uint256 _microFee) external;
 
     /*//////////////////////////////////////////////////////////////
                             IMMUTABLES

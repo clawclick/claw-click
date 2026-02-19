@@ -178,25 +178,22 @@ abstract contract BaseTest is Test {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Create a launch (pool activated at launch with bootstrap ETH)
-    /// @dev New system: createLaunch requires fee + bootstrap ETH together.
-    ///      We send 0.1 ETH bootstrap for deeper initial liquidity (factory uses all excess above fee).
+    /// @dev New system: createLaunch requires bootstrap ETH (minimum 0.001 ETH).
+    ///      We send 0.1 ETH bootstrap for deeper initial liquidity.
     function _createLaunch(
         uint256 targetMcapETH,
         address _beneficiary
     ) internal returns (address token, PoolId poolId, PoolKey memory key) {
-        uint256 fee = factory.getFee(false);
         uint256 bootstrapETH = 0.1 ether;  // Deeper liquidity to avoid maxWallet issues
-        uint256 totalRequired = fee + bootstrapETH;
 
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test Token",
             symbol: "TEST",
             beneficiary: _beneficiary,
             agentWallet: _beneficiary,
-            isPremium: false,
             targetMcapETH: targetMcapETH
         });
-        (token, poolId) = factory.createLaunch{value: totalRequired}(params);
+        (token, poolId) = factory.createLaunch{value: bootstrapETH}(params);
         key = _buildPoolKey(token);
     }
 
@@ -207,19 +204,16 @@ abstract contract BaseTest is Test {
         uint256 targetMcapETH,
         address _beneficiary
     ) internal returns (address token, PoolId poolId, PoolKey memory key) {
-        uint256 fee = factory.getFee(false);
         uint256 bootstrapETH = 0.1 ether;  // Deeper liquidity to avoid maxWallet issues
-        uint256 totalRequired = fee + bootstrapETH;
 
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: name,
             symbol: symbol,
             beneficiary: _beneficiary,
             agentWallet: _beneficiary,
-            isPremium: false,
             targetMcapETH: targetMcapETH
         });
-        (token, poolId) = factory.createLaunch{value: totalRequired}(params);
+        (token, poolId) = factory.createLaunch{value: bootstrapETH}(params);
         key = _buildPoolKey(token);
     }
 

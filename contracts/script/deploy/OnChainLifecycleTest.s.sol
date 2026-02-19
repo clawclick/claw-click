@@ -52,8 +52,8 @@ contract OnChainLifecycleTest is Script {
         vm.startBroadcast();
         
         // Get launch fee
-        uint256 launchFee = factory.getFee(false);  // non-premium
-        console2.log("Launch fee:", launchFee);
+        uint256 bootstrap = 0.001 ether;  // $2 bootstrap
+        console2.log("Bootstrap:", bootstrap);
         
         // Create launch params
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
@@ -61,12 +61,11 @@ contract OnChainLifecycleTest is Script {
             symbol: "TTA",
             beneficiary: msg.sender,
             agentWallet: address(0),
-            isPremium: false,
             targetMcapETH: 1 ether  // 1 ETH = 2k MCAP @ $2000/ETH
         });
         
         // Launch token
-        (address token, ) = factory.createLaunch{value: launchFee}(params);
+        (address token, ) = factory.createLaunch{value: bootstrap}(params);
         
         console2.log("Token launched:", token);
         console2.log("Target MCAP: 1 ETH (2k @ $2000/ETH)");
@@ -84,7 +83,6 @@ contract OnChainLifecycleTest is Script {
         console2.log("Created Block:", info.createdBlock);
         console2.log("Name:", info.name);
         console2.log("Symbol:", info.symbol);
-        console2.log("Is Premium:", info.isPremium);
         console2.log("");
         
         // Step 4: Check pool activation

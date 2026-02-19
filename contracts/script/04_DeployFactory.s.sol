@@ -5,6 +5,7 @@ import "forge-std/Script.sol";
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickHook_V4.sol";
 import "../src/core/ClawclickConfig.sol";
+import "../src/utils/BootstrapETH.sol";
 import "v4-core/src/interfaces/IPoolManager.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
 
@@ -22,12 +23,16 @@ contract DeployFactory is Script {
 
         vm.startBroadcast(pk);
 
+        // Note: BootstrapETH address should be set via environment variable if available
+        address payable bootstrapETHAddr = payable(vm.envOr("BOOTSTRAP_ETH", address(0)));
+        
         ClawclickFactory factory = new ClawclickFactory(
             ClawclickConfig(configAddr),
             IPoolManager(poolManager),
             ClawclickHook(hookAddr),
-            positionManager,
-            vm.addr(pk)
+            IPositionManager(positionManager),
+            BootstrapETH(bootstrapETHAddr),
+            vm.addr(pk)  // owner
         );
 
         // Wire factory into config

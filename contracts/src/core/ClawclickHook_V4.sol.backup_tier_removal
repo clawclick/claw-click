@@ -477,19 +477,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         
         if (launch.token == address(0)) revert LaunchNotFound();
         
-        // ✅ CREATOR FIRST-BUY: Check if creator is buying within 1 minute window
-        // This allows creator to buy up to 15% of supply tax-free in first minute
-        IClawclickFactory factory = IClawclickFactory(config.factory());
-        IClawclickFactory.LaunchInfo memory launchInfo = factory.getLaunchByPoolId(poolId);
-        
-        bool isCreatorFirstBuy = (
-            tx.origin == launchInfo.creator &&  // Must be creator wallet
-            block.timestamp < launchInfo.createdAt + 1 minutes &&  // Within 1 minute
-            params.zeroForOne  // Must be a buy (ETH -> Token)
-        );
-        
-        // If creator first-buy window active, bypass restrictions
-        if (isCreatorFirstBuy || activationInProgress[poolId]) {
+        // ✅ DEV OVERRIDE: Bypass all restrictions during dev seed buy
+        if (activationInProgress[poolId]) {
             return (BaseHook.beforeSwap.selector, toBeforeSwapDelta(0, 0), 0);
         }
         

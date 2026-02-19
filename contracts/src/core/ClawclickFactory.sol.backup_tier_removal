@@ -92,6 +92,12 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /// @notice Bootstrap funding contract (provides free first launches)
     BootstrapETH public immutable bootstrapETH;
     
+    /// @notice Premium tier fee (serious launches)
+    uint256 public premiumFee;
+    
+    /// @notice Micro tier fee (experiments)
+    uint256 public microFee;
+    
     /// @notice Total launches created
     uint256 public totalLaunches;
     
@@ -143,6 +149,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 createdBlock;
         string name;
         string symbol;
+        bool isPremium;
     }
     
     struct CreateParams {
@@ -150,7 +157,8 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         string symbol;
         address beneficiary;
         address agentWallet;
-        uint256 targetMcapETH;    // 1-10 ETH target
+        bool isPremium;
+        uint256 targetMcapETH;    // NEW: 1-10 ETH target
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -165,9 +173,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 targetMcapETH,
         uint160 sqrtPriceX96,
         string name,
-        string symbol
+        string symbol,
+        bool isPremium
     );
     
+    event FeesUpdated(uint256 premiumFee, uint256 microFee);
     event LaunchFeePaid(address indexed user, uint256 amount);
     event FreeBootstrapUsed(address indexed creator, uint256 amount);
     event LiquidityAdded(address indexed token, PoolId indexed poolId, uint256 tokenAmount, uint256 liquidityMinted);
@@ -180,7 +190,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
                                 ERRORS
     //////////////////////////////////////////////////////////////*/
     
-    error InsufficientBootstrap();
+    error InsufficientFee();
     error InvalidParams();
     error ProtocolPaused();
     error NameTooLong();
@@ -211,6 +221,10 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         hook = _hook;
         positionManager = _positionManager;
         bootstrapETH = _bootstrapETH;
+        
+        // Default fees
+        premiumFee = 0.001 ether;  // ~$2.30
+        microFee = 0.0003 ether;   // ~$0.70
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -247,25 +261,33 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // Check protocol state
         if (config.paused()) revert ProtocolPaused();
         
-        // Validate bootstrap requirement
+        // Validate fee + bootstrap requirement
+        uint256 requiredFee = params.isPremium ? premiumFee : microFee;
         uint256 minBootstrap = config.MIN_BOOTSTRAP_ETH();
+        uint256 totalRequired = requiredFee + minBootstrap;
+        
         uint256 bootstrapAmount;
         
         // Check if user sent enough ETH
-        if (msg.value >= minBootstrap) {
-            // User provided bootstrap directly
-            bootstrapAmount = msg.value;
-        } else {
-            // Try free bootstrap from BootstrapETH contract
+        if (msg.value >= totalRequired) {
+            // User paid in full - use their ETH for bootstrap
+            bootstrapAmount = msg.value - requiredFee;
+            emit LaunchFeePaid(msg.sender, requiredFee);
+        } else if (msg.value >= requiredFee) {
+            // User paid fee but not bootstrap - try free bootstrap
             if (address(bootstrapETH) != address(0) && bootstrapETH.isEligible(msg.sender)) {
                 // Request bootstrap from contract
                 bool success = bootstrapETH.requestBootstrap(msg.sender, minBootstrap);
                 require(success, "Bootstrap request failed");
                 bootstrapAmount = minBootstrap;
+                emit LaunchFeePaid(msg.sender, requiredFee);
                 emit FreeBootstrapUsed(msg.sender, minBootstrap);
             } else {
-                revert InsufficientBootstrap();
+                revert InsufficientFee();
             }
+        } else {
+            // Insufficient funds even for fee
+            revert InsufficientFee();
         }
         
         // Validate params
@@ -353,13 +375,18 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             createdAt: block.timestamp,
             createdBlock: block.number,
             name: params.name,
-            symbol: params.symbol
+            symbol: params.symbol,
+            isPremium: params.isPremium
         });
         
         launchByToken[token] = info;
         launchByPoolId[poolId] = info;
         allTokens.push(token);
         totalLaunches++;
+        
+        // 10. Send launch fee to treasury
+        (bool success,) = config.treasury().call{value: requiredFee}("");
+        if (!success) revert FeeTransferFailed();
         
         emit LiquidityAdded(token, poolId, allocations[0], posTokenIds[0]);
         
@@ -371,7 +398,8 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             params.targetMcapETH,
             sqrtPriceX96,
             params.name,
-            params.symbol
+            params.symbol,
+            params.isPremium
         );
         
         return (token, poolId);
@@ -799,34 +827,31 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
     
     /*//////////////////////////////////////////////////////////////
-                         CREATOR FIRST-BUY PRIVILEGE
+                         DEPRECATED (OLD SYSTEM)
     //////////////////////////////////////////////////////////////*/
     
     /**
-     * @notice Clear dev activation override - allows creator to buy up to 15% in first minute
-     * @dev Creator wallet can make ONE first buy within 1 minute of launch for up to 15% supply
-     * @param poolId Pool ID to clear override for
+     * @notice DEPRECATED - Pools are now activated at launch with bootstrap ETH
+     * @dev Kept for interface compatibility but reverts
      */
-    function clearDevOverride(PoolId poolId) external {
-        LaunchInfo storage info = launchByPoolId[poolId];
-        
-        // Must be a valid launch
-        require(info.token != address(0), "Launch not found");
-        
-        // Only creator or factory owner can call
-        require(
-            msg.sender == info.creator || msg.sender == owner(),
-            "Only creator or owner"
-        );
-        
-        // Check if 1 minute has passed since launch
-        require(
-            block.timestamp >= info.createdAt + 1 minutes,
-            "First-buy window still active"
-        );
-        
-        // Clear the override flag
-        ClawclickHook(hook).setActivationInProgress(poolId, false);
+    function activatePool(PoolKey calldata) external payable {
+        revert("Pools activated at launch");
+    }
+    
+    /**
+     * @notice DEPRECATED - Dev activation no longer needed
+     * @dev Kept for interface compatibility but reverts
+     */
+    function activateAndSwapDev(PoolKey calldata) external payable {
+        revert("Use regular launch flow");
+    }
+    
+    /**
+     * @notice DEPRECATED - No dev override in new system
+     * @dev Kept for interface compatibility but reverts
+     */
+    function clearDevOverride(PoolKey calldata) external {
+        revert("No dev override in new system");
     }
     
     /**
@@ -842,6 +867,16 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         return devBalance <= maxDevTokens;
     }
     
+    /*//////////////////////////////////////////////////////////////
+                            ADMIN FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+    
+    function setFees(uint256 _premiumFee, uint256 _microFee) external onlyOwner {
+        premiumFee = _premiumFee;
+        microFee = _microFee;
+        emit FeesUpdated(_premiumFee, _microFee);
+    }
+
     /*//////////////////////////////////////////////////////////////
                             VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
@@ -877,6 +912,10 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     
     function getTokenAtIndex(uint256 index) external view returns (address) {
         return allTokens[index];
+    }
+    
+    function getFee(bool isPremium) external view returns (uint256) {
+        return isPremium ? premiumFee : microFee;
     }
     
     /**
@@ -978,4 +1017,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             ClawclickToken(info.token).transfer(config.treasury(), tokenGained);
         }
     }
+
+    receive() external payable {}
 }

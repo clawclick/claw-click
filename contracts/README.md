@@ -62,8 +62,10 @@ This document provides a detailed overview of each contract in the Claw.Click sy
 
 #### Bootstrap Requirements
 ```solidity
-uint256 public constant MIN_BOOTSTRAP_ETH = 0.001 ether;  // $2 minimum launch
+uint256 public constant MIN_BOOTSTRAP_ETH = 0.001 ether;  // $2 minimum launch (flat rate for all)
 ```
+
+**Note:** Old tier system (Micro/Premium) removed. All launches now require flat $2 bootstrap.
 
 #### Position System
 ```solidity

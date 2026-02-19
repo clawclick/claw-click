@@ -7,6 +7,7 @@ import "../src/core/ClawclickHook_V4.sol";
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickToken.sol";
 import "../src/utils/HookMiner.sol";
+import "../src/utils/BootstrapETH.sol";
 import "../test/TestSwapRouter.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
@@ -80,8 +81,9 @@ contract LiveTest is Script {
             config,
             IPoolManager(POOL_MANAGER),
             hook,
-            POSITION_MANAGER,
-            deployer
+            IPositionManager(POSITION_MANAGER),
+            BootstrapETH(payable(address(0))),  // No bootstrap for testing
+            deployer  // owner
         );
         config.setFactory(address(factory));
         console2.log("[3] Factory    :", address(factory));
@@ -98,17 +100,16 @@ contract LiveTest is Script {
 
         console2.log("--- Phase 2: Create Launch (1 ETH MCAP) ---");
 
-        uint256 fee = factory.getFee(false);
+        uint256 bootstrap = 0.001 ether;  // $2 bootstrap
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name:          "DeepSea Test",
             symbol:        "DST",
             beneficiary:   deployer,
             agentWallet:   deployer,
-            isPremium:     false,
             targetMcapETH: 1 ether
         });
 
-        (address token, PoolId poolId) = factory.createLaunch{value: fee}(params);
+        (address token, PoolId poolId) = factory.createLaunch{value: bootstrap}(params);
         PoolKey memory key = _buildPoolKey(token);
 
         console2.log("[5] Token      :", token);
@@ -124,9 +125,9 @@ contract LiveTest is Script {
         // PHASE 3  —  ACTIVATE POOL
         // ═══════════════════════════════════════════════════════
 
-        console2.log("--- Phase 3: Activate Pool (0.5 ETH) ---");
+        console2.log("--- Phase 3: Pool Activated (bootstrap) ---");
 
-        factory.activatePool{value: 0.5 ether}(key);
+        // Pool automatically activated with bootstrap liquidity
 
         activated = factory.poolActivated(poolId);
         console2.log("[6] Activated? :", activated);
@@ -263,17 +264,16 @@ contract LiveTest is Script {
             symbol:        "CLAW",
             beneficiary:   deployer,
             agentWallet:   deployer,
-            isPremium:     false,
             targetMcapETH: 5 ether
         });
 
-        (address token2, PoolId poolId2) = factory.createLaunch{value: fee}(params2);
+        uint256 bootstrap2 = 0.005 ether;  // $10 bootstrap for 5 ETH MCAP
+        (address token2, PoolId poolId2) = factory.createLaunch{value: bootstrap2}(params2);
         PoolKey memory key2 = _buildPoolKey(token2);
 
         console2.log("[13] Token2    :", token2);
 
-        // Activate
-        factory.activatePool{value: 0.25 ether}(key2);
+        // Pool automatically activated
         console2.log("[14] Activated :", factory.poolActivated(poolId2));
 
         // Buy

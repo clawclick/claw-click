@@ -30,7 +30,7 @@ contract SimpleLaunch is Script {
             symbol: "TTA",
             beneficiary: msg.sender,
             agentWallet: address(0),
-            isPremium: false,
+
             targetMcapETH: 1 ether
         });
         

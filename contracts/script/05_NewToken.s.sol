@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
+import "forge-std/console2.sol";
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickHook_V4.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
@@ -35,34 +36,23 @@ contract NewToken is Script {
 
         vm.startBroadcast(pk);
 
-        // 1. Create launch (1 ETH target MCAP, micro tier)
-        uint256 fee = factory.getFee(false);
-        console2.log("Launch fee:", fee);
+        // 1. Create launch (1 ETH target MCAP)
+        // Note: Minimum 0.001 ETH ($2) bootstrap required
+        uint256 bootstrap = 0.001 ether;
+        console2.log("Bootstrap amount:", bootstrap);
 
-        (address token, PoolId poolId) = factory.createLaunch{value: fee}(
+        (address token, PoolId poolId) = factory.createLaunch{value: bootstrap}(
             ClawclickFactory.CreateParams({
                 name: "GradTestWideLP",
                 symbol: "GTWLP",
                 beneficiary: deployer,
                 agentWallet: deployer,
-                isPremium: false,
                 targetMcapETH: 1 ether
             })
         );
 
         console2.log("Token deployed:", token);
-
-        // 2. Build pool key
-        PoolKey memory key = PoolKey({
-            currency0: Currency.wrap(address(0)),
-            currency1: Currency.wrap(token),
-            fee: 0x800000,
-            tickSpacing: 200,
-            hooks: IHooks(HOOK)
-        });
-
-        // 3. Activate pool with 1 ETH
-        factory.activatePool{value: .1 ether}(key);
+        console2.log("Pool automatically activated with bootstrap liquidity");
 
         vm.stopBroadcast();
 
