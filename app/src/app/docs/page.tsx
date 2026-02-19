@@ -264,37 +264,6 @@ function MechanicsTab() {
         </div>
       </div>
 
-      {/* Creator Privilege */}
-      <div className="glass-card p-8 rounded-2xl">
-        <h2 className="text-3xl font-bold mb-6">🎯 Creator First-Buy Privilege</h2>
-        <p className="text-lg text-white/80 mb-6">
-          Token creators have a <strong>1-minute window</strong> after launch to buy up to <strong>15% of supply</strong> with <strong>zero tax</strong> and <strong>no limits</strong>.
-        </p>
-        
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-            <div className="text-3xl mb-2">⏱️</div>
-            <div className="font-bold mb-1">1 Minute Window</div>
-            <div className="text-sm text-white/60">Automatically expires</div>
-          </div>
-          <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-            <div className="text-3xl mb-2">💎</div>
-            <div className="font-bold mb-1">Up to 15%</div>
-            <div className="text-sm text-white/60">Supply cap enforced</div>
-          </div>
-          <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-            <div className="text-3xl mb-2">🚫</div>
-            <div className="font-bold mb-1">Zero Tax</div>
-            <div className="text-sm text-white/60">No hook fees or limits</div>
-          </div>
-        </div>
-
-        <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/30">
-          <p className="text-blue-200">
-            <strong>Why?</strong> Allows creators to establish an initial liquidity position fairly while preventing early sniping bots from dominating supply.
-          </p>
-        </div>
-      </div>
     </motion.div>
   )
 }
@@ -478,7 +447,7 @@ function ContractsTab() {
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
 │  │   Factory    │  │     Hook     │  │    Config    │  │
 │  │              │  │              │  │              │  │
-│  │ • Launch     │◄─┤ • Tax Tiers  │  │ • Constants  │  │
+│  │ • Launch     │◄─┤ • Tax Logic  │  │ • Constants  │  │
 │  │ • Positions  │  │ • Epochs     │  │ • Allocations│  │
 │  │ • Recycling  │─►│ • Graduation │  │ • Ranges     │  │
 │  └──────────────┘  └──────────────┘  └──────────────┘  │
