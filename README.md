@@ -41,7 +41,7 @@ Position 5: 128M → ∞ MCAP   (0.39% tokens)  [Mints at P4 Epoch 2]
 
 ### Launch Flow Example (2k Starting MCAP)
 
-#### Phase 1: Launch 🎬
+#### Phase 1: Launch
 ```
 User provides: $2 bootstrap (0.001 ETH)
 System mints: Position 1 only (75% of tokens)
@@ -49,7 +49,7 @@ Range: 2k → 32k MCAP
 Status: Pool immediately tradeable
 ```
 
-#### Phase 2: P1 Trading (Hook Tax Active) 💸
+#### Phase 2: P1 Trading (Hook Tax Active)
 ```
 Epoch 1 (2k→4k):   50% hook tax
 Epoch 2 (4k→8k):   25% tax → P2 MINTS automatically
@@ -57,16 +57,16 @@ Epoch 3 (8k→16k):  12.5% tax → P3 MINTS automatically
 Epoch 4 (16k→32k): 6.25% tax
 ```
 
-#### Phase 3: Graduation 🎓
+#### Phase 3: Graduation
 ```
 At 32k MCAP:
-✓ Hook tax DISABLED
-✓ LP fee (1%) ENABLED
-✓ Buy/sell limits REMOVED
-✓ Smooth transition to P2 (5% overlap)
+- Hook tax DISABLED
+- LP fee (1%) ENABLED
+- Buy/sell limits REMOVED
+- Smooth transition to P2 (5% overlap)
 ```
 
-#### Phase 4: Continued Growth 📈
+#### Phase 4: Continued Growth
 ```
 P2 Epoch 1: P1 RETIRES → ETH recycled into future positions
 P2 Epoch 2: P4 MINTS using recycled ETH
@@ -74,13 +74,13 @@ P3 Epoch 1: P2 RETIRES → More ETH recycled
 Pattern continues...
 ```
 
-#### Phase 5: Final State 🌟
+#### Phase 5: Final State
 ```
 At 128M+ MCAP:
-✓ P5 active (0.39% tokens, 64M→∞ range)
-✓ P4 active as support (1.17% tokens)
-✓ P1, P2, P3 retired and capital recycled
-✓ Pure AMM with 1% LP fee only
+- P5 active (0.39% tokens, 64M→∞ range)
+- P4 active as support (1.17% tokens)
+- P1, P2, P3 retired and capital recycled
+- Pure AMM with 1% LP fee only
 ```
 
 ---
@@ -89,27 +89,27 @@ At 128M+ MCAP:
 
 ### For Token Launchers
 
-🎯 **Ultra-Low Barrier** - Launch with just $2 (0.001 ETH)  
-🤖 **Agent-Native** - Built specifically for AI agents to use autonomously  
-⚡ **Zero Intervention** - No manual rebalancing or management required  
-🔒 **Automatic LP Locking** - Security and trust built-in  
-💰 **Fee Earnings** - Agents earn from their token's trading activity  
+**Ultra-Low Barrier** - Launch with just $2 (0.001 ETH)  
+**Agent-Native** - Built specifically for AI agents to use autonomously  
+**Zero Intervention** - No manual rebalancing or management required  
+**Automatic LP Locking** - Security and trust built-in  
+**Fee Earnings** - Agents earn from their token's trading activity  
 
 ### For Traders
 
-📊 **Smooth Price Discovery** - 5% overlap prevents liquidity gaps  
-💎 **Capital Efficient** - Always concentrated at current price  
-🛡️ **Protected Launch Phase** - Hook tax prevents sniping  
-🚀 **Graduated Trading** - Full DEX mode after graduation  
-🔍 **Transparent** - All mechanics on-chain and verifiable  
+**Smooth Price Discovery** - 5% overlap prevents liquidity gaps  
+**Capital Efficient** - Always concentrated at current price  
+**Protected Launch Phase** - Hook tax prevents sniping  
+**Graduated Trading** - Full DEX mode after graduation  
+**Transparent** - All mechanics on-chain and verifiable  
 
 ### For the Protocol
 
-🏗️ **Custom Contracts** - 2.5x more fees than framework-based launchpads  
-⚙️ **Uniswap V4 Powered** - Leverages advanced hook system  
-🔐 **Battle-Tested Security** - Reentrancy protection, access controls  
-📉 **Gas Optimized** - 11% lifecycle gas savings vs alternatives  
-🌐 **Multi-Chain Ready** - Designed for cross-chain expansion  
+**Custom Contracts** - 2.5x more fees than framework-based launchpads  
+**Uniswap V4 Powered** - Leverages advanced hook system  
+**Battle-Tested Security** - Reentrancy protection, access controls  
+**Gas Optimized** - 11% lifecycle gas savings vs alternatives  
+**Multi-Chain Ready** - Designed for cross-chain expansion  
 
 ---
 
@@ -126,11 +126,11 @@ Traditional launchpads either use:
 
 By using **5 pre-calculated positions** with **lazy minting** and **capital recycling**, we achieve:
 
-✅ **Capital efficiency** of concentrated liquidity  
-✅ **Zero intervention** of autonomous systems  
-✅ **Smooth transitions** of overlapping ranges  
-✅ **Cost savings** of lazy minting (no wasted gas on failed tokens)  
-✅ **Long-term scalability** from launch to billions in MCAP  
+- **Capital efficiency** of concentrated liquidity  
+- **Zero intervention** of autonomous systems  
+- **Smooth transitions** of overlapping ranges  
+- **Cost savings** of lazy minting (no wasted gas on failed tokens)  
+- **Long-term scalability** from launch to billions in MCAP  
 
 ---
 
@@ -194,8 +194,8 @@ Hook Tax (Buys Only):
 - Epoch 4: 6.25%
 
 Distribution:
-- 80% to token creator (beneficiary)
-- 20% to platform
+- 70% to token creator (beneficiary)
+- 30% to platform
 ```
 
 #### Graduated Phase (Post-32k MCAP)

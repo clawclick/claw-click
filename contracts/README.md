@@ -92,8 +92,8 @@ uint256 public constant TAX_TIER_4_BPS = 625;   // 6.25% (Epoch 4)
 
 #### Fee Distribution
 ```solidity
-uint256 public constant PLATFORM_FEE_BPS = 2000;      // 20% of hook tax to platform
-uint256 public constant BENEFICIARY_FEE_BPS = 8000;   // 80% to token creator
+uint256 public constant PLATFORM_FEE_BPS = 3000;      // 30% of hook tax to platform
+uint256 public constant BENEFICIARY_FEE_BPS = 7000;   // 70% to token creator
 uint256 public constant GRADUATED_LP_FEE_BPS = 100;   // 1% LP fee after graduation
 ```
 
@@ -433,9 +433,9 @@ uint256 taxRate = _getCurrentTaxRate(progress.currentEpoch);
 if (params.zeroForOne) {  // ETH → Token (buy)
     uint256 feeAmount = (inputAmount * taxRate) / 10000;
     
-    // Distribute: 80% beneficiary, 20% platform
-    beneficiaryFeesETH[launch.beneficiary] += feeAmount * 8000 / 10000;
-    platformFeesETH += feeAmount * 2000 / 10000;
+    // Distribute: 70% beneficiary, 30% platform
+    beneficiaryFeesETH[launch.beneficiary] += feeAmount * 7000 / 10000;
+    platformFeesETH += feeAmount * 3000 / 10000;
     
     // Return delta to extract fee from swap
     delta = toBeforeSwapDelta(int128(uint128(feeAmount)), 0);
