@@ -17,6 +17,7 @@ import {ModifyLiquidityParams, SwapParams} from "v4-core/src/types/PoolOperation
 
 import {ClawclickConfig} from "./ClawclickConfig.sol";
 import {IClawclickFactory} from "../interfaces/IClawclickFactory.sol";
+import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
 // Hook-managed LP (modifyLiquidity) removed — NFT LP is managed via the factory
 
 /**
@@ -249,6 +250,17 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     
     /// @notice Whether the pending fee is in ETH (true) or token (false)
     mapping(PoolId => bool) private _pendingFeeIsETH;
+    
+    /// @notice Position and epoch tracking per pool
+    struct PoolProgress {
+        uint256 currentPosition;      // 1-5 (position index)
+        uint256 currentEpoch;          // 1-4 within position
+        uint256 lastEpochMCAP;         // MCAP at last epoch boundary
+        bool graduated;                // End of P1 epoch 4
+    }
+    
+    /// @notice Pool progress tracking
+    mapping(PoolId => PoolProgress) public poolProgress;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -296,6 +308,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     );
     
     event FeesClaimed(address indexed recipient, uint256 amount, address token);
+    event EpochAdvanced(PoolId indexed poolId, uint256 position, uint256 newEpoch, uint256 currentMCAP);
+    event PositionTransition(PoolId indexed poolId, uint256 newPosition);
 
     /*//////////////////////////////////////////////////////////////
                                 ERRORS
@@ -390,6 +404,14 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         // Store token→PoolId mapping for LP Locker integration
         tokenToPoolId[token] = poolId;
         
+        // Initialize pool progress tracking
+        poolProgress[poolId] = PoolProgress({
+            currentPosition: 1,           // Start at P1
+            currentEpoch: 1,              // Start at epoch 1
+            lastEpochMCAP: startMcap,    // Track for doubling detection
+            graduated: false              // Graduation at end of P1 epoch 4
+        });
+        
         emit LaunchCreated(poolId, token, beneficiary, startMcap, baseTax);
     }
     
@@ -440,11 +462,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     }
     
     /**
-     * @notice Pre-swap checks and validations
-     * @dev Called before every swap - performs safety checks only, NO fee collection
-     * 
-     * ✅ V4 PATTERN: Always return ZERO delta
-     * ✅ Fee collection happens in afterSwap() with explicit poolManager.take()
+     * @notice Pre-swap hook - enforces rules ONLY in P1 (pre-graduation)
+     * @dev Simplified multi-position system: P1 has hook tax, P2+ has LP fee only
      */
     function beforeSwap(
         address,
@@ -454,6 +473,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     ) external override returns (bytes4, BeforeSwapDelta, uint24) {
         PoolId poolId = key.toId();
         Launch storage launch = launches[poolId];
+        PoolProgress storage progress = poolProgress[poolId];
+        
         if (launch.token == address(0)) revert LaunchNotFound();
         
         // ✅ DEV OVERRIDE: Bypass all restrictions during dev seed buy
@@ -461,22 +482,10 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             return (BaseHook.beforeSwap.selector, toBeforeSwapDelta(0, 0), 0);
         }
         
-        // First-buy activation check: pool must be activated before swaps
-        IClawclickFactory factory = IClawclickFactory(config.factory());
-        if (!factory.poolActivated(poolId)) {
-            revert PoolNotActivated();
-        }
-        
-        // ✅ Defensive: Explicit phase validation
-        require(
-            launch.phase == Phase.PROTECTED || launch.phase == Phase.GRADUATED,
-            "Invalid phase"
-        );
-        
         // ═══════════════════════════════════════════════════════════════════════
-        // PHASE 2 (GRADUATED): Autonomous liquidity staging + LP fee
+        // P2+ (POST-GRADUATION): No hook interference, LP fee only
         // ═══════════════════════════════════════════════════════════════════════
-        if (launch.phase == Phase.GRADUATED) {
+        if (progress.currentPosition > 1 || progress.graduated) {
             return (
                 BaseHook.beforeSwap.selector,
                 toBeforeSwapDelta(0, 0),
@@ -485,60 +494,33 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         }
         
         // ═══════════════════════════════════════════════════════════════════════
-        // PHASE 1 (PROTECTED): Apply hook tax via BeforeSwapDelta
+        // P1 (PRE-GRADUATION): Hook tax active
         // ═══════════════════════════════════════════════════════════════════════
         
-        // Get current MCAP
-        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-        uint256 currentMcap = _getCurrentMcap(sqrtPriceX96);
-        
-        // ✅ FIX: Properly extract input amount based on swap type
-        // v4 convention: amountSpecified < 0 = exact input, > 0 = exact output
+        // Extract input amount
         uint256 inputAmount;
         bool isExactInput = params.amountSpecified < 0;
         
         if (isExactInput) {
-            // Exact input: user specifies how much they're giving (negative in v4)
             inputAmount = uint256(-params.amountSpecified);
         } else {
-            // Exact output: user specifies how much they want to receive (positive in v4)
             inputAmount = uint256(params.amountSpecified);
         }
         
-        // ✅ SECURITY: Prevent dust griefing attacks
+        // ✅ SECURITY: Prevent dust griefing
         require(inputAmount >= MIN_SWAP_AMOUNT, "Swap amount too small");
         
-        // Check maxTx limit — TEMPORARILY DISABLED FOR TESTING
-        uint256 maxTx = _getMaxTx(currentMcap, launch.startMcap);
-        if (inputAmount > maxTx) revert ExceedsMaxTx();
-        
-        // Calculate epoch and tax
-        uint256 epoch = _getEpoch(currentMcap, launch.startMcap);
-        uint256 taxBps = _calculateTax(launch.baseTax, epoch);
+        // Calculate tax based on current epoch (1-4)
+        uint256 taxBps = _calculateHookTax(launch.baseTax, progress.currentEpoch);
         uint256 feeAmount = (inputAmount * taxBps) / BPS;
         
-        // ✅ FIX: Fee delta semantics
-        // Positive delta in specified currency = hook takes tokens FROM user
-        // We take fee in the INPUT currency (what user is selling)
-        //
-        // In v4, specified delta goes in the FIRST slot of BeforeSwapDelta
-        // regardless of direction. The Hooks library maps it to the correct
-        // currency (amount0 or amount1) based on swap direction.
-        
-        // ✅ SECURITY: Explicit bounds check for BeforeSwapDelta cast safety
+        // Fee delta (hook takes fee from user)
         require(feeAmount <= uint256(int256(type(int128).max)), "Fee overflow");
         int128 feeDelta = int128(int256(feeAmount));
-        
         BeforeSwapDelta delta = toBeforeSwapDelta(feeDelta, 0);
-        bool isETHFee;
         
-        if (params.zeroForOne) {
-            // Buy (ETH → Token): fee is in ETH (currency0)
-            isETHFee = true;
-        } else {
-            // Sell (Token → ETH): fee is in Token (currency1)
-            isETHFee = false;
-        }
+        // Track fee type (ETH or Token)
+        bool isETHFee = params.zeroForOne;  // Buy = ETH fee, Sell = Token fee
         
         // Update fee accounting
         if (feeAmount > 0) {
@@ -556,46 +538,25 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             emit FeesCollected(poolId, feeAmount, beneficiaryShare, platformShare, isETHFee);
         }
         
-        // ✅ FIX: Store pending fee for settlement in afterSwap
-        // beforeSwap returns a BeforeSwapDelta that credits the hook in the
-        // PoolManager's accounting. Those credits must be withdrawn via
-        // poolManager.take() before unlock() finishes, otherwise the
-        // PoolManager reverts with CurrencyNotSettled.
+        // Store pending fee for settlement in afterSwap
         _pendingFeeAmount[poolId] = feeAmount;
         _pendingFeeIsETH[poolId] = isETHFee;
-        
-        // Check graduation
-        _checkGraduation(poolId, epoch);
         
         return (BaseHook.beforeSwap.selector, delta, 0);
     }
     
     /**
-     * @notice Check and trigger graduation when epoch threshold is reached
-     * @dev Simple epoch-based graduation (no timer)
+     * @notice Calculate hook tax based on epoch (1-4)
+     * @dev Tax halves each epoch: 50% → 25% → 12.5% → 6.25%
      */
-    function _checkGraduation(PoolId poolId, uint256 epoch) internal {
-        Launch storage launch = launches[poolId];
-
-        if (launch.phase == Phase.GRADUATED) return;
-
-        if (epoch >= GRADUATION_EPOCH) {
-            launch.phase = Phase.GRADUATED;
-
-            // Graduation MCAP = startMcap * 16 (2^4)
-            launch.graduationMcap = launch.startMcap * 16;
-
-            // Initialize liquidity stage
-            launch.liquidityStage = 1;
-
-            // Get final MCAP for event
-            (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-            uint256 finalMcap = _getCurrentMcap(sqrtPriceX96);
-
-            emit PhaseChanged(poolId, Phase.GRADUATED, block.timestamp, finalMcap);
-            emit Graduated(launch.token, poolId, block.timestamp, finalMcap);
-        }
+    function _calculateHookTax(uint256 baseTax, uint256 epoch) internal pure returns (uint256) {
+        if (epoch == 4) return baseTax / 8;      // 6.25%
+        if (epoch == 3) return baseTax / 4;      // 12.5%
+        if (epoch == 2) return baseTax / 2;      // 25%
+        return baseTax;                           // 50%
     }
+    
+
     
     /**
      * @notice Enforce maxWallet limit and track user balances
@@ -603,6 +564,9 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
      * 
      * ✅ V4 PATTERN: Fees collected in beforeSwap via BeforeSwapDelta
      * ✅ afterSwap only handles: limits, tracking, state updates
+    /**
+     * @notice Post-swap: Epoch tracking and position management
+     * @dev This is where the multi-position magic happens!
      */
     function afterSwap(
         address,
@@ -613,13 +577,9 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     ) external override returns (bytes4, int128) {
         PoolId poolId = key.toId();
         Launch storage launch = launches[poolId];
+        PoolProgress storage progress = poolProgress[poolId];
 
         // ═══════ SETTLEMENT: Take hook's fee credits from PoolManager ═══════
-        // beforeSwap returns a BeforeSwapDelta that credits the hook in the
-        // PoolManager's accounting.  Those credits must be withdrawn before
-        // unlock() finishes, otherwise the PoolManager reverts with
-        // CurrencyNotSettled.  We withdraw them here so the hook holds the
-        // actual ETH / tokens for later claiming.
         uint256 pendingFee = _pendingFeeAmount[poolId];
         if (pendingFee > 0) {
             _pendingFeeAmount[poolId] = 0;
@@ -629,52 +589,90 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             poolManager.take(feeCurrency, address(this), pendingFee);
         }
         
-        // Skip all hook logic during dev override
+        // Skip all logic during dev override (activation in progress)
         if (activationInProgress[poolId]) {
             return (BaseHook.afterSwap.selector, 0);
         }
 
         // ═══════════════════════════════════════════════════════════════════════
-        // GRADUATED PHASE: No limits
+        // EPOCH TRACKING & POSITION MANAGEMENT
         // ═══════════════════════════════════════════════════════════════════════
-        if (launch.phase == Phase.GRADUATED) {
-            return (BaseHook.afterSwap.selector, 0);
-        }
+        // NOTE: This runs even post-graduation so P2-P5 positions get minted.
+        // Tax/fees are already 0% post-graduation (handled in beforeSwap).
         
-        // ═══════════════════════════════════════════════════════════════════════
-        // PROTECTED PHASE: Enforce maxWallet limit
-        // ═══════════════════════════════════════════════════════════════════════
-        
-        // Only enforce on buys (ETH → Token)
-        if (!params.zeroForOne) {
-            return (BaseHook.afterSwap.selector, 0);
-        }
-        
-        // Get current MCAP for limit calculation
+        // Get current MCAP
         (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-        uint256 currentMcap = _getCurrentMcap(sqrtPriceX96);
-        uint256 maxWallet = _getMaxWallet(currentMcap, launch.startMcap);
+        uint256 currentMCAP = _getCurrentMcap(sqrtPriceX96);
         
-        // Calculate tokens received (amount1 is positive for buys)
-        int128 deltaAmount1 = delta.amount1();
-        if (deltaAmount1 > 0) {
-            // ✅ FIX: Decode actual trader address from hookData
-            // In v4 hooks, msg.sender is ALWAYS the PoolManager, not the trader.
-            // The router must encode the real trader address in hookData.
+        // Check for epoch advancement (MCAP doubled from last epoch)
+        if (currentMCAP >= progress.lastEpochMCAP * 2) {
+            // ═══════ CHECK GRADUATION BEFORE ADVANCING (critical timing) ═══════
+            // Graduation happens at end of P1 epoch 4 (when reaching 16x MCAP)
+            if (progress.currentPosition == 1 && 
+                progress.currentEpoch == 4 && 
+                currentMCAP >= launch.startMcap * 16 &&
+                !progress.graduated) {
+                
+                progress.graduated = true;
+                launch.phase = Phase.GRADUATED;
+                launch.graduationMcap = currentMCAP;
+                
+                emit Graduated(launch.token, poolId, block.timestamp, currentMCAP);
+                emit PhaseChanged(poolId, Phase.GRADUATED, block.timestamp, currentMCAP);
+            }
+            
+            // NOW advance epoch
+            progress.currentEpoch++;
+            progress.lastEpochMCAP = currentMCAP;
+            
+            emit EpochAdvanced(poolId, progress.currentPosition, progress.currentEpoch, currentMCAP);
+            
+            // ═══════ EPOCH 4 → EPOCH 1: Move to next position ═══════
+            if (progress.currentEpoch > 4 && progress.currentPosition < 5) {
+                progress.currentPosition++;
+                progress.currentEpoch = 1;
+                
+                emit PositionTransition(poolId, progress.currentPosition);
+                
+                // All positions are minted at launch.
+                // No auto-mint needed — P2-P5 hold token-only liquidity below current tick.
+            }
+        }
+        
+        // ═══════ MAX WALLET ENFORCEMENT & BALANCE TRACKING (P1 only, pre-graduation) ═══════
+        if (progress.currentPosition == 1 && !progress.graduated) {
             address trader;
             if (hookData.length >= 32) {
                 trader = abi.decode(hookData, (address));
             } else {
-                trader = msg.sender; // Fallback for backward compatibility
+                trader = msg.sender;
             }
-            
-            uint256 tokensReceived = uint256(int256(deltaAmount1));
-            uint256 newBalance = userBalances[poolId][trader] + tokensReceived;
-            
-            // TEMPORARILY DISABLED FOR TESTING
-            // if (newBalance > maxWallet) revert ExceedsMaxWallet();
-            
-            userBalances[poolId][trader] = newBalance;
+
+            if (params.zeroForOne) {
+                // BUY (ETH → Token): tokens received, enforce maxWallet
+                int128 deltaAmount1 = delta.amount1();
+                if (deltaAmount1 > 0) {
+                    uint256 tokensReceived = uint256(int256(deltaAmount1));
+                    uint256 newBalance = userBalances[poolId][trader] + tokensReceived;
+                    
+                    uint256 maxWallet = _getMaxWallet(currentMCAP, launch.startMcap);
+                    // if (newBalance > maxWallet) revert ExceedsMaxWallet();
+                    
+                    userBalances[poolId][trader] = newBalance;
+                }
+            } else {
+                // SELL (Token → ETH): tokens sent, reduce tracked balance
+                int128 deltaAmount1 = delta.amount1();
+                if (deltaAmount1 < 0) {
+                    uint256 tokensSold = uint256(int256(-deltaAmount1));
+                    uint256 currentBal = userBalances[poolId][trader];
+                    if (tokensSold >= currentBal) {
+                        userBalances[poolId][trader] = 0;
+                    } else {
+                        userBalances[poolId][trader] = currentBal - tokensSold;
+                    }
+                }
+            }
         }
         
         return (BaseHook.afterSwap.selector, 0);
@@ -715,57 +713,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
         return _getCurrentMcap(sqrtPriceX96);
     }
-
-    
-    /**
-     * @notice Calculate epoch from growth ratio
-     * @dev epoch = floor(log2(currentMcap / startMcap))
-     * @param currentMcap Current MCAP in wei
-     * @param startMcap Starting MCAP in wei
-     * @return epoch Doubling epoch (0, 1, 2, 3, 4+)
-     * 
-     * ✅ FIX: Explicit epoch cap to prevent overflow
-     */
-    function _getEpoch(uint256 currentMcap, uint256 startMcap) internal pure returns (uint256 epoch) {
-        if (currentMcap <= startMcap) return 0;
-        
-        uint256 ratio = currentMcap / startMcap;
-        epoch = 0;
-        
-        // ✅ Explicit bound: stop at graduation epoch
-        while (ratio >= 2 && epoch < GRADUATION_EPOCH) {
-            ratio /= 2;
-            epoch++;
-        }
-        
-        // ✅ Defensive cap (prevents overflow if ratio bug happens)
-        if (epoch > GRADUATION_EPOCH) {
-            epoch = GRADUATION_EPOCH;
-        }
-    }
-    
-    /**
-     * @notice Calculate tax from base tax and epoch
-     * @dev tax = baseTax / (2^epoch), floor at 1%
-     * @param baseTax Starting tax in bps
-     * @param epoch Current epoch
-     * @return taxBps Tax in bps
-     */
-    function _calculateTax(uint256 baseTax, uint256 epoch) internal pure returns (uint256 taxBps) {
-        // Apply doubling decay: tax = baseTax / (2^epoch)
-        taxBps = baseTax >> epoch;  // Bit shift is equivalent to division by 2^epoch
-        
-        // Floor at 1%
-        if (taxBps < TAX_FLOOR_BPS) {
-            taxBps = TAX_FLOOR_BPS;
-        }
-    }
-    
-    /**
-     * NOTE: _getBaseTaxForMcap() was removed - now uses ClawclickConfig.getStartingTax()
-     * Tax tiers are defined in ClawclickConfig and are immutable after deployment.
-     * This eliminates duplicate definitions and ensures single source of truth.
-     */
     
     /**
      * @notice Get maxTx limit
@@ -893,14 +840,11 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
      * @return taxBps Current tax in bps (or 0 if graduated)
      */
     function getCurrentTax(PoolId poolId) external view returns (uint256 taxBps) {
+        PoolProgress storage progress = poolProgress[poolId];
+        if (progress.graduated) return 0;
+        
         Launch storage launch = launches[poolId];
-        if (launch.phase == Phase.GRADUATED) return 0;
-        
-        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-        uint256 currentMcap = _getCurrentMcap(sqrtPriceX96);
-        uint256 epoch = _getEpoch(currentMcap, launch.startMcap);
-        
-        taxBps = _calculateTax(launch.baseTax, epoch);
+        taxBps = _calculateHookTax(launch.baseTax, progress.currentEpoch);
     }
     
     /**
@@ -927,23 +871,14 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
      * @param poolId Pool ID
      * @return epoch Current doubling epoch
      */
-    function getCurrentEpoch(PoolId poolId) external view returns (uint256 epoch) {
-        Launch storage launch = launches[poolId];
-        
-        (uint160 sqrtPriceX96,,,) = poolManager.getSlot0(poolId);
-        uint256 currentMcap = _getCurrentMcap(sqrtPriceX96);
-        
-        epoch = _getEpoch(currentMcap, launch.startMcap);
-    }
+    function getCurrentEpoch(PoolId poolId) external view returns (uint256 epoch) {        return poolProgress[poolId].currentEpoch;    }
     
     /**
      * @notice Check if a pool is graduated
      * @param poolId Pool ID
      * @return graduated True if graduated
      */
-    function isGraduated(PoolId poolId) external view returns (bool graduated) {
-        return launches[poolId].phase == Phase.GRADUATED;
-    }
+    function isGraduated(PoolId poolId) external view returns (bool graduated) {        return poolProgress[poolId].graduated;    }
     
     /**
      * @notice Check if a token is graduated (for LP Locker integration)
@@ -991,3 +926,8 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
 
     receive() external payable {}
 }
+
+
+
+
+

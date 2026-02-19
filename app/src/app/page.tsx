@@ -5,6 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import ProductsDropdown from './components/ProductsDropdown'
+import ProductsFooter from './components/ProductsFooter'
 
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState(0)
@@ -212,6 +214,7 @@ export default function Home() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-4">
+            <ProductsDropdown />
             <Link href="/README.md" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
               📕 README
             </Link>
@@ -606,8 +609,11 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Products Footer */}
+      <ProductsFooter />
+
       {/* Footer */}
-      <footer className="relative z-10 border-t border-[#E8523D]/10 mt-20">
+      <footer className="relative z-10 border-t border-[#E8523D]/10">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>

@@ -43,30 +43,20 @@ interface IClawclickFactory {
         returns (address token, PoolId poolId);
 
     /*//////////////////////////////////////////////////////////////
-                        FIRST-BUY ACTIVATION
+                    MULTI-POSITION MANAGEMENT
     //////////////////////////////////////////////////////////////*/
 
-    function poolActivated(PoolId poolId) external view returns (bool);
+    function mintNextPosition(PoolId poolId, uint256 positionIndex) external;
 
-    function activatePool(PoolKey calldata key) external payable;
+    function retireOldPosition(PoolId poolId, uint256 positionIndex) external;
 
-    function activateAndSwapDev(PoolKey calldata key) external payable;
-
-    /*//////////////////////////////////////////////////////////////
-                        REPOSITIONING
-    //////////////////////////////////////////////////////////////*/
-
-    function repositionByEpoch(PoolKey calldata key) external;
-
-    function lastRepositionedEpoch(PoolId poolId) external view returns (uint256);
-
-    function needsReposition(PoolId poolId) external view returns (bool needed, uint256 currentEpoch, uint256 lastEpoch);
-
-    function collectFees(PoolId poolId) external;
+    function collectFeesFromPosition(PoolId poolId, uint256 positionIndex) external;
 
     /*//////////////////////////////////////////////////////////////
                             VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
+    
+    function poolActivated(PoolId poolId) external view returns (bool);
 
     function getLaunchByToken(address token)
         external
