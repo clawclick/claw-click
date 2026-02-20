@@ -9,6 +9,13 @@ interface IClawclickFactory {
                                 STRUCTS
     //////////////////////////////////////////////////////////////*/
 
+    /// @notice Fee split configuration for creator's 70% share
+    struct FeeSplit {
+        address[5] wallets;       // Up to 5 beneficiary wallets
+        uint16[5] percentages;    // Percentages in BPS (must sum to 10000 = 100%)
+        uint8 count;              // Number of active wallets (1-5, 0 = use default beneficiary)
+    }
+
     struct LaunchInfo {
         address token;
         address beneficiary;
@@ -21,6 +28,7 @@ interface IClawclickFactory {
         uint256 createdBlock;
         string name;
         string symbol;
+        FeeSplit feeSplit;        // Fee split configuration
     }
 
     struct CreateParams {
@@ -29,6 +37,7 @@ interface IClawclickFactory {
         address beneficiary;
         address agentWallet;
         uint256 targetMcapETH;
+        FeeSplit feeSplit;        // Optional: split creator's 70% across multiple wallets
     }
 
     /*//////////////////////////////////////////////////////////////

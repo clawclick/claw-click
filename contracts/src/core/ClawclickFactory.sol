@@ -131,6 +131,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
                                 TYPES
     //////////////////////////////////////////////////////////////*/
     
+    /// @notice Fee split configuration for creator's 70% share
+    /// @dev Splits the creator's 70% across up to 5 wallets (platform 30% unchanged)
+    struct FeeSplit {
+        address[5] wallets;       // Up to 5 beneficiary wallets
+        uint16[5] percentages;    // Percentages in BPS (must sum to 10000 = 100%)
+        uint8 count;              // Number of active wallets (1-5, 0 = use default beneficiary)
+    }
+    
     struct LaunchInfo {
         address token;
         address beneficiary;
@@ -143,6 +151,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 createdBlock;
         string name;
         string symbol;
+        FeeSplit feeSplit;        // Fee split configuration
     }
     
     struct CreateParams {
@@ -151,6 +160,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         address beneficiary;
         address agentWallet;
         uint256 targetMcapETH;    // 1-10 ETH target
+        FeeSplit feeSplit;        // Optional: split creator's 70% across multiple wallets
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -193,6 +203,8 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     error SqrtPriceOverflow();
     error TokenApprovalFailed();
     error LiquidityAddFailed();
+    error InvalidFeeSplit();
+    error ZeroAddressInSplit();
 
     /*//////////////////////////////////////////////////////////////
                               CONSTRUCTOR
@@ -353,7 +365,8 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             createdAt: block.timestamp,
             createdBlock: block.number,
             name: params.name,
-            symbol: params.symbol
+            symbol: params.symbol,
+            feeSplit: params.feeSplit
         });
         
         launchByToken[token] = info;
@@ -905,6 +918,20 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // No decimals allowed (e.g., no 1.5 ETH or 7.3 ETH)
         if (params.targetMcapETH % 1 ether != 0) {
             revert InvalidTargetMcap();
+        }
+        
+        // ✅ Validate fee split (if specified)
+        if (params.feeSplit.count > 0) {
+            if (params.feeSplit.count > 5) revert InvalidFeeSplit();
+            
+            uint256 totalPercentage = 0;
+            for (uint8 i = 0; i < params.feeSplit.count; i++) {
+                if (params.feeSplit.wallets[i] == address(0)) revert ZeroAddressInSplit();
+                totalPercentage += params.feeSplit.percentages[i];
+            }
+            
+            // Percentages must sum to exactly 10000 BPS (100% of creator's 70%)
+            if (totalPercentage != BPS) revert InvalidFeeSplit();
         }
     }
     
