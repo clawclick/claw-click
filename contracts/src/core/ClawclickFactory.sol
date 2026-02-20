@@ -22,6 +22,7 @@ import {ClawclickToken} from "./ClawclickToken.sol";
 import {ClawclickConfig} from "./ClawclickConfig.sol";
 import {ClawclickHook} from "./ClawclickHook_V4.sol";
 import {BootstrapETH} from "../utils/BootstrapETH.sol";
+import {FeeSplitter} from "../utils/FeeSplitter.sol";
 import {FeeSplitLib} from "../libraries/FeeSplitLib.sol";
 import {LaunchLib} from "../libraries/LaunchLib.sol";
 import {PositionLib} from "../libraries/PositionLib.sol";
@@ -154,7 +155,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 createdBlock;
         string name;
         string symbol;
-        FeeSplit feeSplit;        // Fee split configuration
+        address splitterAddress;  // Fee splitter contract (if multi-wallet split, else address(0))
     }
     
     struct CreateParams {
@@ -286,12 +287,33 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // Validate params
         _validateParams(params);
         
+        // 0. Deploy fee splitter FIRST if multi-wallet split requested
+        address beneficiary = params.beneficiary;
+        address splitterAddress = address(0);
+        
+        if (params.feeSplit.count > 0) {
+            // Deploy immutable fee splitter
+            address payable[5] memory recipients;
+            for (uint8 i = 0; i < 5; i++) {
+                recipients[i] = payable(params.feeSplit.wallets[i]);
+            }
+            
+            FeeSplitter splitter = new FeeSplitter(
+                recipients,
+                params.feeSplit.percentages,
+                params.feeSplit.count
+            );
+            
+            splitterAddress = address(splitter);
+            beneficiary = splitterAddress; // Use splitter as beneficiary
+        }
+        
         // 1. Deploy token (supply minted to factory for liquidity provision)
         token = address(new ClawclickToken(
             params.name,
             params.symbol,
             address(this),  // Factory receives tokens to add liquidity
-            params.beneficiary,
+            beneficiary,    // Either user's wallet OR fee splitter contract
             params.agentWallet
         ));
         
@@ -306,7 +328,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         poolManager.initialize(key, sqrtPriceX96);
         
         // 5. Register launch with hook
-        hook.registerLaunch(key, token, params.beneficiary, params.targetMcapETH, sqrtPriceX96);
+        hook.registerLaunch(key, token, beneficiary, params.targetMcapETH, sqrtPriceX96);
         
         // 6. Calculate position ranges
         uint256 totalSupply = TOTAL_SUPPLY;
@@ -359,7 +381,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // 9. Store launch info
         LaunchInfo memory info = LaunchInfo({
             token: token,
-            beneficiary: params.beneficiary,
+            beneficiary: beneficiary,      // Either user wallet OR splitter address
             agentWallet: params.agentWallet,
             creator: msg.sender,
             poolId: poolId,
@@ -369,7 +391,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             createdBlock: block.number,
             name: params.name,
             symbol: params.symbol,
-            feeSplit: params.feeSplit
+            splitterAddress: splitterAddress  // Track splitter (if used)
         });
         
         launchByToken[token] = info;
