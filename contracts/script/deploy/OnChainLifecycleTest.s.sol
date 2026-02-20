@@ -61,7 +61,12 @@ contract OnChainLifecycleTest is Script {
             symbol: "TTA",
             beneficiary: msg.sender,
             agentWallet: address(0),
-            targetMcapETH: 1 ether  // 1 ETH = 2k MCAP @ $2000/ETH
+            targetMcapETH: 1 ether,  // 1 ETH = 2k MCAP @ $2000/ETH
+            feeSplit: ClawclickFactory.FeeSplit({
+                wallets: [address(0), address(0), address(0), address(0), address(0)],
+                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
+                count: 0
+            })
         });
         
         // Launch token
