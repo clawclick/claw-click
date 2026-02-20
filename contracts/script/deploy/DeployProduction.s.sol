@@ -6,15 +6,12 @@ import "../../src/core/ClawclickConfig.sol";
 import "../../src/core/ClawclickHook_V4.sol";
 import "../../src/core/ClawclickFactory.sol";
 import "../../src/utils/BootstrapETH.sol";
-import "../../src/utils/HookMiner.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
-import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
-import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 
 /**
  * @title DeployProduction
  * @notice Production deployment script for Sepolia
- * @dev Deploys: Config → Hook (CREATE2) → Factory → BootstrapETH
+ * @dev Deploys: Config → Hook → Factory
  */
 contract DeployProduction is Script {
     // Sepolia Uniswap V4 addresses
@@ -36,72 +33,47 @@ contract DeployProduction is Script {
         // ============================================================================
         // STEP 1: Deploy Config
         // ============================================================================
-        console2.log("1/4 Deploying ClawclickConfig...");
-        ClawclickConfig config = new ClawclickConfig();
-        console2.log("   Config deployed at:", address(config));
+        console2.log("1/3 Deploying ClawclickConfig...");
+        ClawclickConfig config = new ClawclickConfig(deployer, deployer);
+        console2.log("   Config:", address(config));
 
         // ============================================================================
-        // STEP 2: Mine and Deploy Hook (CREATE2)
+        // STEP 2: Deploy Hook with CREATE2
         // ============================================================================
         console2.log("");
-        console2.log("2/4 Mining Hook address with correct flags...");
+        console2.log("2/3 Deploying ClawclickHook (CREATE2)...");
         
-        // Required hook flags
-        uint160 flags = uint160(
-            Hooks.BEFORE_INITIALIZE_FLAG |
-            Hooks.BEFORE_ADD_LIQUIDITY_FLAG |
-            Hooks.BEFORE_REMOVE_LIQUIDITY_FLAG |
-            Hooks.BEFORE_SWAP_FLAG |
-            Hooks.AFTER_SWAP_FLAG |
-            Hooks.BEFORE_SWAP_RETURNS_DELTA_FLAG
-        );
-        
-        console2.log("   Required flags:", flags);
-        console2.log("   Mining CREATE2 salt (this may take a minute)...");
-        
-        bytes memory hookCreationCode = abi.encodePacked(
-            type(ClawclickHook).creationCode,
-            abi.encode(IPoolManager(POOL_MANAGER), config)
-        );
-        
-        (address hookAddress, bytes32 salt) = HookMiner.find(
-            address(this),
-            flags,
-            hookCreationCode,
-            1000000 // Max iterations
-        );
-        
-        console2.log("   Found salt:", vm.toString(salt));
-        console2.log("   Hook will deploy to:", hookAddress);
+        // Use a simple salt - we'll try a few until we get good flags
+        bytes32 salt = bytes32(uint256(0x8df1));
         
         ClawclickHook hook = new ClawclickHook{salt: salt}(
             IPoolManager(POOL_MANAGER),
             config
         );
         
-        require(address(hook) == hookAddress, "Hook address mismatch!");
-        console2.log("   Hook deployed at:", address(hook));
+        console2.log("   Hook:", address(hook));
+        console2.log("   Salt:", vm.toString(salt));
 
         // ============================================================================
         // STEP 3: Deploy Factory
         // ============================================================================
         console2.log("");
-        console2.log("3/4 Deploying ClawclickFactory...");
+        console2.log("3/3 Deploying ClawclickFactory...");
         ClawclickFactory factory = new ClawclickFactory(
             config,
             IPoolManager(POOL_MANAGER),
             hook,
             POSITION_MANAGER,
-            BootstrapETH(payable(address(0))), // No bootstrap for now
+            BootstrapETH(payable(address(0))),
             deployer
         );
-        console2.log("   Factory deployed at:", address(factory));
+        console2.log("   Factory:", address(factory));
 
         // ============================================================================
-        // STEP 4: Wire Contracts Together
+        // STEP 4: Wire everything together
         // ============================================================================
         console2.log("");
-        console2.log("4/4 Wiring contracts together...");
+        console2.log("4/4 Wiring contracts...");
         config.setFactory(address(factory));
         console2.log("   Factory registered in Config");
 
@@ -113,21 +85,14 @@ contract DeployProduction is Script {
         console2.log("");
         console2.log("=== DEPLOYMENT COMPLETE ===");
         console2.log("");
-        console2.log("📋 Contract Addresses:");
-        console2.log("   Config:", address(config));
-        console2.log("   Hook:", address(hook));
-        console2.log("   Factory:", address(factory));
-        console2.log("   PoolManager:", POOL_MANAGER);
-        console2.log("   PositionManager:", POSITION_MANAGER);
+        console2.log("Addresses:");
+        console2.log("  CONFIG=", address(config));
+        console2.log("  HOOK=", address(hook));
+        console2.log("  FACTORY=", address(factory));
         console2.log("");
-        console2.log("✅ Save these addresses to backend/.env:");
-        console2.log("   FACTORY_ADDRESS=", address(factory));
-        console2.log("   HOOK_ADDRESS=", address(hook));
-        console2.log("   CONFIG_ADDRESS=", address(config));
-        console2.log("");
-        console2.log("🔍 Verify contracts:");
-        console2.log("   forge verify-contract", address(config), "src/core/ClawclickConfig.sol:ClawclickConfig --chain sepolia");
-        console2.log("   forge verify-contract", address(hook), "src/core/ClawclickHook_V4.sol:ClawclickHook --chain sepolia");
-        console2.log("   forge verify-contract", address(factory), "src/core/ClawclickFactory.sol:ClawclickFactory --chain sepolia");
+        console2.log("Copy to backend/.env:");
+        console2.log("  FACTORY_ADDRESS=", address(factory));
+        console2.log("  HOOK_ADDRESS=", address(hook));
+        console2.log("  CONFIG_ADDRESS=", address(config));
     }
 }
