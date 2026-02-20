@@ -57,10 +57,9 @@ contract TestGraduation is BaseTest {
         (, PoolId poolId, PoolKey memory key) = _createAndActivate(1 ether, beneficiary, 0);
         vm.stopPrank();
 
-        // Simulate buying volume via rotating traders
-        for (uint256 i = 0; i < 4000; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            _buy(key, 0.01 ether);
+        // Simulate buying volume via fresh wallets (respects maxTx)
+        for (uint256 i = 0; i < 10000; i++) {
+            _safeBuyFresh(key);
             if (hook.isGraduated(poolId)) break;
         }
 
@@ -80,9 +79,8 @@ contract TestGraduation is BaseTest {
         (, PoolId poolId, PoolKey memory key) = _createAndActivate(1 ether, beneficiary, 0);
         vm.stopPrank();
 
-        for (uint256 i = 0; i < 4000; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            _buy(key, 0.01 ether);
+        for (uint256 i = 0; i < 10000; i++) {
+            _safeBuyFresh(key);
             if (hook.isGraduated(poolId)) break;
         }
 
@@ -101,9 +99,8 @@ contract TestGraduation is BaseTest {
         (, PoolId poolId, PoolKey memory key) = _createAndActivate(1 ether, beneficiary, 0);
         vm.stopPrank();
 
-        for (uint256 i = 0; i < 4000; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            _buy(key, 0.01 ether);
+        for (uint256 i = 0; i < 10000; i++) {
+            _safeBuyFresh(key);
             if (hook.isGraduated(poolId)) break;
         }
 
@@ -124,9 +121,8 @@ contract TestGraduation is BaseTest {
         (, PoolId poolId, PoolKey memory key) = _createAndActivate(startMcap, beneficiary, 0);
         vm.stopPrank();
 
-        for (uint256 i = 0; i < 4000; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            _buy(key, 0.01 ether);
+        for (uint256 i = 0; i < 10000; i++) {
+            _safeBuyFresh(key);
             if (hook.isGraduated(poolId)) break;
         }
 
@@ -184,10 +180,9 @@ contract TestGraduation is BaseTest {
         uint256 tax2 = hook.getCurrentTax(poolId2);
         assertEq(tax1, tax2, "Both should start with same tax (universal 50%)");
 
-        // Trade only on token1 — rotating traders
-        for (uint256 i = 0; i < 200; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            _buy(key1, 0.01 ether);
+        // Trade only on token1 — fresh wallets (respects maxTx)
+        for (uint256 i = 0; i < 500; i++) {
+            _safeBuyFresh(key1);
         }
 
         uint256 epoch1 = hook.getCurrentEpoch(poolId1);

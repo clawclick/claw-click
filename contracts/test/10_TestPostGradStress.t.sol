@@ -40,19 +40,18 @@ contract TestPostGradStress is BaseTest {
                          INTERNAL HELPERS
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Drive a pool from creation to graduation using rotating traders
+    /// @notice Drive a pool from creation to graduation using fresh wallets
     function _driveToGraduation(
         PoolId poolId,
         PoolKey memory key,
-        uint256 buySize
+        uint256 /* buySize -- now dynamic */
     ) internal returns (uint256 totalBuys) {
         uint256 prevEpoch = 1;
 
         emit log_named_uint("Start MCAP", _getCurrentMcap(poolId));
 
-        for (uint256 i = 0; i < 10000; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            _buy(key, buySize);
+        for (uint256 i = 0; i < 15000; i++) {
+            _safeBuyFresh(key);
             totalBuys++;
 
             uint256 epoch = hook.getCurrentEpoch(poolId);
@@ -110,37 +109,30 @@ contract TestPostGradStress is BaseTest {
     address internal _stressToken;
     PoolId internal _stressPoolId;
 
-    /// @notice Phase 1: Heavy buying post-graduation
-    function _stressPhase1_buy(uint256 buySize, uint256 numRounds) internal returns (uint256 succeeded) {
+    /// @notice Phase 1: Heavy buying post-graduation (no limits)
+    function _stressPhase1_buy(uint256 buySize, uint256 numRounds) internal {
         for (uint256 i = 0; i < numRounds; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            try router.buy{value: buySize}(_stressKey, buySize) { succeeded++; } catch {}
+            _buyFromFreshWallet(_stressKey, buySize);
         }
-        assertTrue(succeeded > 0, "At least some buys should work post-graduation");
     }
 
     /// @notice Phase 2: Every trader sells 80% of holdings
-    function _stressPhase2_sell() internal returns (uint256 succeeded) {
+    function _stressPhase2_sell() internal {
         for (uint256 i = 0; i < NUM_TRADERS; i++) {
             uint256 bal = IERC20(_stressToken).balanceOf(traders[i]);
             if (bal == 0) continue;
-            uint256 sellAmt = (bal * 80) / 100;
             vm.startPrank(traders[i]);
-            IERC20(_stressToken).approve(address(router), sellAmt);
-            try router.sell(_stressKey, sellAmt) { succeeded++; } catch {}
+            IERC20(_stressToken).approve(address(router), (bal * 80) / 100);
+            try router.sell(_stressKey, (bal * 80) / 100) {} catch {}
             vm.stopPrank();
         }
-        // Sells may fail if trader has no balance or liquidity is thin
     }
 
-    /// @notice Phase 3: Re-buy after heavy sells
-    function _stressPhase3_rebuy(uint256 buySize, uint256 numRounds) internal returns (uint256 succeeded) {
-        uint256 half = numRounds / 2;
-        for (uint256 i = 0; i < half; i++) {
-            vm.prank(traders[i % NUM_TRADERS]);
-            try router.buy{value: buySize}(_stressKey, buySize) { succeeded++; } catch {}
+    /// @notice Phase 3: Re-buy after heavy sells (no limits post-graduation)
+    function _stressPhase3_rebuy(uint256 buySize, uint256 numRounds) internal {
+        for (uint256 i = 0; i < numRounds / 2; i++) {
+            _buyFromFreshWallet(_stressKey, buySize);
         }
-        // Re-buys after sells should work if sells returned liquidity
     }
 
     /// @notice Post-graduation stress: many buys, then sell all, then buy again

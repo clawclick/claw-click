@@ -659,23 +659,34 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
                 trader = msg.sender;
             }
 
+            uint256 maxTx = _getMaxTx(currentMCAP, launch.startMcap);
+
             if (params.zeroForOne) {
-                // BUY (ETH → Token): tokens received, enforce maxWallet
+                // BUY (ETH → Token): tokens received, enforce maxTx + maxWallet
                 int128 deltaAmount1 = delta.amount1();
                 if (deltaAmount1 > 0) {
                     uint256 tokensReceived = uint256(int256(deltaAmount1));
+                    
+                    // maxTx: single swap size limit
+                    if (tokensReceived > maxTx) revert ExceedsMaxTx();
+                    
                     uint256 newBalance = userBalances[poolId][trader] + tokensReceived;
                     
+                    // maxWallet: cumulative holding limit
                     uint256 maxWallet = _getMaxWallet(currentMCAP, launch.startMcap);
-                    // if (newBalance > maxWallet) revert ExceedsMaxWallet();
+                    if (newBalance > maxWallet) revert ExceedsMaxWallet();
                     
                     userBalances[poolId][trader] = newBalance;
                 }
             } else {
-                // SELL (Token → ETH): tokens sent, reduce tracked balance
+                // SELL (Token → ETH): tokens sent, enforce maxTx + reduce tracked balance
                 int128 deltaAmount1 = delta.amount1();
                 if (deltaAmount1 < 0) {
                     uint256 tokensSold = uint256(int256(-deltaAmount1));
+                    
+                    // maxTx: single swap size limit (applies to sells too)
+                    if (tokensSold > maxTx) revert ExceedsMaxTx();
+                    
                     uint256 currentBal = userBalances[poolId][trader];
                     if (tokensSold >= currentBal) {
                         userBalances[poolId][trader] = 0;

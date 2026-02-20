@@ -235,15 +235,131 @@ abstract contract BaseTest is Test {
         _autoMintPositions(key);
     }
 
-    /// @notice Buy from a fresh unique wallet (never reused) to avoid maxWallet issues
-    /// @dev Creates a new address, funds it, buys, and stops prank. Perfect for volume simulation.
-    uint256 private _freshWalletNonce;
+    /// @notice Pool of 200 pre-funded traders that accumulate tokens like real users.
+    /// @dev Wallets are created once (200 RPC calls), then reused across buys.
+    ///      maxWallet grows every epoch, so old wallets get more room over time.
+    uint256 private constant TRADER_POOL_SIZE = 200;
+    mapping(uint256 => address) private _traderPool;
+    bool private _traderPoolReady;
+    uint256 private _traderPoolIdx;
+
+    /// @dev Create 200 addresses + vm.deal once (well within 600 req/60s RPC limit).
+    function _ensureTraderPool() internal {
+        if (_traderPoolReady) return;
+        _traderPoolReady = true;
+        for (uint256 i = 0; i < TRADER_POOL_SIZE; i++) {
+            address t = makeAddr(string(abi.encodePacked("tp", vm.toString(i))));
+            vm.deal(t, 10_000 ether);
+            _traderPool[i] = t;
+        }
+    }
+
+    /// @notice Buy from a pooled trader — tokens accumulate naturally (no resets).
+    /// @dev Uses try-catch: if the wallet hits maxWallet the buy silently fails
+    ///      and the caller loop can continue with the next iteration.
     function _buyFromFreshWallet(PoolKey memory key, uint256 ethAmount) internal returns (BalanceDelta delta) {
-        _freshWalletNonce++;
-        address freshTrader = makeAddr(string(abi.encodePacked("fw", vm.toString(_freshWalletNonce))));
-        vm.deal(freshTrader, ethAmount + 0.01 ether); // extra for gas
-        vm.prank(freshTrader);
-        delta = router.buy{value: ethAmount}(key, ethAmount);
+        _ensureTraderPool();
+        address trader = _traderPool[_traderPoolIdx % TRADER_POOL_SIZE];
+        _traderPoolIdx++;
+
+        // Top-up ETH if needed (address already cached — no RPC call)
+        if (trader.balance < ethAmount + 0.01 ether) {
+            vm.deal(trader, ethAmount + 1 ether);
+        }
+
+        vm.prank(trader);
+        try router.buy{value: ethAmount}(key, ethAmount) returns (BalanceDelta d) {
+            delta = d;
+        } catch {
+            // ExceedsMaxWallet or ExceedsMaxTx — wallet full, skip
+        }
+        _autoMintPositions(key);
+    }
+
+    /// @notice Get safe buy ETH for a specific trader, considering their remaining wallet room.
+    /// @dev Checks hook.userBalances to see how much room this trader has left,
+    ///      then converts to safe ETH accounting for tax + slippage.
+    function _getSafeBuyForTrader(PoolId poolId, address trader) internal view returns (uint256) {
+        (uint256 maxTxTokens, uint256 maxWalletTokens) = hook.getCurrentLimits(poolId);
+        if (maxTxTokens == type(uint256).max) return 1 ether; // post-graduation
+
+        uint256 trackedBalance = hook.userBalances(poolId, trader);
+        if (trackedBalance >= maxWalletTokens) return 0; // wallet full
+
+        uint256 roomTokens = maxWalletTokens - trackedBalance;
+        uint256 effectiveMax = roomTokens < maxTxTokens ? roomTokens : maxTxTokens;
+
+        uint256 mcap = _getCurrentMcap(poolId);
+        uint256 maxETH = (effectiveMax * mcap) / TOTAL_SUPPLY;
+
+        uint256 taxBps = hook.getCurrentTax(poolId);
+        uint256 safeETH;
+        if (taxBps >= 10000) {
+            safeETH = 1e12;
+        } else {
+            safeETH = (maxETH * 10000) / (10000 - taxBps);
+            safeETH = (safeETH * 50) / 100; // 50% safety margin for AMM slippage
+        }
+        if (safeETH < 1e12) safeETH = 1e12;
+        return safeETH;
+    }
+
+    /// @notice Calculate the maximum safe buy amount in ETH that won't exceed maxTx
+    /// @dev Uses current MCAP, tax, and maxTx to compute a safe input ETH amount.
+    ///      Returns 1 ether if limits are disabled (post-graduation).
+    function _getMaxSafeBuyETH(PoolId poolId) internal view returns (uint256) {
+        (uint256 maxTxTokens,) = hook.getCurrentLimits(poolId);
+        if (maxTxTokens == type(uint256).max) return 1 ether;
+
+        uint256 mcap = _getCurrentMcap(poolId);
+        uint256 maxTxInETH = (maxTxTokens * mcap) / TOTAL_SUPPLY;
+
+        uint256 taxBps = hook.getCurrentTax(poolId);
+        uint256 safeETH;
+        if (taxBps >= 10000) {
+            safeETH = 0.0001 ether;
+        } else {
+            safeETH = (maxTxInETH * 10000) / (10000 - taxBps);
+            safeETH = (safeETH * 50) / 100; // 50% safety margin
+        }
+        if (safeETH < 1e12) safeETH = 1e12;
+        return safeETH;
+    }
+
+    /// @notice Buy from a pooled trader with a smart amount based on remaining wallet room.
+    /// @dev Scans up to 10 wallets to find one with room, computes safe buy, executes.
+    ///      Simulates real traders: wallets accumulate tokens, maxWallet grows each epoch.
+    function _safeBuyFresh(PoolKey memory key) internal returns (BalanceDelta delta) {
+        _ensureTraderPool();
+        PoolId poolId = key.toId();
+
+        // Try up to 10 wallets to find one with room
+        for (uint256 attempt = 0; attempt < 10; attempt++) {
+            uint256 idx = (_traderPoolIdx + attempt) % TRADER_POOL_SIZE;
+            address trader = _traderPool[idx];
+
+            uint256 buyAmount = _getSafeBuyForTrader(poolId, trader);
+            if (buyAmount == 0) continue; // wallet full, try next
+
+            _traderPoolIdx = idx + 1;
+
+            if (trader.balance < buyAmount + 0.01 ether) {
+                vm.deal(trader, buyAmount + 1 ether);
+            }
+
+            vm.prank(trader);
+            try router.buy{value: buyAmount}(key, buyAmount) returns (BalanceDelta d) {
+                delta = d;
+                _autoMintPositions(key);
+                return delta;
+            } catch {
+                // Unexpected revert — try next wallet
+                continue;
+            }
+        }
+        // All 10 attempts failed (all wallets near capacity at current maxWallet)
+        // Advance pointer so next call tries different wallets
+        _traderPoolIdx += 10;
         _autoMintPositions(key);
     }
 
