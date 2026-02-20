@@ -25,12 +25,19 @@ contract SimpleLaunch is Script {
         vm.startBroadcast();
         
         // Create launch
+        ClawclickFactory.FeeSplit memory emptyFeeSplit = ClawclickFactory.FeeSplit({
+            wallets: [address(0), address(0), address(0), address(0), address(0)],
+            percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
+            count: 0
+        });
+        
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test Token Alpha",
             symbol: "TTA",
             beneficiary: msg.sender,
             agentWallet: address(0),
-            targetMcapETH: 1 ether
+            targetMcapETH: 1 ether,
+            feeSplit: emptyFeeSplit
         });
         
         (address token, ) = factory.createLaunch{value: bootstrap}(params);

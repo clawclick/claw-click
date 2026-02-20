@@ -9,6 +9,12 @@ interface IClawclickFactory {
                                 STRUCTS
     //////////////////////////////////////////////////////////////*/
 
+    struct FeeSplit {
+        address[5] wallets;
+        uint16[5] percentages;
+        uint8 count;
+    }
+
     struct LaunchInfo {
         address token;
         address beneficiary;
@@ -21,6 +27,7 @@ interface IClawclickFactory {
         uint256 createdBlock;
         string name;
         string symbol;
+        FeeSplit feeSplit;
     }
 
     struct CreateParams {
@@ -29,6 +36,7 @@ interface IClawclickFactory {
         address beneficiary;
         address agentWallet;
         uint256 targetMcapETH;
+        FeeSplit feeSplit;
     }
 
     struct PoolState {

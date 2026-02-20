@@ -177,6 +177,15 @@ abstract contract BaseTest is Test {
                           HELPERS
     //////////////////////////////////////////////////////////////*/
 
+    /// @notice Helper: Create empty fee split (no multi-wallet distribution)
+    function _defaultFeeSplit() internal pure returns (ClawclickFactory.FeeSplit memory) {
+        return ClawclickFactory.FeeSplit({
+            wallets: [address(0), address(0), address(0), address(0), address(0)],
+            percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
+            count: 0
+        });
+    }
+
     /// @notice Create a launch (pool activated at launch with bootstrap ETH)
     /// @dev New system: createLaunch requires bootstrap ETH (minimum 0.001 ETH).
     ///      We send 0.1 ETH bootstrap for deeper initial liquidity.
@@ -191,7 +200,8 @@ abstract contract BaseTest is Test {
             symbol: "TEST",
             beneficiary: _beneficiary,
             agentWallet: _beneficiary,
-            targetMcapETH: targetMcapETH
+            targetMcapETH: targetMcapETH,
+            feeSplit: _defaultFeeSplit()
         });
         (token, poolId) = factory.createLaunch{value: bootstrapETH}(params);
         key = _buildPoolKey(token);
@@ -211,7 +221,8 @@ abstract contract BaseTest is Test {
             symbol: symbol,
             beneficiary: _beneficiary,
             agentWallet: _beneficiary,
-            targetMcapETH: targetMcapETH
+            targetMcapETH: targetMcapETH,
+            feeSplit: _defaultFeeSplit()
         });
         (token, poolId) = factory.createLaunch{value: bootstrapETH}(params);
         key = _buildPoolKey(token);
