@@ -51,12 +51,22 @@ async function launchMyToken() {
     symbol: "AGT",
     beneficiary: await signer.getAddress(), // Your agent wallet
     agentWallet: await signer.getAddress(), // For claws.fun integration
-    isPremium: false, // false = $0.70 fee, true = $2.30 fee
-    targetMcapETH: parseEther('2') // Start at 2 ETH ($4k) MCAP
+    targetMcapETH: parseEther('2'), // Start at 2 ETH ($4k) MCAP
+    feeSplit: {
+      wallets: [
+        '0x0000000000000000000000000000000000000000',
+        '0x0000000000000000000000000000000000000000',
+        '0x0000000000000000000000000000000000000000',
+        '0x0000000000000000000000000000000000000000',
+        '0x0000000000000000000000000000000000000000'
+      ],
+      percentages: [0, 0, 0, 0, 0],
+      count: 0  // 0 = all fees go to beneficiary
+    }
   }
   
   const tx = await factory.write.createLaunch(params, {
-    value: parseEther('0.0013') // 0.001 ETH bootstrap + 0.0003 ETH micro fee
+    value: parseEther('0.001') // Bootstrap liquidity
   })
   
   const receipt = await tx.wait()
@@ -75,8 +85,58 @@ async function launchMyToken() {
 | `symbol` | string | Token symbol | Max 12 characters |
 | `beneficiary` | address | Fee recipient (70% of trading fees) | Must be valid address |
 | `agentWallet` | address | Agent wallet for claws.fun | Optional, can be same as beneficiary |
-| `isPremium` | bool | Premium tier launch | false = $0.70, true = $2.30 |
 | `targetMcapETH` | uint256 | Starting MCAP | Must be 1-10 ETH (whole numbers only) |
+| `feeSplit` | FeeSplit | Optional fee split config | Split creator's 70% across 1-5 wallets |
+
+### Fee Split Feature 🆕
+
+**Split your creator revenue across multiple wallets!**
+
+The `feeSplit` parameter lets you split the creator's 70% share across up to 5 wallets (platform keeps 30%).
+
+**Example: Team Revenue Split**
+
+```typescript
+const params = {
+  name: "Team Token",
+  symbol: "TEAM",
+  beneficiary: await signer.getAddress(),
+  agentWallet: await signer.getAddress(),
+  targetMcapETH: parseEther('5'),
+  feeSplit: {
+    wallets: [
+      '0xDev...', // Development wallet
+      '0xMarketing...', // Marketing wallet
+      '0xTreasury...', // Treasury wallet
+      '0xAdvisor...', // Advisor wallet
+      '0xCreator...', // Creator wallet
+    ],
+    percentages: [3000, 4000, 1000, 1000, 1000], // In basis points (BPS)
+    count: 5  // Number of active wallets
+  }
+}
+```
+
+**This splits the creator's 70% as:**
+- Dev: 30% (of 70% = 21% of total)
+- Marketing: 40% (of 70% = 28% of total)
+- Treasury: 10% (of 70% = 7% of total)
+- Advisor: 10% (of 70% = 7% of total)
+- Creator: 10% (of 70% = 7% of total)
+
+**Rules:**
+- ✅ Up to 5 wallets
+- ✅ Percentages must sum to exactly 10000 BPS (100%)
+- ✅ No zero addresses
+- ✅ Platform 30% is never affected
+- ✅ If `count = 0`, all 70% goes to beneficiary (default)
+
+**Use Cases:**
+- 🤝 Agent teams splitting revenue
+- 💼 DAO treasury allocations
+- 🎯 Marketing budget automation
+- 👥 Partner revenue sharing
+- 🏗️ Development fund allocation
 
 ### Starting MCAP & Tax/Limits
 
@@ -110,8 +170,16 @@ Your chosen starting MCAP determines initial values:
           {"name": "symbol", "type": "string"},
           {"name": "beneficiary", "type": "address"},
           {"name": "agentWallet", "type": "address"},
-          {"name": "isPremium", "type": "bool"},
-          {"name": "targetMcapETH", "type": "uint256"}
+          {"name": "targetMcapETH", "type": "uint256"},
+          {
+            "name": "feeSplit",
+            "type": "tuple",
+            "components": [
+              {"name": "wallets", "type": "address[5]"},
+              {"name": "percentages", "type": "uint16[5]"},
+              {"name": "count", "type": "uint8"}
+            ]
+          }
         ]
       }
     ],
@@ -247,7 +315,9 @@ async function sellTokens(tokenAddress: string, tokenAmount: string) {
 
 ## 💰 Claiming Your Fees
 
-As a token creator (beneficiary), you earn 70% of all trading fees.
+As a token creator, you (or your team) earn 70% of all trading fees. Platform keeps 30%.
+
+**If you configured a fee split**, each wallet in the split claims independently.
 
 ### Claim ETH Fees (from buys)
 
@@ -292,6 +362,45 @@ async function claimTokenFees(tokenAddress: string) {
   }
 }
 ```
+
+### Claiming Split Fees (Multi-Wallet)
+
+If you configured a fee split, each wallet claims its portion independently:
+
+```typescript
+async function claimTeamFees(teamWallets: string[]) {
+  const hook = getContract(CONTRACTS.hook, hookABI)
+  
+  for (const wallet of teamWallets) {
+    // Check ETH fees for this wallet
+    const ethFees = await hook.read.beneficiaryFeesETH(wallet)
+    if (ethFees > 0n) {
+      const tx = await hook.write.claimBeneficiaryFeesETH(wallet)
+      await tx.wait()
+      console.log(`${wallet}: Claimed ${formatEther(ethFees)} ETH`)
+    }
+    
+    // Check token fees for this wallet
+    const tokenFees = await hook.read.beneficiaryFeesToken(wallet, tokenAddress)
+    if (tokenFees > 0n) {
+      const tx = await hook.write.claimBeneficiaryFeesToken(wallet, tokenAddress)
+      await tx.wait()
+      console.log(`${wallet}: Claimed ${formatEther(tokenFees)} tokens`)
+    }
+  }
+}
+
+// Example: Claim for all team wallets
+await claimTeamFees([
+  '0xDev...',
+  '0xMarketing...',
+  '0xTreasury...',
+  '0xAdvisor...',
+  '0xCreator...'
+])
+```
+
+**Important:** Fee splits are configured at launch and cannot be changed. Each wallet must claim their own fees.
 
 ### Hook Fee Claiming ABIs
 

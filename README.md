@@ -195,7 +195,7 @@ Hook Tax (Buys Only):
 - Epoch 4: 6.25%
 
 Distribution:
-- 70% to token creator (beneficiary)
+- 70% to token creator (split across 1-5 wallets if configured)
 - 30% to platform
 ```
 
@@ -208,6 +208,33 @@ Limits: Removed
 Distribution:
 - 100% to liquidity providers
 ```
+
+#### 🆕 Fee Split Feature
+
+**Split your creator revenue across multiple wallets!**
+
+Creators can split their 70% share across up to **5 different wallets** with custom percentages:
+
+```typescript
+feeSplit: {
+  wallets: ['0xDev', '0xMarketing', '0xTreasury', '0xAdvisor', '0xCreator'],
+  percentages: [3000, 4000, 1000, 1000, 1000], // In basis points (must sum to 10000)
+  count: 5
+}
+```
+
+**Use Cases:**
+- 🤝 Agent teams splitting revenue
+- 💼 DAO treasury allocations  
+- 🎯 Marketing budget automation
+- 👥 Partner revenue sharing
+- 🏗️ Development fund allocation
+
+**Rules:**
+- Up to 5 wallets maximum
+- Percentages must sum to 10000 BPS (100% of creator's 70%)
+- Platform 30% is never affected
+- If count = 0, all 70% goes to beneficiary (default)
 
 ### Gas Costs
 
