@@ -47,12 +47,7 @@ contract NewToken is Script {
                 symbol: "GTWLP",
                 beneficiary: deployer,
                 agentWallet: deployer,
-                targetMcapETH: 1 ether,
-                feeSplit: ClawclickFactory.FeeSplit({
-                    wallets: [address(0), address(0), address(0), address(0), address(0)],
-                    percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                    count: 0
-                })
+                targetMcapETH: 1 ether
             })
         );
 

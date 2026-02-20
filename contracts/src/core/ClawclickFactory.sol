@@ -8,8 +8,6 @@ import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency} from "v4-core/src/types/Currency.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
-import {FullMath} from "v4-core/src/libraries/FullMath.sol";
-import {FixedPoint96} from "v4-core/src/libraries/FixedPoint96.sol";
 import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
@@ -22,10 +20,7 @@ import {ClawclickToken} from "./ClawclickToken.sol";
 import {ClawclickConfig} from "./ClawclickConfig.sol";
 import {ClawclickHook} from "./ClawclickHook_V4.sol";
 import {BootstrapETH} from "../utils/BootstrapETH.sol";
-import {FeeSplitter} from "../utils/FeeSplitter.sol";
-import {FeeSplitLib} from "../libraries/FeeSplitLib.sol";
-import {LaunchLib} from "../libraries/LaunchLib.sol";
-import {PositionLib} from "../libraries/PositionLib.sol";
+import {PriceMath} from "../libraries/PriceMath.sol";
 
 /**
  * @title ClawclickFactory
@@ -135,14 +130,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
                                 TYPES
     //////////////////////////////////////////////////////////////*/
     
-    /// @notice Fee split configuration for creator's 70% share
-    /// @dev Splits the creator's 70% across up to 5 wallets (platform 30% unchanged)
-    struct FeeSplit {
-        address[5] wallets;
-        uint16[5] percentages;
-        uint8 count;
-    }
-    
     struct LaunchInfo {
         address token;
         address beneficiary;
@@ -155,7 +142,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 createdBlock;
         string name;
         string symbol;
-        address splitterAddress;  // Fee splitter contract (if multi-wallet split, else address(0))
     }
     
     struct CreateParams {
@@ -164,7 +150,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         address beneficiary;
         address agentWallet;
         uint256 targetMcapETH;    // 1-10 ETH target
-        FeeSplit feeSplit;        // Optional: split creator's 70% across multiple wallets
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -207,8 +192,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     error SqrtPriceOverflow();
     error TokenApprovalFailed();
     error LiquidityAddFailed();
-    error InvalidFeeSplit();
-    error ZeroAddressInSplit();
 
     /*//////////////////////////////////////////////////////////////
                               CONSTRUCTOR
@@ -284,28 +267,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             }
         }
         
-        // Validate params
-        _validateParams(params);
-        
-        // 0. Deploy fee splitter FIRST if multi-wallet split requested
-        address beneficiary = params.beneficiary;
-        address splitterAddress = address(0);
-        
-        if (params.feeSplit.count > 0) {
-            // Deploy immutable fee splitter
-            address payable[5] memory recipients;
-            for (uint8 i = 0; i < 5; i++) {
-                recipients[i] = payable(params.feeSplit.wallets[i]);
-            }
-            
-            FeeSplitter splitter = new FeeSplitter(
-                recipients,
-                params.feeSplit.percentages,
-                params.feeSplit.count
-            );
-            
-            splitterAddress = address(splitter);
-            beneficiary = splitterAddress; // Use splitter as beneficiary
+        // Inline validation (saves function call overhead)
+        if (bytes(params.name).length > 32) revert NameTooLong();
+        if (bytes(params.name).length == 0) revert EmptyName();
+        if (bytes(params.symbol).length > 10) revert SymbolTooLong();
+        if (bytes(params.symbol).length == 0) revert EmptySymbol();
+        if (params.beneficiary == address(0)) revert ZeroBeneficiary();
+        if (params.targetMcapETH < MIN_TARGET_MCAP || params.targetMcapETH > MAX_TARGET_MCAP) {
+            revert InvalidTargetMcap();
         }
         
         // 1. Deploy token (supply minted to factory for liquidity provision)
@@ -313,12 +282,13 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             params.name,
             params.symbol,
             address(this),  // Factory receives tokens to add liquidity
-            beneficiary,    // Either user's wallet OR fee splitter contract
+            params.beneficiary,
             params.agentWallet
         ));
         
-        // 2. Calculate deterministic sqrtPrice from target MCAP
-        uint160 sqrtPriceX96 = _calculateSqrtPrice(params.targetMcapETH);
+        // 2. Calculate deterministic sqrtPrice from target MCAP (via external library)
+        uint256 totalSupply = TOTAL_SUPPLY;
+        uint160 sqrtPriceX96 = PriceMath.calculateSqrtPrice(params.targetMcapETH, totalSupply);
         
         // 3. Create pool key
         PoolKey memory key = _createPoolKey(token);
@@ -328,12 +298,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         poolManager.initialize(key, sqrtPriceX96);
         
         // 5. Register launch with hook
-        hook.registerLaunch(key, token, beneficiary, params.targetMcapETH, sqrtPriceX96);
+        hook.registerLaunch(key, token, params.beneficiary, params.targetMcapETH, sqrtPriceX96);
         
-        // 6. Calculate position ranges
-        uint256 totalSupply = TOTAL_SUPPLY;
+        // 6. Calculate position ranges (via external library)
         (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
-            _calculatePositionRanges(params.targetMcapETH, totalSupply);
+            PriceMath.calculatePositionRanges(params.targetMcapETH, totalSupply);
         
         // 7. Mint ALL P1-P5 positions at launch
         //    P1: tokens + bootstrap ETH (spans current price)
@@ -381,7 +350,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // 9. Store launch info
         LaunchInfo memory info = LaunchInfo({
             token: token,
-            beneficiary: beneficiary,      // Either user wallet OR splitter address
+            beneficiary: params.beneficiary,
             agentWallet: params.agentWallet,
             creator: msg.sender,
             poolId: poolId,
@@ -390,8 +359,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             createdAt: block.timestamp,
             createdBlock: block.number,
             name: params.name,
-            symbol: params.symbol,
-            splitterAddress: splitterAddress  // Track splitter (if used)
+            symbol: params.symbol
         });
         
         launchByToken[token] = info;
@@ -416,205 +384,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     }
 
     /*//////////////////////////////////////////////////////////////
-                         PRICE CALCULATION
-    //////////////////////////////////////////////////////////////*/
-    
-    /**
-     * @notice Calculate sqrtPriceX96 from target MCAP using exact Q64.96 math
-     * @dev CRITICAL: Understanding v4 price semantics
-     * 
-     * In Uniswap v4:
-     *   sqrtPriceX96 = sqrt(amount1/amount0) * 2^96
-     * 
-     * For our pool (ETH=currency0, Token=currency1):
-     *   sqrtPriceX96 = sqrt(token/ETH) * 2^96
-     * 
-     * We want: price_ETH_per_token = targetMcap / totalSupply
-     * But sqrtPriceX96 represents: token/ETH = 1 / price_ETH_per_token
-     * 
-     * Therefore:
-     *   sqrtPriceX96 = sqrt(totalSupply / targetMcap) * 2^96
-     * 
-     * Implementation:
-     *   1. ratio = totalSupply / targetMcap (inverted price)
-     *   2. ratioX96 = ratio * 2^96
-     *   3. sqrtRatioX48 = sqrt(ratioX96) = sqrt(ratio * 2^96) = sqrt(ratio) * 2^48
-     *   4. sqrtPriceX96 = sqrtRatioX48 * 2^48
-     * 
-     * @param targetMcapETH Target market cap in ETH (1-10 ETH)
-     * @return sqrtPriceX96 The sqrt price in Q64.96 format
-     */
-    function _calculateSqrtPrice(uint256 targetMcapETH) internal pure returns (uint160 sqrtPriceX96) {
-        if (targetMcapETH < MIN_TARGET_MCAP || targetMcapETH > MAX_TARGET_MCAP) {
-            revert InvalidTargetMcap();
-        }
-        
-        // Step 1: Calculate inverted ratio scaled by 2^96
-        // ratioX96 = (totalSupply * 2^96) / targetMcap
-        uint256 ratioX96 = FullMath.mulDiv(TOTAL_SUPPLY, FixedPoint96.Q96, targetMcapETH);
-        
-        // Step 2: Take square root
-        // sqrt(ratioX96) = sqrt(totalSupply/targetMcap * 2^96) = sqrt(totalSupply/targetMcap) * 2^48
-        uint256 sqrtRatioX48 = _sqrt(ratioX96);
-        
-        // Step 3: Scale back up to Q96
-        // sqrtPriceX96 = sqrtRatioX48 * 2^48
-        uint256 result = sqrtRatioX48 * (1 << 48);
-        
-        // ✅ SECURITY: Explicit bounds check for uint160 cast safety
-        // sqrtPriceX96 must fit in uint160 per Uniswap v4 specification
-        // Valid range: [MIN_SQRT_PRICE, MAX_SQRT_PRICE] both fit in uint160
-        require(result > 0 && result <= type(uint160).max, "SqrtPrice overflow");
-        
-        // Safe cast: result bounds verified above
-        // forge-lint: disable-next-line(unsafe-typecast)
-        return uint160(result);
-    }
-    
-    /**
-     * @notice Babylonian square root method
-     * @dev Gas-efficient iterative sqrt for uint256
-     */
-    function _sqrt(uint256 x) internal pure returns (uint256 y) {
-        if (x == 0) return 0;
-        
-        uint256 z = (x + 1) / 2;
-        y = x;
-        
-        while (z < y) {
-            y = z;
-            z = (x / z + z) / 2;
-        }
-    }
-
-    /*//////////////////////////////////////////////////////////////
                     MULTI-POSITION LIQUIDITY SYSTEM
-    //////////////////////////////////////////////////////////////*/
-    
-    /**
-     * @notice Calculate all 5 position ranges with 5% overlap
-     * @dev Position ranges:
-     *      P1: startMCAP → 16x (epochs 1-4, hook tax phase)
-     *      P2: 16x → 256x (graduation, LP fee active)
-     *      P3: 256x → 4,096x
-     *      P4: 4,096x → 65,536x
-     *      P5: 65,536x → infinity
-     * 
-     * @param startingMCAP Initial MCAP in ETH
-     * @param totalSupply Token total supply
-     * @return tickLowers Lower tick bounds for all 5 positions
-     * @return tickUppers Upper tick bounds for all 5 positions
-     * @return tokenAllocations Token amounts for all 5 positions
-     */
-    function _calculatePositionRanges(
-        uint256 startingMCAP,
-        uint256 totalSupply
-    ) internal view returns (
-        int24[5] memory tickLowers,
-        int24[5] memory tickUppers,
-        uint256[5] memory tokenAllocations
-    ) {
-        // Token allocations (geometric decay: 75%, 18.75%, 4.6875%, 1.1719%, 0.3906%)
-        // Uses EXTENDED_BPS (100000) for finer granularity
-        tokenAllocations[0] = (totalSupply * config.POSITION_1_ALLOCATION_BPS()) / config.EXTENDED_BPS();
-        tokenAllocations[1] = (totalSupply * config.POSITION_2_ALLOCATION_BPS()) / config.EXTENDED_BPS();
-        tokenAllocations[2] = (totalSupply * config.POSITION_3_ALLOCATION_BPS()) / config.EXTENDED_BPS();
-        tokenAllocations[3] = (totalSupply * config.POSITION_4_ALLOCATION_BPS()) / config.EXTENDED_BPS();
-        tokenAllocations[4] = (totalSupply * config.POSITION_5_ALLOCATION_BPS()) / config.EXTENDED_BPS();
-
-        
-        // MCAP milestones (16x, 256x, 4096x, 65536x) with overflow protection
-        uint256 multiplier = config.POSITION_MCAP_MULTIPLIER();
-        uint256 p1End = startingMCAP * multiplier;
-        require(p1End >= startingMCAP, "P1 overflow");
-        
-        uint256 p2End = p1End * multiplier;
-        require(p2End >= p1End, "P2 overflow");
-        
-        uint256 p3End = p2End * multiplier;
-        require(p3End >= p2End, "P3 overflow");
-        
-        uint256 p4End = p3End * multiplier;
-        require(p4End >= p3End, "P4 overflow");
-        
-        uint256[5] memory mcapMilestones = [
-            p1End,              // P1 end: 16x
-            p2End,              // P2 end: 256x
-            p3End,              // P3 end: 4096x
-            p4End,              // P4 end: 65536x
-            type(uint256).max   // P5 end: infinity
-        ];
-        
-        uint256 overlapBps = config.POSITION_OVERLAP_BPS();
-        
-        // Calculate tick ranges with 5% overlap
-        for (uint256 i = 0; i < 5; i++) {
-            if (i == 0) {
-                // P1: starts at initial MCAP
-                tickLowers[i] = _mcapToTick(startingMCAP, totalSupply);
-            } else {
-                // P2-P5: start 5% before previous end (overlap)
-                uint256 lowerMCAP = (mcapMilestones[i-1] * (BPS - overlapBps)) / BPS;
-                tickLowers[i] = _mcapToTick(lowerMCAP, totalSupply);
-            }
-            
-            if (i == 4) {
-                // P5: ends at infinity MCAP → in ETH/Token pools, higher MCAP = lower tick
-                // So infinity MCAP maps to the lowest possible tick
-                tickUppers[i] = TICK_LOWER;
-            } else {
-                // P1-P4: end 5% after milestone (overlap)
-                uint256 upperMCAP = (mcapMilestones[i] * (BPS + overlapBps)) / BPS;
-                tickUppers[i] = _mcapToTick(upperMCAP, totalSupply);
-            }
-            
-            // Ensure tick spacing alignment
-            int24 spacing = 60; // Standard tick spacing for dynamic fee pools
-            tickLowers[i] = (tickLowers[i] / spacing) * spacing;
-            tickUppers[i] = (tickUppers[i] / spacing) * spacing;
-            
-            // Bounds check
-            if (tickLowers[i] < TICK_LOWER) tickLowers[i] = TICK_LOWER;
-            if (tickUppers[i] > TICK_UPPER) tickUppers[i] = TICK_UPPER;
-            
-            // FIX: For ETH(currency0)/Token(currency1) pairs, higher MCAP → lower tick.
-            // _mcapToTick(lowerMCAP) returns a HIGHER tick than _mcapToTick(higherMCAP),
-            // so tickLowers and tickUppers end up inverted. Swap to ensure tickLower < tickUpper.
-            if (tickLowers[i] > tickUppers[i]) {
-                int24 temp = tickLowers[i];
-                tickLowers[i] = tickUppers[i];
-                tickUppers[i] = temp;
-            }
-        }
-        
-        return (tickLowers, tickUppers, tokenAllocations);
-    }
-    
-    /**
-     * @notice Convert MCAP to tick
-     * @dev MCAP = price × totalSupply
-     *      price = MCAP / totalSupply (in ETH per token)
-     *      sqrtPriceX96 = sqrt(inverted_price) * 2^96
-     *      tick = log1.0001(sqrtPrice)
-     */
-    function _mcapToTick(
-        uint256 mcap,
-        uint256 totalSupply
-    ) internal pure returns (int24) {
-        // Calculate inverted ratio (token/ETH = totalSupply/MCAP)
-        uint256 ratioX96 = FullMath.mulDiv(totalSupply, FixedPoint96.Q96, mcap);
-        
-        // Take square root
-        uint256 sqrtRatioX48 = _sqrt(ratioX96);
-        
-        // Scale to Q96
-        uint256 sqrtPriceX96 = sqrtRatioX48 * (1 << 48);
-        
-        // Convert to tick
-        int24 tick = TickMath.getTickAtSqrtPrice(uint160(sqrtPriceX96));
-        
-        return tick;
-    }
+    //////////////////////////////////////////////////////////////*/ 
+    // Math functions moved to PriceMath.sol library to reduce bytecode
     
     /**
      * @notice Mint a position manually (fallback if not minted at launch)
@@ -631,9 +403,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         require(positionIndex < 5, "Invalid position");
         require(!state.positionMinted[positionIndex], "Already minted");
         
-        // Get pre-calculated ranges
+        // Get pre-calculated ranges from library
         (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
-            _calculatePositionRanges(state.startingMCAP, state.totalSupply);
+            PriceMath.calculatePositionRanges(state.startingMCAP, state.totalSupply);
         
         // Get pool key
         LaunchInfo memory info = launchByPoolId[poolId];
@@ -884,13 +656,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
                             VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
     
-    function getLaunchByToken(address token) external view returns (LaunchInfo memory) {
-        return launchByToken[token];
-    }
-    
-    function getLaunchByPoolId(PoolId poolId) external view returns (LaunchInfo memory) {
-        return launchByPoolId[poolId];
-    }
+    // View functions removed to save bytecode - use public mappings directly:
+    // - launchByToken[token] instead of getLaunchByToken()
+    // - launchByPoolId[poolId] instead of getLaunchByPoolId()
+    // - poolStates[poolId].positionTokenIds instead of getPositionTokenIds()
+    // - allTokens array instead of getAllTokens()
     
     function poolActivated(PoolId poolId) external view returns (bool) {
         return poolStates[poolId].activated;
@@ -899,14 +669,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     function positionTokenId(PoolId poolId) external view returns (uint256) {
         // Return P1 token ID for backward compatibility with tests
         return poolStates[poolId].positionTokenIds[0];
-    }
-    
-    function getPositionTokenIds(PoolId poolId) external view returns (uint256[5] memory) {
-        return poolStates[poolId].positionTokenIds;
-    }
-    
-    function getAllTokens() external view returns (address[] memory) {
-        return allTokens;
     }
     
     function getTokenCount() external view returns (uint256) {
@@ -922,32 +684,13 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
      * @dev Useful for UI to show expected price before launch
      */
     function previewSqrtPrice(uint256 targetMcapETH) external pure returns (uint160) {
-        return _calculateSqrtPrice(targetMcapETH);
+        return PriceMath.calculateSqrtPrice(targetMcapETH, TOTAL_SUPPLY);
     }
 
     /*//////////////////////////////////////////////////////////////
                             INTERNAL HELPERS
-    //////////////////////////////////////////////////////////////*/
-    
-    function _validateParams(CreateParams calldata params) internal pure {
-        if (bytes(params.name).length == 0) revert EmptyName();
-        if (bytes(params.symbol).length == 0) revert EmptySymbol();
-        if (bytes(params.name).length > 64) revert NameTooLong();
-        if (bytes(params.symbol).length > 12) revert SymbolTooLong();
-        if (params.beneficiary == address(0)) revert ZeroBeneficiary();
-        if (params.targetMcapETH < MIN_TARGET_MCAP || params.targetMcapETH > MAX_TARGET_MCAP) {
-            revert InvalidTargetMcap();
-        }
-        
-        // ✅ NEW: Enforce whole number MCAP (1, 2, 3, ..., 10 ETH only)
-        // No decimals allowed (e.g., no 1.5 ETH or 7.3 ETH)
-        if (params.targetMcapETH % 1 ether != 0) {
-            revert InvalidTargetMcap();
-        }
-        
-        // ✅ Validate fee split (if specified)
-        FeeSplitLib.validate(params.feeSplit.wallets, params.feeSplit.percentages, params.feeSplit.count);
-    }
+    //////////////////////////////////////////////////////////////*/ 
+    // _validateParams removed - validation inlined in createLaunch()
     
     function _createPoolKey(address token) internal view returns (PoolKey memory) {
         // ETH (address(0)) is always currency0 (lower address)

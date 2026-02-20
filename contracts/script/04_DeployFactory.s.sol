@@ -30,7 +30,7 @@ contract DeployFactory is Script {
             ClawclickConfig(configAddr),
             IPoolManager(poolManager),
             ClawclickHook(hookAddr),
-            positionManager,  // address
+            positionManager,
             BootstrapETH(bootstrapETHAddr),
             vm.addr(pk)  // owner
         );

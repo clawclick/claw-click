@@ -46,7 +46,7 @@ contract Phase1_TradingEpochs is Script {
         console2.log("");
         
         // Get launch info
-        ClawclickFactory.LaunchInfo memory info = factory.getLaunchByToken(TOKEN);
+        ClawclickFactory.LaunchInfo memory info = factory.launchByToken(TOKEN);
         
         console2.log("=== CURRENT STATUS ===");
         console2.log("Pool ID:", uint256(PoolId.unwrap(info.poolId)));

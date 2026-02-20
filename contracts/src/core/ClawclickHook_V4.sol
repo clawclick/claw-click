@@ -308,7 +308,6 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     );
     
     event FeesClaimed(address indexed recipient, uint256 amount, address token);
-    event FeeSplitDistributed(PoolId indexed poolId, address indexed wallet, uint256 amount, bool isETH);
     event EpochAdvanced(PoolId indexed poolId, uint256 position, uint256 newEpoch, uint256 currentMCAP);
     event PositionTransition(PoolId indexed poolId, uint256 newPosition);
 
@@ -481,7 +480,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         // ✅ CREATOR FIRST-BUY: Check if creator is buying within 1 minute window
         // This allows creator to buy up to 15% of supply tax-free in first minute
         IClawclickFactory factory = IClawclickFactory(config.factory());
-        IClawclickFactory.LaunchInfo memory launchInfo = factory.getLaunchByPoolId(poolId);
+        IClawclickFactory.LaunchInfo memory launchInfo = factory.launchByPoolId(poolId);
         
         bool isCreatorFirstBuy = (
             tx.origin == launchInfo.creator &&  // Must be creator wallet
@@ -539,37 +538,12 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             uint256 beneficiaryShare = (feeAmount * BENEFICIARY_SHARE_BPS) / BPS;
             uint256 platformShare = feeAmount - beneficiaryShare;
             
-            // Platform share (30%) - unchanged
             if (isETHFee) {
+                beneficiaryFeesETH[launch.beneficiary] += beneficiaryShare;
                 platformFeesETH += platformShare;
             } else {
+                beneficiaryFeesToken[launch.beneficiary][launch.token] += beneficiaryShare;
                 platformFeesToken[launch.token] += platformShare;
-            }
-            
-            // Beneficiary share (70%) - split across wallets if configured
-            IClawclickFactory.LaunchInfo memory factoryLaunchInfo = IClawclickFactory(config.factory()).getLaunchByPoolId(poolId);
-            
-            if (factoryLaunchInfo.feeSplit.count > 0) {
-                // Split creator's 70% across configured wallets
-                for (uint8 i = 0; i < factoryLaunchInfo.feeSplit.count; i++) {
-                    address wallet = factoryLaunchInfo.feeSplit.wallets[i];
-                    uint256 walletShare = (beneficiaryShare * factoryLaunchInfo.feeSplit.percentages[i]) / BPS;
-                    
-                    if (isETHFee) {
-                        beneficiaryFeesETH[wallet] += walletShare;
-                    } else {
-                        beneficiaryFeesToken[wallet][launch.token] += walletShare;
-                    }
-                    
-                    emit FeeSplitDistributed(poolId, wallet, walletShare, isETHFee);
-                }
-            } else {
-                // Default: all creator's 70% goes to beneficiary
-                if (isETHFee) {
-                    beneficiaryFeesETH[launch.beneficiary] += beneficiaryShare;
-                } else {
-                    beneficiaryFeesToken[launch.beneficiary][launch.token] += beneficiaryShare;
-                }
             }
             
             emit FeesCollected(poolId, feeAmount, beneficiaryShare, platformShare, isETHFee);

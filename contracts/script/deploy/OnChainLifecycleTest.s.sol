@@ -61,12 +61,7 @@ contract OnChainLifecycleTest is Script {
             symbol: "TTA",
             beneficiary: msg.sender,
             agentWallet: address(0),
-            targetMcapETH: 1 ether,  // 1 ETH = 2k MCAP @ $2000/ETH
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            targetMcapETH: 1 ether  // 1 ETH = 2k MCAP @ $2000/ETH
         });
         
         // Launch token
@@ -77,7 +72,7 @@ contract OnChainLifecycleTest is Script {
         console2.log("");
         
         // Step 3: Get launch info
-        ClawclickFactory.LaunchInfo memory info = factory.getLaunchByToken(token);
+        ClawclickFactory.LaunchInfo memory info = factory.launchByToken(token);
         console2.log("=== LAUNCH INFO ===");
         console2.log("Token:", info.token);
         console2.log("Beneficiary:", info.beneficiary);
@@ -98,7 +93,8 @@ contract OnChainLifecycleTest is Script {
         // Step 5: Check position token IDs
         console2.log("");
         console2.log("=== POSITIONS ===");
-        uint256[5] memory tokenIds = factory.getPositionTokenIds(info.poolId);
+        ClawclickFactory.PoolState memory poolState = factory.poolStates(info.poolId);
+        uint256[5] memory tokenIds = poolState.positionTokenIds;
         console2.log("P1 Token ID:", tokenIds[0]);
         console2.log("P2 Token ID:", tokenIds[1]);
         console2.log("P3 Token ID:", tokenIds[2]);

@@ -44,7 +44,7 @@ contract DeployFactory is Script {
             IPoolManager(POOL_MANAGER),
             ClawclickHook(payable(hookAddress)),
             POSITION_MANAGER,
-            BootstrapETH(payable(address(0))),  // No bootstrap for now
+            BootstrapETH(payable(address(0))),
             msg.sender
         );
         

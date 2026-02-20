@@ -95,69 +95,9 @@ uint256 public constant TAX_TIER_4_BPS = 625;   // 6.25% (Epoch 4)
 #### Fee Distribution
 ```solidity
 uint256 public constant PLATFORM_FEE_BPS = 3000;      // 30% of hook tax to platform
-uint256 public constant BENEFICIARY_FEE_BPS = 7000;   // 70% to token creator (can be split)
+uint256 public constant BENEFICIARY_FEE_BPS = 7000;   // 70% to token creator
 uint256 public constant GRADUATED_LP_FEE_BPS = 100;   // 1% LP fee after graduation
 ```
-
-#### 🆕 Fee Split Feature
-
-Creators can split their 70% share across up to 5 wallets:
-
-```solidity
-struct FeeSplit {
-    address[5] wallets;       // Up to 5 beneficiary wallets
-    uint16[5] percentages;    // Percentages in BPS (must sum to 10000 = 100%)
-    uint8 count;              // Number of active wallets (1-5, 0 = use default beneficiary)
-}
-```
-
-**Example Usage:**
-```solidity
-CreateParams memory params = CreateParams({
-    name: "Team Token",
-    symbol: "TEAM",
-    beneficiary: creator,
-    agentWallet: agent,
-    targetMcapETH: 5 ether,
-    feeSplit: FeeSplit({
-        wallets: [dev, marketing, treasury, advisor, creator],
-        percentages: [3000, 4000, 1000, 1000, 1000], // 30%, 40%, 10%, 10%, 10%
-        count: 5
-    })
-});
-```
-
-**This splits the creator's 70% as:**
-- Dev: 30% (of 70% = 21% of total)
-- Marketing: 40% (of 70% = 28% of total)
-- Treasury: 10% (of 70% = 7% of total)
-- Advisor: 10% (of 70% = 7% of total)
-- Creator: 10% (of 70% = 7% of total)
-
-**Validation:**
-- ✅ Percentages must sum to exactly 10000 BPS
-- ✅ No zero addresses in wallet array
-- ✅ Max 5 wallets
-- ✅ If count = 0, all 70% goes to beneficiary (default)
-- ✅ Platform 30% is never affected
-
-**Fee Distribution:**
-Hook automatically splits fees during `beforeSwap()`:
-```solidity
-if (feeSplit.count > 0) {
-    // Split creator's 70% across configured wallets
-    for (uint8 i = 0; i < feeSplit.count; i++) {
-        address wallet = feeSplit.wallets[i];
-        uint256 walletShare = (beneficiaryShare * feeSplit.percentages[i]) / BPS;
-        beneficiaryFeesETH[wallet] += walletShare; // or beneficiaryFeesToken
-    }
-} else {
-    // Default: all 70% to beneficiary
-    beneficiaryFeesETH[launch.beneficiary] += beneficiaryShare;
-}
-```
-
-Each wallet claims independently via `claimBeneficiaryFeesETH()` / `claimBeneficiaryFeesToken()`.
 
 ### Why These Numbers?
 

@@ -40,7 +40,7 @@ contract ExecuteSwap is Script {
         console2.log("");
         
         // Get launch info
-        ClawclickFactory.LaunchInfo memory info = factory.getLaunchByToken(TOKEN);
+        ClawclickFactory.LaunchInfo memory info = factory.launchByToken(TOKEN);
         PoolKey memory key = info.poolKey;
         
         console2.log("=== POOL INFO ===");

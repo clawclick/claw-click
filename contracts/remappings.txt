@@ -1,4 +1,6 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
 v4-core/src/=lib/v4-core/src/
 v4-periphery/=lib/v4-periphery/
+permit2/=lib/v4-periphery/lib/permit2/
 forge-std/=lib/forge-std/src/
+solmate/=lib/v4-core/lib/solmate/src/

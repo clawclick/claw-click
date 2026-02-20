@@ -101,19 +101,15 @@ contract TestLaunch is BaseTest {
     function test_revert_belowMinMcap() public {
         vm.startPrank(deployer);
 
-        uint256 fee = 0.001 ether /* bootstrap */;
+        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Fail Token",
             symbol: "FAIL",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            targetMcapETH: 0.5 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            isPremium: false,
+            targetMcapETH: 0.5 ether
         });
 
         vm.expectRevert();
@@ -129,19 +125,15 @@ contract TestLaunch is BaseTest {
     function test_revert_aboveMaxMcap() public {
         vm.startPrank(deployer);
 
-        uint256 fee = 0.001 ether /* bootstrap */;
+        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Fail Token",
             symbol: "FAIL",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            targetMcapETH: 11 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            isPremium: false,
+            targetMcapETH: 11 ether
         });
 
         vm.expectRevert();
@@ -162,12 +154,8 @@ contract TestLaunch is BaseTest {
             symbol: "FAIL",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            targetMcapETH: 1 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            isPremium: false,
+            targetMcapETH: 1 ether
         });
 
         vm.expectRevert();
@@ -183,19 +171,15 @@ contract TestLaunch is BaseTest {
     function test_revert_emptyName() public {
         vm.startPrank(deployer);
 
-        uint256 fee = 0.001 ether /* bootstrap */;
+        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "",
             symbol: "TEST",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            targetMcapETH: 1 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            isPremium: false,
+            targetMcapETH: 1 ether
         });
 
         vm.expectRevert();
@@ -207,19 +191,15 @@ contract TestLaunch is BaseTest {
     function test_revert_emptySymbol() public {
         vm.startPrank(deployer);
 
-        uint256 fee = 0.001 ether /* bootstrap */;
+        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test",
             symbol: "",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            targetMcapETH: 1 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            isPremium: false,
+            targetMcapETH: 1 ether
         });
 
         vm.expectRevert();
@@ -235,19 +215,15 @@ contract TestLaunch is BaseTest {
     function test_revert_zeroBeneficiary() public {
         vm.startPrank(deployer);
 
-        uint256 fee = 0.001 ether /* bootstrap */;
+        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test",
             symbol: "TEST",
             beneficiary: address(0),
             agentWallet: deployer,
-            targetMcapETH: 1 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            isPremium: false,
+            targetMcapETH: 1 ether
         });
 
         vm.expectRevert();
@@ -306,8 +282,8 @@ contract TestLaunch is BaseTest {
     function test_premiumFee() public {
         vm.startPrank(deployer);
 
-        uint256 premiumFee = 0.001 ether /* bootstrap */;
-        uint256 microFee = 0.001 ether /* bootstrap */;
+        uint256 premiumFee = factory.getFee(true);
+        uint256 microFee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         assertTrue(premiumFee > microFee, "Premium should cost more");
 
@@ -316,12 +292,8 @@ contract TestLaunch is BaseTest {
             symbol: "PREM",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            targetMcapETH: 1 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            isPremium: true,
+            targetMcapETH: 1 ether
         });
 
         (address token,) = factory.createLaunch{value: premiumFee + bootstrap}(params);
@@ -367,39 +339,39 @@ contract TestLaunch is BaseTest {
     }
 
     /*//////////////////////////////////////////////////////////////
-     TEST 14: DEPRECATED FUNCTIONS REVERT (COMMENTED OUT - FUNCTIONS REMOVED)
+     TEST 14: DEPRECATED FUNCTIONS REVERT
     //////////////////////////////////////////////////////////////*/
 
-    // function test_revert_activatePoolDeprecated() public {
-    //     vm.startPrank(deployer);
-    //     (,, PoolKey memory key) = _createLaunch(1 ether, beneficiary);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(alice);
-    //     vm.expectRevert("Pools activated at launch");
-    //     factory.activatePool{value: 0.5 ether}(key);
-    //     vm.stopPrank();
-    // }
-
-    // function test_revert_activateAndSwapDevDeprecated() public {
-    //     vm.startPrank(deployer);
-    //     (,, PoolKey memory key) = _createLaunch(1 ether, deployer);
-    //     vm.stopPrank();
-
-    //     vm.startPrank(deployer);
-    //     vm.expectRevert("Use regular launch flow");
-    //     factory.activateAndSwapDev{value: 0.1 ether}(key);
-    //     vm.stopPrank();
-    // }
-
-    function test_revert_clearDevOverrideDeprecated() public {
+    function test_revert_activatePoolDeprecated() public {
         vm.startPrank(deployer);
-        (, PoolId poolId, PoolKey memory key) = _createLaunch(1 ether, deployer);
+        (,, PoolKey memory key) = _createLaunch(1 ether, beneficiary);
+        vm.stopPrank();
+
+        vm.startPrank(alice);
+        vm.expectRevert("Pools activated at launch");
+        factory.activatePool{value: 0.5 ether}(key);
+        vm.stopPrank();
+    }
+
+    function test_revert_activateAndSwapDevDeprecated() public {
+        vm.startPrank(deployer);
+        (,, PoolKey memory key) = _createLaunch(1 ether, deployer);
         vm.stopPrank();
 
         vm.startPrank(deployer);
-        vm.expectRevert("First-buy window still active");
-        factory.clearDevOverride(poolId);
+        vm.expectRevert("Use regular launch flow");
+        factory.activateAndSwapDev{value: 0.1 ether}(key);
+        vm.stopPrank();
+    }
+
+    function test_revert_clearDevOverrideDeprecated() public {
+        vm.startPrank(deployer);
+        (,, PoolKey memory key) = _createLaunch(1 ether, deployer);
+        vm.stopPrank();
+
+        vm.startPrank(deployer);
+        vm.expectRevert("No dev override in new system");
+        factory.clearDevOverride(key);
         vm.stopPrank();
     }
 }

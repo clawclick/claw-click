@@ -72,12 +72,8 @@ contract FullFlowLiveTest is Script {
         console2.log("Hook    :", address(hook));
 
         factory = new ClawclickFactory(
-            config, 
-            IPoolManager(POOL_MANAGER), 
-            hook,
-            POSITION_MANAGER,
-            BootstrapETH(payable(address(0))),  // No bootstrap for testing
-            deployer
+            config, IPoolManager(POOL_MANAGER), hook,
+            POSITION_MANAGER, BootstrapETH(payable(address(0))), deployer
         );
         config.setFactory(address(factory));
         console2.log("Factory :", address(factory));
@@ -98,12 +94,7 @@ contract FullFlowLiveTest is Script {
                 symbol: "GRAD",
                 beneficiary: deployer,
                 agentWallet: deployer,
-                targetMcapETH: 1 ether,
-                feeSplit: ClawclickFactory.FeeSplit({
-                    wallets: [address(0), address(0), address(0), address(0), address(0)],
-                    percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                    count: 0
-                })
+                targetMcapETH: 1 ether
             })
         );
         PoolKey memory key = _buildPoolKey(token);

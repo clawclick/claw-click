@@ -18,8 +18,8 @@ contract SimpleLaunch is Script {
         console2.log("Factory:", FACTORY);
         console2.log("Deployer:", msg.sender);
         
-        // Bootstrap amount
-        uint256 bootstrap = 0.001 ether;  // $2 at $2000/ETH
+        // Bootstrap amount (0.01 ETH minimum)
+        uint256 bootstrap = 0.01 ether;
         console2.log("Bootstrap:", bootstrap);
         
         vm.startBroadcast();
@@ -30,12 +30,7 @@ contract SimpleLaunch is Script {
             symbol: "TTA",
             beneficiary: msg.sender,
             agentWallet: address(0),
-            targetMcapETH: 1 ether,
-            feeSplit: ClawclickFactory.FeeSplit({
-                wallets: [address(0), address(0), address(0), address(0), address(0)],
-                percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-                count: 0
-            })
+            targetMcapETH: 1 ether
         });
         
         (address token, ) = factory.createLaunch{value: bootstrap}(params);

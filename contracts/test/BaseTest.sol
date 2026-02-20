@@ -7,7 +7,6 @@ import "../src/core/ClawclickHook_V4.sol";
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickToken.sol";
 import "../src/utils/HookMiner.sol";
-import "../src/utils/BootstrapETH.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
@@ -28,7 +27,7 @@ import {TestSwapRouter} from "./TestSwapRouter.sol";
  *
  * NEW SYSTEM (multi-position):
  *   - Pools are activated at launch with bootstrap ETH (no separate activation step)
- *   - No keeper/reposition system - multi-position management is automatic via hook
+ *   - No keeper/reposition system — multi-position management is automatic via hook
  *   - tickSpacing = 60 (was 200)
  *   - Starting epoch = 1 (was 0)
  *   - Universal 50% base tax for all MCAPs
@@ -99,7 +98,6 @@ abstract contract BaseTest is Test {
             IPoolManager(POOL_MANAGER),
             hook,
             POSITION_MANAGER,
-            BootstrapETH(payable(address(0))),  // No bootstrap for testing
             deployer
         );
 
@@ -193,8 +191,7 @@ abstract contract BaseTest is Test {
             symbol: "TEST",
             beneficiary: _beneficiary,
             agentWallet: _beneficiary,
-            targetMcapETH: targetMcapETH,
-            feeSplit: _defaultFeeSplit()
+            targetMcapETH: targetMcapETH
         });
         (token, poolId) = factory.createLaunch{value: bootstrapETH}(params);
         key = _buildPoolKey(token);
@@ -214,8 +211,7 @@ abstract contract BaseTest is Test {
             symbol: symbol,
             beneficiary: _beneficiary,
             agentWallet: _beneficiary,
-            targetMcapETH: targetMcapETH,
-            feeSplit: _defaultFeeSplit()
+            targetMcapETH: targetMcapETH
         });
         (token, poolId) = factory.createLaunch{value: bootstrapETH}(params);
         key = _buildPoolKey(token);
@@ -258,7 +254,7 @@ abstract contract BaseTest is Test {
         }
     }
 
-    /// @notice Buy from a pooled trader - tokens accumulate naturally (no resets).
+    /// @notice Buy from a pooled trader — tokens accumulate naturally (no resets).
     /// @dev Uses try-catch: if the wallet hits maxWallet the buy silently fails
     ///      and the caller loop can continue with the next iteration.
     function _buyFromFreshWallet(PoolKey memory key, uint256 ethAmount) internal returns (BalanceDelta delta) {
@@ -266,7 +262,7 @@ abstract contract BaseTest is Test {
         address trader = _traderPool[_traderPoolIdx % TRADER_POOL_SIZE];
         _traderPoolIdx++;
 
-        // Top-up ETH if needed (address already cached - no RPC call)
+        // Top-up ETH if needed (address already cached — no RPC call)
         if (trader.balance < ethAmount + 0.01 ether) {
             vm.deal(trader, ethAmount + 1 ether);
         }
@@ -275,7 +271,7 @@ abstract contract BaseTest is Test {
         try router.buy{value: ethAmount}(key, ethAmount) returns (BalanceDelta d) {
             delta = d;
         } catch {
-            // ExceedsMaxWallet or ExceedsMaxTx - wallet full, skip
+            // ExceedsMaxWallet or ExceedsMaxTx — wallet full, skip
         }
         _autoMintPositions(key);
     }
@@ -357,7 +353,7 @@ abstract contract BaseTest is Test {
                 _autoMintPositions(key);
                 return delta;
             } catch {
-                // Unexpected revert - try next wallet
+                // Unexpected revert — try next wallet
                 continue;
             }
         }
@@ -391,22 +387,13 @@ abstract contract BaseTest is Test {
         return _mcapFromSqrtPrice(sqrtPriceX96);
     }
 
-    /// @notice Calculate MCAP from sqrtPrice
+    /// @notice Calculate MCAP from sqrtPrice  
     function _mcapFromSqrtPrice(uint160 sqrtPriceX96) internal pure returns (uint256) {
         uint256 intermediate = (TOTAL_SUPPLY * (1 << 96)) / uint256(sqrtPriceX96);
         return (intermediate * (1 << 96)) / uint256(sqrtPriceX96);
     }
 
-    /// @notice Helper: Create default fee split (no split, all goes to beneficiary)
-    function _defaultFeeSplit() internal pure returns (ClawclickFactory.FeeSplit memory) {
-        return ClawclickFactory.FeeSplit({
-            wallets: [address(0), address(0), address(0), address(0), address(0)],
-            percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-            count: 0
-        });
-    }
-
-    /// @notice Create launch - pool is already activated at creation
+    /// @notice Create launch — pool is already activated at creation
     /// @dev activationETH parameter kept for backward compat but ignored (bootstrap is automatic)
     function _createAndActivate(
         uint256 targetMcapETH,
@@ -416,7 +403,7 @@ abstract contract BaseTest is Test {
         (token, poolId, key) = _createLaunch(targetMcapETH, _beneficiary);
     }
 
-    /// @notice Create launch with custom name - pool is already activated at creation
+    /// @notice Create launch with custom name — pool is already activated at creation
     function _createAndActivateNamed(
         string memory name,
         string memory symbol,
