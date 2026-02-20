@@ -156,21 +156,25 @@ export default function Home() {
     }
   ]
 
-  const trendingTokens = [
-    { ticker: '$AGENT', change: '+156%', mcap: '$2.4M', chain: 'BASE' },
-    { ticker: '$CLAW', change: '+89%', mcap: '$1.8M', chain: 'ETH' },
-    { ticker: '$BOT', change: '+67%', mcap: '$890K', chain: 'BSC' },
-    { ticker: '$DEGEN', change: '+54%', mcap: '$650K', chain: 'BASE' },
-    { ticker: '$AI', change: '+43%', mcap: '$420K', chain: 'ETH' },
-  ]
+  // TODO: Fetch from API once backend is live
+  const trendingTokens: any[] = []
+  // const trendingTokens = [
+  //   { ticker: '$AGENT', change: '+156%', mcap: '$2.4M', chain: 'BASE' },
+  //   { ticker: '$CLAW', change: '+89%', mcap: '$1.8M', chain: 'ETH' },
+  //   { ticker: '$BOT', change: '+67%', mcap: '$890K', chain: 'BSC' },
+  //   { ticker: '$DEGEN', change: '+54%', mcap: '$650K', chain: 'BASE' },
+  //   { ticker: '$AI', change: '+43%', mcap: '$420K', chain: 'ETH' },
+  // ]
 
-  const mockTokens = [
-    { name: 'AgentX', symbol: 'AGTX', mcap: '$125K', vol24h: '$8.2K', price: '$0.042', change: '+24.5%', hot: true, chain: 'BASE', txs: 1240, buys: 890, sells: 350, chartUrl: '#', scanUrl: '#' },
-    { name: 'ClawAI', symbol: 'CLAW', mcap: '$89K', vol24h: '$5.1K', price: '$0.089', change: '+18.2%', hot: true, chain: 'ETH', txs: 856, buys: 620, sells: 236, chartUrl: '#', scanUrl: '#' },
-    { name: 'BotToken', symbol: 'BOT', mcap: '$67K', vol24h: '$3.8K', price: '$0.067', change: '+12.1%', hot: false, chain: 'BSC', txs: 432, buys: 290, sells: 142, chartUrl: '#', scanUrl: '#' },
-    { name: 'AutoCoin', symbol: 'AUTO', mcap: '$54K', vol24h: '$2.9K', price: '$0.054', change: '+8.4%', hot: false, chain: 'BASE', txs: 321, buys: 201, sells: 120, chartUrl: '#', scanUrl: '#' },
-    { name: 'SmartAgent', symbol: 'SMART', mcap: '$42K', vol24h: '$2.1K', price: '$0.042', change: '+5.7%', hot: false, chain: 'ETH', txs: 256, buys: 178, sells: 78, chartUrl: '#', scanUrl: '#' },
-  ]
+  // TODO: Fetch from API once backend is live
+  const mockTokens: any[] = []
+  // const mockTokens = [
+  //   { name: 'AgentX', symbol: 'AGTX', mcap: '$125K', vol24h: '$8.2K', price: '$0.042', change: '+24.5%', hot: true, chain: 'BASE', txs: 1240, buys: 890, sells: 350, chartUrl: '#', scanUrl: '#' },
+  //   { name: 'ClawAI', symbol: 'CLAW', mcap: '$89K', vol24h: '$5.1K', price: '$0.089', change: '+18.2%', hot: true, chain: 'ETH', txs: 856, buys: 620, sells: 236, chartUrl: '#', scanUrl: '#' },
+  //   { name: 'BotToken', symbol: 'BOT', mcap: '$67K', vol24h: '$3.8K', price: '$0.067', change: '+12.1%', hot: false, chain: 'BSC', txs: 432, buys: 290, sells: 142, chartUrl: '#', scanUrl: '#' },
+  //   { name: 'AutoCoin', symbol: 'AUTO', mcap: '$54K', vol24h: '$2.9K', price: '$0.054', change: '+8.4%', hot: false, chain: 'BASE', txs: 321, buys: 201, sells: 120, chartUrl: '#', scanUrl: '#' },
+  //   { name: 'SmartAgent', symbol: 'SMART', mcap: '$42K', vol24h: '$2.1K', price: '$0.042', change: '+5.7%', hot: false, chain: 'ETH', txs: 256, buys: 178, sells: 78, chartUrl: '#', scanUrl: '#' },
+  // ]
 
   return (
     <main className="min-h-screen relative bg-[#1a1a1a] text-white overflow-x-hidden w-full">
