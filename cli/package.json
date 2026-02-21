@@ -1,5 +1,5 @@
 {
-  "name": "@clawclick/sdk",
+  "name": "clawclick-sdk",
   "version": "0.1.0",
   "description": "CLI & SDK for Claw.Click agents — launch tokens, trade, upload images, claim fees",
   "main": "dist/index.js",
