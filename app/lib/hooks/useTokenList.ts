@@ -71,7 +71,7 @@ export function useTokenList() {
 
       for (const event of launchEvents) {
         try {
-          const eventArgs = event.args as any
+          const eventArgs = (event as any).args
           const poolId = eventArgs.poolId
           
           // Get launch info
@@ -134,7 +134,7 @@ export function useTokenList() {
           let sellCount = 0
 
           for (const swap of recent24hSwaps) {
-            const swapArgs = swap.args as any
+            const swapArgs = (swap as any).args
             if (swapArgs.isBuy) {
               buyCount++
             } else {

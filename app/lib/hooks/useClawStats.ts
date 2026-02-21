@@ -50,7 +50,7 @@ export function useClawStats() {
       let totalMarketCapWei = 0n
 
       for (const launch of launchEvents) {
-        const poolId = (launch.args as any).poolId
+        const poolId = (launch as any).args.poolId
         
         try {
           // Get swap events for this pool
