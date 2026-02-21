@@ -15,7 +15,7 @@ export interface ClawStats {
 
 const publicClient = createPublicClient({
   chain: sepolia,
-  transport: http('https://eth-sepolia.g.alchemy.com/v2/BdgPEmQddox2due7mrt9J'),
+  transport: http('https://rpc.sepolia.org'),
 })
 
 export function useClawStats() {
@@ -33,12 +33,12 @@ export function useClawStats() {
 
   async function fetchStats() {
     try {
-      // Get all LaunchCreated events
+      // Get all LaunchCreated events (start from deployment block ~10.3M)
       const launchEvents = await publicClient.getContractEvents({
         address: CONTRACTS.FACTORY as `0x${string}`,
         abi: FactoryABI,
         eventName: 'LaunchCreated',
-        fromBlock: 0n,
+        fromBlock: 10300000n,
         toBlock: 'latest',
       })
 
@@ -61,7 +61,7 @@ export function useClawStats() {
             abi: HookABI,
             eventName: 'SwapExecuted',
             args: { poolId },
-            fromBlock: 0n,
+            fromBlock: 10300000n,
             toBlock: 'latest',
           })
 
