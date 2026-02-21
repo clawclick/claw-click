@@ -1,6 +1,9 @@
 import express from 'express'
 import cors from 'cors'
+import multer from 'multer'
+import { verifyMessage } from 'viem'
 import { query } from '../db/client'
+import { uploadImage } from '../lib/supabase'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -10,6 +13,19 @@ const PORT = process.env.PORT || 3001
 
 app.use(cors())
 app.use(express.json())
+
+// Multer: accept logo (max 2MB) and banner (max 5MB) in memory
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max per file
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only image files are allowed'))
+    }
+  },
+})
 
 // ============================================================================
 // PLATFORM STATS
@@ -71,7 +87,8 @@ app.get('/api/tokens', async (req, res) => {
         tx_count_24h, tx_count_total,
         buys_24h, sells_24h,
         graduated, launched_at,
-        current_epoch, current_position
+        current_epoch, current_position,
+        logo_url, banner_url
       FROM tokens
       ${whereClause}
       ORDER BY ${orderBy}
@@ -139,7 +156,8 @@ app.get('/api/tokens/trending', async (req, res) => {
     const result = await query(`
       SELECT 
         address, name, symbol, current_price, current_mcap,
-        volume_24h, price_change_24h, tx_count_24h
+        volume_24h, price_change_24h, tx_count_24h,
+        logo_url, banner_url
       FROM tokens
       WHERE launched_at > NOW() - INTERVAL '7 days'
       ORDER BY volume_24h DESC
@@ -152,6 +170,167 @@ app.get('/api/tokens/trending', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch trending tokens' })
   }
 })
+
+// ============================================================================
+// TOKEN IMAGE UPLOAD (auth via wallet signature)
+// ============================================================================
+
+// The agent signs: "clawclick:upload:<tokenAddress>:<timestamp>"
+// Timestamp must be within 10 minutes to prevent replay attacks
+const SIGNATURE_MAX_AGE_MS = 10 * 60 * 1000
+
+app.post(
+  '/api/token/:address/images',
+  upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'banner', maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const tokenAddress = req.params.address
+      const { signature, timestamp } = req.body
+
+      // --- Validate inputs ---
+      if (!signature || !timestamp) {
+        return res.status(400).json({ error: 'Missing signature or timestamp' })
+      }
+
+      const ts = parseInt(timestamp)
+      if (isNaN(ts) || Math.abs(Date.now() - ts) > SIGNATURE_MAX_AGE_MS) {
+        return res.status(401).json({ error: 'Signature expired or invalid timestamp' })
+      }
+
+      const files = req.files as { [field: string]: { buffer: Buffer; mimetype: string }[] } | undefined
+      if (!files || (!files.logo && !files.banner)) {
+        return res.status(400).json({ error: 'No image files provided (logo and/or banner)' })
+      }
+
+      // --- Verify token exists and get owner info ---
+      const tokenResult = await query(
+        'SELECT creator, agent_wallet, beneficiary FROM tokens WHERE LOWER(address) = LOWER($1)',
+        [tokenAddress]
+      )
+      if (tokenResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Token not found' })
+      }
+
+      const { creator, agent_wallet, beneficiary } = tokenResult.rows[0]
+
+      // --- Verify signature: signer must be creator, agent_wallet, or beneficiary ---
+      const message = `clawclick:upload:${tokenAddress.toLowerCase()}:${timestamp}`
+      let signer: string
+      try {
+        const valid = await verifyMessage({
+          address: creator as `0x${string}`,
+          message,
+          signature: signature as `0x${string}`,
+        })
+        if (valid) {
+          signer = creator
+        } else {
+          throw new Error('not creator')
+        }
+      } catch {
+        // Try agent_wallet
+        if (agent_wallet) {
+          try {
+            const valid = await verifyMessage({
+              address: agent_wallet as `0x${string}`,
+              message,
+              signature: signature as `0x${string}`,
+            })
+            if (valid) {
+              signer = agent_wallet
+            } else {
+              throw new Error('not agent')
+            }
+          } catch {
+            // Try beneficiary
+            try {
+              const valid = await verifyMessage({
+                address: beneficiary as `0x${string}`,
+                message,
+                signature: signature as `0x${string}`,
+              })
+              if (valid) {
+                signer = beneficiary
+              } else {
+                return res.status(403).json({ error: 'Signature does not match token owner' })
+              }
+            } catch {
+              return res.status(403).json({ error: 'Signature does not match token owner' })
+            }
+          }
+        } else {
+          // Try beneficiary as fallback
+          try {
+            const valid = await verifyMessage({
+              address: beneficiary as `0x${string}`,
+              message,
+              signature: signature as `0x${string}`,
+            })
+            if (valid) {
+              signer = beneficiary
+            } else {
+              return res.status(403).json({ error: 'Signature does not match token owner' })
+            }
+          } catch {
+            return res.status(403).json({ error: 'Signature does not match token owner' })
+          }
+        }
+      }
+
+      // --- Upload to Supabase and save URLs ---
+      const updates: string[] = []
+      const values: any[] = []
+      let paramIdx = 1
+
+      if (files.logo?.[0]) {
+        const logoUrl = await uploadImage(
+          tokenAddress,
+          'logo',
+          files.logo[0].buffer,
+          files.logo[0].mimetype
+        )
+        updates.push(`logo_url = $${paramIdx++}`)
+        values.push(logoUrl)
+      }
+
+      if (files.banner?.[0]) {
+        const bannerUrl = await uploadImage(
+          tokenAddress,
+          'banner',
+          files.banner[0].buffer,
+          files.banner[0].mimetype
+        )
+        updates.push(`banner_url = $${paramIdx++}`)
+        values.push(bannerUrl)
+      }
+
+      if (updates.length > 0) {
+        values.push(tokenAddress)
+        await query(
+          `UPDATE tokens SET ${updates.join(', ')}, updated_at = NOW() WHERE LOWER(address) = LOWER($${paramIdx})`,
+          values
+        )
+      }
+
+      const result = await query(
+        'SELECT logo_url, banner_url FROM tokens WHERE LOWER(address) = LOWER($1)',
+        [tokenAddress]
+      )
+
+      res.json({
+        success: true,
+        logo_url: result.rows[0]?.logo_url || null,
+        banner_url: result.rows[0]?.banner_url || null,
+      })
+    } catch (error) {
+      console.error('Error uploading images:', error)
+      res.status(500).json({ error: 'Failed to upload images' })
+    }
+  }
+)
 
 // ============================================================================
 // HEALTH CHECK

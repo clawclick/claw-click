@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS tokens (
   graduated_at TIMESTAMP,
   current_epoch INTEGER DEFAULT 1,
   current_position INTEGER DEFAULT 1,
+  logo_url TEXT,
+  banner_url TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -42,10 +44,12 @@ CREATE TABLE IF NOT EXISTS swaps (
   is_buy BOOLEAN,
   fee_amount DECIMAL(30,18),
   tax_bps INTEGER,
-  tx_hash VARCHAR(66) NOT NULL UNIQUE,
+  tx_hash VARCHAR(66) NOT NULL,
+  log_index INTEGER NOT NULL DEFAULT 0,
   block_number BIGINT NOT NULL,
   timestamp TIMESTAMP NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(tx_hash, log_index)
 );
 
 -- Platform stats table

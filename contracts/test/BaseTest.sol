@@ -7,6 +7,7 @@ import "../src/core/ClawclickHook_V4.sol";
 import "../src/core/ClawclickFactory.sol";
 import "../src/core/ClawclickToken.sol";
 import "../src/utils/HookMiner.sol";
+import "../src/utils/BootstrapETH.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
@@ -18,7 +19,6 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {BootstrapETH} from "../src/utils/BootstrapETH.sol";
 import {TestSwapRouter} from "./TestSwapRouter.sol";
 
 /**
@@ -28,10 +28,10 @@ import {TestSwapRouter} from "./TestSwapRouter.sol";
  *
  * NEW SYSTEM (multi-position):
  *   - Pools are activated at launch with bootstrap ETH (no separate activation step)
- *   - No keeper/reposition system — multi-position management is automatic via hook
+ *   - No keeper/reposition system - multi-position management is automatic via hook
  *   - tickSpacing = 60 (was 200)
  *   - Starting epoch = 1 (was 0)
- *   - Universal 50% base tax for all MCAPs
+ *   - Tax scales by MCAP tier: 1 ETH=50%, 5 ETH=30%, 10 ETH=5%
  */
 abstract contract BaseTest is Test {
     using PoolIdLibrary for PoolKey;
@@ -99,7 +99,7 @@ abstract contract BaseTest is Test {
             IPoolManager(POOL_MANAGER),
             hook,
             POSITION_MANAGER,
-            BootstrapETH(payable(address(0))),
+            BootstrapETH(payable(address(0))),  // No bootstrap for testing
             deployer
         );
 
@@ -232,42 +232,34 @@ abstract contract BaseTest is Test {
         });
     }
 
-    /// @notice Default empty FeeSplit (no splitting, all to beneficiary)
-    function _defaultFeeSplit() internal pure returns (ClawclickFactory.FeeSplit memory) {
-        return ClawclickFactory.FeeSplit({
-            wallets: [address(0), address(0), address(0), address(0), address(0)],
-            percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-            count: 0
-        });
-    }
-
     /// @notice Execute a buy swap (ETH → Token) through the test router
     /// @dev After swap completes, auto-mints any pending positions (P2-P5)
     function _buy(PoolKey memory key, uint256 ethAmount) internal returns (BalanceDelta delta) {
         delta = router.buy{value: ethAmount}(key, ethAmount);
-        _autoMintPositions(key);
     }
 
-    /// @notice Pool of 200 pre-funded traders that accumulate tokens like real users.
-    /// @dev Wallets are created once (200 RPC calls), then reused across buys.
+    /// @notice Pool of 50 traders that accumulate tokens like real users.
+    /// @dev Addresses are derived deterministically via makeAddr (no RPC call).
+    ///      vm.deal is called lazily — only when a trader is actually used — to
+    ///      avoid bursting the free-tier RPC rate limit (600 reqs/60 s).
     ///      maxWallet grows every epoch, so old wallets get more room over time.
-    uint256 private constant TRADER_POOL_SIZE = 200;
+    uint256 private constant TRADER_POOL_SIZE = 50;
     mapping(uint256 => address) private _traderPool;
     bool private _traderPoolReady;
     uint256 private _traderPoolIdx;
 
-    /// @dev Create 200 addresses + vm.deal once (well within 600 req/60s RPC limit).
+    /// @dev Derive 50 deterministic addresses (pure, no RPC). vm.deal is lazy.
     function _ensureTraderPool() internal {
         if (_traderPoolReady) return;
         _traderPoolReady = true;
         for (uint256 i = 0; i < TRADER_POOL_SIZE; i++) {
-            address t = makeAddr(string(abi.encodePacked("tp", vm.toString(i))));
-            vm.deal(t, 10_000 ether);
-            _traderPool[i] = t;
+            _traderPool[i] = makeAddr(string(abi.encodePacked("tp", vm.toString(i))));
+            // NOTE: vm.deal is NOT called here — it's called lazily in buy helpers
+            //       to avoid a 50-request RPC burst during setUp.
         }
     }
 
-    /// @notice Buy from a pooled trader — tokens accumulate naturally (no resets).
+    /// @notice Buy from a pooled trader - tokens accumulate naturally (no resets).
     /// @dev Uses try-catch: if the wallet hits maxWallet the buy silently fails
     ///      and the caller loop can continue with the next iteration.
     function _buyFromFreshWallet(PoolKey memory key, uint256 ethAmount) internal returns (BalanceDelta delta) {
@@ -275,7 +267,7 @@ abstract contract BaseTest is Test {
         address trader = _traderPool[_traderPoolIdx % TRADER_POOL_SIZE];
         _traderPoolIdx++;
 
-        // Top-up ETH if needed (address already cached — no RPC call)
+        // Top-up ETH if needed (address already cached - no RPC call)
         if (trader.balance < ethAmount + 0.01 ether) {
             vm.deal(trader, ethAmount + 1 ether);
         }
@@ -284,9 +276,8 @@ abstract contract BaseTest is Test {
         try router.buy{value: ethAmount}(key, ethAmount) returns (BalanceDelta d) {
             delta = d;
         } catch {
-            // ExceedsMaxWallet or ExceedsMaxTx — wallet full, skip
+            // ExceedsMaxWallet or ExceedsMaxTx - wallet full, skip
         }
-        _autoMintPositions(key);
     }
 
     /// @notice Get safe buy ETH for a specific trader, considering their remaining wallet room.
@@ -299,23 +290,19 @@ abstract contract BaseTest is Test {
         uint256 trackedBalance = hook.userBalances(poolId, trader);
         if (trackedBalance >= maxWalletTokens) return 0; // wallet full
 
-        uint256 effectiveMax;
-        {
-            uint256 roomTokens = maxWalletTokens - trackedBalance;
-            effectiveMax = roomTokens < maxTxTokens ? roomTokens : maxTxTokens;
-        }
+        uint256 roomTokens = maxWalletTokens - trackedBalance;
+        uint256 effectiveMax = roomTokens < maxTxTokens ? roomTokens : maxTxTokens;
 
+        uint256 mcap = _getCurrentMcap(poolId);
+        uint256 maxETH = (effectiveMax * mcap) / TOTAL_SUPPLY;
+
+        uint256 taxBps = hook.getCurrentTax(poolId);
         uint256 safeETH;
-        {
-            uint256 mcap = _getCurrentMcap(poolId);
-            uint256 maxETH = (effectiveMax * mcap) / TOTAL_SUPPLY;
-            uint256 taxBps = hook.getCurrentTax(poolId);
-            if (taxBps >= 10000) {
-                safeETH = 1e12;
-            } else {
-                safeETH = (maxETH * 10000) / (10000 - taxBps);
-                safeETH = (safeETH * 50) / 100; // 50% safety margin for AMM slippage
-            }
+        if (taxBps >= 10000) {
+            safeETH = 1e12;
+        } else {
+            safeETH = (maxETH * 10000) / (10000 - taxBps);
+            safeETH = (safeETH * 50) / 100; // 50% safety margin for AMM slippage
         }
         if (safeETH < 1e12) safeETH = 1e12;
         return safeETH;
@@ -360,39 +347,24 @@ abstract contract BaseTest is Test {
 
             _traderPoolIdx = idx + 1;
 
-            {
-                if (trader.balance < buyAmount + 0.01 ether) {
-                    vm.deal(trader, buyAmount + 1 ether);
-                }
+            if (trader.balance < buyAmount + 0.01 ether) {
+                vm.deal(trader, buyAmount + 1 ether);
+            }
 
-                vm.prank(trader);
-                try router.buy{value: buyAmount}(key, buyAmount) returns (BalanceDelta d) {
-                    delta = d;
-                    _autoMintPositions(key);
-                    return delta;
-                } catch {
-                    // Unexpected revert — try next wallet
-                    continue;
-                }
+            vm.prank(trader);
+            try router.buy{value: buyAmount}(key, buyAmount) returns (BalanceDelta d) {
+                delta = d;
+                return delta;
+            } catch {
+                // Unexpected revert - try next wallet
+                continue;
             }
         }
         // All 10 attempts failed (all wallets near capacity at current maxWallet)
         // Advance pointer so next call tries different wallets
         _traderPoolIdx += 10;
-        _autoMintPositions(key);
     }
 
-    /// @notice Auto-mint any pending positions after a swap
-    /// @dev Checks hook's poolProgress.currentPosition and mints unminted positions
-    ///      Called after every swap to ensure positions are minted as the price progresses
-    function _autoMintPositions(PoolKey memory key) internal {
-        PoolId pid = key.toId();
-        (uint256 currentPos,,,) = hook.poolProgress(pid);
-        // positions 1..currentPos should be minted (factory index = position - 1)
-        for (uint256 i = 0; i < currentPos && i < 5; i++) {
-            try factory.mintNextPosition(pid, i) {} catch {}
-        }
-    }
 
     /// @notice Execute a sell swap (Token → ETH) through the test router
     function _sell(PoolKey memory key, address token, uint256 tokenAmount) internal returns (BalanceDelta delta) {
@@ -406,13 +378,22 @@ abstract contract BaseTest is Test {
         return _mcapFromSqrtPrice(sqrtPriceX96);
     }
 
-    /// @notice Calculate MCAP from sqrtPrice  
+    /// @notice Calculate MCAP from sqrtPrice
     function _mcapFromSqrtPrice(uint160 sqrtPriceX96) internal pure returns (uint256) {
         uint256 intermediate = (TOTAL_SUPPLY * (1 << 96)) / uint256(sqrtPriceX96);
         return (intermediate * (1 << 96)) / uint256(sqrtPriceX96);
     }
 
-    /// @notice Create launch — pool is already activated at creation
+    /// @notice Helper: Create default fee split (no split, all goes to beneficiary)
+    function _defaultFeeSplit() internal pure returns (ClawclickFactory.FeeSplit memory) {
+        return ClawclickFactory.FeeSplit({
+            wallets: [address(0), address(0), address(0), address(0), address(0)],
+            percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
+            count: 0
+        });
+    }
+
+    /// @notice Create launch - pool is already activated at creation
     /// @dev activationETH parameter kept for backward compat but ignored (bootstrap is automatic)
     function _createAndActivate(
         uint256 targetMcapETH,
@@ -422,7 +403,7 @@ abstract contract BaseTest is Test {
         (token, poolId, key) = _createLaunch(targetMcapETH, _beneficiary);
     }
 
-    /// @notice Create launch with custom name — pool is already activated at creation
+    /// @notice Create launch with custom name - pool is already activated at creation
     function _createAndActivateNamed(
         string memory name,
         string memory symbol,

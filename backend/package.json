@@ -16,13 +16,16 @@
     "dotenv": "^16.4.1",
     "pg": "^8.11.3",
     "viem": "^2.7.15",
-    "redis": "^4.6.12"
+    "redis": "^4.6.12",
+    "@supabase/supabase-js": "^2.39.3",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/cors": "^2.8.17",
     "@types/node": "^20.11.16",
     "@types/pg": "^8.11.0",
+    "@types/multer": "^1.4.11",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }
