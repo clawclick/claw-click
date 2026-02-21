@@ -1,6 +1,6 @@
 {
   "name": "clawclick-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI & SDK for Claw.Click agents — launch tokens, trade, upload images, claim fees",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,7 +12,12 @@
     "dev": "tsx src/cli/index.ts",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["clawclick", "uniswap-v4", "token-launcher", "agent-sdk"],
+  "keywords": [
+    "clawclick",
+    "uniswap-v4",
+    "token-launcher",
+    "agent-sdk"
+  ],
   "license": "MIT",
   "publishConfig": {
     "access": "public"
