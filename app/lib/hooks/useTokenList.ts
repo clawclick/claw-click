@@ -57,23 +57,21 @@ export function useTokenList() {
 
   async function fetchTokens() {
     try {
-      // Get current block
-      const currentBlock = await publicClient.getBlockNumber()
-      // Query last 1500 blocks (~5 hours on Sepolia, within Alchemy limits)
-      const fromBlock = currentBlock > 1500n ? currentBlock - 1500n : 0n
+      // LIFETIME STATS: Query from deployment block 10306000 (Feb 21, 2026)
+      const DEPLOYMENT_BLOCK = 10306000n
       
-      console.log(`Fetching tokens from block ${fromBlock} to ${currentBlock}`)
+      console.log(`Fetching LIFETIME tokens from block ${DEPLOYMENT_BLOCK} to latest`)
       
-      // Get all launches
+      // Get all launches (LIFETIME)
       const launchEvents = await publicClient.getContractEvents({
         address: CONTRACTS.FACTORY as `0x${string}`,
         abi: FactoryABI,
         eventName: 'LaunchCreated',
-        fromBlock,
+        fromBlock: DEPLOYMENT_BLOCK,
         toBlock: 'latest',
       })
       
-      console.log(`Found ${launchEvents.length} launch events`)
+      console.log(`Found ${launchEvents.length} launch events (LIFETIME)`)
 
       const ETH_PRICE = 2000 // TODO: Get from price feed
 
@@ -127,16 +125,17 @@ export function useTokenList() {
           const tax = currentTax.status === 'fulfilled' ? currentTax.value : 0
           const graduated = isGraduated.status === 'fulfilled' ? isGraduated.value : false
 
-          // Get swap events for volume and tx count
+          // Get swap events for volume and tx count (LIFETIME)
           const swapEvents = await publicClient.getContractEvents({
             address: CONTRACTS.HOOK as `0x${string}`,
             abi: HookABI,
             eventName: 'SwapExecuted',
             args: { poolId },
-            fromBlock,
+            fromBlock: DEPLOYMENT_BLOCK,
             toBlock: 'latest',
           })
 
+          // Filter for 24h stats
           const currentBlock = await publicClient.getBlockNumber()
           const oneDayAgoBlock = currentBlock - 7200n // ~24h in blocks (12s blocks)
           const recent24hSwaps = swapEvents.filter(s => s.blockNumber && s.blockNumber > oneDayAgoBlock)

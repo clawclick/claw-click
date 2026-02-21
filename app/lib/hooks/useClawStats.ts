@@ -35,23 +35,21 @@ export function useClawStats() {
 
   async function fetchStats() {
     try {
-      // Get current block
-      const currentBlock = await publicClient.getBlockNumber()
-      // Query last 1500 blocks (~5 hours on Sepolia, within Alchemy limits)
-      const fromBlock = currentBlock > 1500n ? currentBlock - 1500n : 0n
+      // LIFETIME STATS: Query from deployment block 10306000 (Feb 21, 2026)
+      const DEPLOYMENT_BLOCK = 10306000n
       
-      console.log(`Fetching events from block ${fromBlock} to ${currentBlock}`)
+      console.log(`Fetching LIFETIME events from block ${DEPLOYMENT_BLOCK} to latest`)
       
-      // Get all LaunchCreated events
+      // Get all LaunchCreated events (LIFETIME)
       const launchEvents = await publicClient.getContractEvents({
         address: CONTRACTS.FACTORY as `0x${string}`,
         abi: FactoryABI,
         eventName: 'LaunchCreated',
-        fromBlock,
+        fromBlock: DEPLOYMENT_BLOCK,
         toBlock: 'latest',
       })
       
-      console.log(`Found ${launchEvents.length} LaunchCreated events`)
+      console.log(`Found ${launchEvents.length} LaunchCreated events (LIFETIME)`)
 
       const tokensLaunched = launchEvents.length
 
@@ -66,13 +64,13 @@ export function useClawStats() {
         if (!poolId) continue
         
         try {
-          // Get swap events for this pool
+          // Get swap events for this pool (LIFETIME)
           const swapEvents = await publicClient.getContractEvents({
             address: CONTRACTS.HOOK as `0x${string}`,
             abi: HookABI,
             eventName: 'SwapExecuted',
             args: { poolId },
-            fromBlock,
+            fromBlock: DEPLOYMENT_BLOCK,
             toBlock: 'latest',
           })
 
