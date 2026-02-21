@@ -12,7 +12,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
-const BUCKET = 'token-images'
+const BUCKET = 'clawclick'
 
 /**
  * Upload an image buffer to Supabase Storage.
@@ -25,7 +25,7 @@ export async function uploadImage(
   contentType: string
 ): Promise<string> {
   const ext = contentType.split('/')[1] || 'png'
-  const filePath = `${tokenAddress.toLowerCase()}/${type}.${ext}`
+  const filePath = `${type}/${tokenAddress.toLowerCase()}.${ext}`
 
   // Upsert — overwrite if already exists
   const { error } = await supabase.storage
