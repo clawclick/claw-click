@@ -218,7 +218,7 @@ export function useTokenList() {
             
             chartUrl: '#', // TODO: Add DEXScreener or similar
             scanUrl: getExplorerLink('token', launchInfo.token),
-            hot: recent24hSwaps.length > 10, // Mark as "hot" if > 10 swaps in 24h
+            hot: recent24hSwaps.length > 100, // Mark as "hot" if > 100 swaps in 24h
             chain: 'SEPOLIA',
           })
         } catch (error) {
