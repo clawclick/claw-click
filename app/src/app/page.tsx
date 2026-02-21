@@ -374,9 +374,9 @@ export default function Home() {
                     boxShadow: `0 8px 32px 0 ${stat.glowColor}, inset 0 1px 0 0 rgba(255, 255, 255, 0.05)`
                   }}
                 >
-                  <div className="text-4xl sm:text-5xl font-extrabold gradient-text mb-2">
+                  <div className="text-3xl sm:text-4xl font-extrabold gradient-text mb-2">
                     {stat.value}
-                    {stat.suffix && <span className="text-2xl ml-1">{stat.suffix}</span>}
+                    {stat.suffix && <span className="text-xl ml-1">{stat.suffix}</span>}
                   </div>
                   <div className="text-xs sm:text-sm text-[#9AA4B2]">{stat.label}</div>
                 </motion.div>
