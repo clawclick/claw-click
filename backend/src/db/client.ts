@@ -8,6 +8,10 @@ export const pool = new Pool({
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
+  // Heroku Postgres requires SSL but uses self-signed certs
+  ssl: process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
+    : undefined,
 })
 
 pool.on('error', (err) => {

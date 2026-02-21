@@ -100,8 +100,8 @@ client.watchEvent({
           creator,
           beneficiary,
           poolId,
-          formatEther(targetMcapETH),
-          formatEther(targetMcapETH), // Start at target MCAP
+          formatEther(targetMcapETH ?? 0n),
+          formatEther(targetMcapETH ?? 0n), // Start at target MCAP
           sqrtPriceX96?.toString() || '0',
         ])
         
@@ -151,7 +151,7 @@ client.watchEvent({
         if (tokenResult.rows.length === 0) continue
         
         const tokenAddress = tokenResult.rows[0].address
-        const feeInEth = isETH ? formatEther(totalFee) : '0'
+        const feeInEth = isETH ? formatEther(totalFee ?? 0n) : '0'
         
         console.log(`💰 Fee collected on ${tokenAddress}: ${feeInEth} ETH`)
         
@@ -207,7 +207,7 @@ client.watchEvent({
             current_mcap = $1,
             updated_at = NOW()
           WHERE address = $2
-        `, [formatEther(finalMcap), token])
+        `, [formatEther(finalMcap ?? 0n), token])
         
       } catch (error) {
         console.error('Error processing Graduated event:', error)
