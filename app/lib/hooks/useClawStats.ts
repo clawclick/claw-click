@@ -3,6 +3,7 @@ import { createPublicClient, http, formatEther } from 'viem'
 import { sepolia } from 'viem/chains'
 import { CONTRACTS } from '../contracts'
 import { queryEventsInChunks } from '../utils/queryEvents'
+import { formatLargeNumber } from '../utils/formatNumber'
 import FactoryABI from '../../src/abis/factory.json'
 import HookABI from '../../src/abis/hook.json'
 
@@ -119,9 +120,9 @@ export function useClawStats() {
 
       setStats({
         tokensLaunched,
-        totalVolume: `$${(totalVolumeETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-        feesGenerated: `$${(totalFeesETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-        totalMarketCap: `$${(totalMarketCapETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+        totalVolume: formatLargeNumber(totalVolumeETH * ETH_PRICE),
+        feesGenerated: formatLargeNumber(totalFeesETH * ETH_PRICE),
+        totalMarketCap: formatLargeNumber(totalMarketCapETH * ETH_PRICE),
         isLoading: false,
       })
     } catch (error) {
