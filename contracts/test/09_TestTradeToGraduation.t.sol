@@ -15,7 +15,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  *    - Pools activate at launch (no separate activation step)
  *    - No keeper/reposition needed — positions managed automatically via hook
  *    - Epoch starts at 1 (not 0)
- *    - Universal 50% base tax for all MCAPs
+ *    - Tax scales by MCAP tier: 1 ETH=50%, 5 ETH=30%, 10 ETH=5%
  *    - Graduation at end of P1 epoch 4 (16x MCAP)
  *
  *  Epoch map (1 ETH target MCAP):
@@ -77,102 +77,111 @@ contract TestTradeToGraduation is BaseTest {
         FeeSnap memory prev
     ) internal {
         // -- Pool progress --
-        (uint256 pos, uint256 epoch, uint256 lastEpochMCAP, bool graduated) = hook.poolProgress(poolId);
         uint256 mcap = _getCurrentMcap(poolId);
 
-        emit log("  +============================================================+");
-        if (graduated) {
-            emit log("  |               ** GRADUATED **                              |");
+        {
+            (uint256 pos, uint256 epoch, uint256 lastEpochMCAP, bool graduated) = hook.poolProgress(poolId);
+
+            emit log("  +============================================================+");
+            if (graduated) {
+                emit log("  |               ** GRADUATED **                              |");
+            }
+            emit log("  +============================================================+");
+
+            // -- Identity --
+            emit log_named_uint("  | Buy #", buyNum);
+            emit log_named_uint("  | Position", pos);
+            emit log_named_uint("  | Epoch", epoch);
+
+            // -- MCAP --
+            emit log("  +-- MCAP ------------------------------------------------------+");
+            emit log_named_decimal_uint("  | Current MCAP (ETH)", mcap, 18);
+            emit log_named_decimal_uint("  | Last Epoch MCAP (ETH)", lastEpochMCAP, 18);
         }
-        emit log("  +============================================================+");
-
-        // -- Identity --
-        emit log_named_uint("  | Buy #", buyNum);
-        emit log_named_uint("  | Position", pos);
-        emit log_named_uint("  | Epoch", epoch);
-
-        // -- MCAP --
-        emit log("  +-- MCAP ------------------------------------------------------+");
-        emit log_named_decimal_uint("  | Current MCAP (ETH)", mcap, 18);
-        emit log_named_decimal_uint("  | Last Epoch MCAP (ETH)", lastEpochMCAP, 18);
 
         // Launch data
-        (,, uint256 startMcap, uint256 baseTax,, , , uint256 gradMcap) = hook.launches(poolId);
-        emit log_named_decimal_uint("  | Start MCAP (ETH)", startMcap, 18);
-        emit log_named_decimal_uint("  | Graduation MCAP (ETH)", gradMcap, 18);
-        if (startMcap > 0) {
-            emit log_named_uint("  | MCAP Growth (x)", mcap / startMcap);
+        {
+            (,, uint256 startMcap, uint256 baseTax,, , , uint256 gradMcap) = hook.launches(poolId);
+            emit log_named_decimal_uint("  | Start MCAP (ETH)", startMcap, 18);
+            emit log_named_decimal_uint("  | Graduation MCAP (ETH)", gradMcap, 18);
+            if (startMcap > 0) {
+                emit log_named_uint("  | MCAP Growth (x)", mcap / startMcap);
+            }
+
+            // -- Tax --
+            emit log("  +-- TAX -------------------------------------------------------+");
+            uint256 taxBps = hook.getCurrentTax(poolId);
+            emit log_named_uint("  | Current Tax (bps)", taxBps);
+            emit log_named_uint("  | Tax %", taxBps / 100);
+            emit log_named_uint("  | Base Tax (bps)", baseTax);
         }
 
-        // -- Tax --
-        emit log("  +-- TAX -------------------------------------------------------+");
-        uint256 taxBps = hook.getCurrentTax(poolId);
-        emit log_named_uint("  | Current Tax (bps)", taxBps);
-        emit log_named_uint("  | Tax %", taxBps / 100);
-        emit log_named_uint("  | Base Tax (bps)", baseTax);
-
         // -- Limits --
-        emit log("  +-- LIMITS ----------------------------------------------------+");
-        (uint256 maxTx, uint256 maxWallet) = hook.getCurrentLimits(poolId);
-        if (maxTx == type(uint256).max) {
-            emit log("  | MaxTx: UNLIMITED (graduated)");
-            emit log("  | MaxWallet: UNLIMITED (graduated)");
-        } else {
-            emit log_named_decimal_uint("  | MaxTx (tokens)", maxTx, 18);
-            emit log_named_decimal_uint("  | MaxWallet (tokens)", maxWallet, 18);
-            uint256 ts = IERC20(token).totalSupply();
-            if (ts > 0) {
-                emit log_named_uint("  | MaxTx (bps of supply)", (maxTx * 10000) / ts);
-                emit log_named_uint("  | MaxWallet (bps of supply)", (maxWallet * 10000) / ts);
+        {
+            emit log("  +-- LIMITS ----------------------------------------------------+");
+            (uint256 maxTx, uint256 maxWallet) = hook.getCurrentLimits(poolId);
+            if (maxTx == type(uint256).max) {
+                emit log("  | MaxTx: UNLIMITED (graduated)");
+                emit log("  | MaxWallet: UNLIMITED (graduated)");
+            } else {
+                emit log_named_decimal_uint("  | MaxTx (tokens)", maxTx, 18);
+                emit log_named_decimal_uint("  | MaxWallet (tokens)", maxWallet, 18);
+                uint256 ts = IERC20(token).totalSupply();
+                if (ts > 0) {
+                    emit log_named_uint("  | MaxTx (bps of supply)", (maxTx * 10000) / ts);
+                    emit log_named_uint("  | MaxWallet (bps of supply)", (maxWallet * 10000) / ts);
+                }
             }
         }
 
         // -- Fees (cumulative) --
         emit log("  +-- FEES (cumulative) -----------------------------------------+");
-        uint256 bFees = hook.beneficiaryFeesETH(beneficiary);
-        uint256 pFees = hook.platformFeesETH();
-        uint256 bTok = hook.beneficiaryFeesToken(beneficiary, token);
-        uint256 pTok = hook.platformFeesToken(token);
-        emit log_named_decimal_uint("  | Beneficiary ETH fees", bFees, 18);
-        emit log_named_decimal_uint("  | Platform ETH fees", pFees, 18);
-        emit log_named_decimal_uint("  | Total ETH fees", bFees + pFees, 18);
-        emit log_named_decimal_uint("  | Beneficiary Token fees", bTok, 18);
-        emit log_named_decimal_uint("  | Platform Token fees", pTok, 18);
+        {
+            uint256 bFees = hook.beneficiaryFeesETH(beneficiary);
+            uint256 pFees = hook.platformFeesETH();
+            uint256 bTok = hook.beneficiaryFeesToken(beneficiary, token);
+            uint256 pTok = hook.platformFeesToken(token);
+            emit log_named_decimal_uint("  | Beneficiary ETH fees", bFees, 18);
+            emit log_named_decimal_uint("  | Platform ETH fees", pFees, 18);
+            emit log_named_decimal_uint("  | Total ETH fees", bFees + pFees, 18);
+            emit log_named_decimal_uint("  | Beneficiary Token fees", bTok, 18);
+            emit log_named_decimal_uint("  | Platform Token fees", pTok, 18);
 
-        // Delta
-        uint256 dBen = bFees > prev.benETH ? bFees - prev.benETH : 0;
-        uint256 dPlat = pFees > prev.platETH ? pFees - prev.platETH : 0;
-        uint256 dBenTok = bTok > prev.benTok ? bTok - prev.benTok : 0;
-        uint256 dPlatTok = pTok > prev.platTok ? pTok - prev.platTok : 0;
-        emit log("  +-- FEES (delta since last snapshot) ---------------------------+");
-        emit log_named_decimal_uint("  | +ETH fees this period", dBen + dPlat, 18);
-        emit log_named_decimal_uint("  |   +Beneficiary ETH", dBen, 18);
-        emit log_named_decimal_uint("  |   +Platform ETH", dPlat, 18);
-        emit log_named_decimal_uint("  | +Token fees this period", dBenTok + dPlatTok, 18);
-        if (bFees + pFees > 0) {
-            emit log_named_uint("  | Ben/Plat split (bps)", (bFees * 10000) / (bFees + pFees));
-        }
-
-        // -- LP / Positions --
-        emit log("  +-- POSITIONS -------------------------------------------------+");
-        uint256[5] memory posIds = factory.getPositionTokenIds(poolId);
-        for (uint256 p = 0; p < 5; p++) {
-            if (posIds[p] != 0) {
-                emit log_named_uint("  | P (minted)", p + 1);
-                emit log_named_uint("  |   Token ID", posIds[p]);
+            // Delta
+            uint256 dBen = bFees > prev.benETH ? bFees - prev.benETH : 0;
+            uint256 dPlat = pFees > prev.platETH ? pFees - prev.platETH : 0;
+            uint256 dBenTok = bTok > prev.benTok ? bTok - prev.benTok : 0;
+            uint256 dPlatTok = pTok > prev.platTok ? pTok - prev.platTok : 0;
+            emit log("  +-- FEES (delta since last snapshot) ---------------------------+");
+            emit log_named_decimal_uint("  | +ETH fees this period", dBen + dPlat, 18);
+            emit log_named_decimal_uint("  |   +Beneficiary ETH", dBen, 18);
+            emit log_named_decimal_uint("  |   +Platform ETH", dPlat, 18);
+            emit log_named_decimal_uint("  | +Token fees this period", dBenTok + dPlatTok, 18);
+            if (bFees + pFees > 0) {
+                emit log_named_uint("  | Ben/Plat split (bps)", (bFees * 10000) / (bFees + pFees));
             }
         }
 
-        // Factory pool state: recycledETH
-        (,,,,,uint256 recycledETH,,) = factory.poolStates(poolId);
-        emit log_named_decimal_uint("  | Recycled ETH (from retired)", recycledETH, 18);
+        // -- LP / Positions --
+        {
+            emit log("  +-- POSITIONS -------------------------------------------------+");
+            (uint256 snapPos,,,) = hook.poolProgress(poolId);
+            emit log_named_uint("  | Positions minted so far", snapPos);
+            if (snapPos > 0) {
+                emit log_named_uint("  |   P1 Token ID", factory.positionTokenId(poolId));
+            }
 
-        // -- Pool Manager Balances --
-        emit log("  +-- PM BALANCES -----------------------------------------------+");
-        uint256 pmTokenBal = IERC20(token).balanceOf(POOL_MANAGER);
-        uint256 pmEthBal = POOL_MANAGER.balance;
-        emit log_named_decimal_uint("  | PM Token Balance", pmTokenBal, 18);
-        emit log_named_decimal_uint("  | PM ETH Balance", pmEthBal, 18);
+            // Factory pool state: recycledETH
+            (,,,,,uint256 recycledETH,,) = factory.poolStates(poolId);
+            emit log_named_decimal_uint("  | Recycled ETH (from retired)", recycledETH, 18);
+
+            // -- Pool Manager Balances --
+            emit log("  +-- PM BALANCES -----------------------------------------------+");
+            uint256 pmTokenBal = IERC20(token).balanceOf(POOL_MANAGER);
+            uint256 pmEthBal = POOL_MANAGER.balance;
+            emit log_named_decimal_uint("  | PM Token Balance", pmTokenBal, 18);
+            emit log_named_decimal_uint("  | PM ETH Balance", pmEthBal, 18);
+        }
 
         emit log("  +============================================================+");
     }
@@ -286,7 +295,7 @@ contract TestTradeToGraduation is BaseTest {
         (token, poolId, key) = _createLaunch(5 ether, beneficiary);
         vm.stopPrank();
 
-        assertEq(hook.getCurrentTax(poolId), 5000, "5 ETH tier: 50% tax (universal base)");
+        assertEq(hook.getCurrentTax(poolId), 3000, "5 ETH tier: 30% base tax");
         emit log_named_uint("Start MCAP", _getCurrentMcap(poolId));
 
         uint256 prevEpoch = 1;
@@ -597,14 +606,10 @@ contract TestTradeToGraduation is BaseTest {
                     // Position NFT status
                     emit log("    --- POSITIONS ---");
                     {
-                        uint256[5] memory posIds = factory.getPositionTokenIds(poolId);
-                        for (uint256 p = 0; p < 5; p++) {
-                            if (posIds[p] != 0) {
-                                emit log_named_uint("      P minted", p + 1);
-                                emit log_named_uint("        NFT Token ID", posIds[p]);
-                            } else {
-                                emit log_named_uint("      P not yet minted", p + 1);
-                            }
+                        (uint256 posCount,,,) = hook.poolProgress(poolId);
+                        emit log_named_uint("      Positions minted", posCount);
+                        if (posCount > 0) {
+                            emit log_named_uint("        P1 NFT Token ID", factory.positionTokenId(poolId));
                         }
                     }
 
@@ -731,27 +736,22 @@ contract TestTradeToGraduation is BaseTest {
 
         // Position NFT Summary
         emit log("  --- POSITION NFT SUMMARY ---");
-        uint256[5] memory finalPosIds = factory.getPositionTokenIds(poolId);
-        for (uint256 p = 0; p < 5; p++) {
-            emit log_named_uint("    Position", p + 1);
-            emit log_named_uint("      Token ID", finalPosIds[p]);
-            emit log_named_string("      Minted", finalPosIds[p] > 0 ? "YES" : "NO");
+        (uint256 finalPos, uint256 finalEpoch,,) = hook.poolProgress(poolId);
+        emit log_named_uint("    Positions minted", finalPos);
+        if (finalPos > 0) {
+            emit log_named_uint("    P1 Token ID", factory.positionTokenId(poolId));
         }
 
         // Pool Progress
-        (uint256 finalPos, uint256 finalEpoch,,) = hook.poolProgress(poolId);
         emit log("  --- POOL PROGRESS ---");
         emit log_named_uint("    Current Position", finalPos);
         emit log_named_uint("    Current Epoch", finalEpoch);
         emit log_named_string("    Graduated", hook.isGraduated(poolId) ? "YES" : "NO");
         emit log("");
 
-        // Assertions
-        assertTrue(finalPosIds[0] > 0, "P1 should be minted");
-        assertTrue(finalPosIds[1] > 0, "P2 should be minted");
-        assertTrue(finalPosIds[2] > 0, "P3 should be minted");
-        assertTrue(finalPosIds[3] > 0, "P4 should be minted");
-        assertTrue(finalPosIds[4] > 0, "P5 should be minted");
+        // Assertions — all 5 positions should be minted
+        assertGe(finalPos, 5, "All 5 positions should be minted");
+        assertTrue(factory.positionTokenId(poolId) > 0, "P1 should have a token ID");
         
         assertTrue(hook.isGraduated(poolId), "Should be graduated");
         assertGe(finalPos, 5, "Should have reached P5");

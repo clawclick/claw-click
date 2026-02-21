@@ -95,10 +95,10 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     uint256 public totalLaunches;
     
     /// @notice Launch info by token address
-    mapping(address => LaunchInfo) public launchByToken;
+    mapping(address => LaunchInfo) internal _launchByToken;
     
     /// @notice Launch info by pool ID
-    mapping(PoolId => LaunchInfo) public launchByPoolId;
+    mapping(PoolId => LaunchInfo) internal _launchByPoolId;
     
     /// @notice Pool state (multi-position tracking)
     mapping(PoolId => PoolState) public poolStates;
@@ -330,25 +330,35 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
             PriceMath.calculatePositionRanges(params.targetMcapETH, totalSupply);
         
-        // 7. Mint ALL P1-P5 positions at launch
-        //    P1: tokens + bootstrap ETH (spans current price)
-        //    P2-P5: token-only, one-sided liquidity (below current tick)
-        //    Since current tick > P2-P5 upper ticks, those positions hold
-        //    only token1 (Token). As price moves down through each range,
-        //    the tokens become tradeable. No ETH needed for P2-P5.
+        // 7. Mint positions at launch
+        //    P1: tokens + bootstrap ETH (full-range, always succeeds)
+        //    P2-P5: token-only, one-sided liquidity — may have 0 liquidity at
+        //    certain MCAP tiers due to tick rounding. Deferred positions can be
+        //    minted later via mintNextPosition when price enters range.
         uint256[5] memory posTokenIds;
         bool[5] memory mintedFlags;
         
         for (uint256 i = 0; i < 5; i++) {
             uint256 ethForPosition = (i == 0) ? bootstrapAmount : 0;
-            posTokenIds[i] = _mintPositionViaManager(
-                key,
-                tickLowers[i],
-                tickUppers[i],
-                allocations[i],
-                ethForPosition
+            
+            // Pre-check: will this position have non-zero liquidity?
+            uint160 sqrtLower = TickMath.getSqrtPriceAtTick(tickLowers[i]);
+            uint160 sqrtUpper = TickMath.getSqrtPriceAtTick(tickUppers[i]);
+            uint128 liq = LiquidityAmounts.getLiquidityForAmounts(
+                sqrtPriceX96, sqrtLower, sqrtUpper, ethForPosition, allocations[i]
             );
-            mintedFlags[i] = true;
+            
+            if (liq > 0) {
+                posTokenIds[i] = _mintPositionViaManager(
+                    key,
+                    tickLowers[i],
+                    tickUppers[i],
+                    allocations[i],
+                    ethForPosition
+                );
+                mintedFlags[i] = true;
+            }
+            // else: position deferred — mintNextPosition() when price enters range
         }
         
         // 8. Store pool state
@@ -367,9 +377,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         });
         poolStates[poolId] = poolState;
         
-        // Store reverse mappings for all positions
+        // Store reverse mappings for minted positions only
         for (uint256 i = 0; i < 5; i++) {
-            tokenIdToPoolId[posTokenIds[i]] = poolId;
+            if (mintedFlags[i]) {
+                tokenIdToPoolId[posTokenIds[i]] = poolId;
+            }
         }
 
         
@@ -389,8 +401,8 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             feeSplit: params.feeSplit
         });
         
-        launchByToken[token] = info;
-        launchByPoolId[poolId] = info;
+        _launchByToken[token] = info;
+        _launchByPoolId[poolId] = info;
         allTokens.push(token);
         totalLaunches++;
         
@@ -435,7 +447,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             PriceMath.calculatePositionRanges(state.startingMCAP, state.totalSupply);
         
         // Get pool key
-        LaunchInfo memory info = launchByPoolId[poolId];
+        LaunchInfo memory info = _launchByPoolId[poolId];
         
         // Pre-check: ensure liquidity will be > 0 at current price
         (uint160 curSqrtPrice,,,) = poolManager.getSlot0(poolId);
@@ -597,7 +609,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         PoolId poolId = tokenIdToPoolId[tokenId];
         require(PoolId.unwrap(poolId) != bytes32(0), "PoolId not found");
         
-        LaunchInfo storage launch = launchByPoolId[poolId];
+        LaunchInfo storage launch = _launchByPoolId[poolId];
         PoolKey memory key = launch.poolKey;
         
         uint256 ethBefore = address(this).balance;
@@ -645,7 +657,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
      * @param poolId Pool ID to clear override for
      */
     function clearDevOverride(PoolId poolId) external {
-        LaunchInfo storage info = launchByPoolId[poolId];
+        LaunchInfo storage info = _launchByPoolId[poolId];
         
         // Must be a valid launch
         require(info.token != address(0), "Launch not found");
@@ -688,6 +700,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     // - launchByPoolId[poolId] instead of getLaunchByPoolId()
     // - poolStates[poolId].positionTokenIds instead of getPositionTokenIds()
     // - allTokens array instead of getAllTokens()
+    
+    function launchByToken(address token) external view returns (LaunchInfo memory) {
+        return _launchByToken[token];
+    }
+    
+    function launchByPoolId(PoolId poolId) external view returns (LaunchInfo memory) {
+        return _launchByPoolId[poolId];
+    }
     
     function poolActivated(PoolId poolId) external view returns (bool) {
         return poolStates[poolId].activated;
@@ -754,7 +774,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 tokenId = state.positionTokenIds[positionIndex];
         require(tokenId != 0, "No position");
         
-        LaunchInfo storage info = launchByPoolId[poolId];
+        LaunchInfo storage info = _launchByPoolId[poolId];
         PoolKey memory key = info.poolKey;
         
         uint256 ethBefore = address(this).balance;

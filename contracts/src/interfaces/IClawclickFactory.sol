@@ -78,7 +78,6 @@ interface IClawclickFactory {
     
     function poolActivated(PoolId poolId) external view returns (bool);
 
-    // Public mappings - access directly instead of view functions
     function launchByToken(address token) external view returns (LaunchInfo memory);
     
     function launchByPoolId(PoolId poolId) external view returns (LaunchInfo memory);

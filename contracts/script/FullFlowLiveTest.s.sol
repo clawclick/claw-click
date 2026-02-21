@@ -94,7 +94,8 @@ contract FullFlowLiveTest is Script {
                 symbol: "GRAD",
                 beneficiary: deployer,
                 agentWallet: deployer,
-                targetMcapETH: 1 ether
+                targetMcapETH: 1 ether,
+                feeSplit: ClawclickFactory.FeeSplit([address(0),address(0),address(0),address(0),address(0)], [uint16(0),uint16(0),uint16(0),uint16(0),uint16(0)], 0)
             })
         );
         PoolKey memory key = _buildPoolKey(token);
@@ -299,7 +300,7 @@ contract FullFlowLiveTest is Script {
         return PoolKey({
             currency0: Currency.wrap(address(0)),
             currency1: Currency.wrap(token),
-            fee: 0x800000, tickSpacing: 200,
+            fee: 0x800000, tickSpacing: 60,
             hooks: IHooks(address(hook))
         });
     }

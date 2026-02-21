@@ -11,6 +11,7 @@ import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
+import "../../src/utils/BootstrapETH.sol";
 
 /**
  * @title MP_03_LaunchTest
@@ -57,6 +58,7 @@ contract MP_03_LaunchTest is Test {
             IPoolManager(mockPoolManager),
             hook,
             mockPositionManager,
+            BootstrapETH(payable(address(0))),
             owner
         );
         
@@ -75,20 +77,16 @@ contract MP_03_LaunchTest is Test {
         console2.log("=== VALID LAUNCH TEST ===");
         
         uint256 minBootstrap = config.MIN_BOOTSTRAP_ETH();
-        uint256 launchFee = factory.getFee(false);
-        uint256 totalRequired = minBootstrap + launchFee;
         
         console2.log("  Min bootstrap:", minBootstrap);
-        console2.log("  Launch fee:", launchFee);
-        console2.log("  Total required:", totalRequired);
         
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test Token",
             symbol: "TEST",
             beneficiary: beneficiary,
             agentWallet: address(0),
-            isPremium: false,
-            targetMcapETH: 2 ether  // 2k starting MCAP
+            targetMcapETH: 2 ether,  // 2k starting MCAP
+            feeSplit: ClawclickFactory.FeeSplit([address(0),address(0),address(0),address(0),address(0)], [uint16(0),uint16(0),uint16(0),uint16(0),uint16(0)], 0)
         });
         
         // Should succeed (mock would need proper setup in real test)
@@ -232,7 +230,7 @@ contract MP_03_LaunchTest is Test {
         console2.log("  - createdBlock");
         console2.log("  - name");
         console2.log("  - symbol");
-        console2.log("  - isPremium");
+        // isPremium removed from LaunchInfo
         
         console2.log("[PASS] LaunchInfo structure correct");
     }
@@ -330,19 +328,16 @@ contract MP_03_LaunchTest is Test {
                         FEE HANDLING
     //////////////////////////////////////////////////////////////*/
     
-    /// @notice TEST 16: Launch fee tiers
-    function test_LaunchFeeTiers() public view {
-        console2.log("=== LAUNCH FEE TIERS TEST ===");
+    /// @notice TEST 16: Bootstrap fee
+    function test_BootstrapFee() public view {
+        console2.log("=== BOOTSTRAP FEE TEST ===");
         
-        uint256 microFee = factory.getFee(false);
-        uint256 premiumFee = factory.getFee(true);
+        uint256 minBootstrap = config.MIN_BOOTSTRAP_ETH();
+        console2.log("  Bootstrap minimum:", minBootstrap);
         
-        console2.log("  Micro tier:", microFee);
-        console2.log("  Premium tier:", premiumFee);
+        assertEq(minBootstrap, 0.001 ether, "Min bootstrap incorrect");
         
-        assertTrue(premiumFee > microFee, "Premium not higher than micro");
-        
-        console2.log("[PASS] Fee tiers work correctly");
+        console2.log("[PASS] Bootstrap fee correct");
     }
     
     /// @notice TEST 17: Fee sent to treasury

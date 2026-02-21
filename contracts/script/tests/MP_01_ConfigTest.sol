@@ -125,12 +125,12 @@ contract MP_01_ConfigTest is Test {
                             TAX CONSTANTS
     //////////////////////////////////////////////////////////////*/
     
-    /// @notice TEST 8: Base tax = 50%
+    /// @notice TEST 8: Base tax = 50% for 1 ETH MCAP
     function test_BaseTax() public view {
-        uint256 baseTax = config.BASE_TAX_BPS();
-        assertEq(baseTax, 5000, "Base tax not 5000 bps");
+        uint256 baseTax = config.getStartingTax(1 ether);
+        assertEq(baseTax, 5000, "Base tax not 5000 bps for 1 ETH");
         assertEq((baseTax * 100) / config.BPS(), 50, "Base tax not 50%");
-        console2.log("[PASS] Base tax = 50% (5000 bps)");
+        console2.log("[PASS] Base tax = 50% (5000 bps) for 1 ETH MCAP");
     }
     
     /// @notice TEST 9: getStartingTax returns fixed 50%

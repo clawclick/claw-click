@@ -13,7 +13,7 @@ import "./BaseTest.sol";
  *   - Pool is activated at launch (createLaunch sends fee + bootstrap)
  *   - Epochs are stored in poolProgress (not dynamically calculated from price)
  *   - Epoch advancement happens in afterSwap based on MCAP growth
- *   - Universal 50% base tax for ALL tiers
+ *   - Tax scales by MCAP tier: 1 ETH=50%, 5 ETH=30%, 10 ETH=5%
  *   - Tax decay: E1=50%, E2=25%, E3=12.5%, E4=6.25% (graduation at end of E4)
  *   - No _setMcap — we use real trades to grow MCAP
  */

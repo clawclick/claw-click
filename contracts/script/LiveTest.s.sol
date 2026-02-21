@@ -106,7 +106,8 @@ contract LiveTest is Script {
             symbol:        "DST",
             beneficiary:   deployer,
             agentWallet:   deployer,
-            targetMcapETH: 1 ether
+            targetMcapETH: 1 ether,
+            feeSplit: ClawclickFactory.FeeSplit([address(0),address(0),address(0),address(0),address(0)], [uint16(0),uint16(0),uint16(0),uint16(0),uint16(0)], 0)
         });
 
         (address token, PoolId poolId) = factory.createLaunch{value: bootstrap}(params);
@@ -264,7 +265,8 @@ contract LiveTest is Script {
             symbol:        "CLAW",
             beneficiary:   deployer,
             agentWallet:   deployer,
-            targetMcapETH: 5 ether
+            targetMcapETH: 5 ether,
+            feeSplit: ClawclickFactory.FeeSplit([address(0),address(0),address(0),address(0),address(0)], [uint16(0),uint16(0),uint16(0),uint16(0),uint16(0)], 0)
         });
 
         uint256 bootstrap2 = 0.005 ether;  // $10 bootstrap for 5 ETH MCAP
@@ -359,7 +361,7 @@ contract LiveTest is Script {
             currency0: Currency.wrap(address(0)),
             currency1: Currency.wrap(token),
             fee:       0x800000,
-            tickSpacing: 200,
+            tickSpacing: 60,
             hooks:     IHooks(address(hook))
         });
     }

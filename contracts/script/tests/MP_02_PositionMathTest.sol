@@ -8,6 +8,7 @@ import "../../src/core/ClawclickConfig.sol";
 import "../../src/core/ClawclickHook_V4.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol";
+import "../../src/utils/BootstrapETH.sol";
 
 /**
  * @title MP_02_PositionMathTest
@@ -49,6 +50,7 @@ contract MP_02_PositionMathTest is Test {
             poolManager,
             hook,
             address(positionManager),
+            BootstrapETH(payable(address(0))),
             owner
         );
         

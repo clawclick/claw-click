@@ -121,7 +121,7 @@ contract MP_04_EpochTrackingTest is Test {
     function test_TaxRatesPerEpoch() public view {
         console2.log("=== TAX RATES PER EPOCH ===");
         
-        uint256 baseTax = config.BASE_TAX_BPS();  // 5000 = 50%
+        uint256 baseTax = config.getStartingTax(1 ether);  // 5000 = 50% for 1 ETH
         
         console2.log("Base tax:", baseTax, "bps (50%)");
         console2.log("");

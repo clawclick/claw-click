@@ -61,7 +61,8 @@ contract OnChainLifecycleTest is Script {
             symbol: "TTA",
             beneficiary: msg.sender,
             agentWallet: address(0),
-            targetMcapETH: 1 ether  // 1 ETH = 2k MCAP @ $2000/ETH
+            targetMcapETH: 1 ether,
+            feeSplit: ClawclickFactory.FeeSplit([address(0),address(0),address(0),address(0),address(0)], [uint16(0),uint16(0),uint16(0),uint16(0),uint16(0)], 0)
         });
         
         // Launch token
@@ -90,17 +91,28 @@ contract OnChainLifecycleTest is Script {
         bool activated = factory.poolActivated(info.poolId);
         console2.log("Pool activated:", activated);
         
-        // Step 5: Check position token IDs
+        // Step 5: Check pool state (auto-getter returns 8 scalar fields, arrays excluded)
         console2.log("");
-        console2.log("=== POSITIONS ===");
-        ClawclickFactory.PoolState memory poolState = factory.poolStates(info.poolId);
-        uint256[5] memory tokenIds = poolState.positionTokenIds;
-        console2.log("P1 Token ID:", tokenIds[0]);
-        console2.log("P2 Token ID:", tokenIds[1]);
-        console2.log("P3 Token ID:", tokenIds[2]);
-        console2.log("P4 Token ID:", tokenIds[3]);
-        console2.log("P5 Token ID:", tokenIds[4]);
-        console2.log("(Only P1 should be minted at launch)");
+        console2.log("=== POOL STATE ===");
+        (
+            address psToken,
+            address psBeneficiary,
+            uint256 psStartingMCAP,
+            uint256 psGraduationMCAP,
+            uint256 psTotalSupply,
+            uint256 psRecycledETH,
+            bool psActivated,
+            bool psGraduated
+        ) = factory.poolStates(info.poolId);
+        console2.log("Token:", psToken);
+        console2.log("Beneficiary:", psBeneficiary);
+        console2.log("Starting MCAP:", psStartingMCAP);
+        console2.log("Graduation MCAP:", psGraduationMCAP);
+        console2.log("Total Supply:", psTotalSupply);
+        console2.log("Recycled ETH:", psRecycledETH);
+        console2.log("Activated:", psActivated);
+        console2.log("Graduated:", psGraduated);
+        console2.log("(Position token IDs not available via auto-getter)");
         
         vm.stopBroadcast();
         

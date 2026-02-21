@@ -56,6 +56,14 @@ library PriceMath {
 
     /**
      * @notice Calculate position ranges and token allocations for 5-position strategy
+     * @dev Matches original factory logic:
+     *      P1: startMCAP → 16x (epochs 1-4, hook tax phase)
+     *      P2: 16x → 256x (graduation, LP fee active)
+     *      P3: 256x → 4,096x
+     *      P4: 4,096x → 65,536x
+     *      P5: 65,536x → infinity
+     *      Token allocations: geometric decay (75%, 18.75%, 4.6875%, 1.1719%, 0.3906%)
+     *      5% overlap between adjacent positions
      * @param targetMcapETH Initial target market cap
      * @param totalSupply Total token supply
      * @return tickLowers Array of lower ticks for each position
@@ -70,38 +78,74 @@ library PriceMath {
         int24[5] memory tickUppers,
         uint256[5] memory allocations
     ) {
-        // Position 1: Full range (spans current price, gets bootstrap ETH)
-        tickLowers[0] = -887220;
-        tickUppers[0] = 887220;
-        allocations[0] = totalSupply * 20 / 100; // 20%
-        
-        // Positions 2-5: Staggered ranges below current tick (token-only, one-sided)
-        // As MCAP increases, price moves UP through these ranges, making tokens tradeable
-        
-        // P2: 1x-2x MCAP range
-        uint256 mcap2x = targetMcapETH * 2;
-        tickLowers[1] = _mcapToTick(targetMcapETH, totalSupply);
-        tickUppers[1] = _mcapToTick(mcap2x, totalSupply);
-        allocations[1] = totalSupply * 20 / 100; // 20%
-        
-        // P3: 2x-4x MCAP range
-        uint256 mcap4x = targetMcapETH * 4;
-        tickLowers[2] = _mcapToTick(mcap2x, totalSupply);
-        tickUppers[2] = _mcapToTick(mcap4x, totalSupply);
-        allocations[2] = totalSupply * 20 / 100; // 20%
-        
-        // P4: 4x-8x MCAP range
-        uint256 mcap8x = targetMcapETH * 8;
-        tickLowers[3] = _mcapToTick(mcap4x, totalSupply);
-        tickUppers[3] = _mcapToTick(mcap8x, totalSupply);
-        allocations[3] = totalSupply * 20 / 100; // 20%
-        
-        // P5: 8x-16x MCAP range
-        uint256 mcap16x = targetMcapETH * 16;
-        tickLowers[4] = _mcapToTick(mcap8x, totalSupply);
-        tickUppers[4] = _mcapToTick(mcap16x, totalSupply);
-        allocations[4] = totalSupply * 20 / 100; // 20%
-        
+        // Token allocations (geometric decay, EXTENDED_BPS = 100000)
+        uint256 EXTENDED_BPS = 100000;
+        allocations[0] = (totalSupply * 75000) / EXTENDED_BPS;   // 75.0000%
+        allocations[1] = (totalSupply * 18750) / EXTENDED_BPS;   // 18.7500%
+        allocations[2] = (totalSupply * 4688) / EXTENDED_BPS;    // 4.6875%
+        allocations[3] = (totalSupply * 1172) / EXTENDED_BPS;    // 1.1719%
+        allocations[4] = (totalSupply * 390) / EXTENDED_BPS;     // 0.3906%
+
+        // MCAP milestones (16x per step): 16x, 256x, 4096x, 65536x
+        uint256 multiplier = 16;
+        uint256 p1End = targetMcapETH * multiplier;
+        uint256 p2End = p1End * multiplier;
+        uint256 p3End = p2End * multiplier;
+        uint256 p4End = p3End * multiplier;
+
+        uint256[5] memory mcapMilestones = [
+            p1End,              // P1 end: 16x
+            p2End,              // P2 end: 256x
+            p3End,              // P3 end: 4096x
+            p4End,              // P4 end: 65536x
+            type(uint256).max   // P5 end: infinity
+        ];
+
+        uint256 BPS = 10000;
+        uint256 overlapBps = 500; // 5% overlap
+
+        int24 TICK_LOWER = -887220;
+        int24 TICK_UPPER = 887220;
+        int24 spacing = 60;
+
+        // Calculate tick ranges with 5% overlap
+        for (uint256 i = 0; i < 5; i++) {
+            if (i == 0) {
+                // P1: starts at initial MCAP
+                tickLowers[i] = _mcapToTick(targetMcapETH, totalSupply);
+            } else {
+                // P2-P5: start 5% before previous end (overlap)
+                uint256 lowerMCAP = (mcapMilestones[i-1] * (BPS - overlapBps)) / BPS;
+                tickLowers[i] = _mcapToTick(lowerMCAP, totalSupply);
+            }
+
+            if (i == 4) {
+                // P5: ends at infinity MCAP → lowest possible tick
+                tickUppers[i] = TICK_LOWER;
+            } else {
+                // P1-P4: end 5% after milestone (overlap)
+                uint256 upperMCAP = (mcapMilestones[i] * (BPS + overlapBps)) / BPS;
+                tickUppers[i] = _mcapToTick(upperMCAP, totalSupply);
+            }
+
+            // Ensure tick spacing alignment
+            tickLowers[i] = (tickLowers[i] / spacing) * spacing;
+            tickUppers[i] = (tickUppers[i] / spacing) * spacing;
+
+            // Bounds check
+            if (tickLowers[i] < TICK_LOWER) tickLowers[i] = TICK_LOWER;
+            if (tickUppers[i] > TICK_UPPER) tickUppers[i] = TICK_UPPER;
+
+            // FIX: For ETH(currency0)/Token(currency1) pairs, higher MCAP → lower tick.
+            // _mcapToTick(lowerMCAP) returns a HIGHER tick than _mcapToTick(higherMCAP),
+            // so tickLowers and tickUppers end up inverted. Swap to ensure tickLower < tickUpper.
+            if (tickLowers[i] > tickUppers[i]) {
+                int24 temp = tickLowers[i];
+                tickLowers[i] = tickUppers[i];
+                tickUppers[i] = temp;
+            }
+        }
+
         return (tickLowers, tickUppers, allocations);
     }
 

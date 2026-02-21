@@ -54,19 +54,21 @@ contract TestPostGradStress is BaseTest {
             _safeBuyFresh(key);
             totalBuys++;
 
-            uint256 epoch = hook.getCurrentEpoch(poolId);
             bool grad = hook.isGraduated(poolId);
 
-            if (epoch != prevEpoch || grad) {
-                emit log("  ----------------------------------------");
-                emit log_named_uint("    Buy #", totalBuys);
-                emit log_named_uint("    MCAP", _getCurrentMcap(poolId));
-                emit log_named_uint("    Epoch", epoch);
-                emit log_named_uint("    Tax bps", hook.getCurrentTax(poolId));
-                if (grad) {
-                    emit log("    ** GRADUATED **");
+            {
+                uint256 epoch = hook.getCurrentEpoch(poolId);
+                if (epoch != prevEpoch || grad) {
+                    emit log("  ----------------------------------------");
+                    emit log_named_uint("    Buy #", totalBuys);
+                    emit log_named_uint("    MCAP", _getCurrentMcap(poolId));
+                    emit log_named_uint("    Epoch", epoch);
+                    emit log_named_uint("    Tax bps", hook.getCurrentTax(poolId));
+                    if (grad) {
+                        emit log("    ** GRADUATED **");
+                    }
+                    prevEpoch = epoch;
                 }
-                prevEpoch = epoch;
             }
 
             if (grad) break;
@@ -78,10 +80,12 @@ contract TestPostGradStress is BaseTest {
         emit log_named_uint("  Total Buys", totalBuys);
 
         // Log fees
-        uint256 bFees = hook.beneficiaryFeesETH(beneficiary);
-        uint256 pFees = hook.platformFeesETH();
-        emit log_named_uint("  Beneficiary ETH fees", bFees);
-        emit log_named_uint("  Platform ETH fees", pFees);
+        {
+            uint256 bFees = hook.beneficiaryFeesETH(beneficiary);
+            uint256 pFees = hook.platformFeesETH();
+            emit log_named_uint("  Beneficiary ETH fees", bFees);
+            emit log_named_uint("  Platform ETH fees", pFees);
+        }
     }
 
     /// @notice Log pool state: MCAP, PoolManager balances, token supply info

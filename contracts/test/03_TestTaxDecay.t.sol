@@ -8,7 +8,7 @@ import "./BaseTest.sol";
  * @notice Tests tax decay mechanics based on MCAP growth
  *
  * NEW SYSTEM:
- * - Universal 50% base tax for all MCAPs
+ * - Tax scales by MCAP tier: 1 ETH=50%, 5 ETH=30%, 10 ETH=5%
  * - Epoch starts at 1 (not 0)
  * - Tax decay: epoch 1=50%, 2=25%, 3=12.5%, 4=6.25%
  * - Post-graduation: 0%
@@ -42,8 +42,8 @@ contract TestTaxDecay is BaseTest {
         );
 
         uint256 tax = hook.getCurrentTax(poolId);
-        // New system: universal 50% base tax for ALL tiers
-        assertEq(tax, 5000, "5 ETH tier should start at 50% tax (universal)");
+        // Tax formula: 55% - (5% * mcapInETH) → 5 ETH = 30%
+        assertEq(tax, 3000, "5 ETH tier should start at 30% tax");
 
         vm.stopPrank();
     }
@@ -55,8 +55,8 @@ contract TestTaxDecay is BaseTest {
         );
 
         uint256 tax = hook.getCurrentTax(poolId);
-        // New system: universal 50% base tax for ALL tiers
-        assertEq(tax, 5000, "10 ETH tier should start at 50% tax (universal)");
+        // Tax formula: 55% - (5% * mcapInETH) → 10 ETH = 5%
+        assertEq(tax, 500, "10 ETH tier should start at 5% tax");
 
         vm.stopPrank();
     }
@@ -135,10 +135,12 @@ contract TestTaxDecay is BaseTest {
      TEST 6: ALL TIERS HAVE SAME BASE TAX (50%)
     //////////////////////////////////////////////////////////////*/
 
-    function test_allTiersSameBaseTax() public {
+    function test_allTiersCorrectBaseTax() public {
         vm.startPrank(deployer);
 
-        // New system: universal 50% base tax for ALL MCAPs
+        // Tax formula: 55% - (5% * mcapInETH)
+        // 1 ETH=50%, 2=45%, 3=40%, 4=35%, 5=30%, 6=25%, 7=20%, 8=15%, 9=10%, 10=5%
+        uint256[10] memory expectedTax = [uint256(5000), 4500, 4000, 3500, 3000, 2500, 2000, 1500, 1000, 500];
         for (uint256 i = 0; i < 10; i++) {
             uint256 mcap = (i + 1) * 1 ether;
             string memory name = string(abi.encodePacked("Tax", vm.toString(i)));
@@ -147,7 +149,7 @@ contract TestTaxDecay is BaseTest {
             (, PoolId poolId,) = _createLaunchNamed(name, symbol, mcap, beneficiary);
 
             (,,, uint256 baseTax,,,, ) = hook.launches(poolId);
-            assertEq(baseTax, 5000, string(abi.encodePacked("All tiers should have 50% base tax: ", vm.toString(mcap))));
+            assertEq(baseTax, expectedTax[i], string(abi.encodePacked("Wrong base tax for ", vm.toString(mcap))));
         }
 
         vm.stopPrank();

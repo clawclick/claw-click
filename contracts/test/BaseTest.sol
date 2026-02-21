@@ -18,6 +18,7 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {BootstrapETH} from "../src/utils/BootstrapETH.sol";
 import {TestSwapRouter} from "./TestSwapRouter.sol";
 
 /**
@@ -98,6 +99,7 @@ abstract contract BaseTest is Test {
             IPoolManager(POOL_MANAGER),
             hook,
             POSITION_MANAGER,
+            BootstrapETH(payable(address(0))),
             deployer
         );
 
@@ -177,15 +179,6 @@ abstract contract BaseTest is Test {
                           HELPERS
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Helper: Create empty fee split (no multi-wallet distribution)
-    function _defaultFeeSplit() internal pure returns (ClawclickFactory.FeeSplit memory) {
-        return ClawclickFactory.FeeSplit({
-            wallets: [address(0), address(0), address(0), address(0), address(0)],
-            percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
-            count: 0
-        });
-    }
-
     /// @notice Create a launch (pool activated at launch with bootstrap ETH)
     /// @dev New system: createLaunch requires bootstrap ETH (minimum 0.001 ETH).
     ///      We send 0.1 ETH bootstrap for deeper initial liquidity.
@@ -236,6 +229,15 @@ abstract contract BaseTest is Test {
             fee: 0x800000,
             tickSpacing: 60,  // New system uses tickSpacing=60
             hooks: IHooks(address(hook))
+        });
+    }
+
+    /// @notice Default empty FeeSplit (no splitting, all to beneficiary)
+    function _defaultFeeSplit() internal pure returns (ClawclickFactory.FeeSplit memory) {
+        return ClawclickFactory.FeeSplit({
+            wallets: [address(0), address(0), address(0), address(0), address(0)],
+            percentages: [uint16(0), uint16(0), uint16(0), uint16(0), uint16(0)],
+            count: 0
         });
     }
 
@@ -297,19 +299,23 @@ abstract contract BaseTest is Test {
         uint256 trackedBalance = hook.userBalances(poolId, trader);
         if (trackedBalance >= maxWalletTokens) return 0; // wallet full
 
-        uint256 roomTokens = maxWalletTokens - trackedBalance;
-        uint256 effectiveMax = roomTokens < maxTxTokens ? roomTokens : maxTxTokens;
+        uint256 effectiveMax;
+        {
+            uint256 roomTokens = maxWalletTokens - trackedBalance;
+            effectiveMax = roomTokens < maxTxTokens ? roomTokens : maxTxTokens;
+        }
 
-        uint256 mcap = _getCurrentMcap(poolId);
-        uint256 maxETH = (effectiveMax * mcap) / TOTAL_SUPPLY;
-
-        uint256 taxBps = hook.getCurrentTax(poolId);
         uint256 safeETH;
-        if (taxBps >= 10000) {
-            safeETH = 1e12;
-        } else {
-            safeETH = (maxETH * 10000) / (10000 - taxBps);
-            safeETH = (safeETH * 50) / 100; // 50% safety margin for AMM slippage
+        {
+            uint256 mcap = _getCurrentMcap(poolId);
+            uint256 maxETH = (effectiveMax * mcap) / TOTAL_SUPPLY;
+            uint256 taxBps = hook.getCurrentTax(poolId);
+            if (taxBps >= 10000) {
+                safeETH = 1e12;
+            } else {
+                safeETH = (maxETH * 10000) / (10000 - taxBps);
+                safeETH = (safeETH * 50) / 100; // 50% safety margin for AMM slippage
+            }
         }
         if (safeETH < 1e12) safeETH = 1e12;
         return safeETH;
@@ -354,18 +360,20 @@ abstract contract BaseTest is Test {
 
             _traderPoolIdx = idx + 1;
 
-            if (trader.balance < buyAmount + 0.01 ether) {
-                vm.deal(trader, buyAmount + 1 ether);
-            }
+            {
+                if (trader.balance < buyAmount + 0.01 ether) {
+                    vm.deal(trader, buyAmount + 1 ether);
+                }
 
-            vm.prank(trader);
-            try router.buy{value: buyAmount}(key, buyAmount) returns (BalanceDelta d) {
-                delta = d;
-                _autoMintPositions(key);
-                return delta;
-            } catch {
-                // Unexpected revert — try next wallet
-                continue;
+                vm.prank(trader);
+                try router.buy{value: buyAmount}(key, buyAmount) returns (BalanceDelta d) {
+                    delta = d;
+                    _autoMintPositions(key);
+                    return delta;
+                } catch {
+                    // Unexpected revert — try next wallet
+                    continue;
+                }
             }
         }
         // All 10 attempts failed (all wallets near capacity at current maxWallet)

@@ -632,6 +632,20 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
             return (BaseHook.afterSwap.selector, 0);
         }
 
+        // ✅ CREATOR FIRST-BUY: Also skip limits in afterSwap (beforeSwap skipped tax)
+        {
+            IClawclickFactory factory = IClawclickFactory(config.factory());
+            IClawclickFactory.LaunchInfo memory launchInfo = factory.launchByPoolId(poolId);
+            bool isCreatorFirstBuy = (
+                tx.origin == launchInfo.creator &&
+                block.timestamp < launchInfo.createdAt + 1 minutes &&
+                params.zeroForOne
+            );
+            if (isCreatorFirstBuy) {
+                return (BaseHook.afterSwap.selector, 0);
+            }
+        }
+
         // ═══════════════════════════════════════════════════════════════════════
         // EPOCH TRACKING & POSITION MANAGEMENT
         // ═══════════════════════════════════════════════════════════════════════

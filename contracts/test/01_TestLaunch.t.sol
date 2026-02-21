@@ -10,7 +10,7 @@ import "./BaseTest.sol";
  * NEW SYSTEM:
  * - Pools activate at launch with bootstrap ETH (no separate activation)
  * - Factory creates token, initializes pool, mints P1 position in one tx
- * - Universal 50% base tax for all MCAPs
+ * - Tax scales by MCAP tier: 1 ETH=50%, 5 ETH=30%, 10 ETH=5%
  * - tickSpacing = 60
  *
  * Covers:
@@ -69,8 +69,8 @@ contract TestLaunch is BaseTest {
         (address hookToken,,uint256 startMcap, uint256 baseTax,,,, ) = hook.launches(poolId);
         assertEq(hookToken, token);
         assertEq(startMcap, 5 ether);
-        // New system: universal 50% base tax for ALL tiers
-        assertEq(baseTax, 5000, "All tiers should have 50% base tax");
+        // Tax scales: 55% - (5% * mcapInETH) → 5 ETH = 30%
+        assertEq(baseTax, 3000, "5 ETH tier should have 30% base tax");
 
         vm.stopPrank();
     }
@@ -88,8 +88,8 @@ contract TestLaunch is BaseTest {
 
         (,,uint256 startMcap, uint256 baseTax,,,, ) = hook.launches(poolId);
         assertEq(startMcap, 10 ether);
-        // New system: universal 50% base tax for ALL tiers
-        assertEq(baseTax, 5000, "All tiers should have 50% base tax");
+        // Tax scales: 55% - (5% * mcapInETH) → 10 ETH = 5%
+        assertEq(baseTax, 500, "10 ETH tier should have 5% base tax");
 
         vm.stopPrank();
     }
@@ -101,19 +101,18 @@ contract TestLaunch is BaseTest {
     function test_revert_belowMinMcap() public {
         vm.startPrank(deployer);
 
-        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Fail Token",
             symbol: "FAIL",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            isPremium: false,
-            targetMcapETH: 0.5 ether
+            targetMcapETH: 0.5 ether,
+            feeSplit: _defaultFeeSplit()
         });
 
         vm.expectRevert();
-        factory.createLaunch{value: fee + bootstrap}(params);
+        factory.createLaunch{value: bootstrap}(params);
 
         vm.stopPrank();
     }
@@ -125,19 +124,18 @@ contract TestLaunch is BaseTest {
     function test_revert_aboveMaxMcap() public {
         vm.startPrank(deployer);
 
-        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Fail Token",
             symbol: "FAIL",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            isPremium: false,
-            targetMcapETH: 11 ether
+            targetMcapETH: 11 ether,
+            feeSplit: _defaultFeeSplit()
         });
 
         vm.expectRevert();
-        factory.createLaunch{value: fee + bootstrap}(params);
+        factory.createLaunch{value: bootstrap}(params);
 
         vm.stopPrank();
     }
@@ -154,8 +152,8 @@ contract TestLaunch is BaseTest {
             symbol: "FAIL",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            isPremium: false,
-            targetMcapETH: 1 ether
+            targetMcapETH: 1 ether,
+            feeSplit: _defaultFeeSplit()
         });
 
         vm.expectRevert();
@@ -171,19 +169,18 @@ contract TestLaunch is BaseTest {
     function test_revert_emptyName() public {
         vm.startPrank(deployer);
 
-        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "",
             symbol: "TEST",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            isPremium: false,
-            targetMcapETH: 1 ether
+            targetMcapETH: 1 ether,
+            feeSplit: _defaultFeeSplit()
         });
 
         vm.expectRevert();
-        factory.createLaunch{value: fee + bootstrap}(params);
+        factory.createLaunch{value: bootstrap}(params);
 
         vm.stopPrank();
     }
@@ -191,19 +188,18 @@ contract TestLaunch is BaseTest {
     function test_revert_emptySymbol() public {
         vm.startPrank(deployer);
 
-        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test",
             symbol: "",
             beneficiary: beneficiary,
             agentWallet: beneficiary,
-            isPremium: false,
-            targetMcapETH: 1 ether
+            targetMcapETH: 1 ether,
+            feeSplit: _defaultFeeSplit()
         });
 
         vm.expectRevert();
-        factory.createLaunch{value: fee + bootstrap}(params);
+        factory.createLaunch{value: bootstrap}(params);
 
         vm.stopPrank();
     }
@@ -215,19 +211,18 @@ contract TestLaunch is BaseTest {
     function test_revert_zeroBeneficiary() public {
         vm.startPrank(deployer);
 
-        uint256 fee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
         ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
             name: "Test",
             symbol: "TEST",
             beneficiary: address(0),
             agentWallet: deployer,
-            isPremium: false,
-            targetMcapETH: 1 ether
+            targetMcapETH: 1 ether,
+            feeSplit: _defaultFeeSplit()
         });
 
         vm.expectRevert();
-        factory.createLaunch{value: fee + bootstrap}(params);
+        factory.createLaunch{value: bootstrap}(params);
 
         vm.stopPrank();
     }
@@ -276,28 +271,20 @@ contract TestLaunch is BaseTest {
     }
 
     /*//////////////////////////////////////////////////////////////
-        TEST 11: PREMIUM VS MICRO FEE
+        TEST 11: BOOTSTRAP-ONLY LAUNCH (NO PREMIUM TIER)
     //////////////////////////////////////////////////////////////*/
 
-    function test_premiumFee() public {
+    function test_bootstrapOnlyLaunch() public {
         vm.startPrank(deployer);
 
-        uint256 premiumFee = factory.getFee(true);
-        uint256 microFee = factory.getFee(false);
         uint256 bootstrap = config.MIN_BOOTSTRAP_ETH();
-        assertTrue(premiumFee > microFee, "Premium should cost more");
 
-        ClawclickFactory.CreateParams memory params = ClawclickFactory.CreateParams({
-            name: "Premium Token",
-            symbol: "PREM",
-            beneficiary: beneficiary,
-            agentWallet: beneficiary,
-            isPremium: true,
-            targetMcapETH: 1 ether
-        });
+        // New system: single tier, just bootstrap ETH
+        (address token, PoolId poolId,) = _createLaunch(1 ether, beneficiary);
 
-        (address token,) = factory.createLaunch{value: premiumFee + bootstrap}(params);
-        assertTrue(token != address(0), "Premium launch should work");
+        assertTrue(token != address(0), "Launch should work with bootstrap");
+        assertTrue(factory.poolActivated(poolId), "Pool should activate at launch");
+        assertTrue(factory.positionTokenId(poolId) > 0, "LP should be minted");
 
         vm.stopPrank();
     }
@@ -339,39 +326,21 @@ contract TestLaunch is BaseTest {
     }
 
     /*//////////////////////////////////////////////////////////////
-     TEST 14: DEPRECATED FUNCTIONS REVERT
+     TEST 14: CLEAR DEV OVERRIDE TAKES POOLID
     //////////////////////////////////////////////////////////////*/
 
-    function test_revert_activatePoolDeprecated() public {
+    function test_clearDevOverrideAcceptsPoolId() public {
         vm.startPrank(deployer);
-        (,, PoolKey memory key) = _createLaunch(1 ether, beneficiary);
+        (address token, PoolId poolId,) = _createLaunch(1 ether, deployer);
         vm.stopPrank();
 
-        vm.startPrank(alice);
-        vm.expectRevert("Pools activated at launch");
-        factory.activatePool{value: 0.5 ether}(key);
-        vm.stopPrank();
-    }
-
-    function test_revert_activateAndSwapDevDeprecated() public {
+        // clearDevOverride takes PoolId (not PoolKey) and requires 1 min elapsed
+        // Just verify it exists and doesn't revert with wrong error
         vm.startPrank(deployer);
-        (,, PoolKey memory key) = _createLaunch(1 ether, deployer);
-        vm.stopPrank();
-
-        vm.startPrank(deployer);
-        vm.expectRevert("Use regular launch flow");
-        factory.activateAndSwapDev{value: 0.1 ether}(key);
-        vm.stopPrank();
-    }
-
-    function test_revert_clearDevOverrideDeprecated() public {
-        vm.startPrank(deployer);
-        (,, PoolKey memory key) = _createLaunch(1 ether, deployer);
-        vm.stopPrank();
-
-        vm.startPrank(deployer);
-        vm.expectRevert("No dev override in new system");
-        factory.clearDevOverride(key);
+        // Warp forward 61 seconds so the time lock passes
+        vm.warp(block.timestamp + 61);
+        // Should not revert (pool already activated, override already cleared)
+        factory.clearDevOverride(poolId);
         vm.stopPrank();
     }
 }

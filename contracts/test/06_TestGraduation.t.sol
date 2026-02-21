@@ -127,7 +127,7 @@ contract TestGraduation is BaseTest {
         }
 
         if (hook.isGraduated(poolId)) {
-            (,,,, uint256 graduationMcap,,,) = hook.launches(poolId);
+            (,,,,,,, uint256 graduationMcap) = hook.launches(poolId);
             // graduationMcap is the actual MCAP when graduation triggered (>= 16x)
             assertGe(graduationMcap, startMcap * 16, "Graduation MCAP >= startMcap * 16");
         }
