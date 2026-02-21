@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { createPublicClient, http, formatEther } from 'viem'
 import { sepolia } from 'viem/chains'
 import { CONTRACTS } from '../contracts'
+import { queryEventsInChunks } from '../utils/queryEvents'
 import FactoryABI from '../../src/abis/factory.json'
 import HookABI from '../../src/abis/hook.json'
 
@@ -15,7 +16,7 @@ export interface ClawStats {
 
 const publicClient = createPublicClient({
   chain: sepolia,
-  transport: http('https://rpc.sepolia.org'),
+  transport: http('https://ethereum-sepolia-rpc.publicnode.com'),
 })
 
 export function useClawStats() {
@@ -33,14 +34,23 @@ export function useClawStats() {
 
   async function fetchStats() {
     try {
-      // Get all LaunchCreated events (start from deployment block ~10.3M)
+      // Get current block
+      const currentBlock = await publicClient.getBlockNumber()
+      // Query last 1500 blocks (~5 hours on Sepolia, within Alchemy limits)
+      const fromBlock = currentBlock > 1500n ? currentBlock - 1500n : 0n
+      
+      console.log(`Fetching events from block ${fromBlock} to ${currentBlock}`)
+      
+      // Get all LaunchCreated events
       const launchEvents = await publicClient.getContractEvents({
         address: CONTRACTS.FACTORY as `0x${string}`,
         abi: FactoryABI,
         eventName: 'LaunchCreated',
-        fromBlock: 10300000n,
+        fromBlock,
         toBlock: 'latest',
       })
+      
+      console.log(`Found ${launchEvents.length} LaunchCreated events`)
 
       const tokensLaunched = launchEvents.length
 
@@ -61,7 +71,7 @@ export function useClawStats() {
             abi: HookABI,
             eventName: 'SwapExecuted',
             args: { poolId },
-            fromBlock: 10300000n,
+            fromBlock,
             toBlock: 'latest',
           })
 

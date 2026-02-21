@@ -21,6 +21,9 @@ export const EXPLORER_URL = 'https://sepolia.etherscan.io'
 
 export const NETWORK_NAME = 'Sepolia Testnet'
 
+// Deployment block - start querying events from here
+export const DEPLOYMENT_BLOCK = 10306000n // Factory deployed around block 10,306,034
+
 // Helper function to get explorer link
 export function getExplorerLink(type: 'tx' | 'address' | 'token', hash: string): string {
   return `${EXPLORER_URL}/${type}/${hash}`

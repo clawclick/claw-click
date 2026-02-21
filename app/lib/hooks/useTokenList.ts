@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import { createPublicClient, http, formatEther } from 'viem'
 import { sepolia } from 'viem/chains'
 import { CONTRACTS, getExplorerLink } from '../contracts'
+import { queryEventsInChunks } from '../utils/queryEvents'
 import FactoryABI from '../../src/abis/factory.json'
 import HookABI from '../../src/abis/hook.json'
 
 const publicClient = createPublicClient({
   chain: sepolia,
-  transport: http('https://rpc.sepolia.org'),
+  transport: http('https://ethereum-sepolia-rpc.publicnode.com'),
 })
 
 export interface TokenData {
@@ -56,14 +57,23 @@ export function useTokenList() {
 
   async function fetchTokens() {
     try {
-      // Get all launches (start from deployment block ~10.3M)
+      // Get current block
+      const currentBlock = await publicClient.getBlockNumber()
+      // Query last 1500 blocks (~5 hours on Sepolia, within Alchemy limits)
+      const fromBlock = currentBlock > 1500n ? currentBlock - 1500n : 0n
+      
+      console.log(`Fetching tokens from block ${fromBlock} to ${currentBlock}`)
+      
+      // Get all launches
       const launchEvents = await publicClient.getContractEvents({
         address: CONTRACTS.FACTORY as `0x${string}`,
         abi: FactoryABI,
         eventName: 'LaunchCreated',
-        fromBlock: 10300000n,
+        fromBlock,
         toBlock: 'latest',
       })
+      
+      console.log(`Found ${launchEvents.length} launch events`)
 
       const ETH_PRICE = 2000 // TODO: Get from price feed
 
@@ -123,7 +133,7 @@ export function useTokenList() {
             abi: HookABI,
             eventName: 'SwapExecuted',
             args: { poolId },
-            fromBlock: 10300000n,
+            fromBlock,
             toBlock: 'latest',
           })
 
