@@ -50,7 +50,9 @@ export function useClawStats() {
       let totalMarketCapWei = 0n
 
       for (const launch of launchEvents) {
-        const poolId = (launch as any).args.poolId
+        // Type-safe access to event args
+        const launchArgs: any = launch.args
+        const poolId = launchArgs.poolId
         
         try {
           // Get swap events for this pool
@@ -64,14 +66,15 @@ export function useClawStats() {
           })
 
           for (const swap of swapEvents) {
-            const args = swap.args as any
-            const feeAmount = args.feeAmount
-            const isETHFee = args.isETHFee
+            // Type-safe access to swap event args
+            const swapArgs: any = swap.args
+            const feeAmount = swapArgs.feeAmount
+            const isETHFee = swapArgs.isETHFee
             
             if (isETHFee) {
               totalFeesWei += feeAmount
               // Approximate volume (fee / tax rate)
-              const taxBps = args.taxBps
+              const taxBps = swapArgs.taxBps
               if (taxBps > 0) {
                 const volume = (feeAmount * 10000n) / taxBps
                 totalVolumeWei += volume

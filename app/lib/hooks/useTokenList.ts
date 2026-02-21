@@ -71,7 +71,8 @@ export function useTokenList() {
 
       for (const event of launchEvents) {
         try {
-          const eventArgs = (event as any).args
+          // Type-safe access to event args
+          const eventArgs: any = event.args
           const poolId = eventArgs.poolId
           
           // Get launch info
@@ -134,14 +135,15 @@ export function useTokenList() {
           let sellCount = 0
 
           for (const swap of recent24hSwaps) {
-            const swapArgs = (swap as any).args
-            if (swapArgs.isBuy) {
+            // Type-safe access to swap event args
+            const swapArgs: any = swap.args
+            if (swapArgs && swapArgs.isBuy) {
               buyCount++
-            } else {
+            } else if (swapArgs) {
               sellCount++
             }
             
-            if (swapArgs.isETHFee && swapArgs.taxBps > 0) {
+            if (swapArgs && swapArgs.isETHFee && swapArgs.taxBps > 0) {
               const volume = (swapArgs.feeAmount * 10000n) / swapArgs.taxBps
               volume24hWei += volume
             }
