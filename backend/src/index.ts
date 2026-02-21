@@ -1,4 +1,4 @@
 import './api/server'
+import './indexer/worker'
 
-console.log('🦞 Claw.Click Backend Started!')
-console.log('📝 Run "npm run indexer" in a separate terminal to start event indexing')
+console.log('🦞 Claw.Click Backend Started (API + Indexer)')
