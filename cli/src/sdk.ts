@@ -198,8 +198,8 @@ export class ClawClick {
           agentWallet: params.agentWallet || this.address,
           targetMcapETH: parseEther(params.targetMcapETH),
           feeSplit: {
-            wallets: wallets as readonly [Address, Address, Address, Address, Address],
-            percentages: percentages as readonly [number, number, number, number, number],
+            wallets: wallets as unknown as readonly [Address, Address, Address, Address, Address],
+            percentages: percentages as unknown as readonly [number, number, number, number, number],
             count,
           },
         },
