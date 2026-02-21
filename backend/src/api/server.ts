@@ -60,13 +60,15 @@ app.get('/api/tokens', async (req, res) => {
       sort = 'new',
       limit = 20,
       offset = 0,
-      search = ''
+      search = '',
+      graduated,
     } = req.query
     
     let orderBy = 'launched_at DESC'
     if (sort === 'hot') orderBy = 'volume_24h DESC'
     if (sort === 'mcap') orderBy = 'current_mcap DESC NULLS LAST'
-    if (sort === 'volume') orderBy = 'volume_total DESC'
+    if (sort === 'volume') orderBy = 'volume_24h DESC'
+    if (sort === 'volume_total') orderBy = 'volume_total DESC'
     
     let whereClause = 'WHERE 1=1'
     const params: any[] = []
@@ -74,6 +76,12 @@ app.get('/api/tokens', async (req, res) => {
     if (search) {
       whereClause += ` AND (LOWER(name) LIKE $${params.length + 1} OR LOWER(symbol) LIKE $${params.length + 1} OR LOWER(address) LIKE $${params.length + 1})`
       params.push(`%${search.toString().toLowerCase()}%`)
+    }
+
+    if (graduated === 'true') {
+      whereClause += ' AND graduated = true'
+    } else if (graduated === 'false') {
+      whereClause += ' AND graduated = false'
     }
     
     params.push(limit, offset)
