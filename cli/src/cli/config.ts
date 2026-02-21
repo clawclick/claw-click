@@ -11,7 +11,7 @@ dotenv.config()
 export function loadConfig(): ClawClickConfig {
   const privateKey = process.env.CLAWCLICK_PRIVATE_KEY
   const rpcUrl = process.env.CLAWCLICK_RPC_URL
-  const apiUrl = process.env.CLAWCLICK_API_URL || 'http://localhost:3001'
+  const apiUrl = process.env.CLAWCLICK_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
   const factoryAddress = process.env.CLAWCLICK_FACTORY_ADDRESS
   const hookAddress = process.env.CLAWCLICK_HOOK_ADDRESS
   const swapExecutorAddress = process.env.CLAWCLICK_SWAP_EXECUTOR_ADDRESS
