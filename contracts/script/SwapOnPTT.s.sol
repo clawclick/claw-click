@@ -32,11 +32,11 @@ contract SwapOnPTT is Script {
         TestSwapRouter router = new TestSwapRouter(IPoolManager(POOL_MANAGER));
         console2.log("Router deployed:", address(router));
 
-        // Build pool key
+        // Build pool key (MUST match Factory's _createPoolKey)
         PoolKey memory key = PoolKey({
             currency0: Currency.wrap(address(0)), // ETH
             currency1: Currency.wrap(PTT_TOKEN),
-            fee: 0,
+            fee: 0x800000, // Dynamic fee flag - CRITICAL!
             tickSpacing: 60,
             hooks: IHooks(HOOK)
         });
