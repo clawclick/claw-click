@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { createPublicClient, http, formatEther } from 'viem'
 import { sepolia } from 'viem/chains'
 import { CONTRACTS, getExplorerLink } from '../contracts'
-import FactoryABI from '../../abis/ClawclickFactory.json'
-import HookABI from '../../abis/ClawclickHook.json'
+import FactoryABI from '../../src/abis/ClawclickFactory.json'
+import HookABI from '../../src/abis/ClawclickHook.json'
 
 const publicClient = createPublicClient({
   chain: sepolia,
