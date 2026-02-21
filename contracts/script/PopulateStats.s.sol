@@ -54,7 +54,7 @@ contract PopulateStats is Script {
         console2.log("PHASE 1: Small buys (0.01 ETH each)");
         for (uint i = 0; i < 15; i++) {
             uint256 amount = 0.01 ether;
-            console2.log("[", i + 1, "/15] Buy 0.01 ETH");
+            console2.log("Buy 0.01 ETH");
             router.buy{value: amount}(key, amount);
             swapCount++;
             totalVolume += amount;
@@ -71,7 +71,7 @@ contract PopulateStats is Script {
             uint256 sellAmount = balance / 10; // Sell 10%
             if (sellAmount == 0) break;
             
-            console2.log("[", i + 1, "/5] Sell", sellAmount / 1e18, "tokens");
+            console2.log("Selling tokens");
             IERC20(PTT_TOKEN).approve(address(router), sellAmount);
             router.sell(key, sellAmount);
             swapCount++;
@@ -83,7 +83,7 @@ contract PopulateStats is Script {
         // PHASE 3: More small buys
         for (uint i = 0; i < 10; i++) {
             uint256 amount = 0.008 ether; // Slightly smaller
-            console2.log("[", i + 1, "/10] Buy 0.008 ETH");
+            console2.log("Buy 0.008 ETH");
             router.buy{value: amount}(key, amount);
             swapCount++;
             totalVolume += amount;
