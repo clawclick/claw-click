@@ -172,17 +172,45 @@ export default function Home() {
       chain: t.chain,
     }))
 
-  // Filter tokens based on active tab
-  const filteredTokens = tokens.filter(token => {
-    if (activeTab === 'hot') return token.hot
-    if (activeTab === 'new') return (Date.now() / 1000 - token.createdAt) < 86400 // Last 24h
-    if (activeTab === 'mcap') return true // Will sort by mcap
-    if (activeTab === 'volume') return true // Will sort by volume
-    if (activeTab === 'base' || activeTab === 'eth' || activeTab === 'bsc') {
-      return token.chain.toLowerCase() === activeTab
-    }
-    return true // 'all'
-  })
+  // Filter and sort tokens based on active tab
+  const filteredTokens = tokens
+    .filter(token => {
+      if (activeTab === 'hot') return token.hot
+      if (activeTab === 'new') return (Date.now() / 1000 - token.createdAt) < 86400 // Last 24h
+      if (activeTab === 'mcap') return true // Show all, will sort
+      if (activeTab === 'volume') return true // Show all, will sort
+      if (activeTab === 'base' || activeTab === 'eth' || activeTab === 'bsc') {
+        // Match chain (Sepolia is ETH-based)
+        if (activeTab === 'eth') return token.chain === 'SEPOLIA'
+        return token.chain.toLowerCase() === activeTab.toLowerCase()
+      }
+      return true // 'all'
+    })
+    .sort((a, b) => {
+      // Sort based on active tab
+      if (activeTab === 'mcap') {
+        // Sort by market cap (descending)
+        const mcapA = parseFloat(a.mcapUSD.replace(/[$,]/g, '')) || 0
+        const mcapB = parseFloat(b.mcapUSD.replace(/[$,]/g, '')) || 0
+        return mcapB - mcapA
+      }
+      if (activeTab === 'volume') {
+        // Sort by 24h volume (descending)
+        const volA = parseFloat(a.vol24h.replace(/[$,]/g, '')) || 0
+        const volB = parseFloat(b.vol24h.replace(/[$,]/g, '')) || 0
+        return volB - volA
+      }
+      if (activeTab === 'new') {
+        // Sort by creation time (newest first)
+        return b.createdAt - a.createdAt
+      }
+      if (activeTab === 'hot') {
+        // Sort by transaction count (most active first)
+        return b.txCount - a.txCount
+      }
+      // Default: newest first
+      return b.createdAt - a.createdAt
+    })
 
   return (
     <main className="min-h-screen relative bg-[#1a1a1a] text-white overflow-x-hidden w-full">
