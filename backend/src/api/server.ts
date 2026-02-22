@@ -52,6 +52,81 @@ app.get('/api/stats', async (req, res) => {
 })
 
 // ============================================================================
+// AGENT-SPECIFIC STATS (for claws.fun)
+// ============================================================================
+app.get('/api/stats/agents', async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT 
+        COUNT(*) as total_agents,
+        COALESCE(SUM(current_mcap), 0) as agent_mcap_total,
+        COALESCE(SUM(volume_24h), 0) as agent_volume_24h,
+        COALESCE(SUM(volume_total), 0) as agent_volume_total
+      FROM tokens
+      WHERE is_agent = TRUE
+    `)
+    
+    res.json(result.rows[0])
+  } catch (error) {
+    console.error('Error fetching agent stats:', error)
+    res.status(500).json({ error: 'Failed to fetch agent stats' })
+  }
+})
+
+// ============================================================================
+// GRADUATED AGENTS COUNT
+// ============================================================================
+app.get('/api/stats/agents/graduated', async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT COUNT(*) as graduated_agents
+      FROM tokens
+      WHERE is_agent = TRUE AND graduated = TRUE
+    `)
+    
+    res.json(result.rows[0])
+  } catch (error) {
+    console.error('Error fetching graduated agents:', error)
+    res.status(500).json({ error: 'Failed to fetch graduated agents' })
+  }
+})
+
+// ============================================================================
+// AGENT FEED (recent agent tokenizations for claws.fun homepage)
+// ============================================================================
+app.get('/api/agents/recent', async (req, res) => {
+  try {
+    const { limit = 10 } = req.query
+    
+    const result = await query(`
+      SELECT 
+        address,
+        name,
+        symbol,
+        creator,
+        agent_wallet,
+        target_mcap,
+        current_mcap,
+        current_price,
+        volume_24h,
+        graduated,
+        current_epoch,
+        logo_url,
+        launched_at
+      FROM tokens
+      WHERE is_agent = TRUE
+      ORDER BY launched_at DESC
+      LIMIT $1
+    `, [limit])
+    
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error fetching recent agents:', error)
+    res.status(500).json({ error: 'Failed to fetch recent agents' })
+  }
+})
+
+// ============================================================================
 // TOKENS LIST
 // ============================================================================
 app.get('/api/tokens', async (req, res) => {
