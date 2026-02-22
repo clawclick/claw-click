@@ -122,11 +122,28 @@ client.watchEvent({
         
         console.log(`🆕 New token launched: ${symbol} (${token})`)
         
+        // Read agentWallet from the deployed token contract
+        // If agentWallet != address(0), this is an agent token from claws.fun
+        let agentWallet: string | null = null
+        let isAgent = false
+        try {
+          const wallet = await client.readContract({
+            address: token as `0x${string}`,
+            abi: [{ name: 'agentWallet', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'address' }] }],
+            functionName: 'agentWallet',
+          }) as string
+          if (wallet && wallet !== '0x0000000000000000000000000000000000000000') {
+            agentWallet = wallet
+            isAgent = true
+            console.log(`🤖 Agent token detected! agentWallet: ${wallet}`)
+          }
+        } catch { /* older tokens may not have agentWallet() */ }
+        
         await query(`
           INSERT INTO tokens (
             address, name, symbol, creator, beneficiary, pool_id,
-            target_mcap, current_mcap, sqrt_price_x96, launched_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+            target_mcap, current_mcap, sqrt_price_x96, agent_wallet, is_agent, launched_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
           ON CONFLICT (address) DO NOTHING
         `, [
           token,
@@ -138,15 +155,27 @@ client.watchEvent({
           formatEther(targetMcapETH ?? 0n),
           formatEther(targetMcapETH ?? 0n), // Start at target MCAP
           sqrtPriceX96?.toString() || '0',
+          agentWallet,
+          isAgent,
         ])
         
-        // Update total tokens count
-        await query(`
-          UPDATE stats SET 
-            total_tokens = total_tokens + 1,
-            updated_at = NOW()
-          WHERE id = 1
-        `)
+        // Update total tokens count (and agent count if applicable)
+        if (isAgent) {
+          await query(`
+            UPDATE stats SET 
+              total_tokens = total_tokens + 1,
+              total_agents = total_agents + 1,
+              updated_at = NOW()
+            WHERE id = 1
+          `)
+        } else {
+          await query(`
+            UPDATE stats SET 
+              total_tokens = total_tokens + 1,
+              updated_at = NOW()
+            WHERE id = 1
+          `)
+        }
         
         // Add to in-memory cache so Swap listener picks it up immediately
         if (poolId) {
