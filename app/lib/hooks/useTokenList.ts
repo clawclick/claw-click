@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { getExplorerLink } from '../contracts'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
-const ETH_PRICE = 2000 // TODO: price feed
 
 export interface TokenData {
   name: string
@@ -70,6 +69,7 @@ export function useTokenList(options?: {
       const res = await fetch(`${API_URL}/api/tokens?${params}`)
       if (!res.ok) throw new Error(`API ${res.status}`)
       const data = await res.json()
+      const ethPrice = parseFloat(data.eth_price_usd || '0') || 2800
 
       const tokensData: TokenData[] = (data.tokens || []).map((t: any) => {
         const mcapETH = parseFloat(t.current_mcap || '0')
@@ -90,10 +90,10 @@ export function useTokenList(options?: {
           createdAt: t.launched_at ? Math.floor(new Date(t.launched_at).getTime() / 1000) : 0,
           createdBlock: 0,
 
-          price: `$${(pricePerToken * ETH_PRICE).toFixed(6)}`,
+          price: `$${(pricePerToken * ethPrice).toFixed(6)}`,
           mcap: `${mcapETH.toFixed(4)} ETH`,
-          mcapUSD: `$${(mcapETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-          vol24h: `$${(vol24hETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+          mcapUSD: `$${(mcapETH * ethPrice).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+          vol24h: `$${(vol24hETH * ethPrice).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
           change24h: changeStr,
           currentEpoch: t.current_epoch || 0,
           currentTax: 0,

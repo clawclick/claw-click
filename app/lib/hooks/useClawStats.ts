@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { formatLargeNumber } from '../utils/formatNumber'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
-const ETH_PRICE = 2000 // TODO: price feed
 
 export interface ClawStats {
   tokensLaunched: number
@@ -33,15 +32,16 @@ export function useClawStats() {
       if (!res.ok) throw new Error(`API ${res.status}`)
       const data = await res.json()
 
+      const ethPrice = parseFloat(data.eth_price_usd || '0') || 2800
       const totalVolumeETH = parseFloat(data.total_volume_eth || '0')
-      // Approximate fees as ~2.5% of volume (average across epochs)
-      const totalFeesETH = totalVolumeETH * 0.025
+      const totalFeesETH = parseFloat(data.total_fees_eth || '0')
+      const totalMcapETH = parseFloat(data.total_market_cap_eth || '0')
 
       setStats({
         tokensLaunched: data.total_tokens || 0,
-        totalVolume: formatLargeNumber(totalVolumeETH * ETH_PRICE),
-        feesGenerated: formatLargeNumber(totalFeesETH * ETH_PRICE),
-        totalMarketCap: '$0', // TODO: backend could aggregate this
+        totalVolume: formatLargeNumber(totalVolumeETH * ethPrice),
+        feesGenerated: formatLargeNumber(totalFeesETH * ethPrice),
+        totalMarketCap: formatLargeNumber(totalMcapETH * ethPrice),
         isLoading: false,
       })
     } catch (error) {

@@ -4,6 +4,7 @@ import multer from 'multer'
 import { verifyMessage } from 'viem'
 import { query } from '../db/client'
 import { uploadImage } from '../lib/supabase'
+import { getETHPriceSync } from '../lib/ethPrice'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -34,17 +35,22 @@ app.get('/api/stats', async (req, res) => {
   try {
     const result = await query(`
       SELECT 
-        total_tokens,
-        total_volume_eth,
-        total_volume_24h,
-        total_txs,
-        total_txs_24h,
-        updated_at
-      FROM stats
-      WHERE id = 1
+        s.total_tokens,
+        s.total_volume_eth,
+        s.total_volume_24h,
+        s.total_txs,
+        s.total_txs_24h,
+        COALESCE(s.total_fees_eth, 0) as total_fees_eth,
+        s.updated_at,
+        COALESCE(m.total_mcap, 0) as total_market_cap_eth
+      FROM stats s
+      CROSS JOIN (
+        SELECT COALESCE(SUM(current_mcap), 0) as total_mcap FROM tokens WHERE graduated = false
+      ) m
+      WHERE s.id = 1
     `)
     
-    res.json(result.rows[0])
+    res.json({ ...result.rows[0], eth_price_usd: getETHPriceSync() })
   } catch (error) {
     console.error('Error fetching stats:', error)
     res.status(500).json({ error: 'Failed to fetch stats' })
@@ -187,7 +193,8 @@ app.get('/api/tokens', async (req, res) => {
       tokens: result.rows,
       total: parseInt(countResult.rows[0].total),
       limit: parseInt(limit as string),
-      offset: parseInt(offset as string)
+      offset: parseInt(offset as string),
+      eth_price_usd: getETHPriceSync()
     })
   } catch (error) {
     console.error('Error fetching tokens:', error)
@@ -223,7 +230,8 @@ app.get('/api/token/:address', async (req, res) => {
     
     res.json({
       token: tokenResult.rows[0],
-      recentSwaps: swapsResult.rows
+      recentSwaps: swapsResult.rows,
+      eth_price_usd: getETHPriceSync()
     })
   } catch (error) {
     console.error('Error fetching token:', error)
@@ -247,7 +255,7 @@ app.get('/api/tokens/trending', async (req, res) => {
       LIMIT 10
     `)
     
-    res.json(result.rows)
+    res.json({ tokens: result.rows, eth_price_usd: getETHPriceSync() })
   } catch (error) {
     console.error('Error fetching trending:', error)
     res.status(500).json({ error: 'Failed to fetch trending tokens' })

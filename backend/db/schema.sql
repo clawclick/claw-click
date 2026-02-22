@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS stats (
   total_volume_24h DECIMAL(30,18) DEFAULT 0,
   total_txs BIGINT DEFAULT 0,
   total_txs_24h INTEGER DEFAULT 0,
+  total_fees_eth DECIMAL(30,18) DEFAULT 0,
   updated_at TIMESTAMP DEFAULT NOW(),
   CONSTRAINT single_row CHECK (id = 1)
 );

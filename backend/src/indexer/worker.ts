@@ -205,10 +205,11 @@ client.watchEvent({
         await query(`
           UPDATE stats SET
             total_volume_eth = total_volume_eth + $1,
+            total_fees_eth = total_fees_eth + $2,
             total_txs = total_txs + 1,
             updated_at = NOW()
           WHERE id = 1
-        `, [swapVolume])
+        `, [swapVolume, feeInEth])
         
       } catch (error) {
         console.error('Error processing FeesCollected event:', error)
