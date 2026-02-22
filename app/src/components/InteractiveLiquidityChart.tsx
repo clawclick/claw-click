@@ -174,7 +174,7 @@ export default function InteractiveLiquidityChart() {
       {/* Chart Container */}
       <div
         ref={chartRef}
-        className="relative bg-black/40 rounded-xl border border-white/10 overflow-hidden"
+        className="relative bg-black/40 rounded-xl border border-white/10 overflow-x-auto"
         style={{ height: '500px' }}
         onMouseMove={(e) => {
           const rect = chartRef.current?.getBoundingClientRect()
@@ -187,7 +187,7 @@ export default function InteractiveLiquidityChart() {
         }}
       >
         {/* SVG Chart */}
-        <svg width="800" height="500" className="absolute inset-0">
+        <svg width="800" height="500" className="min-w-[600px] w-full h-full" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
           {/* Grid Lines */}
           <g opacity="0.1">
             {/* Horizontal grid */}

@@ -19,27 +19,28 @@ export default function DocsPage() {
     <div className="min-h-screen bg-[#1a1a1a] text-white">
       {/* Header */}
       <div className="border-b border-white/10 bg-black/20 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] bg-clip-text text-transparent hover:opacity-80 transition">
+            <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] bg-clip-text text-transparent hover:opacity-80 transition">
               claw.click
             </Link>
-            <nav className="flex gap-6">
+            <nav className="hidden sm:flex gap-6">
               <Link href="/" className="text-white/60 hover:text-white transition">Home</Link>
               <Link href="/docs" className="text-white font-semibold">Docs</Link>
               <Link href="/readme" className="text-white/60 hover:text-white transition">README</Link>
               <Link href="/skill" className="text-white/60 hover:text-white transition">Skill</Link>
             </nav>
+            <Link href="/" className="sm:hidden text-white/60 hover:text-white transition text-sm">← Back</Link>
           </div>
         </div>
       </div>
 
       {/* Title */}
-      <div className="max-w-7xl mx-auto px-6 pt-12 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-6 sm:pb-8">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-5xl font-bold mb-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] bg-clip-text text-transparent"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] bg-clip-text text-transparent"
         >
           Documentation
         </motion.h1>
@@ -47,34 +48,34 @@ export default function DocsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-xl text-white/60"
+          className="text-base sm:text-lg md:text-xl text-white/60"
         >
           Learn how Claw.Click's 5-position progressive liquidity system works
         </motion.p>
       </div>
 
       {/* Tabs */}
-      <div className="max-w-7xl mx-auto px-6 mb-8">
-        <div className="flex gap-2 border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
+        <div className="flex gap-1 sm:gap-2 border-b border-white/10 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 font-semibold transition-all ${
+              className={`px-3 sm:px-6 py-2 sm:py-3 font-semibold text-sm sm:text-base whitespace-nowrap transition-all ${
                 activeTab === tab.id
                   ? 'text-white border-b-2 border-[#E8523D]'
                   : 'text-white/40 hover:text-white/60'
               }`}
             >
-              <span className="mr-2">{tab.icon}</span>
-              {tab.label}
+              <span className="mr-1 sm:mr-2">{tab.icon}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-20">
         {activeTab === 'overview' && <OverviewTab />}
         {activeTab === 'mechanics' && <MechanicsTab />}
         {activeTab === 'economics' && <EconomicsTab />}

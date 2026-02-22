@@ -26,14 +26,14 @@ export default function MobileMenu() {
 
       {/* Mobile Menu Overlay - Full screen */}
       <div
-        className={`fixed inset-0 bg-[#1a1a1a]/95 backdrop-blur-xl z-50 md:hidden transition-all duration-300 ${
+        className={`fixed inset-0 bg-[#1a1a1a] z-50 md:hidden transition-all duration-300 overflow-y-auto ${
           isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
       >
         {/* Close Button */}
         <button
           onClick={closeMenu}
-          className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center rounded-lg hover:bg-[#E8523D]/10 transition-colors"
+          className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center rounded-lg hover:bg-[#E8523D]/10 transition-colors z-10"
           aria-label="Close menu"
         >
           <svg className="w-6 h-6 text-[#E8523D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@ export default function MobileMenu() {
         </button>
 
         {/* Menu Content */}
-        <nav className="flex flex-col items-center justify-center h-full gap-8 px-6">
+        <nav className="flex flex-col items-center justify-start min-h-screen pt-20 pb-10 gap-6 px-6">
           {/* Logo */}
           <Link href="/" onClick={closeMenu} className="mb-4">
             <span className="text-3xl font-bold gradient-text">Claw.Click</span>
