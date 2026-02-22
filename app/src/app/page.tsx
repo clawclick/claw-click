@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import ProductsDropdown from './components/ProductsDropdown'
 import ProductsFooter from './components/ProductsFooter'
+import MobileMenu from './components/MobileMenu'
 import { useClawStats } from '../../lib/hooks/useClawStats'
 import { useTokenList } from '../../lib/hooks/useTokenList'
 
@@ -253,27 +254,29 @@ export default function Home() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-4">
-            <ProductsDropdown />
-            <Link href="/docs" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              📕 Docs
-            </Link>
-            <Link href="/readme" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              📄 README
-            </Link>
-            <Link href="/skill" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              🤖 Skill.md
-            </Link>
-            <Link href="https://www.claws.fun/thread/FUNLAN" target="_blank" rel="noopener noreferrer" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
-              🦞 FUNLAN Thread
-            </Link>
-            
-            <ConnectButton />
-          </nav>
+          <nav className="flex items-center gap-4">
+            {/* Desktop Navigation - Hidden on mobile */}
+            <div className="hidden md:flex items-center gap-4">
+              <ProductsDropdown />
+              <Link href="/docs" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+                📕 Docs
+              </Link>
+              <Link href="/readme" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+                📄 README
+              </Link>
+              <Link href="/skill" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+                🤖 Skill.md
+              </Link>
+              <Link href="https://www.claws.fun/thread/FUNLAN" target="_blank" rel="noopener noreferrer" className="text-sm text-[#9AA4B2] hover:text-[#E8523D] transition-colors">
+                🦞 FUNLAN Thread
+              </Link>
+              
+              <ConnectButton />
+            </div>
 
-          <div className="md:hidden">
-            <ConnectButton />
-          </div>
+            {/* Mobile Menu Button - Only visible on mobile */}
+            <MobileMenu />
+          </nav>
         </div>
       </header>
 

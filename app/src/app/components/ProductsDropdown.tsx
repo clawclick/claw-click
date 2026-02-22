@@ -30,7 +30,12 @@ const products = [
   },
 ]
 
-export default function ProductsDropdown() {
+interface ProductsDropdownProps {
+  mobile?: boolean
+  onItemClick?: () => void
+}
+
+export default function ProductsDropdown({ mobile = false, onItemClick }: ProductsDropdownProps = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -45,6 +50,44 @@ export default function ProductsDropdown() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const handleProductClick = () => {
+    setIsOpen(false)
+    onItemClick?.()
+  }
+
+  if (mobile) {
+    // Mobile: Always expanded, no dropdown behavior
+    return (
+      <div className="w-full">
+        <h3 className="text-lg font-bold gradient-text mb-3 text-center">🎁 Products</h3>
+        <div className="space-y-3">
+          {products.map((product) => (
+            <a
+              key={product.name}
+              href={product.url}
+              onClick={handleProductClick}
+              className="block p-4 rounded-xl bg-[#2a2a2a] border border-[#E8523D]/20 hover:border-[#E8523D]/40 transition-all"
+              target={product.url.startsWith('http') ? '_blank' : '_self'}
+              rel={product.url.startsWith('http') ? 'noopener noreferrer' : ''}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-semibold text-white">{product.name}</span>
+                {product.isLive && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-[#9AA4B2] leading-relaxed">{product.description}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Desktop: Dropdown behavior
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -71,6 +114,7 @@ export default function ProductsDropdown() {
                 <a
                   key={product.name}
                   href={product.url}
+                  onClick={handleProductClick}
                   className="block p-3 rounded-lg bg-[#0a0a0a]/50 hover:bg-[#0a0a0a]/80 transition-all border border-[#E8523D]/10 hover:border-[#E8523D]/30"
                   target={product.url.startsWith('http') ? '_blank' : '_self'}
                   rel={product.url.startsWith('http') ? 'noopener noreferrer' : ''}
