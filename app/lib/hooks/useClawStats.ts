@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react'
-import { createPublicClient, http, formatEther } from 'viem'
-import { sepolia } from 'viem/chains'
-import { CONTRACTS } from '../contracts'
-import { queryEventsInChunks } from '../utils/queryEvents'
 import { formatLargeNumber } from '../utils/formatNumber'
-import FactoryABI from '../../src/abis/factory.json'
-import HookABI from '../../src/abis/hook.json'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
+const ETH_PRICE = 2000 // TODO: price feed
 
 export interface ClawStats {
   tokensLaunched: number
@@ -14,11 +11,6 @@ export interface ClawStats {
   totalMarketCap: string
   isLoading: boolean
 }
-
-const publicClient = createPublicClient({
-  chain: sepolia,
-  transport: http('https://ethereum-sepolia-rpc.publicnode.com'),
-})
 
 export function useClawStats() {
   const [stats, setStats] = useState<ClawStats>({
@@ -31,96 +23,25 @@ export function useClawStats() {
 
   useEffect(() => {
     fetchStats()
+    const interval = setInterval(fetchStats, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   async function fetchStats() {
     try {
-      // LIFETIME STATS: Query from deployment block 10306000 (Feb 21, 2026)
-      const DEPLOYMENT_BLOCK = 10306000n
-      
-      console.log(`Fetching LIFETIME events from block ${DEPLOYMENT_BLOCK} to latest`)
-      
-      // Get all LaunchCreated events (LIFETIME)
-      const launchEvents = await publicClient.getContractEvents({
-        address: CONTRACTS.FACTORY as `0x${string}`,
-        abi: FactoryABI,
-        eventName: 'LaunchCreated',
-        fromBlock: DEPLOYMENT_BLOCK,
-        toBlock: 'latest',
-      })
-      
-      console.log(`Found ${launchEvents.length} LaunchCreated events (LIFETIME)`)
+      const res = await fetch(`${API_URL}/api/stats`)
+      if (!res.ok) throw new Error(`API ${res.status}`)
+      const data = await res.json()
 
-      const tokensLaunched = launchEvents.length
-
-      // Calculate total volume from SwapExecuted events
-      let totalVolumeWei = 0n
-      let totalFeesWei = 0n
-      let totalMarketCapWei = 0n
-
-      for (const launch of launchEvents) {
-        // Extract poolId from event
-        const poolId = (launch as any).args?.poolId
-        if (!poolId) continue
-        
-        try {
-          // Get swap events for this pool (LIFETIME)
-          const swapEvents = await publicClient.getContractEvents({
-            address: CONTRACTS.HOOK as `0x${string}`,
-            abi: HookABI,
-            eventName: 'SwapExecuted',
-            args: { poolId },
-            fromBlock: DEPLOYMENT_BLOCK,
-            toBlock: 'latest',
-          })
-
-          for (const swap of swapEvents) {
-            // Extract swap data from event
-            const swapArgs = (swap as any).args
-            if (!swapArgs) continue
-            
-            const feeAmount = swapArgs.feeAmount
-            const isETHFee = swapArgs.isETHFee
-            
-            if (isETHFee && feeAmount) {
-              totalFeesWei += BigInt(feeAmount)
-              // Approximate volume (fee / tax rate)
-              const taxBps = swapArgs.taxBps
-              if (taxBps && taxBps > 0) {
-                const volume = (BigInt(feeAmount) * 10000n) / BigInt(taxBps)
-                totalVolumeWei += volume
-              }
-            }
-          }
-
-          // Get current MCAP for this pool
-          try {
-            const mcap = await publicClient.readContract({
-              address: CONTRACTS.HOOK as `0x${string}`,
-              abi: HookABI,
-              functionName: 'getCurrentMcap',
-              args: [poolId],
-            }) as bigint
-            totalMarketCapWei += mcap
-          } catch (e) {
-            // Pool might not exist yet
-          }
-        } catch (error) {
-          console.error('Error fetching pool data:', error)
-        }
-      }
-
-      // Convert to USD (assuming ETH = $2000 for now, will need price feed later)
-      const ETH_PRICE = 2000
-      const totalVolumeETH = parseFloat(formatEther(totalVolumeWei))
-      const totalFeesETH = parseFloat(formatEther(totalFeesWei))
-      const totalMarketCapETH = parseFloat(formatEther(totalMarketCapWei))
+      const totalVolumeETH = parseFloat(data.total_volume_eth || '0')
+      // Approximate fees as ~2.5% of volume (average across epochs)
+      const totalFeesETH = totalVolumeETH * 0.025
 
       setStats({
-        tokensLaunched,
+        tokensLaunched: data.total_tokens || 0,
         totalVolume: formatLargeNumber(totalVolumeETH * ETH_PRICE),
         feesGenerated: formatLargeNumber(totalFeesETH * ETH_PRICE),
-        totalMarketCap: formatLargeNumber(totalMarketCapETH * ETH_PRICE),
+        totalMarketCap: '$0', // TODO: backend could aggregate this
         isLoading: false,
       })
     } catch (error) {

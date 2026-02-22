@@ -9,16 +9,24 @@ import ProductsDropdown from './components/ProductsDropdown'
 import ProductsFooter from './components/ProductsFooter'
 import MobileMenu from './components/MobileMenu'
 import { useClawStats } from '../../lib/hooks/useClawStats'
-import { useTokenList } from '../../lib/hooks/useTokenList'
+import { useTokenList, type TokenSort } from '../../lib/hooks/useTokenList'
+import { useTrendingTokens } from '../../lib/hooks/useTrendingTokens'
 
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState(0)
   const [activeTab, setActiveTab] = useState('all')
   const [copied, setCopied] = useState(false)
   
-  // Fetch live data from contracts
+  // Map tab to backend sort param
+  const sortMap: Record<string, TokenSort | undefined> = {
+    all: 'new', hot: 'hot', new: 'new', mcap: 'mcap', volume: 'volume',
+  }
+  const currentSort = sortMap[activeTab] || 'new'
+  
+  // Fetch live data from backend API
   const stats = useClawStats()
-  const { tokens, isLoading: tokensLoading } = useTokenList()
+  const { tokens, isLoading: tokensLoading } = useTokenList({ sort: currentSort, limit: 50 })
+  const { trending: trendingTokens } = useTrendingTokens()
 
   const clawTokenCA = '0x7b4nvtm5vmt5vy1234567890abcdefghij1234567890enj8900'
   
@@ -163,55 +171,14 @@ export default function Home() {
     }
   ]
 
-  // Get trending tokens (top 5 by volume)
-  const trendingTokens = tokens
-    .slice(0, 5)
-    .map(t => ({
-      ticker: `$${t.symbol}`,
-      change: t.change24h,
-      mcap: t.mcapUSD,
-      chain: t.chain,
-    }))
-
-  // Filter and sort tokens based on active tab
-  const filteredTokens = tokens
-    .filter(token => {
-      if (activeTab === 'hot') return token.hot
-      if (activeTab === 'new') return (Date.now() / 1000 - token.createdAt) < 86400 // Last 24h
-      if (activeTab === 'mcap') return true // Show all, will sort
-      if (activeTab === 'volume') return true // Show all, will sort
-      if (activeTab === 'base' || activeTab === 'eth' || activeTab === 'bsc') {
-        // Match chain (Sepolia is ETH-based)
-        if (activeTab === 'eth') return token.chain === 'SEPOLIA'
-        return token.chain.toLowerCase() === activeTab.toLowerCase()
-      }
-      return true // 'all'
-    })
-    .sort((a, b) => {
-      // Sort based on active tab
-      if (activeTab === 'mcap') {
-        // Sort by market cap (descending)
-        const mcapA = parseFloat(a.mcapUSD.replace(/[$,]/g, '')) || 0
-        const mcapB = parseFloat(b.mcapUSD.replace(/[$,]/g, '')) || 0
-        return mcapB - mcapA
-      }
-      if (activeTab === 'volume') {
-        // Sort by 24h volume (descending)
-        const volA = parseFloat(a.vol24h.replace(/[$,]/g, '')) || 0
-        const volB = parseFloat(b.vol24h.replace(/[$,]/g, '')) || 0
-        return volB - volA
-      }
-      if (activeTab === 'new') {
-        // Sort by creation time (newest first)
-        return b.createdAt - a.createdAt
-      }
-      if (activeTab === 'hot') {
-        // Sort by transaction count (most active first)
-        return b.txCount - a.txCount
-      }
-      // Default: newest first
-      return b.createdAt - a.createdAt
-    })
+  // Tokens are already sorted by the backend based on activeTab
+  // Only apply client-side chain filter for chain-specific tabs
+  const filteredTokens = tokens.filter(token => {
+    if (activeTab === 'base') return token.chain === 'BASE'
+    if (activeTab === 'eth') return token.chain === 'SEPOLIA'
+    if (activeTab === 'bsc') return token.chain === 'BSC'
+    return true
+  })
 
   return (
     <main className="min-h-screen relative bg-[#1a1a1a] text-white overflow-x-hidden w-full">

@@ -1,6 +1,6 @@
 {
   "name": "clawclick-sdk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CLI & SDK for Claw.Click agents — launch tokens, trade, upload images, claim fees",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

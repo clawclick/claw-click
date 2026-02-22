@@ -46,6 +46,8 @@ export interface LaunchParams {
   beneficiary: Address
   agentWallet?: Address
   targetMcapETH: string // in ETH, e.g. "1.5"
+  /** Bootstrap ETH to send (e.g. "0.001"). If omitted, relies on free bootstrap contract. */
+  bootstrapETH?: string
   feeSplit?: {
     wallets: Address[]
     percentages: number[] // basis points out of 10000
@@ -204,7 +206,7 @@ export class ClawClick {
           },
         },
       ],
-      value: 0n,
+      value: params.bootstrapETH ? parseEther(params.bootstrapETH) : 0n,
     })
 
     const receipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash })

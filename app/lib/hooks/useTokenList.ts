@@ -1,15 +1,8 @@
-import { useState, useEffect } from 'react'
-import { createPublicClient, http, formatEther } from 'viem'
-import { sepolia } from 'viem/chains'
-import { CONTRACTS, getExplorerLink } from '../contracts'
-import { queryEventsInChunks } from '../utils/queryEvents'
-import FactoryABI from '../../src/abis/factory.json'
-import HookABI from '../../src/abis/hook.json'
+import { useState, useEffect, useCallback } from 'react'
+import { getExplorerLink } from '../contracts'
 
-const publicClient = createPublicClient({
-  chain: sepolia,
-  transport: http('https://ethereum-sepolia-rpc.publicnode.com'),
-})
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
+const ETH_PRICE = 2000 // TODO: price feed
 
 export interface TokenData {
   name: string
@@ -41,200 +34,97 @@ export interface TokenData {
   scanUrl: string
   hot: boolean
   chain: string
+  logoUrl: string | null
+  bannerUrl: string | null
 }
 
-export function useTokenList() {
+export type TokenSort = 'new' | 'hot' | 'mcap' | 'volume' | 'volume_total'
+
+export function useTokenList(options?: {
+  sort?: TokenSort
+  limit?: number
+  offset?: number
+  search?: string
+  graduated?: boolean
+}) {
   const [tokens, setTokens] = useState<TokenData[]>([])
+  const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    fetchTokens()
-    
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchTokens, 30000)
-    return () => clearInterval(interval)
-  }, [])
+  const sort = options?.sort || 'new'
+  const limit = options?.limit || 50
+  const offset = options?.offset || 0
+  const search = options?.search || ''
+  const graduated = options?.graduated
 
-  async function fetchTokens() {
+  const fetchTokens = useCallback(async () => {
     try {
-      // LIFETIME STATS: Query from deployment block 10306000 (Feb 21, 2026)
-      const DEPLOYMENT_BLOCK = 10306000n
-      
-      console.log(`Fetching LIFETIME tokens from block ${DEPLOYMENT_BLOCK} to latest`)
-      
-      // Get all launches (LIFETIME)
-      const launchEvents = await publicClient.getContractEvents({
-        address: CONTRACTS.FACTORY as `0x${string}`,
-        abi: FactoryABI,
-        eventName: 'LaunchCreated',
-        fromBlock: DEPLOYMENT_BLOCK,
-        toBlock: 'latest',
+      const params = new URLSearchParams({
+        sort,
+        limit: String(limit),
+        offset: String(offset),
       })
-      
-      console.log(`Found ${launchEvents.length} launch events (LIFETIME)`)
+      if (search) params.set('search', search)
+      if (graduated !== undefined) params.set('graduated', String(graduated))
 
-      const ETH_PRICE = 2000 // TODO: Get from price feed
+      const res = await fetch(`${API_URL}/api/tokens?${params}`)
+      if (!res.ok) throw new Error(`API ${res.status}`)
+      const data = await res.json()
 
-      const tokensData: TokenData[] = []
+      const tokensData: TokenData[] = (data.tokens || []).map((t: any) => {
+        const mcapETH = parseFloat(t.current_mcap || '0')
+        const pricePerToken = mcapETH / 1_000_000_000
+        const vol24hETH = parseFloat(t.volume_24h || '0')
+        const priceChange = parseFloat(t.price_change_24h || '0')
+        const changeStr = priceChange >= 0 ? `+${priceChange.toFixed(1)}%` : `${priceChange.toFixed(1)}%`
 
-      for (const event of launchEvents) {
-        try {
-          // Extract poolId from event
-          const eventArgs = (event as any).args
-          if (!eventArgs) continue
-          const poolId = eventArgs.poolId
-          
-          // Get launch info
-          const launchInfo = await publicClient.readContract({
-            address: CONTRACTS.FACTORY as `0x${string}`,
-            abi: FactoryABI,
-            functionName: 'launchByPoolId',
-            args: [poolId],
-          }) as any
-          
-          // Get current stats
-          const [mcapWei, currentEpoch, currentTax, isGraduated] = await Promise.allSettled([
-            publicClient.readContract({
-              address: CONTRACTS.HOOK as `0x${string}`,
-              abi: HookABI,
-              functionName: 'getCurrentMcap',
-              args: [poolId],
-            }) as Promise<bigint>,
-            publicClient.readContract({
-              address: CONTRACTS.HOOK as `0x${string}`,
-              abi: HookABI,
-              functionName: 'getCurrentEpoch',
-              args: [poolId],
-            }) as Promise<number>,
-            publicClient.readContract({
-              address: CONTRACTS.HOOK as `0x${string}`,
-              abi: HookABI,
-              functionName: 'getCurrentTax',
-              args: [poolId],
-            }) as Promise<number>,
-            publicClient.readContract({
-              address: CONTRACTS.HOOK as `0x${string}`,
-              abi: HookABI,
-              functionName: 'isGraduated',
-              args: [poolId],
-            }) as Promise<boolean>,
-          ])
+        return {
+          name: t.name,
+          symbol: t.symbol,
+          token: t.address,
+          poolId: '',
+          creator: t.creator,
+          beneficiary: t.beneficiary || '',
+          agentWallet: '',
+          targetMcapETH: t.target_mcap || '0',
+          createdAt: t.launched_at ? Math.floor(new Date(t.launched_at).getTime() / 1000) : 0,
+          createdBlock: 0,
 
-          const mcap = mcapWei.status === 'fulfilled' ? mcapWei.value : 0n
-          const epoch = currentEpoch.status === 'fulfilled' ? currentEpoch.value : 1
-          const tax = currentTax.status === 'fulfilled' ? currentTax.value : 0
-          const graduated = isGraduated.status === 'fulfilled' ? isGraduated.value : false
+          price: `$${(pricePerToken * ETH_PRICE).toFixed(6)}`,
+          mcap: `${mcapETH.toFixed(4)} ETH`,
+          mcapUSD: `$${(mcapETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+          vol24h: `$${(vol24hETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+          change24h: changeStr,
+          currentEpoch: t.current_epoch || 0,
+          currentTax: 0,
+          isGraduated: t.graduated || false,
+          txCount: parseInt(t.tx_count_24h || '0') + parseInt(t.tx_count_total || '0'),
+          buyCount: parseInt(t.buys_24h || '0'),
+          sellCount: parseInt(t.sells_24h || '0'),
 
-          // Get swap events for volume and tx count (LIFETIME)
-          const swapEvents = await publicClient.getContractEvents({
-            address: CONTRACTS.HOOK as `0x${string}`,
-            abi: HookABI,
-            eventName: 'SwapExecuted',
-            args: { poolId },
-            fromBlock: DEPLOYMENT_BLOCK,
-            toBlock: 'latest',
-          })
-
-          // Filter for 24h stats
-          const currentBlock = await publicClient.getBlockNumber()
-          const oneDayAgoBlock = currentBlock - 7200n // ~24h in blocks (12s blocks)
-          const recent24hSwaps = swapEvents.filter(s => s.blockNumber && s.blockNumber > oneDayAgoBlock)
-
-          let volume24hWei = 0n
-          let buyCount = 0
-          let sellCount = 0
-
-          for (const swap of recent24hSwaps) {
-            // Extract swap data from event
-            const swapArgs = (swap as any).args
-            if (!swapArgs) continue
-            
-            if (swapArgs.isBuy) {
-              buyCount++
-            } else {
-              sellCount++
-            }
-            
-            if (swapArgs.isETHFee && swapArgs.taxBps > 0 && swapArgs.feeAmount) {
-              const volume = (BigInt(swapArgs.feeAmount) * 10000n) / BigInt(swapArgs.taxBps)
-              volume24hWei += volume
-            }
-          }
-
-          const mcapETH = parseFloat(formatEther(mcap))
-          const vol24hETH = parseFloat(formatEther(volume24hWei))
-
-          // Calculate price (assuming total supply = 1B tokens)
-          const TOTAL_SUPPLY = 1_000_000_000
-          const pricePerToken = mcapETH / TOTAL_SUPPLY
-
-          // Calculate 24h change from first vs last swap in 24h window
-          let change24h = '+0.0%'
-          if (recent24hSwaps.length >= 2) {
-            try {
-              // Get MCAP from oldest and newest swaps in 24h
-              const oldestSwap = recent24hSwaps[recent24hSwaps.length - 1]
-              const newestSwap = recent24hSwaps[0]
-              
-              // Approximate MCAP change from swap amounts (rough estimate)
-              // Better method: query historical MCAP, but this works for now
-              const buyVolume = recent24hSwaps.filter(s => (s as any).args?.isBuy).length
-              const sellVolume = recent24hSwaps.filter(s => !(s as any).args?.isBuy).length
-              
-              if (buyVolume + sellVolume > 0) {
-                const netActivity = ((buyVolume - sellVolume) / (buyVolume + sellVolume)) * 100
-                const changePercent = netActivity > 0 ? Math.min(netActivity * 2, 50) : Math.max(netActivity * 2, -50)
-                change24h = changePercent >= 0 ? `+${changePercent.toFixed(1)}%` : `${changePercent.toFixed(1)}%`
-              }
-            } catch (e) {
-              // If calculation fails, use default
-            }
-          }
-
-          tokensData.push({
-            name: launchInfo.name,
-            symbol: launchInfo.symbol,
-            token: launchInfo.token,
-            poolId: poolId,
-            creator: launchInfo.creator,
-            beneficiary: launchInfo.beneficiary,
-            agentWallet: launchInfo.agentWallet,
-            targetMcapETH: formatEther(launchInfo.targetMcapETH),
-            createdAt: Number(launchInfo.createdAt),
-            createdBlock: Number(launchInfo.createdBlock),
-            
-            price: `$${(pricePerToken * ETH_PRICE).toFixed(6)}`,
-            mcap: `${mcapETH.toFixed(4)} ETH`,
-            mcapUSD: `$${(mcapETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-            vol24h: `$${(vol24hETH * ETH_PRICE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-            change24h,
-            currentEpoch: epoch,
-            currentTax: tax,
-            isGraduated: graduated,
-            txCount: swapEvents.length,
-            buyCount,
-            sellCount,
-            
-            chartUrl: '#', // TODO: Add DEXScreener or similar
-            scanUrl: getExplorerLink('token', launchInfo.token),
-            hot: recent24hSwaps.length > 100, // Mark as "hot" if > 100 swaps in 24h
-            chain: 'SEPOLIA',
-          })
-        } catch (error) {
-          console.error('Error fetching token data:', error)
+          chartUrl: '#',
+          scanUrl: getExplorerLink('token', t.address),
+          hot: parseInt(t.tx_count_24h || '0') > 100,
+          chain: 'SEPOLIA',
+          logoUrl: t.logo_url || null,
+          bannerUrl: t.banner_url || null,
         }
-      }
-
-      // Sort by creation time (newest first)
-      tokensData.sort((a, b) => b.createdAt - a.createdAt)
+      })
 
       setTokens(tokensData)
+      setTotal(data.total || 0)
       setIsLoading(false)
     } catch (error) {
       console.error('Error fetching tokens:', error)
       setIsLoading(false)
     }
-  }
+  }, [sort, limit, offset, search, graduated])
 
-  return { tokens, isLoading, refresh: fetchTokens }
+  useEffect(() => {
+    fetchTokens()
+    const interval = setInterval(fetchTokens, 30000)
+    return () => clearInterval(interval)
+  }, [fetchTokens])
+
+  return { tokens, total, isLoading, refresh: fetchTokens }
 }

@@ -33,8 +33,8 @@ function sqrtPriceToMcap(sqrtPriceX96: bigint): { price: string; mcap: string } 
   const sqrtPriceSq = sqrtPriceX96 * sqrtPriceX96
   const ethPerToken = (Q96 * Q96 * PRECISION) / sqrtPriceSq
   
-  // mcap = ethPerToken * totalSupply / 1e18
-  const mcapWei = (ethPerToken * TOTAL_SUPPLY) / PRECISION
+  // mcap = ethPerToken * totalSupply (ethPerToken already scaled by 1e18)
+  const mcapWei = ethPerToken * TOTAL_SUPPLY
   
   return {
     price: formatEther(ethPerToken),
@@ -69,6 +69,41 @@ async function loadKnownPoolIds() {
 }
 
 loadKnownPoolIds()
+
+// ============================================================================
+// ONE-TIME DATA FIXUP — correct mcap & swap direction from prior bugs
+// ============================================================================
+async function fixupExistingData() {
+  try {
+    // 1. Recalculate current_mcap from stored sqrt_price_x96 for all tokens
+    const tokens = await query('SELECT address, sqrt_price_x96 FROM tokens WHERE sqrt_price_x96 IS NOT NULL AND sqrt_price_x96 != \'0\'')
+    for (const row of tokens.rows) {
+      const sqrtPriceX96 = BigInt(row.sqrt_price_x96)
+      const { price, mcap } = sqrtPriceToMcap(sqrtPriceX96)
+      await query('UPDATE tokens SET current_mcap = $1, current_price = $2 WHERE address = $3', [mcap, price, row.address])
+    }
+    console.log(`🔧 Fixup: recalculated mcap for ${tokens.rows.length} tokens`)
+
+    // 2. Fix swaps: flip is_buy and swap amount_in/amount_out
+    //    Old bug: buys were stored as sells with token amount in amount_in
+    await query(`
+      UPDATE swaps SET
+        is_buy = NOT is_buy,
+        amount_in = amount_out,
+        amount_out = amount_in
+    `)
+    console.log('🔧 Fixup: corrected is_buy and amounts in swaps table')
+
+    // 3. Reset 24h counters — refresh24hStats() will recompute them correctly
+    await query(`UPDATE tokens SET volume_24h = 0, buys_24h = 0, sells_24h = 0, tx_count_24h = 0`)
+    console.log('🔧 Fixup: reset 24h stats (will recompute shortly)')
+  } catch (error) {
+    console.error('Fixup failed (non-fatal):', error)
+  }
+}
+
+// Run fixup once on startup
+fixupExistingData()
 
 // ============================================================================
 // TOKEN LAUNCHED EVENT
@@ -237,8 +272,8 @@ client.watchEvent({
         if (!knownPoolIds.has(poolId.toLowerCase())) continue
         
         const { price, mcap } = sqrtPriceToMcap(sqrtPriceX96)
-        // ETH is currency0: amount0 > 0 means pool received ETH = user buying token
-        const isBuy = (amount0 ?? 0n) > 0n
+        // V4 convention: amount0 < 0 means ETH flowed into pool = user buying token
+        const isBuy = (amount0 ?? 0n) < 0n
         
         // Compute amounts: absolute values in ETH terms
         const absAmount0 = (amount0 ?? 0n) < 0n ? -(amount0 ?? 0n) : (amount0 ?? 0n)
@@ -310,7 +345,7 @@ async function refresh24hStats() {
       FROM (
         SELECT 
           token_address,
-          SUM(amount_in) as vol,
+          SUM(CASE WHEN is_buy THEN amount_in ELSE amount_out END) as vol,
           COUNT(*) as txs,
           COUNT(*) FILTER (WHERE is_buy = true) as buys,
           COUNT(*) FILTER (WHERE is_buy = false) as sells
@@ -334,7 +369,7 @@ async function refresh24hStats() {
     // Platform-wide 24h stats
     await query(`
       UPDATE stats SET
-        total_volume_24h = COALESCE((SELECT SUM(amount_in) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours'), 0),
+        total_volume_24h = COALESCE((SELECT SUM(CASE WHEN is_buy THEN amount_in ELSE amount_out END) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours'), 0),
         total_txs_24h = COALESCE((SELECT COUNT(*) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours'), 0),
         updated_at = NOW()
       WHERE id = 1
