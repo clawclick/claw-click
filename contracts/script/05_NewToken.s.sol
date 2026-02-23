@@ -22,8 +22,8 @@ contract NewToken is Script {
     using PoolIdLibrary for PoolKey;
 
     // Existing deployed contracts on Sepolia (latest DeployAndActivate)
-    address constant FACTORY = 0x6658702F5070fF4a0f6C4507101EA485839511bb;
-    address constant HOOK    = 0x9d5427a454Be43eF29343CBB6F51040C25262AC8;
+    address constant FACTORY = 0x00cE3F7e4701e5c0FC9798a3b8bA33C7d767068B;
+    address constant HOOK    = 0x2eE8002De60eb532E9850BF9D95BA8153461eAc8;
 
     function run() external {
         uint256 pk = vm.envUint("PRIVATE_KEY");
@@ -43,8 +43,8 @@ contract NewToken is Script {
 
         (address token, PoolId poolId) = factory.createLaunch{value: bootstrap}(
             ClawclickFactory.CreateParams({
-                name: "GradTestWideLP",
-                symbol: "GTWLP",
+                name: "GradTest1ETH",
+                symbol: "GT1E",
                 beneficiary: deployer,
                 agentWallet: deployer,
                 targetMcapETH: 1 ether,

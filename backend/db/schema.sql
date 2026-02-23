@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS swaps (
   is_buy BOOLEAN,
   fee_amount DECIMAL(30,18),
   tax_bps INTEGER,
+  price_at_swap DECIMAL(36,18),
   tx_hash VARCHAR(66) NOT NULL,
   log_index INTEGER NOT NULL DEFAULT 0,
   block_number BIGINT NOT NULL,

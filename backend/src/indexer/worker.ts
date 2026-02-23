@@ -345,13 +345,14 @@ client.watchEvent({
         if (tokenResult.rows.length === 0) continue
         const tokenAddress = tokenResult.rows[0].address
         
-        // Insert into swaps table
+        // Insert into swaps table (with price snapshot for 24h change calc)
         await query(`
           INSERT INTO swaps (
             pool_id, token_address, trader,
             amount_in, amount_out, is_buy,
+            price_at_swap,
             tx_hash, log_index, block_number, timestamp
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
           ON CONFLICT (tx_hash, log_index) DO NOTHING
         `, [
           poolId,
@@ -360,6 +361,7 @@ client.watchEvent({
           formatEther(isBuy ? absAmount0 : absAmount1),  // what user spent
           formatEther(isBuy ? absAmount1 : absAmount0),  // what user received
           isBuy,
+          price,  // snapshot price at this swap
           txHash,
           logIndex,
           Number(blockNumber)
@@ -402,11 +404,32 @@ async function refresh24hStats() {
     // Zero out tokens with no swaps in 24h
     await query(`
       UPDATE tokens SET
-        volume_24h = 0, tx_count_24h = 0, buys_24h = 0, sells_24h = 0
+        volume_24h = 0, tx_count_24h = 0, buys_24h = 0, sells_24h = 0,
+        price_change_24h = 0
       WHERE address NOT IN (
         SELECT DISTINCT token_address FROM swaps
         WHERE timestamp > NOW() - INTERVAL '24 hours'
       )
+    `)
+
+    // Compute price_change_24h: compare current price to the earliest swap price within 24h window
+    await query(`
+      UPDATE tokens t SET
+        price_change_24h = CASE
+          WHEN p.old_price IS NULL OR p.old_price = 0 THEN 0
+          ELSE ROUND(((t.current_price - p.old_price) / p.old_price) * 100, 2)
+        END
+      FROM (
+        SELECT DISTINCT ON (token_address)
+          token_address,
+          price_at_swap as old_price
+        FROM swaps
+        WHERE timestamp > NOW() - INTERVAL '24 hours'
+          AND price_at_swap IS NOT NULL
+          AND price_at_swap > 0
+        ORDER BY token_address, timestamp ASC
+      ) p
+      WHERE t.address = p.token_address
     `)
     
     // Platform-wide 24h stats
