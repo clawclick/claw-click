@@ -92,6 +92,47 @@ async function fixupExistingData() {
 fixupExistingData()
 
 // ============================================================================
+// NFT CHECK & DELAYED AGENT RECHECK
+// ============================================================================
+async function checkNFT(wallet: string): Promise<boolean> {
+  try {
+    const nftRes = await fetch(`https://claws-fun-backend-764a4f25b49e.herokuapp.com/api/nft/${wallet}`)
+    if (nftRes.ok) {
+      const nftData = await nftRes.json() as { hasNFT: boolean; nftId: number }
+      return nftData.hasNFT
+    }
+  } catch (err) {
+    console.error(`⚠️ NFT check failed for ${wallet}:`, err)
+  }
+  return false
+}
+
+function scheduleAgentRecheck(tokenAddress: string, agentWallet: string) {
+  // Recheck at 30s, 60s, 90s, and 120s after launch
+  const delays = [30_000, 60_000, 90_000, 120_000]
+  for (const delay of delays) {
+    setTimeout(async () => {
+      try {
+        // Check if already marked as agent (skip if so)
+        const existing = await query('SELECT is_agent FROM tokens WHERE LOWER(address) = LOWER($1)', [tokenAddress])
+        if (existing.rows.length > 0 && existing.rows[0].is_agent) return
+
+        const hasNFT = await checkNFT(agentWallet)
+        if (hasNFT) {
+          await query('UPDATE tokens SET is_agent = true, updated_at = NOW() WHERE LOWER(address) = LOWER($1)', [tokenAddress])
+          await query('UPDATE stats SET total_agents = total_agents + 1, updated_at = NOW() WHERE id = 1')
+          console.log(`🤖 Delayed NFT check: ${tokenAddress} confirmed as agent (wallet: ${agentWallet})`)
+        } else {
+          console.log(`⏳ Delayed NFT check (${delay/1000}s): ${tokenAddress} still no NFT`)
+        }
+      } catch (err) {
+        console.error(`⚠️ Delayed agent recheck failed for ${tokenAddress}:`, err)
+      }
+    }, delay)
+  }
+}
+
+// ============================================================================
 // TOKEN LAUNCHED EVENT
 // ============================================================================
 const tokenLaunchedABI = parseAbiItem(
@@ -121,19 +162,14 @@ client.watchEvent({
           if (wallet && wallet !== '0x0000000000000000000000000000000000000000') {
             agentWallet = wallet
             // Verify agent wallet holds a claws.fun NFT
-            try {
-              const nftRes = await fetch(`https://claws-fun-backend-764a4f25b49e.herokuapp.com/api/nft/${wallet}`)
-              if (nftRes.ok) {
-                const nftData = await nftRes.json() as { hasNFT: boolean; nftId: number }
-                if (nftData.hasNFT) {
-                  isAgent = true
-                  console.log(`🤖 Agent token detected! agentWallet: ${wallet}, nftId: ${nftData.nftId}`)
-                } else {
-                  console.log(`👤 agentWallet ${wallet} has no NFT — not an agent`)
-                }
-              }
-            } catch (nftErr) {
-              console.error(`⚠️ NFT check failed for ${wallet}:`, nftErr)
+            const nftResult = await checkNFT(wallet)
+            if (nftResult) {
+              isAgent = true
+              console.log(`🤖 Agent token detected! agentWallet: ${wallet}`)
+            } else {
+              console.log(`👤 agentWallet ${wallet} has no NFT yet — scheduling recheck`)
+              // NFT may not be minted yet (takes 30s-2min), schedule delayed rechecks
+              scheduleAgentRecheck(token as string, wallet)
             }
           }
         } catch { /* older tokens may not have agentWallet() */ }
