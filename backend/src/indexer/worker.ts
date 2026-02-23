@@ -71,11 +71,11 @@ async function loadKnownPoolIds() {
 loadKnownPoolIds()
 
 // ============================================================================
-// ONE-TIME DATA FIXUP — correct mcap & swap direction from prior bugs
+// ONE-TIME DATA FIXUP — correct mcap from stored sqrt_price_x96
 // ============================================================================
 async function fixupExistingData() {
   try {
-    // 1. Recalculate current_mcap from stored sqrt_price_x96 for all tokens
+    // Recalculate current_mcap from stored sqrt_price_x96 for all tokens
     const tokens = await query('SELECT address, sqrt_price_x96 FROM tokens WHERE sqrt_price_x96 IS NOT NULL AND sqrt_price_x96 != \'0\'')
     for (const row of tokens.rows) {
       const sqrtPriceX96 = BigInt(row.sqrt_price_x96)
@@ -83,20 +83,6 @@ async function fixupExistingData() {
       await query('UPDATE tokens SET current_mcap = $1, current_price = $2 WHERE address = $3', [mcap, price, row.address])
     }
     console.log(`🔧 Fixup: recalculated mcap for ${tokens.rows.length} tokens`)
-
-    // 2. Fix swaps: flip is_buy and swap amount_in/amount_out
-    //    Old bug: buys were stored as sells with token amount in amount_in
-    await query(`
-      UPDATE swaps SET
-        is_buy = NOT is_buy,
-        amount_in = amount_out,
-        amount_out = amount_in
-    `)
-    console.log('🔧 Fixup: corrected is_buy and amounts in swaps table')
-
-    // 3. Reset 24h counters — refresh24hStats() will recompute them correctly
-    await query(`UPDATE tokens SET volume_24h = 0, buys_24h = 0, sells_24h = 0, tx_count_24h = 0`)
-    console.log('🔧 Fixup: reset 24h stats (will recompute shortly)')
   } catch (error) {
     console.error('Fixup failed (non-fatal):', error)
   }
@@ -315,8 +301,10 @@ client.watchEvent({
         if (!knownPoolIds.has(poolId.toLowerCase())) continue
         
         const { price, mcap } = sqrtPriceToMcap(sqrtPriceX96)
-        // V4 convention: amount0 < 0 means ETH flowed into pool = user buying token
-        const isBuy = (amount0 ?? 0n) < 0n
+        // V4 Swap event: amounts are pool's perspective (positive = received, negative = sent)
+        // amount0 > 0 means pool received ETH = user paid ETH = BUY
+        // amount0 < 0 means pool sent ETH = user received ETH = SELL
+        const isBuy = (amount0 ?? 0n) > 0n
         
         // Compute amounts: absolute values in ETH terms
         const absAmount0 = (amount0 ?? 0n) < 0n ? -(amount0 ?? 0n) : (amount0 ?? 0n)
