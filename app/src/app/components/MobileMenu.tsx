@@ -1,35 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import ProductsDropdown from './ProductsDropdown'
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const toggleMenu = () => setIsOpen(!isOpen)
   const closeMenu = () => setIsOpen(false)
 
-  return (
-    <>
-      {/* Hamburger Button - Only visible on mobile */}
-      <button
-        onClick={toggleMenu}
-        className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-[#E8523D]/10 transition-colors"
-        aria-label="Toggle menu"
-      >
-        <span className={`block w-6 h-0.5 bg-[#E8523D] transition-all ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
-        <span className={`block w-6 h-0.5 bg-[#E8523D] my-1 transition-all ${isOpen ? 'opacity-0' : ''}`}></span>
-        <span className={`block w-6 h-0.5 bg-[#E8523D] transition-all ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
-      </button>
-
-      {/* Mobile Menu Overlay - Full screen */}
-      <div
-        className={`fixed inset-0 bg-[#1a1a1a] z-[100] md:hidden transition-all duration-300 overflow-y-auto ${
-          isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-      >
+  const overlay = (
+    <div
+      className={`fixed inset-0 bg-[#1a1a1a] z-[9999] md:hidden transition-all duration-300 overflow-y-auto ${
+        isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+      }`}
+    >
         {/* Close Button */}
         <button
           onClick={closeMenu}
@@ -94,6 +87,24 @@ export default function MobileMenu() {
           </div>
         </nav>
       </div>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Hamburger Button - Only visible on mobile */}
+      <button
+        onClick={toggleMenu}
+        className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-[#E8523D]/10 transition-colors"
+        aria-label="Toggle menu"
+      >
+        <span className={`block w-6 h-0.5 bg-[#E8523D] transition-all ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+        <span className={`block w-6 h-0.5 bg-[#E8523D] my-1 transition-all ${isOpen ? 'opacity-0' : ''}`}></span>
+        <span className={`block w-6 h-0.5 bg-[#E8523D] transition-all ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
+      </button>
+
+      {/* Render overlay using portal to bypass parent constraints */}
+      {mounted && createPortal(overlay, document.body)}
     </>
   )
 }
