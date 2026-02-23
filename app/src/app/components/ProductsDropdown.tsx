@@ -106,7 +106,7 @@ export default function ProductsDropdown({ mobile = false, onItemClick }: Produc
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-96 bg-[#1a1a1a]/95 backdrop-blur-xl border border-[#E8523D]/20 rounded-lg shadow-xl overflow-hidden z-50">
+        <div className="fixed top-20 right-4 mt-2 w-96 bg-[#1a1a1a]/95 backdrop-blur-xl border border-[#E8523D]/20 rounded-lg shadow-xl overflow-hidden z-[60]">
           <div className="p-4">
             <h3 className="text-sm font-bold gradient-text mb-3">$CLAWS Products</h3>
             <div className="space-y-3">
