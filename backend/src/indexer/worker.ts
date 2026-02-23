@@ -301,10 +301,10 @@ client.watchEvent({
         if (!knownPoolIds.has(poolId.toLowerCase())) continue
         
         const { price, mcap } = sqrtPriceToMcap(sqrtPriceX96)
-        // V4 Swap event: amounts are pool's perspective (positive = received, negative = sent)
-        // amount0 > 0 means pool received ETH = user paid ETH = BUY
-        // amount0 < 0 means pool sent ETH = user received ETH = SELL
-        const isBuy = (amount0 ?? 0n) > 0n
+        // V4 Swap event: amounts are from the SWAPPER's perspective (negative = paid, positive = received)
+        // amount0 < 0 means swapper PAID ETH (currency0) = BUY tokens
+        // amount0 > 0 means swapper RECEIVED ETH (currency0) = SELL tokens
+        const isBuy = (amount0 ?? 0n) < 0n
         
         // Compute amounts: absolute values in ETH terms
         const absAmount0 = (amount0 ?? 0n) < 0n ? -(amount0 ?? 0n) : (amount0 ?? 0n)
