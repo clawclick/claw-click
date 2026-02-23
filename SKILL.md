@@ -1,36 +1,74 @@
-# Claw.Click OpenClaw Skill
+# Claw.Click SDK Skill
 
 ## 🎯 Overview
 
-This skill enables OpenClaw agents to autonomously launch, manage, and trade tokens on the Claw.Click launchpad built on Uniswap V4.
+This skill enables agents to autonomously launch, manage, and trade tokens on the Claw.Click launchpad built on Uniswap V4.
 
 ## 📦 Installation
 
-Add this skill to your OpenClaw agent's skills directory or reference it directly:
-
 ```bash
-# Via OpenClaw skill manager (when available)
-openclaw skill install claw-click
-
-# Or clone into your agent's skills directory
-git clone https://github.com/clawclick/claw-click.git skills/claw-click
+npm install @clawclick/sdk
 ```
 
-## 🔧 Contract Addresses
+The package includes both a TypeScript/JavaScript SDK and a CLI tool.
 
-### Sepolia Testnet
+---
+
+## 🔧 Setup
+
+### SDK (TypeScript)
 
 ```typescript
-const CONTRACTS = {
-  factory: '0x...', // ClawclickFactory
-  hook: '0x...',    // ClawclickHook_V4
-  config: '0x...',  // ClawclickConfig
-  poolManager: '0x...', // Uniswap V4 PoolManager
-  positionManager: '0x...', // Uniswap V4 PositionManager
-}
+import { ClawClick } from '@clawclick/sdk'
+import { formatEther, type Address } from 'viem'
+
+const sdk = new ClawClick({
+  privateKey: process.env.PRIVATE_KEY!,
+  rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
+  apiUrl: 'https://claw-click-backend-5157d572b2b6.herokuapp.com',
+  factoryAddress: '0x5C92E6f1Add9a2113C6977DfF15699e948e017Db',
+  hookAddress: '0xa2FF089271e4527025Ee614EB165368875A12AC8',
+  swapExecutorAddress: '0xFB3b0319BAA5E987a8A024De512272288E818824',
+  chainId: 11155111, // Sepolia
+})
+
+console.log('Agent wallet:', sdk.address)
 ```
 
-### Mainnet (Q1 2026)
+### CLI
+
+Set environment variables in `.env`:
+
+```env
+PRIVATE_KEY=0x...
+RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+API_URL=https://claw-click-backend-5157d572b2b6.herokuapp.com
+FACTORY_ADDRESS=0x5C92E6f1Add9a2113C6977DfF15699e948e017Db
+HOOK_ADDRESS=0xa2FF089271e4527025Ee614EB165368875A12AC8
+SWAP_EXECUTOR_ADDRESS=0xFB3b0319BAA5E987a8A024De512272288E818824
+```
+
+Then use the CLI:
+
+```bash
+npx clawclick launch --name "Agent Token" --symbol "AGT" --beneficiary 0xYOUR_ADDRESS --mcap 2
+npx clawclick buy --token 0xTOKEN_ADDRESS --amount 0.01
+npx clawclick sell --token 0xTOKEN_ADDRESS --amount 1000
+npx clawclick claim
+npx clawclick info --token 0xTOKEN_ADDRESS
+npx clawclick upload --token 0xTOKEN_ADDRESS --logo ./logo.png
+```
+
+### Contract Addresses (Sepolia)
+
+| Contract | Address |
+|----------|---------|
+| Factory | `0x5C92E6f1Add9a2113C6977DfF15699e948e017Db` |
+| Hook | `0xa2FF089271e4527025Ee614EB165368875A12AC8` |
+| SwapExecutor | `0xFB3b0319BAA5E987a8A024De512272288E818824` |
+| PoolManager | `0xE03A1074c86CFeDd5C142C4F04F1a1536e203543` |
+
+### Mainnet
 
 Coming soon on Base, Ethereum, and BSC.
 
@@ -38,122 +76,310 @@ Coming soon on Base, Ethereum, and BSC.
 
 ## 🚀 Launching a Token
 
-### Quick Start
+### Basic Launch
 
 ```typescript
-import { parseEther } from 'viem'
+const result = await sdk.launch({
+  name: 'Agent Token',
+  symbol: 'AGT',
+  beneficiary: sdk.address,    // Fee recipient (70% of trading fees)
+  agentWallet: sdk.address,    // Your agent wallet (enables claws.fun integration)
+  targetMcapETH: '2',          // Starting MCAP in ETH
+  bootstrapETH: '0.001',       // Minimum 0.001 ETH required
+})
 
-async function launchMyToken() {
-  const factory = getContract(CONTRACTS.factory, factoryABI)
-  
-  const params = {
-    name: "Agent Token",
-    symbol: "AGT",
-    beneficiary: await signer.getAddress(), // Your agent wallet
-    agentWallet: await signer.getAddress(), // For claws.fun integration
-    targetMcapETH: parseEther('2'), // Start at 2 ETH ($4k) MCAP
-    feeSplit: {
-      wallets: [
-        '0x0000000000000000000000000000000000000000',
-        '0x0000000000000000000000000000000000000000',
-        '0x0000000000000000000000000000000000000000',
-        '0x0000000000000000000000000000000000000000',
-        '0x0000000000000000000000000000000000000000'
-      ],
-      percentages: [0, 0, 0, 0, 0],
-      count: 0  // 0 = all fees go to beneficiary
-    }
-  }
-  
-  const tx = await factory.write.createLaunch(params, {
-    value: parseEther('0.001') // Bootstrap liquidity
-  })
-  
-  const receipt = await tx.wait()
-  const tokenAddress = getTokenAddressFromLogs(receipt.logs)
-  
-  console.log('Token launched:', tokenAddress)
-  return tokenAddress
-}
+console.log('Token:', result.tokenAddress)
+console.log('Pool ID:', result.poolId)
+console.log('TX:', result.txHash)
 ```
 
-### Parameters Explained
+### Launch with Fee Split
+
+Split your 70% creator revenue across up to 5 wallets:
+
+```typescript
+const result = await sdk.launch({
+  name: 'Team Token',
+  symbol: 'TEAM',
+  beneficiary: sdk.address,
+  agentWallet: sdk.address,
+  targetMcapETH: '5',
+  bootstrapETH: '0.001',
+  feeSplit: {
+    wallets: [
+      '0xDev...' as Address,
+      '0xMarketing...' as Address,
+      '0xTreasury...' as Address,
+    ],
+    percentages: [5000, 3000, 2000], // Basis points, must sum to 10000
+  },
+})
+```
+
+This splits the creator's 70% as:
+- Dev: 50% of 70% = 35% of total fees
+- Marketing: 30% of 70% = 21% of total fees
+- Treasury: 20% of 70% = 14% of total fees
+- Platform always keeps 30%
+
+### Parameters
 
 | Parameter | Type | Description | Constraints |
 |-----------|------|-------------|-------------|
-| `name` | string | Token name | Max 64 characters |
-| `symbol` | string | Token symbol | Max 12 characters |
-| `beneficiary` | address | Fee recipient (70% of trading fees) | Must be valid address |
-| `agentWallet` | address | Agent wallet for claws.fun | Optional, can be same as beneficiary |
-| `targetMcapETH` | uint256 | Starting MCAP | Must be 1-10 ETH (whole numbers only) |
-| `feeSplit` | FeeSplit | Optional fee split config | Split creator's 70% across 1-5 wallets |
-
-### Fee Split Feature 🆕
-
-**Split your creator revenue across multiple wallets!**
-
-The `feeSplit` parameter lets you split the creator's 70% share across up to 5 wallets (platform keeps 30%).
-
-**Example: Team Revenue Split**
-
-```typescript
-const params = {
-  name: "Team Token",
-  symbol: "TEAM",
-  beneficiary: await signer.getAddress(),
-  agentWallet: await signer.getAddress(),
-  targetMcapETH: parseEther('5'),
-  feeSplit: {
-    wallets: [
-      '0xDev...', // Development wallet
-      '0xMarketing...', // Marketing wallet
-      '0xTreasury...', // Treasury wallet
-      '0xAdvisor...', // Advisor wallet
-      '0xCreator...', // Creator wallet
-    ],
-    percentages: [3000, 4000, 1000, 1000, 1000], // In basis points (BPS)
-    count: 5  // Number of active wallets
-  }
-}
-```
-
-**This splits the creator's 70% as:**
-- Dev: 30% (of 70% = 21% of total)
-- Marketing: 40% (of 70% = 28% of total)
-- Treasury: 10% (of 70% = 7% of total)
-- Advisor: 10% (of 70% = 7% of total)
-- Creator: 10% (of 70% = 7% of total)
-
-**Rules:**
-- ✅ Up to 5 wallets
-- ✅ Percentages must sum to exactly 10000 BPS (100%)
-- ✅ No zero addresses
-- ✅ Platform 30% is never affected
-- ✅ If `count = 0`, all 70% goes to beneficiary (default)
-
-**Use Cases:**
-- 🤝 Agent teams splitting revenue
-- 💼 DAO treasury allocations
-- 🎯 Marketing budget automation
-- 👥 Partner revenue sharing
-- 🏗️ Development fund allocation
+| `name` | string | Token name | 1-32 characters |
+| `symbol` | string | Token symbol | 1-10 characters |
+| `beneficiary` | Address | Fee recipient | Non-zero address |
+| `agentWallet` | Address | Agent wallet for claws.fun | Optional, defaults to signer |
+| `targetMcapETH` | string | Starting MCAP in ETH | "1" to "10" |
+| `bootstrapETH` | string | Bootstrap liquidity | Minimum "0.001" |
+| `feeSplit` | object | Revenue split config | Up to 5 wallets, BPS must sum to 10000 |
 
 ### Starting MCAP & Tax/Limits
 
-Your chosen starting MCAP determines initial values:
+| MCAP | Starting Tax | Starting Limits | Graduation Target |
+|------|-------------|-----------------|-------------------|
+| 1 ETH | 50% | 0.1% of supply | 16 ETH |
+| 2 ETH | 45% | 0.2% of supply | 32 ETH |
+| 5 ETH | 30% | 0.5% of supply | 80 ETH |
+| 10 ETH | 5% | 1.0% of supply | 160 ETH |
 
-| MCAP | Starting Tax | Starting Limits | Cost for 1% Bag |
-|------|--------------|-----------------|-----------------|
-| 1 ETH ($2k) | 50% | 0.1% of supply | ~$15 |
-| 2 ETH ($4k) | 45% | 0.2% of supply | ~$29 |
-| 5 ETH ($10k) | 30% | 0.5% of supply | ~$65 |
-| 10 ETH ($20k) | 5% | 1.0% of supply | ~$105 |
+- **Tax decay:** Halves every MCAP doubling (epoch)
+- **Limit expansion:** Scales proportionally with growth
+- **Graduation:** At 16x starting MCAP (4 doublings)
 
-**Tax decay:** Halves every MCAP doubling (epoch)  
-**Limit expansion:** Scales proportionally with growth  
-**Graduation:** At 16x starting MCAP (4 doublings)
+---
 
-### Factory ABI
+## 💱 Trading Tokens
+
+### Buy (ETH → Token)
+
+```typescript
+const txHash = await sdk.buy(
+  '0xTOKEN_ADDRESS' as Address,
+  '0.05',  // ETH to spend
+  500,     // Slippage tolerance in bps (5%), optional, default 500
+)
+
+const receipt = await sdk.publicClient.waitForTransactionReceipt({ hash: txHash })
+console.log('Status:', receipt.status)
+```
+
+### Sell (Token → ETH)
+
+```typescript
+// Sell a specific amount
+const txHash = await sdk.sell(
+  '0xTOKEN_ADDRESS' as Address,
+  '100000', // Amount of tokens to sell
+)
+
+// Or sell entire balance
+const txHash = await sdk.sell(
+  '0xTOKEN_ADDRESS' as Address,
+  'all',
+)
+
+const receipt = await sdk.publicClient.waitForTransactionReceipt({ hash: txHash })
+```
+
+The SDK handles token approval automatically before selling.
+
+---
+
+## 💰 Claiming Fees
+
+As a token creator, you earn 70% of all trading fees. Platform keeps 30%.
+
+### Claim ETH Fees (from buys)
+
+```typescript
+const txHash = await sdk.claimFeesETH()
+// or claim for a specific beneficiary:
+const txHash = await sdk.claimFeesETH('0xBeneficiary...' as Address)
+```
+
+### Claim Token Fees (from sells)
+
+```typescript
+const txHash = await sdk.claimFeesToken('0xTOKEN_ADDRESS' as Address)
+// or claim for a specific beneficiary:
+const txHash = await sdk.claimFeesToken('0xTOKEN_ADDRESS' as Address, '0xBeneficiary...' as Address)
+```
+
+If you configured a fee split, each wallet claims independently using their own signer.
+
+---
+
+## 📸 Image Upload
+
+Upload logo and/or banner for a token you own. The SDK signs a message to prove ownership.
+
+```typescript
+const result = await sdk.uploadImages('0xTOKEN_ADDRESS' as Address, {
+  logoPath: './logo.png',
+  bannerPath: './banner.png',
+})
+
+console.log('Logo URL:', result.logo_url)
+console.log('Banner URL:', result.banner_url)
+```
+
+Supported formats: PNG, JPEG, GIF, WebP, SVG.
+
+---
+
+## 📊 On-Chain Reads
+
+### Token Info
+
+```typescript
+const info = await sdk.getTokenInfo('0xTOKEN_ADDRESS' as Address)
+console.log('Name:', info.name)
+console.log('Symbol:', info.symbol)
+console.log('Creator:', info.creator)
+console.log('Beneficiary:', info.beneficiary)
+console.log('Agent Wallet:', info.agentWallet)
+console.log('Pool ID:', info.poolId)
+console.log('Target MCAP:', formatEther(info.targetMcapETH), 'ETH')
+```
+
+### Pool Progress
+
+```typescript
+const progress = await sdk.getPoolProgress('0xTOKEN_ADDRESS' as Address)
+console.log('Epoch:', progress.currentEpoch)     // 1-4 (graduates at 4)
+console.log('Position:', progress.currentPosition)
+console.log('Graduated:', progress.graduated)
+```
+
+### Tax & Limits
+
+```typescript
+const tax = await sdk.getCurrentTax('0xTOKEN_ADDRESS' as Address)
+console.log('Tax:', Number(tax) / 100, '%')
+
+const limits = await sdk.getCurrentLimits('0xTOKEN_ADDRESS' as Address)
+console.log('Max TX:', formatEther(limits.maxTx), 'tokens')
+console.log('Max Wallet:', formatEther(limits.maxWallet), 'tokens')
+```
+
+### Graduation Check
+
+```typescript
+const graduated = await sdk.isGraduated('0xTOKEN_ADDRESS' as Address)
+console.log('Graduated:', graduated)
+```
+
+### Balances
+
+```typescript
+const ethBalance = await sdk.getETHBalance()
+const tokenBalance = await sdk.getTokenBalance('0xTOKEN_ADDRESS' as Address)
+```
+
+---
+
+## 📡 Backend API Reads
+
+The SDK can also read from the Claw.Click backend API for indexed data:
+
+### Token Data
+
+```typescript
+const data = await sdk.getTokenFromAPI('0xTOKEN_ADDRESS')
+console.log('Price:', data.current_price, 'ETH')
+console.log('MCAP:', data.current_mcap, 'ETH')
+console.log('Volume 24h:', data.volume_24h, 'ETH')
+console.log('Recent Swaps:', data.recentSwaps)
+```
+
+### List Tokens
+
+```typescript
+const { tokens, total } = await sdk.listTokens({
+  sort: 'hot',     // 'new' | 'hot' | 'mcap' | 'volume'
+  limit: 20,
+  offset: 0,
+  search: 'agent',
+})
+```
+
+### Trending Tokens
+
+```typescript
+const trending = await sdk.getTrending()
+```
+
+### Platform Stats
+
+```typescript
+const stats = await sdk.getStats()
+console.log('Total tokens:', stats.total_tokens)
+console.log('Total volume:', stats.total_volume_eth, 'ETH')
+console.log('ETH price:', stats.eth_price_usd, 'USD')
+```
+
+---
+
+## 🎨 Complete Example: Autonomous Agent
+
+```typescript
+import { ClawClick } from '@clawclick/sdk'
+import { formatEther, type Address } from 'viem'
+
+async function main() {
+  const sdk = new ClawClick({
+    privateKey: process.env.PRIVATE_KEY!,
+    rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
+    apiUrl: 'https://claw-click-backend-5157d572b2b6.herokuapp.com',
+    factoryAddress: '0x5C92E6f1Add9a2113C6977DfF15699e948e017Db',
+    hookAddress: '0xa2FF089271e4527025Ee614EB165368875A12AC8',
+    swapExecutorAddress: '0xFB3b0319BAA5E987a8A024De512272288E818824',
+    chainId: 11155111,
+  })
+
+  console.log('Agent:', sdk.address)
+  console.log('Balance:', formatEther(await sdk.getETHBalance()), 'ETH')
+
+  // 1. Launch a token
+  const result = await sdk.launch({
+    name: 'Agent Token',
+    symbol: 'AGT',
+    beneficiary: sdk.address,
+    agentWallet: sdk.address,
+    targetMcapETH: '2',
+    bootstrapETH: '0.001',
+  })
+  console.log('Launched:', result.tokenAddress)
+
+  // 2. Buy some more
+  const buyTx = await sdk.buy(result.tokenAddress, '0.01')
+  await sdk.publicClient.waitForTransactionReceipt({ hash: buyTx })
+  console.log('Bought! Balance:', formatEther(await sdk.getTokenBalance(result.tokenAddress)))
+
+  // 3. Monitor progress
+  const progress = await sdk.getPoolProgress(result.tokenAddress)
+  console.log('Epoch:', progress.currentEpoch.toString(), '/ 4')
+  console.log('Graduated:', progress.graduated)
+
+  // 4. Claim fees when ready
+  try {
+    const claimTx = await sdk.claimFeesETH()
+    await sdk.publicClient.waitForTransactionReceipt({ hash: claimTx })
+    console.log('Fees claimed!')
+  } catch {
+    console.log('No fees to claim yet')
+  }
+}
+
+main().catch(console.error)
+```
+
+---
+
+## 🔧 Factory ABI (for direct contract integration)
+
+If you want to call the factory contract directly instead of using the SDK:
 
 ```json
 [
@@ -191,609 +417,53 @@ Your chosen starting MCAP determines initial values:
 ]
 ```
 
----
-
-## 💱 Trading Tokens
-
-### Buying Tokens (ETH → Token)
-
-```typescript
-async function buyTokens(tokenAddress: string, ethAmount: string) {
-  const poolManager = getContract(CONTRACTS.poolManager, poolManagerABI)
-  const poolKey = await getPoolKey(tokenAddress)
-  
-  const swapParams = {
-    zeroForOne: true, // ETH → Token (currency0 → currency1)
-    amountSpecified: -parseEther(ethAmount), // Negative = exact input
-    sqrtPriceLimitX96: 0n, // No slippage limit (use with caution)
-  }
-  
-  const tx = await poolManager.write.swap(
-    poolKey,
-    swapParams,
-    '0x', // No hook data needed
-    {
-      value: parseEther(ethAmount)
-    }
-  )
-  
-  const receipt = await tx.wait()
-  const tokensReceived = parseTokensFromReceipt(receipt)
-  
-  return {
-    tokensReceived,
-    txHash: receipt.transactionHash
-  }
-}
-```
-
-### Selling Tokens (Token → ETH)
-
-```typescript
-async function sellTokens(tokenAddress: string, tokenAmount: string) {
-  const token = getContract(tokenAddress, tokenABI)
-  const poolManager = getContract(CONTRACTS.poolManager, poolManagerABI)
-  
-  // 1. Approve PoolManager to spend your tokens
-  const approveTx = await token.write.approve(
-    CONTRACTS.poolManager,
-    parseEther(tokenAmount)
-  )
-  await approveTx.wait()
-  
-  // 2. Execute swap
-  const poolKey = await getPoolKey(tokenAddress)
-  
-  const swapParams = {
-    zeroForOne: false, // Token → ETH (currency1 → currency0)
-    amountSpecified: -parseEther(tokenAmount), // Negative = exact input
-    sqrtPriceLimitX96: 0n,
-  }
-  
-  const tx = await poolManager.write.swap(
-    poolKey,
-    swapParams,
-    '0x'
-  )
-  
-  const receipt = await tx.wait()
-  const ethReceived = parseETHFromReceipt(receipt)
-  
-  return {
-    ethReceived,
-    txHash: receipt.transactionHash
-  }
-}
-```
-
-### PoolManager Swap ABI
-
-```json
-[
-  {
-    "name": "swap",
-    "type": "function",
-    "stateMutability": "payable",
-    "inputs": [
-      {
-        "name": "key",
-        "type": "tuple",
-        "components": [
-          {"name": "currency0", "type": "address"},
-          {"name": "currency1", "type": "address"},
-          {"name": "fee", "type": "uint24"},
-          {"name": "tickSpacing", "type": "int24"},
-          {"name": "hooks", "type": "address"}
-        ]
-      },
-      {
-        "name": "params",
-        "type": "tuple",
-        "components": [
-          {"name": "zeroForOne", "type": "bool"},
-          {"name": "amountSpecified", "type": "int256"},
-          {"name": "sqrtPriceLimitX96", "type": "uint160"}
-        ]
-      },
-      {"name": "hookData", "type": "bytes"}
-    ],
-    "outputs": [
-      {
-        "name": "delta",
-        "type": "tuple",
-        "components": [
-          {"name": "amount0", "type": "int128"},
-          {"name": "amount1", "type": "int128"}
-        ]
-      }
-    ]
-  }
-]
-```
-
----
-
-## 💰 Claiming Your Fees
-
-As a token creator, you (or your team) earn 70% of all trading fees. Platform keeps 30%.
-
-**If you configured a fee split**, each wallet in the split claims independently.
-
-### Claim ETH Fees (from buys)
-
-```typescript
-async function claimETHFees() {
-  const hook = getContract(CONTRACTS.hook, hookABI)
-  const beneficiary = await signer.getAddress()
-  
-  // Check available fees
-  const availableETH = await hook.read.beneficiaryFeesETH(beneficiary)
-  console.log('Available ETH fees:', formatEther(availableETH))
-  
-  if (availableETH > 0n) {
-    const tx = await hook.write.claimBeneficiaryFeesETH(beneficiary)
-    await tx.wait()
-    console.log('ETH fees claimed!')
-  }
-}
-```
-
-### Claim Token Fees (from sells)
-
-```typescript
-async function claimTokenFees(tokenAddress: string) {
-  const hook = getContract(CONTRACTS.hook, hookABI)
-  const beneficiary = await signer.getAddress()
-  
-  // Check available tokens
-  const availableTokens = await hook.read.beneficiaryFeesToken(
-    beneficiary,
-    tokenAddress
-  )
-  console.log('Available token fees:', formatEther(availableTokens))
-  
-  if (availableTokens > 0n) {
-    const tx = await hook.write.claimBeneficiaryFeesToken(
-      beneficiary,
-      tokenAddress
-    )
-    await tx.wait()
-    console.log('Token fees claimed!')
-  }
-}
-```
-
-### Claiming Split Fees (Multi-Wallet)
-
-If you configured a fee split, each wallet claims its portion independently:
-
-```typescript
-async function claimTeamFees(teamWallets: string[]) {
-  const hook = getContract(CONTRACTS.hook, hookABI)
-  
-  for (const wallet of teamWallets) {
-    // Check ETH fees for this wallet
-    const ethFees = await hook.read.beneficiaryFeesETH(wallet)
-    if (ethFees > 0n) {
-      const tx = await hook.write.claimBeneficiaryFeesETH(wallet)
-      await tx.wait()
-      console.log(`${wallet}: Claimed ${formatEther(ethFees)} ETH`)
-    }
-    
-    // Check token fees for this wallet
-    const tokenFees = await hook.read.beneficiaryFeesToken(wallet, tokenAddress)
-    if (tokenFees > 0n) {
-      const tx = await hook.write.claimBeneficiaryFeesToken(wallet, tokenAddress)
-      await tx.wait()
-      console.log(`${wallet}: Claimed ${formatEther(tokenFees)} tokens`)
-    }
-  }
-}
-
-// Example: Claim for all team wallets
-await claimTeamFees([
-  '0xDev...',
-  '0xMarketing...',
-  '0xTreasury...',
-  '0xAdvisor...',
-  '0xCreator...'
-])
-```
-
-**Important:** Fee splits are configured at launch and cannot be changed. Each wallet must claim their own fees.
-
-### Hook Fee Claiming ABIs
-
-```json
-[
-  {
-    "name": "beneficiaryFeesETH",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{"name": "beneficiary", "type": "address"}],
-    "outputs": [{"name": "", "type": "uint256"}]
-  },
-  {
-    "name": "claimBeneficiaryFeesETH",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [{"name": "beneficiary", "type": "address"}],
-    "outputs": []
-  },
-  {
-    "name": "beneficiaryFeesToken",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [
-      {"name": "beneficiary", "type": "address"},
-      {"name": "token", "type": "address"}
-    ],
-    "outputs": [{"name": "", "type": "uint256"}]
-  },
-  {
-    "name": "claimBeneficiaryFeesToken",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      {"name": "beneficiary", "type": "address"},
-      {"name": "token", "type": "address"}
-    ],
-    "outputs": []
-  }
-]
-```
-
----
-
-## 📊 Querying Token Status
-
-### Get Complete Token Info
-
-```typescript
-async function getTokenStatus(tokenAddress: string) {
-  const factory = getContract(CONTRACTS.factory, factoryABI)
-  const hook = getContract(CONTRACTS.hook, hookABI)
-  
-  // Get launch info
-  const launchInfo = await factory.read.launchByToken(tokenAddress)
-  const poolId = launchInfo.poolId
-  
-  // Get current metrics
-  const currentMcap = await hook.read.getCurrentMcap(poolId)
-  const currentTax = await hook.read.getCurrentTax(poolId)
-  const [maxTx, maxWallet] = await hook.read.getCurrentLimits(poolId)
-  const epoch = await hook.read.getCurrentEpoch(poolId)
-  const graduated = await hook.read.isGraduated(poolId)
-  
-  // Get launch details
-  const launch = await hook.read.launches(poolId)
-  
-  return {
-    // Token info
-    tokenAddress,
-    name: launchInfo.name,
-    symbol: launchInfo.symbol,
-    beneficiary: launch.beneficiary,
-    
-    // MCAP info
-    startMcap: launch.startMcap,
-    currentMcap,
-    graduationMcap: launch.graduationMcap,
-    
-    // Current state
-    phase: graduated ? 'GRADUATED' : 'PROTECTED',
-    graduated,
-    epoch: Number(epoch),
-    
-    // Taxes & Limits
-    baseTax: launch.baseTax,
-    currentTax,
-    maxTx,
-    maxWallet,
-    
-    // Timestamps
-    createdAt: launchInfo.createdAt,
-    createdBlock: launchInfo.createdBlock,
-  }
-}
-```
-
-### Hook Query ABIs
-
-```json
-[
-  {
-    "name": "getCurrentMcap",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{"name": "poolId", "type": "bytes32"}],
-    "outputs": [{"name": "mcap", "type": "uint256"}]
-  },
-  {
-    "name": "getCurrentTax",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{"name": "poolId", "type": "bytes32"}],
-    "outputs": [{"name": "taxBps", "type": "uint256"}]
-  },
-  {
-    "name": "getCurrentLimits",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{"name": "poolId", "type": "bytes32"}],
-    "outputs": [
-      {"name": "maxTx", "type": "uint256"},
-      {"name": "maxWallet", "type": "uint256"}
-    ]
-  },
-  {
-    "name": "getCurrentEpoch",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{"name": "poolId", "type": "bytes32"}],
-    "outputs": [{"name": "epoch", "type": "uint256"}]
-  },
-  {
-    "name": "isGraduated",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{"name": "poolId", "type": "bytes32"}],
-    "outputs": [{"name": "graduated", "type": "bool"}]
-  }
-]
-```
-
----
-
-## 🔧 Helper Functions
-
-### Calculate Pool ID
-
-```typescript
-import { keccak256, encodeAbiParameters } from 'viem'
-
-function calculatePoolId(tokenAddress: string): string {
-  const poolKey = {
-    currency0: '0x0000000000000000000000000000000000000000', // ETH
-    currency1: tokenAddress,
-    fee: 0x800000, // Dynamic fee flag (8388608)
-    tickSpacing: 60,
-    hooks: CONTRACTS.hook
-  }
-  
-  const encoded = encodeAbiParameters(
-    [
-      {name: 'currency0', type: 'address'},
-      {name: 'currency1', type: 'address'},
-      {name: 'fee', type: 'uint24'},
-      {name: 'tickSpacing', type: 'int24'},
-      {name: 'hooks', type: 'address'}
-    ],
-    [
-      poolKey.currency0,
-      poolKey.currency1,
-      poolKey.fee,
-      poolKey.tickSpacing,
-      poolKey.hooks
-    ]
-  )
-  
-  return keccak256(encoded)
-}
-```
-
-### Get Pool Key
-
-```typescript
-async function getPoolKey(tokenAddress: string) {
-  const factory = getContract(CONTRACTS.factory, factoryABI)
-  const launchInfo = await factory.read.launchByToken(tokenAddress)
-  return launchInfo.poolKey
-}
-```
-
-### Format Numbers
-
-```typescript
-function formatMCAP(mcap: bigint): string {
-  const eth = Number(formatEther(mcap))
-  if (eth >= 1000) return `$${(eth * 2000).toFixed(0)}k`
-  return `$${(eth * 2000).toFixed(2)}`
-}
-
-function formatTax(bps: bigint): string {
-  return `${Number(bps) / 100}%`
-}
-
-function formatLimits(amount: bigint): string {
-  const pct = (Number(formatEther(amount)) / 10_000_000) * 100
-  return `${pct.toFixed(2)}%`
-}
-```
-
----
-
-## 🎨 Complete Example: Autonomous Agent
-
-```typescript
-import { createWalletClient, http } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
-import { sepolia } from 'viem/chains'
-
-class ClawClickAgent {
-  private client: any
-  private account: any
-  
-  constructor(privateKey: string) {
-    this.account = privateKeyToAccount(privateKey as `0x${string}`)
-    this.client = createWalletClient({
-      account: this.account,
-      chain: sepolia,
-      transport: http()
-    })
-  }
-  
-  async launch(name: string, symbol: string, startMcap: number = 2) {
-    console.log(`🚀 Launching ${symbol}...`)
-    
-    const tokenAddress = await launchMyToken()
-    console.log(`✅ Token launched: ${tokenAddress}`)
-    
-    return tokenAddress
-  }
-  
-  async monitor(tokenAddress: string) {
-    console.log(`👀 Monitoring ${tokenAddress}...`)
-    
-    setInterval(async () => {
-      const status = await getTokenStatus(tokenAddress)
-      
-      console.log(`
-📊 ${status.symbol} Status:
-   MCAP: ${formatMCAP(status.currentMcap)}
-   Epoch: ${status.epoch}/4
-   Tax: ${formatTax(status.currentTax)}
-   Phase: ${status.phase}
-   ${status.graduated ? '🎓 GRADUATED!' : '🔒 Protected'}
-      `)
-      
-      // Auto-claim if fees > $10
-      await this.autoClaimFees(tokenAddress)
-    }, 60000) // Every minute
-  }
-  
-  async autoClaimFees(tokenAddress: string) {
-    const ethFees = await hook.read.beneficiaryFeesETH(this.account.address)
-    const tokenFees = await hook.read.beneficiaryFeesToken(
-      this.account.address,
-      tokenAddress
-    )
-    
-    if (ethFees > parseEther('0.005')) {
-      await claimETHFees()
-      console.log('💰 Claimed ETH fees:', formatEther(ethFees))
-    }
-    
-    if (tokenFees > parseEther('10000')) {
-      await claimTokenFees(tokenAddress)
-      console.log('💰 Claimed token fees:', formatEther(tokenFees))
-    }
-  }
-  
-  async trade(tokenAddress: string, isBuy: boolean, amount: string) {
-    if (isBuy) {
-      return await buyTokens(tokenAddress, amount)
-    } else {
-      return await sellTokens(tokenAddress, amount)
-    }
-  }
-}
-
-// Usage
-const agent = new ClawClickAgent(process.env.PRIVATE_KEY!)
-const token = await agent.launch("Agent Token", "AGT", 2)
-await agent.monitor(token)
-```
+**Key notes for direct integration:**
+- `wallets` array must always be length 5 (pad with zero addresses)
+- `percentages` array must always be length 5 (pad with 0)
+- `count` is the number of active wallets (0 = all fees go to beneficiary)
+- `targetMcapETH` is in wei (use `parseEther('2')` for 2 ETH)
+- Send bootstrap ETH as `msg.value` (minimum 0.001 ETH)
 
 ---
 
 ## 🔐 Security Best Practices
 
-### 1. Private Key Management
 ```typescript
 // ❌ Never hardcode keys
 const privateKey = '0x123...'
 
 // ✅ Use environment variables
-const privateKey = process.env.PRIVATE_KEY
+const privateKey = process.env.PRIVATE_KEY!
 
-// ✅ Use key management services
-const privateKey = await keyManager.getKey('agent-wallet')
-```
-
-### 2. Transaction Validation
-```typescript
-// Always validate before sending
-async function safeLaunch(params) {
-  // Check balance
-  const balance = await client.getBalance({ address: account.address })
-  if (balance < parseEther('0.002')) {
-    throw new Error('Insufficient balance')
-  }
-  
-  // Validate params
-  if (params.targetMcapETH < 1 || params.targetMcapETH > 10) {
-    throw new Error('Invalid MCAP (must be 1-10 ETH)')
-  }
-  
-  // Proceed with launch
-  return await launchToken(params)
+// ✅ Validate balance before transacting
+const balance = await sdk.getETHBalance()
+if (balance < parseEther('0.002')) {
+  throw new Error('Insufficient balance')
 }
 ```
-
-### 3. Error Handling
-```typescript
-async function robustTrade(tokenAddress, isBuy, amount) {
-  try {
-    return await trade(tokenAddress, isBuy, amount)
-  } catch (error) {
-    if (error.message.includes('insufficient balance')) {
-      console.error('Not enough funds')
-    } else if (error.message.includes('slippage')) {
-      console.error('Price moved too much, retry with higher slippage')
-    } else {
-      console.error('Trade failed:', error.message)
-    }
-    throw error
-  }
-}
-```
-
----
-
-## 📚 Additional Resources
-
-- **[Documentation](https://claw.click/docs)** - Full system documentation
-- **[README](https://claw.click/readme)** - Project overview
-- **[GitHub](https://github.com/clawclick/claw-click)** - Source code
-- **[Contracts](https://github.com/clawclick/claw-click/tree/main/contracts)** - Smart contract source
 
 ---
 
 ## 🆘 Troubleshooting
 
-### Common Errors
-
 | Error | Cause | Solution |
 |-------|-------|----------|
-| "Insufficient Fee" | Not enough ETH sent | Send 0.0013 ETH minimum |
-| "Invalid Target MCAP" | MCAP not 1-10 ETH or not whole number | Use 1, 2, 3, ..., 10 (no decimals) |
-| "Start MCAP too low" | MCAP < 1 ETH | Minimum is 1 ETH |
-| "Swap amount too small" | Below MIN_SWAP_AMOUNT | Use at least 0.0001 ETH/tokens |
-| "Exceeds Max TX" | Buying/selling too much | Check getCurrentLimits() |
-| "Exceeds Max Wallet" | Wallet would hold too much | Check getCurrentLimits() |
-| "Pool not activated" | Trying to trade before launch complete | Wait for launch tx to confirm |
+| `InsufficientBootstrap` | Not enough ETH sent | Send 0.001 ETH minimum as `bootstrapETH` |
+| `InvalidTargetMcap` | MCAP not in valid range | Use 1-10 ETH |
+| `ExceedsMaxTx` | Trade too large | Check `sdk.getCurrentLimits()` |
+| `ExceedsMaxWallet` | Wallet would hold too much | Check `sdk.getCurrentLimits()` |
+| `PoolNotActivated` | Trade before launch complete | Wait for launch TX to confirm |
+| `AlreadyGraduated` | Pool already graduated | Token is on open Uniswap V4 now |
 
-### Getting Help
+---
 
+## 📚 Resources
+
+- **Website:** [claw.click](https://claw.click)
+- **GitHub:** [github.com/clawclick/claw-click](https://github.com/clawclick/claw-click)
+- **npm:** [npmjs.com/package/@clawclick/sdk](https://www.npmjs.com/package/@clawclick/sdk)
 - **Discord:** [discord.gg/claws](https://discord.gg/claws)
-- **GitHub Issues:** [github.com/clawclick/claw-click/issues](https://github.com/clawclick/claw-click/issues)
 - **Twitter:** [@clawdotclick](https://twitter.com/clawdotclick)
-
----
-
-## 📄 License
-
-MIT License - See [LICENSE](LICENSE) for details
-
----
-
-## 🙏 Acknowledgments
-
-Built with:
-- [Uniswap V4](https://uniswap.org) - Core AMM protocol
-- [viem](https://viem.sh) - Ethereum library
-- [Foundry](https://getfoundry.sh) - Smart contract framework
 
 ---
 
@@ -801,6 +471,6 @@ Built with:
 
 **🦞 Built by agents, for agents 🦞**
 
-[Launch Token](https://claw.click) • [Read Docs](https://claw.click/docs) • [Join Discord](https://discord.gg/claws)
+[Launch Token](https://claw.click) • [SDK Docs](https://github.com/clawclick/claw-click/tree/main/cli) • [Join Discord](https://discord.gg/claws)
 
 </div>
