@@ -26,7 +26,7 @@ export default function MobileMenu() {
 
       {/* Mobile Menu Overlay - Full screen */}
       <div
-        className={`fixed inset-0 bg-[#1a1a1a] z-50 md:hidden transition-all duration-300 overflow-y-auto ${
+        className={`fixed inset-0 bg-[#1a1a1a] z-[100] md:hidden transition-all duration-300 overflow-y-auto ${
           isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
       >
