@@ -123,7 +123,7 @@ client.watchEvent({
         console.log(`🆕 New token launched: ${symbol} (${token})`)
         
         // Read agentWallet from the deployed token contract
-        // If agentWallet != address(0), this is an agent token from claws.fun
+        // Then verify with claws.fun NFT check to determine if it's a real agent
         let agentWallet: string | null = null
         let isAgent = false
         try {
@@ -134,8 +134,21 @@ client.watchEvent({
           }) as string
           if (wallet && wallet !== '0x0000000000000000000000000000000000000000') {
             agentWallet = wallet
-            isAgent = true
-            console.log(`🤖 Agent token detected! agentWallet: ${wallet}`)
+            // Verify agent wallet holds a claws.fun NFT
+            try {
+              const nftRes = await fetch(`https://claws-fun-backend-764a4f25b49e.herokuapp.com/api/nft/${wallet}`)
+              if (nftRes.ok) {
+                const nftData = await nftRes.json() as { hasNFT: boolean; nftId: number }
+                if (nftData.hasNFT) {
+                  isAgent = true
+                  console.log(`🤖 Agent token detected! agentWallet: ${wallet}, nftId: ${nftData.nftId}`)
+                } else {
+                  console.log(`👤 agentWallet ${wallet} has no NFT — not an agent`)
+                }
+              }
+            } catch (nftErr) {
+              console.error(`⚠️ NFT check failed for ${wallet}:`, nftErr)
+            }
           }
         } catch { /* older tokens may not have agentWallet() */ }
         
