@@ -86,7 +86,6 @@ export default function MobileMenu() {
             <ConnectButton />
           </div>
         </nav>
-      </div>
     </div>
   )
 
