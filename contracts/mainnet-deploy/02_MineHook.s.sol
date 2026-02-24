@@ -114,7 +114,7 @@ contract MineHook is Script {
         require(valid, "Mined address does not match required flags");
         
         console2.log("");
-        console2.log("✅ Save HOOK_SALT to .env:");
+        console2.log("[OK] Save HOOK_SALT to .env:");
         console2.log("HOOK_SALT=");
         console2.logBytes32(salt);
     }

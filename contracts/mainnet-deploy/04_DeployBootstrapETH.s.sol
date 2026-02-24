@@ -56,7 +56,7 @@ contract DeployBootstrapETH is Script {
 
         // Predict Factory address using CREATE2
         // Factory constructor params: (config, poolManager, hook, positionManager, bootstrapETH, owner)
-        // We'll use address(this) as placeholder for bootstrapETH in prediction
+        // We'll use address(0) as placeholder for bootstrapETH in prediction
         bytes memory factoryCreationCode = abi.encodePacked(
             type(ClawclickFactory).creationCode,
             abi.encode(config, poolManager, hook, positionManager, address(0), deployer)
@@ -75,7 +75,7 @@ contract DeployBootstrapETH is Script {
         
         console2.log("Predicted Factory Address:", predictedFactory);
         console2.log("");
-        console2.log("⚠️  IMPORTANT: Step 5 MUST use this exact salt!");
+        console2.log("[WARNING] IMPORTANT: Step 5 MUST use this exact salt!");
         console2.log("");
 
         vm.startBroadcast(deployerPrivateKey);
@@ -93,11 +93,11 @@ contract DeployBootstrapETH is Script {
         console2.log("Daily Limit:", bootstrapETH.DAILY_LAUNCH_LIMIT());
         console2.log("Current Balance:", bootstrapETH.getBalance());
         console2.log("");
-        console2.log("✅ BootstrapETH deployed!");
-        console2.log("✅ Save BOOTSTRAP_ETH_ADDRESS:");
+        console2.log("[OK] BootstrapETH deployed!");
+        console2.log("[OK] Save BOOTSTRAP_ETH_ADDRESS:");
         console2.log(address(bootstrapETH));
         console2.log("");
-        console2.log("✅ Verify FACTORY_ADDRESS in Step 5 matches:");
+        console2.log("[OK] Verify FACTORY_ADDRESS in Step 5 matches:");
         console2.log(predictedFactory);
     }
 }

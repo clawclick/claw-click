@@ -67,7 +67,7 @@ contract WireFactory is Script {
         require(config.factory() == factoryAddress, "Factory not set correctly");
         
         console2.log("");
-        console2.log("✅ Factory successfully wired to Config!");
-        console2.log("✅ Token launching is now enabled");
+        console2.log("[OK] Factory successfully wired to Config!");
+        console2.log("[OK] Token launching is now enabled");
     }
 }

@@ -50,8 +50,8 @@ contract SetSafeExemption is Script {
         console2.log("");
 
         if (hook.globalExemptions(safeAddress)) {
-            console2.log("⚠️  SAFE is already exempt!");
-            console2.log("✅ No action needed");
+            console2.log("[WARNING] SAFE is already exempt!");
+            console2.log("[OK] No action needed");
             return;
         }
 
@@ -70,13 +70,13 @@ contract SetSafeExemption is Script {
         require(hook.globalExemptions(safeAddress), "SAFE exemption not set correctly");
         
         console2.log("");
-        console2.log("✅ SAFE successfully exempted!");
-        console2.log("✅ SAFE can now:");
+        console2.log("[OK] SAFE successfully exempted!");
+        console2.log("[OK] SAFE can now:");
         console2.log("   - Hold any token amount (no maxWallet)");
         console2.log("   - Transfer any amount (no maxTx)");
         console2.log("   - Trade without taxes (0% fee)");
         console2.log("   - Works across ALL tokens");
         console2.log("");
-        console2.log("⚠️  IMPORTANT: This exemption is PERMANENT and cannot be removed");
+        console2.log("[WARNING] IMPORTANT: This exemption is PERMANENT and cannot be removed");
     }
 }

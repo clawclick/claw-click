@@ -96,8 +96,8 @@ contract DeployHook is Script {
         require(beforeSwapReturnDelta, "Missing beforeSwapReturnDelta");
         
         console2.log("");
-        console2.log("✅ Hook deployed and verified!");
-        console2.log("✅ Save HOOK_ADDRESS for next steps:");
+        console2.log("[OK] Hook deployed and verified!");
+        console2.log("[OK] Save HOOK_ADDRESS for next steps:");
         console2.log(address(hook));
     }
 }

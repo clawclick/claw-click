@@ -59,7 +59,7 @@ contract DeployConfig is Script {
         console2.log("Min Bootstrap:", config.MIN_BOOTSTRAP_ETH());
         console2.log("Position Multiplier:", config.POSITION_MCAP_MULTIPLIER());
         console2.log("");
-        console2.log("✅ Save CONFIG_ADDRESS for next steps:");
+        console2.log("[OK] Save CONFIG_ADDRESS for next steps:");
         console2.log(address(config));
     }
 }
