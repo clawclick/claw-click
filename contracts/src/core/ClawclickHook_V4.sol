@@ -261,6 +261,10 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     
     /// @notice Pool progress tracking
     mapping(PoolId => PoolProgress) public poolProgress;
+    
+    /// @notice Addresses permanently exempt from ALL taxes and limits across ALL tokens
+    /// @dev Once set to true, cannot be reverted to false (permanent exemption)
+    mapping(address => bool) public globalExemptions;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -311,6 +315,7 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
     event FeeSplitDistributed(PoolId indexed poolId, address indexed wallet, uint256 amount, bool isETH);
     event EpochAdvanced(PoolId indexed poolId, uint256 position, uint256 newEpoch, uint256 currentMCAP);
     event PositionTransition(PoolId indexed poolId, uint256 newPosition);
+    event GlobalExemptionSet(address indexed account, bool exempt);
 
     /*//////////////////////////////////////////////////////////////
                                 ERRORS
@@ -426,6 +431,29 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         if (msg.sender != config.factory()) revert NotFactory();
         activationInProgress[poolId] = inProgress;
     }
+    
+    /**
+     * @notice Set permanent global exemption for an address (SAFE treasury only)
+     * @dev Once set to true, CANNOT be reverted - exemption is PERMANENT
+     *      Exempt addresses bypass ALL taxes and limits on ALL tokens
+     * @param account Address to exempt (SAFE treasury: 0xFf7549B06E68186C91a6737bc0f0CDE1245e349b)
+     * @param exempt True to exempt (permanent), false has no effect if already exempt
+     */
+    function setGlobalExemption(address account, bool exempt) external {
+        require(
+            msg.sender == config.owner() || msg.sender == config.factory(),
+            "Only owner or factory"
+        );
+        require(account != address(0), "Cannot exempt zero address");
+        
+        // ✅ PERMANENT: Once set to true, cannot be removed
+        if (!exempt && globalExemptions[account]) {
+            revert("Exemption is permanent");
+        }
+        
+        globalExemptions[account] = exempt;
+        emit GlobalExemptionSet(account, exempt);
+    }
 
     /*//////////////////////////////////////////////////////////////
                             HOOK CALLBACKS
@@ -477,6 +505,11 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
         PoolProgress storage progress = poolProgress[poolId];
         
         if (launch.token == address(0)) revert LaunchNotFound();
+        
+        // ✅ GLOBAL EXEMPTION: Skip ALL taxes and restrictions for exempt addresses (SAFE treasury)
+        if (globalExemptions[tx.origin]) {
+            return (BaseHook.beforeSwap.selector, toBeforeSwapDelta(0, 0), 0);
+        }
         
         // ✅ CREATOR FIRST-BUY: Check if creator is buying within 1 minute window
         // This allows creator to buy up to 15% of supply tax-free in first minute
@@ -698,6 +731,11 @@ contract ClawclickHook is BaseHook, ReentrancyGuard {
                 trader = abi.decode(hookData, (address));
             } else {
                 trader = msg.sender;
+            }
+            
+            // ✅ GLOBAL EXEMPTION: Skip limit enforcement for exempt addresses (SAFE treasury)
+            if (globalExemptions[trader]) {
+                return (BaseHook.afterSwap.selector, 0);
             }
 
             uint256 maxTx = _getMaxTx(currentMCAP, launch.startMcap);
