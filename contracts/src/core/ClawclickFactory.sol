@@ -4,9 +4,11 @@ pragma solidity ^0.8.24;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
+import {IUnlockCallback} from "v4-core/src/interfaces/IUnlockCallback.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency} from "v4-core/src/types/Currency.sol";
+import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
 import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
@@ -15,6 +17,7 @@ import {Actions} from "v4-periphery/src/libraries/Actions.sol";
 import {IAllowanceTransfer} from "permit2/src/interfaces/IAllowanceTransfer.sol";
 import {LiquidityAmounts} from "v4-periphery/src/libraries/LiquidityAmounts.sol";
 import {PositionInfo, PositionInfoLibrary} from "v4-periphery/src/libraries/PositionInfoLibrary.sol";
+import {SwapParams} from "v4-core/src/types/PoolOperation.sol";
 
 import {ClawclickToken} from "./ClawclickToken.sol";
 import {ClawclickConfig} from "./ClawclickConfig.sol";
@@ -43,7 +46,7 @@ import {PriceMath} from "../libraries/PriceMath.sol";
  *   - LP locked forever (protocol-owned liquidity)
  *   - ETH is always currency0 (address(0) < any token address)
  */
-contract ClawclickFactory is Ownable, ReentrancyGuard {
+contract ClawclickFactory is Ownable, ReentrancyGuard, IUnlockCallback {
     using PoolIdLibrary for PoolKey;
     using StateLibrary for IPoolManager;
     using PositionInfoLibrary for PositionInfo;
@@ -161,6 +164,13 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 targetMcapETH;    // 1-10 ETH target
         FeeSplit feeSplit;        // Optional: split creator's 70% across multiple wallets
     }
+    
+    /// @notice Callback data for token→ETH swaps during fee collection
+    /// @dev Used internally by unlockCallback to execute swaps
+    struct SwapCallbackData {
+        PoolKey key;
+        uint256 tokenAmount;
+    }
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -184,7 +194,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     event PoolActivated(PoolId indexed poolId, bool isDevActivation, uint256 liquidityMinted);
     event PositionMinted(PoolId indexed poolId, uint256 indexed positionIndex, uint256 tokenId, uint256 tokenAmount);
     event PositionRetired(PoolId indexed poolId, uint256 indexed positionIndex, uint256 tokenId, uint256 ethRecovered, uint256 tokensRecovered);
-    event FeesCollectedFromPosition(PoolId indexed poolId, uint256 indexed positionIndex, uint256 tokenId, uint256 ethAmount, uint256 tokenAmount);
+    event FeesCollectedFromPosition(PoolId indexed poolId, uint256 indexed positionIndex, uint256 tokenId, uint256 ethAmount, uint256 tokenAmount, uint256 ethFromSwap);
     event FeeSplitDistributed(PoolId indexed poolId, address indexed wallet, uint256 amount);
 
     /*//////////////////////////////////////////////////////////////
@@ -766,13 +776,94 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
     
     /**
+     * @notice Uniswap V4 unlock callback for executing token→ETH swaps
+     * @dev Called by PoolManager during unlock(). Settles tokens, executes swap, takes ETH.
+     * @param data Encoded SwapCallbackData (PoolKey + token amount)
+     * @return Empty bytes (no return data needed)
+     */
+    function unlockCallback(bytes calldata data) 
+        external 
+        override 
+        returns (bytes memory) 
+    {
+        require(msg.sender == address(poolManager), "Only PoolManager");
+        
+        SwapCallbackData memory swapData = abi.decode(data, (SwapCallbackData));
+        
+        // Step 1: Settle tokens into PoolManager
+        address token = Currency.unwrap(swapData.key.currency1);
+        ClawclickToken(token).transfer(address(poolManager), swapData.tokenAmount);
+        poolManager.sync(swapData.key.currency1);
+        poolManager.settle(swapData.key.currency1);
+        
+        // Step 2: Execute swap (Token → ETH)
+        SwapParams memory params = SwapParams({
+            zeroForOne: false,  // Sell token (currency1) for ETH (currency0)
+            amountSpecified: -int256(swapData.tokenAmount),  // Exact input
+            sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1  // No price limit (accept any price)
+        });
+        
+        BalanceDelta delta = poolManager.swap(swapData.key, params, "");
+        
+        // Step 3: Take ETH from PoolManager
+        int128 ethDelta = delta.amount0();
+        if (ethDelta < 0) {  // Negative = we receive ETH
+            uint256 ethReceived = uint256(int256(-ethDelta));
+            poolManager.take(swapData.key.currency0, address(this), ethReceived);
+        }
+        
+        return "";  // No return data needed
+    }
+    
+    /**
+     * @notice Internal: Swap tokens to ETH via pool
+     * @dev Swaps token fees back to ETH for simplified distribution
+     * @param key Pool key
+     * @param tokenAmount Amount of tokens to swap
+     * @return ethReceived ETH received from swap
+     */
+    function _swapTokensToETH(
+        PoolKey memory key,
+        uint256 tokenAmount
+    ) internal returns (uint256 ethReceived) {
+        if (tokenAmount == 0) return 0;
+        
+        // Track ETH balance before swap
+        uint256 ethBefore = address(this).balance;
+        
+        // Prepare callback data
+        SwapCallbackData memory data = SwapCallbackData({
+            key: key,
+            tokenAmount: tokenAmount
+        });
+        
+        // Trigger unlock → unlockCallback executes swap
+        poolManager.unlock(abi.encode(data));
+        
+        // Calculate ETH received
+        ethReceived = address(this).balance - ethBefore;
+        
+        return ethReceived;
+    }
+    
+    /**
      * @notice Collect accrued LP fees from a specific position with 70/30 split
-     * @dev Callable by token creator or ecosystem deployer - distributes ETH and tokens with 70/30 split
+     * @dev Callable by token creator or ecosystem deployer - automatically swaps tokens to ETH and distributes
      * @param poolId Pool identifier
      * @param positionIndex Position index (0-4)
      * 
-     * NOTE: LP fees are collected in both ETH and tokens (standard for two-sided AMM pools).
-     * Both currencies are distributed using the same 70/30 split as Phase 1 hook taxes.
+     * FLOW:
+     * 1. Collect LP fees (ETH + tokens) from PositionManager
+     * 2. Swap ALL tokens → ETH via the pool (no price limit, accepts any price)
+     * 3. Combine ETH from fees + ETH from swap
+     * 4. Distribute 70% to creator(s), 30% to platform treasury (matches Phase 1 hook taxes)
+     * 5. If swap fails, entire transaction reverts (user can retry)
+     * 
+     * Benefits:
+     * - Treasury receives ETH only (no manual token sales needed)
+     * - Creators receive ETH only (simplified distribution)
+     * - Fee split wallets supported (1-5 wallets with custom percentages)
+     * - Single transaction (no separate claims/swaps required)
      */
     function collectFeesFromPosition(PoolId poolId, uint256 positionIndex) external nonReentrant {
         PoolState storage state = poolStates[poolId];
@@ -817,10 +908,19 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 ethGained = address(this).balance - ethBefore;
         uint256 tokenGained = ClawclickToken(info.token).balanceOf(address(this)) - tokenBefore;
         
-        // ✅ 70/30 SPLIT ON ETH FEES: Exactly like Phase 1 hook taxes
-        if (ethGained > 0) {
-            uint256 beneficiaryETH = (ethGained * 7000) / BPS; // 70%
-            uint256 platformETH = ethGained - beneficiaryETH;   // 30%
+        // ✅ SWAP TOKENS TO ETH: Convert all token fees to ETH before distribution
+        uint256 ethFromSwap = 0;
+        if (tokenGained > 0) {
+            ethFromSwap = _swapTokensToETH(key, tokenGained);
+        }
+        
+        // Combine all ETH (direct fees + swapped tokens)
+        uint256 totalETH = ethGained + ethFromSwap;
+        
+        // ✅ 70/30 SPLIT ON ALL ETH: Exactly like Phase 1 hook taxes
+        if (totalETH > 0) {
+            uint256 beneficiaryETH = (totalETH * 7000) / BPS; // 70%
+            uint256 platformETH = totalETH - beneficiaryETH;   // 30%
             
             // Pay platform first (30%)
             if (platformETH > 0) {
@@ -850,35 +950,6 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             }
         }
         
-        // ✅ 70/30 SPLIT ON TOKEN FEES: Exactly like Phase 1 hook taxes
-        if (tokenGained > 0) {
-            uint256 beneficiaryTokens = (tokenGained * 7000) / BPS; // 70%
-            uint256 platformTokens = tokenGained - beneficiaryTokens; // 30%
-            
-            // Pay platform first (30%)
-            if (platformTokens > 0) {
-                ClawclickToken(info.token).transfer(config.treasury(), platformTokens);
-            }
-            
-            // Pay creator(s) (70%) - check for fee split wallets
-            if (beneficiaryTokens > 0) {
-                if (info.feeSplit.count > 0) {
-                    // Split 70% across multiple wallets (exactly like Phase 1 hook taxes)
-                    for (uint8 i = 0; i < info.feeSplit.count; i++) {
-                        address wallet = info.feeSplit.wallets[i];
-                        uint256 walletShare = (beneficiaryTokens * info.feeSplit.percentages[i]) / BPS;
-                        
-                        if (walletShare > 0) {
-                            ClawclickToken(info.token).transfer(wallet, walletShare);
-                        }
-                    }
-                } else {
-                    // Single beneficiary gets all 70%
-                    ClawclickToken(info.token).transfer(info.beneficiary, beneficiaryTokens);
-                }
-            }
-        }
-        
-        emit FeesCollectedFromPosition(poolId, positionIndex, tokenId, ethGained, tokenGained);
+        emit FeesCollectedFromPosition(poolId, positionIndex, tokenId, ethGained, tokenGained, ethFromSwap);
     }
 }
