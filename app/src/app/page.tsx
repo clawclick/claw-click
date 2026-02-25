@@ -511,6 +511,7 @@ export default function Home() {
                 <thead className="border-b border-[#E8523D]/10">
                   <tr>
                     <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Token</th>
+                    <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Type</th>
                     <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Chain</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Price</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Change</th>
@@ -524,7 +525,7 @@ export default function Home() {
                 <tbody>
                   {tokensLoading ? (
                     <tr>
-                      <td colSpan={9} className="p-12 text-center text-[#9AA4B2]">
+                      <td colSpan={10} className="p-12 text-center text-[#9AA4B2]">
                         <div className="flex items-center justify-center gap-3">
                           <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#E8523D] border-t-transparent"></div>
                           Loading tokens...
@@ -533,7 +534,7 @@ export default function Home() {
                     </tr>
                   ) : filteredTokens.length === 0 ? (
                     <tr>
-                      <td colSpan={9} className="p-12">
+                      <td colSpan={10} className="p-12">
                         {/* Empty state handled below table */}
                       </td>
                     </tr>
@@ -556,6 +557,15 @@ export default function Home() {
                               <div className="text-sm text-[#9AA4B2]">{token.symbol}</div>
                             </div>
                           </div>
+                        </td>
+                        <td className="p-4">
+                          <span className={`text-xs px-2 py-1 rounded font-semibold ${
+                            token.launchType === 'DIRECT' 
+                              ? 'bg-blue-500/20 text-blue-400' 
+                              : 'bg-orange-500/20 text-orange-400'
+                          }`} title={token.launchType === 'DIRECT' ? 'Immortalized via claws.fun' : 'Launched via claw.click'}>
+                            {token.launchType === 'DIRECT' ? '👤 immortal' : '🚀 token'}
+                          </span>
                         </td>
                         <td className="p-4">
                           <span className="text-xs px-2 py-1 rounded font-semibold bg-purple-500/20 text-purple-400">
@@ -583,6 +593,7 @@ export default function Home() {
                         </td>
                         <td className="p-4">
                           <div className="flex items-center justify-center gap-2">
+                            {/* Chart link */}
                             <a href={token.chartUrl} target="_blank" rel="noopener noreferrer" className="text-[#9AA4B2] hover:text-[#E8523D] transition-colors" title="Chart">
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="4" y1="20" x2="4" y2="14" strokeLinecap="round"/>
@@ -590,12 +601,32 @@ export default function Home() {
                                 <line x1="20" y1="20" x2="20" y2="4" strokeLinecap="round"/>
                               </svg>
                             </a>
+                            {/* Scanner link */}
                             <a href={token.scanUrl} target="_blank" rel="noopener noreferrer" className="text-[#9AA4B2] hover:text-[#E8523D] transition-colors" title="Scanner">
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" strokeLinecap="round" strokeLinejoin="round"/>
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round" strokeLinejoin="round"/>
                               </svg>
                             </a>
+                            {/* Trade/Swap button - DIRECT goes to Uniswap, AGENT to custom swap */}
+                            {token.launchType === 'DIRECT' ? (
+                              <a 
+                                href={`https://app.uniswap.org/swap?outputCurrency=${token.token}&chain=sepolia`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="px-3 py-1 text-xs font-semibold rounded bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                                title="Swap on Uniswap"
+                              >
+                                swap
+                              </a>
+                            ) : (
+                              <button 
+                                className="px-3 py-1 text-xs font-semibold rounded bg-[#E8523D]/20 text-[#E8523D] hover:bg-[#E8523D]/30 transition-colors"
+                                title="Trade (custom swap UI - coming soon)"
+                              >
+                                trade
+                              </button>
+                            )}
                           </div>
                         </td>
                       </motion.tr>

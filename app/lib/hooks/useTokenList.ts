@@ -14,6 +14,7 @@ export interface TokenData {
   targetMcapETH: string
   createdAt: number
   createdBlock: number
+  launchType: 'DIRECT' | 'AGENT' // DIRECT = claws.fun immortal agent, AGENT = claw.click hook token
   
   // Live stats
   price: string
@@ -89,6 +90,8 @@ export function useTokenList(options?: {
           targetMcapETH: t.target_mcap || '0',
           createdAt: t.launched_at ? Math.floor(new Date(t.launched_at).getTime() / 1000) : 0,
           createdBlock: 0,
+          // launchType: 0 = DIRECT (claws.fun immortal), 1 = AGENT (claw.click hook)
+          launchType: (t.launch_type === 0 || t.launch_type === 'DIRECT') ? 'DIRECT' : 'AGENT',
 
           price: `$${(pricePerToken * ethPrice).toFixed(6)}`,
           mcap: `${mcapETH.toFixed(4)} ETH`,
