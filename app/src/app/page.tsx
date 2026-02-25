@@ -9,13 +9,15 @@ import ProductsDropdown from './components/ProductsDropdown'
 import ProductsFooter from './components/ProductsFooter'
 import MobileMenu from './components/MobileMenu'
 import { useClawStats } from '../../lib/hooks/useClawStats'
-import { useTokenList, type TokenSort } from '../../lib/hooks/useTokenList'
+import { useTokenList, type TokenSort, type TokenData } from '../../lib/hooks/useTokenList'
 import { useTrendingTokens } from '../../lib/hooks/useTrendingTokens'
+import TradeModal from './components/TradeModal'
 
 export default function Home() {
   const [activeFeature, setActiveFeature] = useState(0)
   const [activeTab, setActiveTab] = useState('all')
   const [copied, setCopied] = useState(false)
+  const [tradeToken, setTradeToken] = useState<TokenData | null>(null)
   
   // Map tab to backend sort param
   const sortMap: Record<string, TokenSort | undefined> = {
@@ -519,6 +521,7 @@ export default function Home() {
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Volume</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Txs</th>
                     <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Buys/Sells</th>
+                    <th className="text-center p-4 text-sm font-semibold text-[#9AA4B2]">Trade</th>
                     <th className="text-center p-4 text-sm font-semibold text-[#9AA4B2]">Links</th>
                   </tr>
                 </thead>
@@ -590,6 +593,14 @@ export default function Home() {
                             <span className="text-green-400 text-sm">↑ {token.buyCount}</span>
                             <span className="text-red-400 text-sm">↓ {token.sellCount}</span>
                           </div>
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setTradeToken(token); }}
+                            className="px-4 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white hover:opacity-90 transition-opacity shadow-md shadow-[#E8523D]/20"
+                          >
+                            Trade
+                          </button>
                         </td>
                         <td className="p-4">
                           <div className="flex items-center justify-center gap-2">
@@ -730,6 +741,15 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Trade Modal */}
+      {tradeToken && (
+        <TradeModal
+          isOpen={!!tradeToken}
+          onClose={() => setTradeToken(null)}
+          token={tradeToken}
+        />
+      )}
     </main>
   )
 }
