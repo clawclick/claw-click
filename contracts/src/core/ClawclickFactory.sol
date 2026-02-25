@@ -257,7 +257,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /**
      * @notice Create a new token launch with deterministic MCAP-based price
      * @dev Mints ALL 5 positions at launch.
-     *      P1 gets tokens + fixed bootstrap ETH (~$2). P2-P5 get token-only one-sided liquidity.
+     *      P1 gets tokens + bootstrap ETH (~$2). P2-P5 get token-only one-sided liquidity.
      *      targetMcapETH (1-10 ETH) determines starting PRICE via v4 tick calculation, NOT user ETH deposit.
      * @param params Launch parameters including target MCAP (for price calculation only)
      * @return token The created token address
@@ -265,21 +265,28 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
      */
     function createLaunch(CreateParams calldata params) 
         external 
+        payable
         nonReentrant
         returns (address token, PoolId poolId) 
     {
         // Check protocol state
         if (config.paused()) revert ProtocolPaused();
         
-        // Get fixed bootstrap amount (~$2 worth of ETH) for P1 price setting
+        // Get required bootstrap amount (~$2 worth of ETH) for P1 price setting
         uint256 bootstrapAmount = config.MIN_BOOTSTRAP_ETH();
         
-        // Request bootstrap from BootstrapETH contract (user sends $0)
-        if (address(bootstrapETH) != address(0) && bootstrapETH.isEligible(msg.sender)) {
+        // Option 1: User sends bootstrap directly (msg.value >= ~$2)
+        if (msg.value >= bootstrapAmount) {
+            bootstrapAmount = msg.value;
+        } 
+        // Option 2: Fallback to free bootstrap from BootstrapETH contract
+        else if (address(bootstrapETH) != address(0) && bootstrapETH.isEligible(msg.sender)) {
             bool success = bootstrapETH.requestBootstrap(msg.sender, bootstrapAmount);
             require(success, "Bootstrap request failed");
             emit FreeBootstrapUsed(msg.sender, bootstrapAmount);
-        } else {
+        } 
+        // Option 3: User has no funds and not eligible for free bootstrap
+        else {
             revert InsufficientBootstrap();
         }
         
