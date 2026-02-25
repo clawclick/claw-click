@@ -6,6 +6,15 @@ import {PoolId} from "v4-core/src/types/PoolId.sol";
 
 interface IClawclickFactory {
     /*//////////////////////////////////////////////////////////////
+                                TYPES
+    //////////////////////////////////////////////////////////////*/
+
+    enum LaunchType {
+        DIRECT,    // No hook, 1% LP fee, instant tradability
+        AGENT      // Hook-based, epoch/tax/limits, graduation
+    }
+
+    /*//////////////////////////////////////////////////////////////
                                 STRUCTS
     //////////////////////////////////////////////////////////////*/
 
@@ -28,6 +37,7 @@ interface IClawclickFactory {
         string name;
         string symbol;
         FeeSplit feeSplit;
+        LaunchType launchType;
     }
 
     struct CreateParams {
@@ -37,6 +47,7 @@ interface IClawclickFactory {
         address agentWallet;
         uint256 targetMcapETH;
         FeeSplit feeSplit;
+        LaunchType launchType;
     }
 
     struct PoolState {
@@ -96,6 +107,10 @@ interface IClawclickFactory {
         external
         pure
         returns (uint160);
+    
+    function isDirectLaunch(PoolId poolId) external view returns (bool isDirect);
+    
+    function isDirectLaunchByToken(address token) external view returns (bool isDirect);
 
     /*//////////////////////////////////////////////////////////////
                             ADMIN
