@@ -46,6 +46,47 @@ contract ClawclickFactoryHelper is ReentrancyGuard {
         positionManager = _positionManager;
     }
 
+    function mintAllDirectPositions(PoolId poolId) external payable nonReentrant {
+        (,, uint256 startingMCAP,, uint256 totalSupply, uint256 recycledETH,,) = factoryCore.getPoolState(poolId);
+        (, bool[5] memory minted,) = factoryCore.getPoolFlags(poolId);
+        
+        // Clear recycled ETH once (will receive it)
+        factoryCore.clearRecycledETH(poolId);
+        
+        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
+            PriceMath.calculatePositionRanges(startingMCAP, totalSupply);
+        
+        (, PoolKey memory poolKey,,,,,,) = factoryCore.getLaunchInfo(poolId);
+        
+        // Mint all 5 positions
+        for (uint256 i = 0; i < 5; i++) {
+            require(!minted[i], "Position already minted");
+            
+            (uint160 curSqrtPrice,,,) = poolManager.getSlot0(poolId);
+            uint160 sqrtLower = TickMath.getSqrtPriceAtTick(tickLowers[i]);
+            uint160 sqrtUpper = TickMath.getSqrtPriceAtTick(tickUppers[i]);
+            
+            // Calculate ETH needed for this position (split bootstrap across positions)
+            uint256 ethForPosition = recycledETH / 5;
+            
+            uint128 liq = LiquidityAmounts.getLiquidityForAmounts(
+                curSqrtPrice, sqrtLower, sqrtUpper, ethForPosition, allocations[i]
+            );
+            
+            if (liq > 0) {
+                uint256 tokenId = _mintPositionViaManager(
+                    poolKey,
+                    tickLowers[i],
+                    tickUppers[i],
+                    allocations[i],
+                    ethForPosition
+                );
+                
+                factoryCore.storePositionTokenId(poolId, i, tokenId);
+            }
+        }
+    }
+
     function mintNextPosition(PoolId poolId, uint256 positionIndex) external nonReentrant {
         (,, uint256 startingMCAP,, uint256 totalSupply, uint256 recycledETH,,) = factoryCore.getPoolState(poolId);
         (, bool[5] memory minted,) = factoryCore.getPoolFlags(poolId);

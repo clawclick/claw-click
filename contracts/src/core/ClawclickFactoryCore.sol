@@ -173,7 +173,7 @@ contract ClawclickFactoryCore is Ownable, ReentrancyGuard {
             positionTokenIds: [uint256(0), 0, 0, 0, 0],
             positionMinted: [false, false, false, false, false],
             positionRetired: [false, false, false, false, false],
-            recycledETH: 0,
+            recycledETH: bootstrapAmount,
             activated: true,
             graduated: false
         });
@@ -311,7 +311,12 @@ contract ClawclickFactoryCore is Ownable, ReentrancyGuard {
 
     function clearRecycledETH(PoolId poolId) external {
         require(msg.sender == helper, "Only helper");
+        uint256 amount = poolStates[poolId].recycledETH;
         poolStates[poolId].recycledETH = 0;
+        if (amount > 0) {
+            (bool success,) = helper.call{value: amount}("");
+            require(success, "ETH transfer failed");
+        }
     }
 
     function addRecycledETH(PoolId poolId, uint256 amount) external {

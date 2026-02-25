@@ -24,21 +24,23 @@ import {PriceMath} from "../libraries/PriceMath.sol";
 
 /**
  * @title ClawclickFactory
- * @notice Factory for creating MCAP-initialized Uniswap v4 token launches
- * @dev Deep Sea Engine - Deterministic AMM model
+ * @notice Factory for creating MCAP-initialized Uniswap v4 token launches (DIRECT & AGENT flows)
+ * @dev Deep Sea Engine - Deterministic AMM model with dual launch types
  * 
  * Launch Flow:
- *   1. User specifies target MCAP (1-10 ETH)
+ *   1. User specifies target MCAP (1-10 ETH) - determines starting PRICE via tick calculation
  *   2. Factory calculates deterministic price: price = targetMcap / totalSupply
  *   3. Factory converts price → sqrtPriceX96 using Q64.96 fixed-point math
  *   4. Factory deploys token (1B supply minted to factory)
  *   5. Factory initializes pool at calculated sqrtPrice
- *   6. Factory adds full-range liquidity (100% tokens, 0 ETH)
- *   7. Factory locks LP NFT permanently
- *   8. Hook enforces dynamic tax + maxTx/maxWallet based on live MCAP
+ *   6. Factory adds P1-P5 positions: P1 with ~$2 bootstrap ETH, P2-P5 token-only
+ *   7. Factory locks LP NFTs permanently
+ *   8. AGENT flow: Hook enforces dynamic tax/limits/epochs/graduation
+ *      DIRECT flow: No hook, 1% LP fee only, no graduation
  * 
  * Key Invariants:
- *   - Price is deterministic from target MCAP (no genesis gating)
+ *   - Price is deterministic from target MCAP (no user ETH deposit)
+ *   - Bootstrap: Fixed ~$2 ETH from BootstrapETH contract for P1 price setting
  *   - All tokens liquid from block 1 (no supply throttling)
  *   - LP locked forever (protocol-owned liquidity)
  *   - ETH is always currency0 (address(0) < any token address)
@@ -255,39 +257,30 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     /**
      * @notice Create a new token launch with deterministic MCAP-based price
      * @dev Mints ALL 5 positions at launch.
-     *      P1 gets tokens + bootstrap ETH. P2-P5 get token-only one-sided liquidity.
-     * @param params Launch parameters including target MCAP
+     *      P1 gets tokens + fixed bootstrap ETH (~$2). P2-P5 get token-only one-sided liquidity.
+     *      targetMcapETH (1-10 ETH) determines starting PRICE via v4 tick calculation, NOT user ETH deposit.
+     * @param params Launch parameters including target MCAP (for price calculation only)
      * @return token The created token address
      * @return poolId The pool ID for the token/ETH pair
      */
     function createLaunch(CreateParams calldata params) 
         external 
-        payable 
         nonReentrant
         returns (address token, PoolId poolId) 
     {
         // Check protocol state
         if (config.paused()) revert ProtocolPaused();
         
-        // Validate bootstrap requirement
-        uint256 minBootstrap = config.MIN_BOOTSTRAP_ETH();
-        uint256 bootstrapAmount;
+        // Get fixed bootstrap amount (~$2 worth of ETH) for P1 price setting
+        uint256 bootstrapAmount = config.MIN_BOOTSTRAP_ETH();
         
-        // Check if user sent enough ETH
-        if (msg.value >= minBootstrap) {
-            // User provided bootstrap directly
-            bootstrapAmount = msg.value;
+        // Request bootstrap from BootstrapETH contract (user sends $0)
+        if (address(bootstrapETH) != address(0) && bootstrapETH.isEligible(msg.sender)) {
+            bool success = bootstrapETH.requestBootstrap(msg.sender, bootstrapAmount);
+            require(success, "Bootstrap request failed");
+            emit FreeBootstrapUsed(msg.sender, bootstrapAmount);
         } else {
-            // Try free bootstrap from BootstrapETH contract
-            if (address(bootstrapETH) != address(0) && bootstrapETH.isEligible(msg.sender)) {
-                // Request bootstrap from contract
-                bool success = bootstrapETH.requestBootstrap(msg.sender, minBootstrap);
-                require(success, "Bootstrap request failed");
-                bootstrapAmount = minBootstrap;
-                emit FreeBootstrapUsed(msg.sender, minBootstrap);
-            } else {
-                revert InsufficientBootstrap();
-            }
+            revert InsufficientBootstrap();
         }
         
         // Inline validation (saves function call overhead)
@@ -375,11 +368,17 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         }
         
         // 8. Store pool state
+        // DIRECT flow: NO graduation (P1-P5 stay forever)
+        // AGENT flow: Graduation at 16x (positions rebalance)
+        uint256 graduationMCAP = (params.launchType == LaunchType.AGENT) 
+            ? params.targetMcapETH * config.POSITION_MCAP_MULTIPLIER()
+            : 0; // DIRECT flow has no graduation
+        
         PoolState memory poolState = PoolState({
             token: token,
             beneficiary: params.beneficiary,
             startingMCAP: params.targetMcapETH,
-            graduationMCAP: params.targetMcapETH * config.POSITION_MCAP_MULTIPLIER(),
+            graduationMCAP: graduationMCAP,
             totalSupply: totalSupply,
             positionTokenIds: posTokenIds,
             positionMinted: mintedFlags,
@@ -676,6 +675,9 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         
         // Must be a valid launch
         require(info.token != address(0), "Launch not found");
+        
+        // AGENT flow only (DIRECT has no hook or dev override)
+        require(info.launchType == LaunchType.AGENT, "AGENT flow only");
         
         // Only creator or factory owner can call
         require(
