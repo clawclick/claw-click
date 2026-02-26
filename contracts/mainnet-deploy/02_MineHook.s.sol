@@ -58,7 +58,7 @@ contract MineHook is Script {
         address deployer = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
         
         // Base mainnet addresses
-        address poolManager = vm.envAddress("POOL_MANAGER_ADDRESS");
+        address poolManager = vm.envAddress("POOL_MANAGER");
         address config = vm.envAddress("CONFIG_ADDRESS");
 
         console2.log("=== MINING HOOK ADDRESS ===");

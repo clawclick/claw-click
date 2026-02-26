@@ -38,14 +38,14 @@ import "../src/core/ClawclickFactory.sol";
 contract DeployBootstrapETH is Script {
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("MAINNET_DEPLOYER_PK");
         address deployer = vm.addr(deployerPrivateKey);
         
         // Get all addresses needed for Factory prediction
         address config = vm.envAddress("CONFIG_ADDRESS");
         address hook = vm.envAddress("HOOK_ADDRESS");
-        address poolManager = vm.envAddress("POOL_MANAGER_ADDRESS");
-        address positionManager = vm.envAddress("POSITION_MANAGER_ADDRESS");
+        address poolManager = vm.envAddress("POOL_MANAGER");
+        address positionManager = vm.envAddress("POSITION_MANAGER");
         bytes32 factorySalt = vm.envBytes32("FACTORY_SALT");
 
         console2.log("=== PREDICTING FACTORY ADDRESS ===");

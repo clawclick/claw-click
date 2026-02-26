@@ -46,14 +46,14 @@ import {IPositionManager} from "v4-periphery/src/interfaces/IPositionManager.sol
 contract DeployFactory is Script {
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("MAINNET_DEPLOYER_PK");
         address deployer = vm.addr(deployerPrivateKey);
         
         address config = vm.envAddress("CONFIG_ADDRESS");
         address hook = vm.envAddress("HOOK_ADDRESS");
         address bootstrapETH = vm.envAddress("BOOTSTRAP_ETH_ADDRESS");
-        address poolManager = vm.envAddress("POOL_MANAGER_ADDRESS");
-        address positionManager = vm.envAddress("POSITION_MANAGER_ADDRESS");
+        address poolManager = vm.envAddress("POOL_MANAGER");
+        address positionManager = vm.envAddress("POSITION_MANAGER");
         bytes32 factorySalt = vm.envBytes32("FACTORY_SALT");
 
         console2.log("=== DEPLOYING FACTORY ===");

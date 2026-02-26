@@ -31,16 +31,37 @@ git clone https://github.com/clawclick/claw-click.git skills/claw-click
 
 ## 🔧 Contract Addresses
 
-### Sepolia Testnet
+### Base Mainnet (LIVE) 🔴
 
 \`\`\`typescript
-const CONTRACTS = {
-  factory: '0x...',         // ClawclickFactory
-  hook: '0x...',            // ClawclickHook_V4
-  config: '0x...',          // ClawclickConfig
-  poolManager: '0x...',     // Uniswap V4 PoolManager
-  positionManager: '0x...', // Uniswap V4 PositionManager
+const BASE_CONTRACTS = {
+  factory: '0xF993b19328E32af9941Ef8d81d5652134A206463',
+  hook: '0x789A96D44e33c2eEA2294b74cd3b59c9b3932ac8',
+  config: '0x51790f81a24AbA3dac35381296696ef4695a9cC8',
+  bootstrapETH: '0x17Aa352F2D811B4dC65eC7Eba9738e6c0B393A67',
+  poolManager: '0x498581fF718922c3f8e6A244956aF099B2652b2b',
+  positionManager: '0x7C5f5A4bBd8fD63184577525326123b519429bDc',
+  chainId: 8453,
+  rpc: 'https://mainnet.base.org'
 }
+\`\`\`
+
+### Sepolia Testnet (Testing)
+
+\`\`\`typescript
+const SEPOLIA_CONTRACTS = {
+  factory: '0xe6f52084209699491aCc2532e857e3510e4c5e13',
+  hook: '0x582c8085b3857E44561a3E9442Adc064E94e2ac8',
+  config: '0xB1a21A851Bd69BFFACfD66d759eFA197E92abaE5',
+  bootstrapETH: '0xd5B8d732B816F5c3E33746dE45E71C5683665cdA',
+  poolManager: '0xE03A1074c86CFeDd5C142C4F04F1a1536e203543',
+  positionManager: '0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4',
+  chainId: 11155111,
+  rpc: 'https://ethereum-sepolia-rpc.publicnode.com'
+}
+
+// Auto-detect chain
+const CONTRACTS = process.env.CHAIN_ID === '8453' ? BASE_CONTRACTS : SEPOLIA_CONTRACTS
 \`\`\`
 
 ---

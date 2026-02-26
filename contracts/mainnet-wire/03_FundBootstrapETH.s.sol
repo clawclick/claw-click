@@ -39,7 +39,7 @@ import "../src/utils/BootstrapETH.sol";
 contract FundBootstrapETH is Script {
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("MAINNET_DEPLOYER_PK");
         address deployer = vm.addr(deployerPrivateKey);
         
         address bootstrapETHAddress = vm.envAddress("BOOTSTRAP_ETH_ADDRESS");

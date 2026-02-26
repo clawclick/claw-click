@@ -29,7 +29,7 @@ import "../src/core/ClawclickConfig.sol";
 contract WireFactory is Script {
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("MAINNET_DEPLOYER_PK");
         address deployer = vm.addr(deployerPrivateKey);
         
         address configAddress = vm.envAddress("CONFIG_ADDRESS");

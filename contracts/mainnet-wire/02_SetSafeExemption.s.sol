@@ -30,7 +30,7 @@ import "../src/core/ClawclickHook_V4.sol";
 contract SetSafeExemption is Script {
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("MAINNET_DEPLOYER_PK");
         address deployer = vm.addr(deployerPrivateKey);
         
         address hookAddress = vm.envAddress("HOOK_ADDRESS");

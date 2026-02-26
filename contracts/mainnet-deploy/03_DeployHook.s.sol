@@ -36,11 +36,11 @@ import "../src/core/ClawclickConfig.sol";
 contract DeployHook is Script {
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("MAINNET_DEPLOYER_PK");
         address deployer = vm.addr(deployerPrivateKey);
         
         bytes32 salt = vm.envBytes32("HOOK_SALT");
-        address poolManager = vm.envAddress("POOL_MANAGER_ADDRESS");
+        address poolManager = vm.envAddress("POOL_MANAGER");
         address config = vm.envAddress("CONFIG_ADDRESS");
 
         console2.log("=== DEPLOYING HOOK ===");

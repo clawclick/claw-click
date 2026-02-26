@@ -32,7 +32,7 @@ import "../src/core/ClawclickConfig.sol";
 contract DeployConfig is Script {
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("MAINNET_DEPLOYER_PK");
         address deployer = vm.addr(deployerPrivateKey);
         address safe = vm.envAddress("SAFE_ADDRESS");
 
