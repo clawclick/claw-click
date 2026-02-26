@@ -118,6 +118,7 @@ app.get('/api/agents/recent', async (req, res) => {
         graduated,
         current_epoch,
         logo_url,
+        launch_type,
         launched_at
       FROM tokens
       WHERE is_agent = TRUE
@@ -143,6 +144,7 @@ app.get('/api/tokens', async (req, res) => {
       offset = 0,
       search = '',
       graduated,
+      launch_type,
     } = req.query
     
     let orderBy = 'launched_at DESC'
@@ -164,6 +166,12 @@ app.get('/api/tokens', async (req, res) => {
     } else if (graduated === 'false') {
       whereClause += ' AND graduated = false'
     }
+
+    // Filter by launch type: 'direct' or 'agent'
+    if (launch_type === 'direct' || launch_type === 'agent') {
+      whereClause += ` AND launch_type = $${params.length + 1}`
+      params.push(launch_type)
+    }
     
     params.push(limit, offset)
     
@@ -177,7 +185,8 @@ app.get('/api/tokens', async (req, res) => {
         buys_24h, sells_24h,
         graduated, launched_at,
         current_epoch, current_position,
-        logo_url, banner_url
+        logo_url, banner_url,
+        launch_type
       FROM tokens
       ${whereClause}
       ORDER BY ${orderBy}
@@ -248,7 +257,7 @@ app.get('/api/tokens/trending', async (req, res) => {
       SELECT 
         address, name, symbol, current_price, current_mcap,
         volume_24h, price_change_24h, tx_count_24h,
-        logo_url, banner_url
+        logo_url, banner_url, launch_type
       FROM tokens
       WHERE launched_at > NOW() - INTERVAL '7 days'
       ORDER BY volume_24h DESC

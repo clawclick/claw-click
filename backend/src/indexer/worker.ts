@@ -136,7 +136,7 @@ function scheduleAgentRecheck(tokenAddress: string, agentWallet: string) {
 // TOKEN LAUNCHED EVENT
 // ============================================================================
 const tokenLaunchedABI = parseAbiItem(
-  'event TokenLaunched(address indexed token, address indexed beneficiary, address indexed creator, bytes32 poolId, uint256 targetMcapETH, uint160 sqrtPriceX96, string name, string symbol)'
+  'event TokenLaunched(address indexed token, address indexed beneficiary, address indexed creator, bytes32 poolId, uint256 targetMcapETH, uint160 sqrtPriceX96, string name, string symbol, uint8 launchType)'
 )
 
 client.watchEvent({
@@ -145,9 +145,11 @@ client.watchEvent({
   onLogs: async (logs) => {
     for (const log of logs) {
       try {
-        const { token, beneficiary, creator, poolId, targetMcapETH, sqrtPriceX96, name, symbol } = log.args
+        const { token, beneficiary, creator, poolId, targetMcapETH, sqrtPriceX96, name, symbol, launchType } = log.args
         
-        console.log(`🆕 New token launched: ${symbol} (${token})`)
+        // launchType: 0 = DIRECT (claws.fun), 1 = AGENT (claw.click)
+        const launchTypeStr = (Number(launchType) === 0) ? 'direct' : 'agent'
+        console.log(`🆕 New token launched: ${symbol} (${token}) — ${launchTypeStr.toUpperCase()}`)
         
         // Read agentWallet from the deployed token contract
         // Then verify with claws.fun NFT check to determine if it's a real agent
@@ -177,8 +179,8 @@ client.watchEvent({
         await query(`
           INSERT INTO tokens (
             address, name, symbol, creator, beneficiary, pool_id,
-            target_mcap, current_mcap, sqrt_price_x96, agent_wallet, is_agent, launched_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
+            target_mcap, current_mcap, sqrt_price_x96, agent_wallet, is_agent, launch_type, launched_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
           ON CONFLICT (address) DO NOTHING
         `, [
           token,
@@ -192,6 +194,7 @@ client.watchEvent({
           sqrtPriceX96?.toString() || '0',
           agentWallet,
           isAgent,
+          launchTypeStr,
         ])
         
         // Update total tokens count (and agent count if applicable)
