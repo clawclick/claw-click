@@ -262,6 +262,7 @@ export default function Home() {
                       <span className={`text-sm px-3 py-1 rounded font-semibold ${
                         token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' :
                         token.chain === 'ETH' ? 'bg-purple-500/20 text-purple-400' :
+                        token.chain === 'SEPOLIA' ? 'bg-gray-500/20 text-gray-400' :
                         'bg-yellow-500/20 text-yellow-400'
                       }`}>
                         {token.chain}
@@ -571,7 +572,12 @@ export default function Home() {
                           </span>
                         </td>
                         <td className="p-4">
-                          <span className="text-xs px-2 py-1 rounded font-semibold bg-purple-500/20 text-purple-400">
+                          <span className={`text-xs px-2 py-1 rounded font-semibold ${
+                            token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' :
+                            token.chain === 'ETH' ? 'bg-purple-500/20 text-purple-400' :
+                            token.chain === 'SEPOLIA' ? 'bg-gray-500/20 text-gray-400' :
+                            'bg-yellow-500/20 text-yellow-400'
+                          }`}>
                             {token.chain}
                           </span>
                         </td>
