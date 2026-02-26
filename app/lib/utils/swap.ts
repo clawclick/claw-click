@@ -99,10 +99,11 @@ export const FACTORY_ABI = [
               { name: 'count', type: 'uint8' },
             ],
           },
+          { name: 'launchType', type: 'uint8' },
         ],
       },
     ],
-  },
+  }
 ] as const
 
 /**

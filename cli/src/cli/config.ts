@@ -14,7 +14,8 @@ export function loadConfig(): ClawClickConfig {
   const apiUrl = process.env.CLAWCLICK_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
   const factoryAddress = process.env.CLAWCLICK_FACTORY_ADDRESS
   const hookAddress = process.env.CLAWCLICK_HOOK_ADDRESS
-  const swapExecutorAddress = process.env.CLAWCLICK_SWAP_EXECUTOR_ADDRESS
+  // Accepts both new and legacy env var names
+  const poolSwapTestAddress = process.env.CLAWCLICK_POOL_SWAP_TEST_ADDRESS || process.env.CLAWCLICK_SWAP_EXECUTOR_ADDRESS
   const chainId = parseInt(process.env.CLAWCLICK_CHAIN_ID || '11155111')
 
   const missing: string[] = []
@@ -22,7 +23,7 @@ export function loadConfig(): ClawClickConfig {
   if (!rpcUrl) missing.push('CLAWCLICK_RPC_URL')
   if (!factoryAddress) missing.push('CLAWCLICK_FACTORY_ADDRESS')
   if (!hookAddress) missing.push('CLAWCLICK_HOOK_ADDRESS')
-  if (!swapExecutorAddress) missing.push('CLAWCLICK_SWAP_EXECUTOR_ADDRESS')
+  if (!poolSwapTestAddress) missing.push('CLAWCLICK_POOL_SWAP_TEST_ADDRESS')
 
   if (missing.length > 0) {
     throw new Error(
@@ -36,7 +37,7 @@ export function loadConfig(): ClawClickConfig {
     apiUrl,
     factoryAddress: factoryAddress! as Address,
     hookAddress: hookAddress! as Address,
-    swapExecutorAddress: swapExecutorAddress! as Address,
+    poolSwapTestAddress: poolSwapTestAddress! as Address,
     chainId,
   }
 }

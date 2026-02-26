@@ -2,6 +2,20 @@
 
 CLI & SDK for Claw.Click agents — launch tokens, trade, upload images, claim fees.
 
+## Dual Launch System
+
+The factory supports two launch types:
+
+| Feature | DIRECT (claws.fun) | AGENT (claw.click) |
+|---------|--------------------|--------------------|
+| Hook | None — hookless V4 pool | ClawclickHook — epoch/tax/limits |
+| Fee | 1% LP fee (static) | Dynamic fee (0x800000) via hook |
+| Tax | None | Starts high, decays over 5 epochs |
+| Limits | None | Max TX + Max Wallet, relaxing per epoch |
+| Graduation | N/A | Triggers at 16× starting MCAP |
+| Uniswap UI | Tradeable natively | Requires custom swap UI |
+| Fee claims | `collectFeesFromPosition()` (70/30 split) | `claimFeesETH()` / `claimFeesToken()` via hook |
+
 ## Install
 
 ```bash
@@ -20,38 +34,44 @@ Create a `.env` file:
 
 ```bash
 CLAWCLICK_PRIVATE_KEY=your_hex_private_key
-CLAWCLICK_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
+CLAWCLICK_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 CLAWCLICK_API_URL=https://claw-click-backend-5157d572b2b6.herokuapp.com/
-CLAWCLICK_FACTORY_ADDRESS=0x...
-CLAWCLICK_HOOK_ADDRESS=0x...
-CLAWCLICK_SWAP_EXECUTOR_ADDRESS=0x...
+CLAWCLICK_FACTORY_ADDRESS=0xe6f52084209699491aCc2532e857e3510e4c5e13
+CLAWCLICK_HOOK_ADDRESS=0x582c8085b3857E44561a3E9442Adc064E94e2ac8
+CLAWCLICK_POOL_SWAP_TEST_ADDRESS=0x9b6b46e2c869aa39918db7f52f5557fe577b6eee
 CLAWCLICK_CHAIN_ID=11155111
 ```
 
 ## CLI Commands
 
 ```bash
-# Launch a new token
-clawclick launch -n "My Token" -s "MTK" -b 0xBeneficiary -m 1.5
+# Launch a DIRECT token (hookless, tradeable on Uniswap)
+clawclick launch -n "My Token" -s "MTK" -b 0xBeneficiary -m 1.5 -T direct
 
-# Buy tokens with ETH
+# Launch an AGENT token (hook-based, epoch/tax/graduation)
+clawclick launch -n "Agent Token" -s "AGT" -b 0xBeneficiary -m 2 -T agent
+
+# Launch defaults to AGENT if -T is omitted
+clawclick launch -n "Default" -s "DFL" -b 0xBeneficiary
+
+# Buy tokens with ETH (works for both launch types)
 clawclick buy -t 0xTokenAddress -a 0.1
 
-# Sell tokens
+# Sell tokens (works for both launch types)
 clawclick sell -t 0xTokenAddress -a 1000000
 clawclick sell -t 0xTokenAddress -a all
 
 # Upload images (must be token owner/creator/agent)
 clawclick upload -t 0xTokenAddress -l ./logo.png -b ./banner.png
 
-# Claim ETH fees
+# Claim ETH fees (AGENT pools only — via hook)
 clawclick claim
 clawclick claim -b 0xBeneficiaryAddress
 
-# Claim token fees
+# Claim token fees (AGENT pools only — via hook)
 clawclick claim -t 0xTokenAddress
 
-# Get token info (on-chain + API)
+# Get token info (shows launch type, on-chain + API data)
 clawclick info -t 0xTokenAddress
 
 # Check balances
@@ -77,53 +97,102 @@ import { ClawClick } from '@clawclick/sdk'
 
 const sdk = new ClawClick({
   privateKey: process.env.PRIVATE_KEY!,
-  rpcUrl: 'https://sepolia.infura.io/v3/...',
+  rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
   apiUrl: 'https://your-backend.herokuapp.com',
   factoryAddress: '0x...',
   hookAddress: '0x...',
-  swapExecutorAddress: '0x...',
+  poolSwapTestAddress: '0x...',  // PoolSwapTest contract
   chainId: 11155111,
 })
 
-// Launch a token
-const { tokenAddress, poolId, txHash } = await sdk.launch({
-  name: 'My Token',
-  symbol: 'MTK',
+// ── Launch (DIRECT — hookless, Uniswap-tradeable) ──
+const direct = await sdk.launch({
+  name: 'My Direct Token',
+  symbol: 'MDT',
   beneficiary: '0x...',
   targetMcapETH: '1.5',
+  launchType: 'direct',  // hookless pool, 1% LP fee
+})
+console.log(direct.launchType) // 'direct'
+
+// ── Launch (AGENT — hook-based, epoch/tax/graduation) ──
+const agent = await sdk.launch({
+  name: 'Agent Token',
+  symbol: 'AGT',
+  beneficiary: '0x...',
+  targetMcapETH: '2',
+  launchType: 'agent',  // default — hook-based pool
+  feeSplit: {
+    wallets: ['0xAlice...', '0xBob...'],
+    percentages: [5000, 5000],  // 50/50 of creator's 70%
+  },
 })
 
-// Buy
-await sdk.buy(tokenAddress, '0.1')
+// ── Trading (same API for both types) ──
+await sdk.buy(tokenAddress, '0.1')        // Buy with 0.1 ETH
+await sdk.sell(tokenAddress, '1000000')   // Sell 1M tokens
+await sdk.sell(tokenAddress, 'all')       // Sell entire balance
 
-// Sell
-await sdk.sell(tokenAddress, '1000000')
-await sdk.sell(tokenAddress, 'all')
+// ── Check launch type ──
+const isDirect = await sdk.isDirectLaunch(tokenAddress)
 
-// Upload images
+// ── Token info (includes launchType) ──
+const info = await sdk.getTokenInfo(tokenAddress)
+console.log(info.launchType) // 'direct' or 'agent'
+
+// ── Fee claims (AGENT only — via hook) ──
+await sdk.claimFeesETH()
+await sdk.claimFeesToken(tokenAddress)
+
+// ── LP fee collection (DIRECT — via factory) ──
+await sdk.collectFeesFromPosition(tokenAddress, 0)
+
+// ── Pool state (scalar fields — arrays excluded by Solidity auto-getter) ──
+const state = await sdk.getPoolState(tokenAddress)
+console.log(state.activated)    // true
+console.log(state.recycledETH)  // ETH from withdrawn positions
+
+// ── AGENT-specific reads (no-op for DIRECT) ──
+const progress = await sdk.getPoolProgress(tokenAddress)
+const tax = await sdk.getCurrentTax(tokenAddress)       // 0n for DIRECT
+const limits = await sdk.getCurrentLimits(tokenAddress)  // max uint for DIRECT
+const graduated = await sdk.isGraduated(tokenAddress)    // false for DIRECT
+
+// ── Upload images ──
 await sdk.uploadImages(tokenAddress, {
   logoPath: './logo.png',
   bannerPath: './banner.png',
 })
 
-// Claim fees
-await sdk.claimFeesETH()
-await sdk.claimFeesToken(tokenAddress)
-
-// Read data
-const info = await sdk.getTokenInfo(tokenAddress)
-const progress = await sdk.getPoolProgress(tokenAddress)
-const tax = await sdk.getCurrentTax(tokenAddress)
-const limits = await sdk.getCurrentLimits(tokenAddress)
-const graduated = await sdk.isGraduated(tokenAddress)
-const balance = await sdk.getTokenBalance(tokenAddress)
-const ethBalance = await sdk.getETHBalance()
-
-// API reads
+// ── API reads ──
 const tokens = await sdk.listTokens({ sort: 'hot', limit: 10 })
 const trending = await sdk.getTrending()
 const stats = await sdk.getStats()
 const tokenData = await sdk.getTokenFromAPI(tokenAddress)
+```
+
+## Architecture
+
+```
+┌──────────────┐     createLaunch(DIRECT)     ┌──────────────────┐
+│              │  ──────────────────────────►  │                  │
+│   CLI / SDK  │                               │  ClawclickFactory │
+│              │  ──────────────────────────►  │                  │
+└──────┬───────┘     createLaunch(AGENT)       └────────┬─────────┘
+       │                                                │
+       │ buy / sell                                     │ AGENT only
+       ▼                                                ▼
+┌──────────────┐                               ┌──────────────────┐
+│ PoolSwapTest │  ─────── swap() ──────────►   │  Uniswap V4      │
+│              │                               │  PoolManager      │
+└──────────────┘                               └────────┬─────────┘
+                                                        │
+                                               ┌────────┴─────────┐
+                                               │ ClawclickHook    │
+                                               │ (AGENT pools)    │
+                                               │ tax / limits /   │
+                                               │ epoch / graduate │
+                                               └──────────────────┘
 ```
 
 ## Building
@@ -137,5 +206,5 @@ npm run build
 ## Development
 
 ```bash
-npm run dev -- launch -n "Test" -s "TST" -b 0x...
+npm run dev -- launch -n "Test" -s "TST" -b 0x... -T direct
 ```

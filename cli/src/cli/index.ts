@@ -22,12 +22,15 @@ program
   .requiredOption('-b, --beneficiary <address>', 'Beneficiary address for fees')
   .option('-m, --mcap <eth>', 'Target MCAP in ETH (default: 1)', '1')
   .option('-a, --agent <address>', 'Agent wallet address (defaults to signer)')
+  .option('-T, --type <type>', 'Launch type: "direct" (hookless, Uniswap) or "agent" (hook-based)', 'agent')
   .option('--fee-wallets <addresses>', 'Comma-separated fee split wallet addresses')
   .option('--fee-pcts <percentages>', 'Comma-separated fee split percentages (must match wallets)')
   .action(async (opts) => {
     try {
       const sdk = createSDK()
+      const launchType = opts.type === 'direct' ? 'direct' : 'agent'
       console.log(`🦞 Launching token: ${opts.name} (${opts.symbol})`)
+      console.log(`   Type:        ${launchType.toUpperCase()} ${launchType === 'direct' ? '(hookless — tradeable on Uniswap)' : '(hook-based — epoch/tax/graduation)'}`)
       console.log(`   Beneficiary: ${opts.beneficiary}`)
       console.log(`   Target MCAP: ${opts.mcap} ETH`)
       console.log(`   Signer: ${sdk.address}`)
@@ -49,11 +52,13 @@ program
         agentWallet: opts.agent as Address | undefined,
         targetMcapETH: opts.mcap,
         feeSplit,
+        launchType,
       })
 
       console.log(`\n✅ Token launched!`)
       console.log(`   Token: ${result.tokenAddress}`)
       console.log(`   Pool ID: ${result.poolId}`)
+      console.log(`   Type: ${result.launchType.toUpperCase()}`)
       console.log(`   TX: ${result.txHash}`)
     } catch (err: any) {
       console.error(`\n❌ Launch failed: ${err.message}`)
@@ -199,27 +204,37 @@ program
       console.log(`\n🔍 Token Info: ${token}\n`)
 
       // On-chain data
-      const [info, progress, tax, limits, graduated] = await Promise.all([
-        sdk.getTokenInfo(token),
-        sdk.getPoolProgress(token),
-        sdk.getCurrentTax(token),
-        sdk.getCurrentLimits(token),
-        sdk.isGraduated(token),
-      ])
+      const info = await sdk.getTokenInfo(token)
+      const isDirect = info.launchType === 'direct'
 
       console.log(`   Name:         ${info.name}`)
       console.log(`   Symbol:       ${info.symbol}`)
+      console.log(`   Launch Type:  ${info.launchType.toUpperCase()} ${isDirect ? '(hookless — Uniswap)' : '(hook-based)'}`)
       console.log(`   Creator:      ${info.creator}`)
       console.log(`   Beneficiary:  ${info.beneficiary}`)
       console.log(`   Agent Wallet: ${info.agentWallet}`)
       console.log(`   Pool ID:      ${info.poolId}`)
       console.log(`   Target MCAP:  ${formatEther(info.targetMcapETH)} ETH`)
-      console.log(`   Epoch:        ${progress.currentEpoch}`)
-      console.log(`   Position:     ${progress.currentPosition}`)
-      console.log(`   Tax:          ${Number(tax) / 100}%`)
-      console.log(`   Max TX:       ${formatEther(limits.maxTx)} tokens`)
-      console.log(`   Max Wallet:   ${formatEther(limits.maxWallet)} tokens`)
-      console.log(`   Graduated:    ${graduated ? '✅ Yes' : '❌ No'}`)
+
+      if (!isDirect) {
+        // AGENT-specific: epoch/tax/limits/graduation
+        const [progress, tax, limits, graduated] = await Promise.all([
+          sdk.getPoolProgress(token),
+          sdk.getCurrentTax(token),
+          sdk.getCurrentLimits(token),
+          sdk.isGraduated(token),
+        ])
+        console.log(`   Epoch:        ${progress.currentEpoch}`)
+        console.log(`   Position:     ${progress.currentPosition}`)
+        console.log(`   Tax:          ${Number(tax) / 100}%`)
+        console.log(`   Max TX:       ${formatEther(limits.maxTx)} tokens`)
+        console.log(`   Max Wallet:   ${formatEther(limits.maxWallet)} tokens`)
+        console.log(`   Graduated:    ${graduated ? '✅ Yes' : '❌ No'}`)
+      } else {
+        console.log(`   Fee:          1% LP fee (no dynamic tax)`)
+        console.log(`   Limits:       None (hookless)`)
+        console.log(`   Tradeable:    Uniswap UI + SDK`)
+      }
 
       // API data
       try {
