@@ -108,8 +108,8 @@ async function checkNFT(wallet: string): Promise<boolean> {
 }
 
 function scheduleAgentRecheck(tokenAddress: string, agentWallet: string) {
-  // Recheck at 30s, 60s, 90s, and 120s after launch
-  const delays = [30_000, 60_000, 90_000, 120_000]
+  // Recheck every 20s for up to 3 minutes
+  const delays = [20_000, 40_000, 60_000, 80_000, 100_000, 120_000, 140_000, 160_000, 180_000]
   for (const delay of delays) {
     setTimeout(async () => {
       try {

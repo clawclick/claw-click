@@ -110,8 +110,6 @@ interface IClawclickFactory {
     
     function isDirectLaunch(PoolId poolId) external view returns (bool isDirect);
     
-    function isDirectLaunchByToken(address token) external view returns (bool isDirect);
-
     /*//////////////////////////////////////////////////////////////
                             ADMIN
     //////////////////////////////////////////////////////////////*/
