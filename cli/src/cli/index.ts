@@ -23,6 +23,7 @@ program
   .option('-m, --mcap <eth>', 'Target MCAP in ETH (default: 1)', '1')
   .option('-a, --agent <address>', 'Agent wallet address (defaults to signer)')
   .option('-T, --type <type>', 'Launch type: "direct" (hookless, Uniswap) or "agent" (hook-based)', 'agent')
+  .option('-e, --bootstrap <eth>', 'Bootstrap ETH to seed liquidity (default: 0.001)', '0.001')
   .option('--fee-wallets <addresses>', 'Comma-separated fee split wallet addresses')
   .option('--fee-pcts <percentages>', 'Comma-separated fee split percentages (must match wallets)')
   .action(async (opts) => {
@@ -33,6 +34,7 @@ program
       console.log(`   Type:        ${launchType.toUpperCase()} ${launchType === 'direct' ? '(hookless — tradeable on Uniswap)' : '(hook-based — epoch/tax/graduation)'}`)
       console.log(`   Beneficiary: ${opts.beneficiary}`)
       console.log(`   Target MCAP: ${opts.mcap} ETH`)
+      console.log(`   Bootstrap:   ${opts.bootstrap} ETH`)
       console.log(`   Signer: ${sdk.address}`)
 
       let feeSplit: { wallets: Address[]; percentages: number[] } | undefined
@@ -51,6 +53,7 @@ program
         beneficiary: opts.beneficiary as Address,
         agentWallet: opts.agent as Address | undefined,
         targetMcapETH: opts.mcap,
+        bootstrapETH: opts.bootstrap,
         feeSplit,
         launchType,
       })

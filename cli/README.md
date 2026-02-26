@@ -15,6 +15,7 @@ The factory supports two launch types:
 | Graduation | N/A | Triggers at 16× starting MCAP |
 | Uniswap UI | Tradeable natively | Requires custom swap UI |
 | Fee claims | `collectFeesFromPosition()` (70/30 split) | `claimFeesETH()` / `claimFeesToken()` via hook |
+| Bootstrap | Min 0.001 ETH (seeds initial liquidity) | Min 0.001 ETH (seeds initial liquidity) |
 
 ## Install
 
@@ -46,12 +47,13 @@ CLAWCLICK_CHAIN_ID=11155111
 
 ```bash
 # Launch a DIRECT token (hookless, tradeable on Uniswap)
-clawclick launch -n "My Token" -s "MTK" -b 0xBeneficiary -m 1.5 -T direct
+# -e sets bootstrap ETH (min 0.001 ETH required to seed liquidity)
+clawclick launch -n "My Token" -s "MTK" -b 0xBeneficiary -m 1.5 -T direct -e 0.01
 
 # Launch an AGENT token (hook-based, epoch/tax/graduation)
-clawclick launch -n "Agent Token" -s "AGT" -b 0xBeneficiary -m 2 -T agent
+clawclick launch -n "Agent Token" -s "AGT" -b 0xBeneficiary -m 2 -T agent -e 0.001
 
-# Launch defaults to AGENT if -T is omitted
+# Launch defaults to AGENT with 0.001 ETH bootstrap if -T and -e are omitted
 clawclick launch -n "Default" -s "DFL" -b 0xBeneficiary
 
 # Buy tokens with ETH (works for both launch types)
@@ -111,7 +113,8 @@ const direct = await sdk.launch({
   symbol: 'MDT',
   beneficiary: '0x...',
   targetMcapETH: '1.5',
-  launchType: 'direct',  // hookless pool, 1% LP fee
+  bootstrapETH: '0.01',   // min 0.001 ETH — more = tighter spread
+  launchType: 'direct',   // hookless pool, 1% LP fee
 })
 console.log(direct.launchType) // 'direct'
 
@@ -121,7 +124,8 @@ const agent = await sdk.launch({
   symbol: 'AGT',
   beneficiary: '0x...',
   targetMcapETH: '2',
-  launchType: 'agent',  // default — hook-based pool
+  bootstrapETH: '0.001',  // minimum bootstrap (0.001 ETH)
+  launchType: 'agent',    // default — hook-based pool
   feeSplit: {
     wallets: ['0xAlice...', '0xBob...'],
     percentages: [5000, 5000],  // 50/50 of creator's 70%

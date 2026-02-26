@@ -56,13 +56,28 @@ export interface ClawClickConfig {
   chainId?: number
 }
 
+/**
+ * Minimum bootstrap ETH required by the factory (from ClawclickConfig).
+ * If wallet is not eligible for free bootstrap, at least this much ETH must be sent.
+ */
+export const MIN_BOOTSTRAP_ETH = '0.001'
+
 export interface LaunchParams {
   name: string
   symbol: string
   beneficiary: Address
   agentWallet?: Address
   targetMcapETH: string // in ETH, e.g. "1.5"
-  /** Bootstrap ETH to send (e.g. "0.001"). If omitted, relies on free bootstrap contract. */
+  /**
+   * Bootstrap ETH to seed initial liquidity.
+   * Minimum: 0.001 ETH (from ClawclickConfig.MIN_BOOTSTRAP_ETH).
+   * If omitted, the factory will try the free BootstrapETH contract.
+   * If the wallet is not eligible for free bootstrap, the tx will revert
+   * with `InsufficientBootstrap()` — so always pass at least "0.001".
+   *
+   * @example "0.001" // minimum
+   * @example "0.01"  // more liquidity = tighter initial spread
+   */
   bootstrapETH?: string
   feeSplit?: {
     wallets: Address[]
@@ -257,6 +272,7 @@ export class ClawClick {
     })
 
     const receipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash })
+    if (receipt.status === 'reverted') throw new Error('Transaction reverted')
 
     // Fallback: read from factory using token count
     const tokenCount = await this.publicClient.readContract({

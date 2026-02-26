@@ -1,5 +1,5 @@
 // @clawclick/sdk — CLI & SDK for Claw.Click agents
-export { ClawClick } from './sdk'
+export { ClawClick, MIN_BOOTSTRAP_ETH } from './sdk'
 export type {
   ClawClickConfig,
   LaunchParams,
