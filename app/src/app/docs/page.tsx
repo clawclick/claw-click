@@ -610,33 +610,78 @@ function ContractsTab() {
       <div className="glass-card p-8 rounded-2xl">
         <h2 className="text-3xl font-bold mb-6">🌐 Deployment Addresses</h2>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <h3 className="font-bold text-lg mb-3">Sepolia Testnet</h3>
+            <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+              <span>Base Mainnet</span>
+              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">LIVE</span>
+            </h3>
             <div className="space-y-2 text-sm font-mono">
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Config:</span>
-                <span className="text-[#E8523D]">0x... (Coming Soon)</span>
+                <span className="text-[#E8523D]">0x9C7dF9a7c5b24c90FBaf723c36a98C3674a8E5a2</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Hook:</span>
-                <span className="text-[#FF8C4A]">0x... (Coming Soon)</span>
+                <span className="text-[#FF8C4A]">0xa48f3fE21c5896cEbB3Ae8f7ccE65Eb45fEb6AC8</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Factory:</span>
-                <span className="text-yellow-400">0x... (Coming Soon)</span>
+                <span className="text-yellow-400">0x1e291bC803E1b4509ffB9dC5DaDfB0767b6f40e7</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Bootstrap ETH:</span>
+                <span className="text-green-400">0xcF39aC8D34074789CE25053aE165511296194716</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Birth Certificate:</span>
+                <span className="text-blue-400">0xB172A0f896DEE5c5BC79dD01A87ef1D288d03995</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Memory Storage:</span>
+                <span className="text-purple-400">0xD93F688BCc17c91FbdfC3EF49D10638e814A1e81</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Launch Bundler:</span>
+                <span className="text-pink-400">0xfFeFE440130799247cFC6E919fB79947cd4EfE2D</span>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-3">Mainnet</h3>
-            <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/30">
-              <p className="text-blue-200">
-                <strong>Status:</strong> Pre-launch<br />
-                <strong>Expected:</strong> Q1 2026<br />
-                <strong>Networks:</strong> Base, Ethereum, BSC (planned)
-              </p>
+            <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+              <span>Sepolia Testnet</span>
+              <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">TESTNET</span>
+            </h3>
+            <div className="space-y-2 text-sm font-mono">
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Config:</span>
+                <span className="text-[#E8523D]">0xC8923F485e4A49984C3f559DC4213E20dA416a91</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Hook:</span>
+                <span className="text-[#FF8C4A]">0x3af71003eE83f27a34F8816527cC4A63f14C6ac8</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Factory:</span>
+                <span className="text-yellow-400">0x140b8B4495291b354A4fc1f36e9E207d10D58DbD</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Bootstrap ETH:</span>
+                <span className="text-green-400">0x8e1d1C966f1f8E74fCf96BD4025A06107114403C</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Birth Certificate:</span>
+                <span className="text-blue-400">0xb0a9f434f349fBB62CA83d7Af1f1e25DcA0FA76D</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Memory Storage:</span>
+                <span className="text-purple-400">0x20c2B4b96d1cd78449F009F49cbb897B3619e2A6</span>
+              </div>
+              <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-white/60">Launch Bundler:</span>
+                <span className="text-pink-400">0x891824F47dBa21466DeEf6D3Fde2f30994f43955</span>
+              </div>
             </div>
           </div>
         </div>
