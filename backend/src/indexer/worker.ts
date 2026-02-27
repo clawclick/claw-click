@@ -1,13 +1,17 @@
 import { createPublicClient, webSocket, http, parseAbiItem, formatEther } from 'viem'
-import { sepolia } from 'viem/chains'
+import { base, sepolia } from 'viem/chains'
 import { query } from '../db/client'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
+// Chain config — reads CHAIN_ID env var, defaults to Base mainnet (8453)
+const CHAIN_ID = parseInt(process.env.CHAIN_ID || '8453')
+const chain = CHAIN_ID === 11155111 ? sepolia : base
+
 const FACTORY_ADDRESS = process.env.FACTORY_ADDRESS as `0x${string}`
 const HOOK_ADDRESS = process.env.HOOK_ADDRESS as `0x${string}`
-const POOL_MANAGER_ADDRESS = (process.env.POOL_MANAGER_ADDRESS || '0xE03A1074c86CFeDd5C142C4F04F1a1536e203543') as `0x${string}`
+const POOL_MANAGER_ADDRESS = (process.env.POOL_MANAGER_ADDRESS || '0x498581fF718922c3f8e6A244956aF099B2652b2b') as `0x${string}`
 
 // In-memory set of known pool IDs (loaded from DB on startup, updated on new launches)
 const knownPoolIds = new Set<string>()
@@ -42,15 +46,42 @@ function sqrtPriceToMcap(sqrtPriceX96: bigint): { price: string; mcap: string } 
   }
 }
 
-// Create client with WebSocket for event listening
+// RPC URL — use explicit env var, or build from Alchemy/Infura key
+function getRpcUrl(): string {
+  if (process.env.RPC_URL) return process.env.RPC_URL
+  if (CHAIN_ID === 8453) {
+    // Base mainnet
+    if (process.env.ALCHEMY_API_KEY) return `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    return 'https://mainnet.base.org'
+  }
+  // Sepolia fallback
+  if (process.env.INFURA_PROJECT_ID) return `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+  return 'https://ethereum-sepolia-rpc.publicnode.com'
+}
+
+function getWsUrl(): string | undefined {
+  if (process.env.WS_RPC_URL) return process.env.WS_RPC_URL
+  if (CHAIN_ID === 8453 && process.env.ALCHEMY_API_KEY) {
+    return `wss://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+  }
+  if (CHAIN_ID === 11155111 && process.env.INFURA_PROJECT_ID) {
+    return `wss://sepolia.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+  }
+  return undefined
+}
+
+const wsUrl = getWsUrl()
+const rpcUrl = getRpcUrl()
+
+// Create client — prefer WebSocket for event listening, fall back to HTTP polling
 const client = createPublicClient({
-  chain: sepolia,
-  transport: process.env.INFURA_PROJECT_ID 
-    ? webSocket(`wss://sepolia.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`)
-    : http(`https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`)
+  chain,
+  transport: wsUrl ? webSocket(wsUrl) : http(rpcUrl),
 })
 
 console.log('🚀 Claw.Click Event Indexer Starting...')
+console.log(`⛓️  Chain: ${chain.name} (${CHAIN_ID})`)
+console.log(`🔗 RPC: ${wsUrl || rpcUrl}`)
 console.log(`📡 Factory: ${FACTORY_ADDRESS}`)
 console.log(`📡 Hook: ${HOOK_ADDRESS}`)
 console.log(`📡 PoolManager: ${POOL_MANAGER_ADDRESS}`)
