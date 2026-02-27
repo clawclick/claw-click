@@ -72,7 +72,7 @@ app.get('/api/stats', async (req, res) => {
           COALESCE(SUM(s.total_txs_24h), 0) as total_txs_24h,
           COALESCE(SUM(s.total_fees_eth), 0) as total_fees_eth,
           MAX(s.updated_at) as updated_at,
-          COALESCE(m.total_mcap, 0) as total_market_cap_eth
+          MAX(m.total_mcap) as total_market_cap_eth
         FROM stats s
         CROSS JOIN (
           SELECT COALESCE(SUM(current_mcap), 0) as total_mcap FROM tokens WHERE graduated = false
