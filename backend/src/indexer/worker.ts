@@ -89,7 +89,7 @@ console.log(`📡 PoolManager: ${POOL_MANAGER_ADDRESS}`)
 // Load known pool IDs from DB on startup
 async function loadKnownPoolIds() {
   try {
-    const result = await query('SELECT pool_id FROM tokens')
+    const result = await query('SELECT pool_id FROM tokens WHERE chain_id = $1', [CHAIN_ID])
     for (const row of result.rows) {
       knownPoolIds.add(row.pool_id.toLowerCase())
     }
@@ -107,7 +107,7 @@ loadKnownPoolIds()
 async function fixupExistingData() {
   try {
     // Recalculate current_mcap from stored sqrt_price_x96 for all tokens
-    const tokens = await query('SELECT address, sqrt_price_x96 FROM tokens WHERE sqrt_price_x96 IS NOT NULL AND sqrt_price_x96 != \'0\'')
+    const tokens = await query('SELECT address, sqrt_price_x96 FROM tokens WHERE chain_id = $1 AND sqrt_price_x96 IS NOT NULL AND sqrt_price_x96 != \'0\'', [CHAIN_ID])
     for (const row of tokens.rows) {
       const sqrtPriceX96 = BigInt(row.sqrt_price_x96)
       const { price, mcap } = sqrtPriceToMcap(sqrtPriceX96)
@@ -145,13 +145,13 @@ function scheduleAgentRecheck(tokenAddress: string, agentWallet: string) {
     setTimeout(async () => {
       try {
         // Check if already marked as agent (skip if so)
-        const existing = await query('SELECT is_agent FROM tokens WHERE LOWER(address) = LOWER($1)', [tokenAddress])
+        const existing = await query('SELECT is_agent FROM tokens WHERE LOWER(address) = LOWER($1) AND chain_id = $2', [tokenAddress, CHAIN_ID])
         if (existing.rows.length > 0 && existing.rows[0].is_agent) return
 
         const hasNFT = await checkNFT(agentWallet)
         if (hasNFT) {
-          await query('UPDATE tokens SET is_agent = true, updated_at = NOW() WHERE LOWER(address) = LOWER($1)', [tokenAddress])
-          await query('UPDATE stats SET total_agents = total_agents + 1, updated_at = NOW() WHERE id = 1')
+          await query('UPDATE tokens SET is_agent = true, updated_at = NOW() WHERE LOWER(address) = LOWER($1) AND chain_id = $2', [tokenAddress, CHAIN_ID])
+          await query('UPDATE stats SET total_agents = total_agents + 1, updated_at = NOW() WHERE chain_id = $1', [CHAIN_ID])
           console.log(`🤖 Delayed NFT check: ${tokenAddress} confirmed as agent (wallet: ${agentWallet})`)
         } else {
           console.log(`⏳ Delayed NFT check (${delay/1000}s): ${tokenAddress} still no NFT`)
@@ -210,9 +210,9 @@ client.watchEvent({
         await query(`
           INSERT INTO tokens (
             address, name, symbol, creator, beneficiary, pool_id,
-            target_mcap, current_mcap, sqrt_price_x96, agent_wallet, is_agent, launch_type, launched_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
-          ON CONFLICT (address) DO NOTHING
+            target_mcap, current_mcap, sqrt_price_x96, agent_wallet, is_agent, launch_type, chain_id, launched_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
+          ON CONFLICT (address, chain_id) DO NOTHING
         `, [
           token,
           name,
@@ -226,6 +226,7 @@ client.watchEvent({
           agentWallet,
           isAgent,
           launchTypeStr,
+          CHAIN_ID,
         ])
         
         // Update total tokens count (and agent count if applicable)
@@ -235,15 +236,15 @@ client.watchEvent({
               total_tokens = total_tokens + 1,
               total_agents = total_agents + 1,
               updated_at = NOW()
-            WHERE id = 1
-          `)
+            WHERE chain_id = $1
+          `, [CHAIN_ID])
         } else {
           await query(`
             UPDATE stats SET 
               total_tokens = total_tokens + 1,
               updated_at = NOW()
-            WHERE id = 1
-          `)
+            WHERE chain_id = $1
+          `, [CHAIN_ID])
         }
         
         // Add to in-memory cache so Swap listener picks it up immediately
@@ -278,8 +279,8 @@ client.watchEvent({
         
         // Get token address from poolId
         const tokenResult = await query(`
-          SELECT address FROM tokens WHERE pool_id = $1
-        `, [poolId])
+          SELECT address FROM tokens WHERE pool_id = $1 AND chain_id = $2
+        `, [poolId, CHAIN_ID])
         
         if (tokenResult.rows.length === 0) continue
         
@@ -297,8 +298,8 @@ client.watchEvent({
             volume_total = volume_total + $1,
             tx_count_total = tx_count_total + 1,
             updated_at = NOW()
-          WHERE address = $2
-        `, [swapVolume, tokenAddress])
+          WHERE address = $2 AND chain_id = $3
+        `, [swapVolume, tokenAddress, CHAIN_ID])
         
         await query(`
           UPDATE stats SET
@@ -306,8 +307,8 @@ client.watchEvent({
             total_fees_eth = total_fees_eth + $2,
             total_txs = total_txs + 1,
             updated_at = NOW()
-          WHERE id = 1
-        `, [swapVolume, feeInEth])
+          WHERE chain_id = $3
+        `, [swapVolume, feeInEth, CHAIN_ID])
         
       } catch (error) {
         console.error('Error processing FeesCollected event:', error)
@@ -340,8 +341,8 @@ client.watchEvent({
             graduated_at = NOW(),
             current_mcap = $1,
             updated_at = NOW()
-          WHERE address = $2
-        `, [formatEther(finalMcap ?? 0n), token])
+          WHERE address = $2 AND chain_id = $3
+        `, [formatEther(finalMcap ?? 0n), token, CHAIN_ID])
         
       } catch (error) {
         console.error('Error processing Graduated event:', error)
@@ -393,12 +394,12 @@ client.watchEvent({
             current_mcap = $2,
             sqrt_price_x96 = $3,
             updated_at = NOW()
-          WHERE pool_id = $4
-        `, [price, mcap, sqrtPriceX96.toString(), poolId])
+          WHERE pool_id = $4 AND chain_id = $5
+        `, [price, mcap, sqrtPriceX96.toString(), poolId, CHAIN_ID])
         
         // Look up token address for this pool
         const tokenResult = await query(
-          'SELECT address FROM tokens WHERE pool_id = $1', [poolId]
+          'SELECT address FROM tokens WHERE pool_id = $1 AND chain_id = $2', [poolId, CHAIN_ID]
         )
         if (tokenResult.rows.length === 0) continue
         const tokenAddress = tokenResult.rows[0].address
@@ -409,8 +410,8 @@ client.watchEvent({
             pool_id, token_address, trader,
             amount_in, amount_out, is_buy,
             price_at_swap,
-            tx_hash, log_index, block_number, timestamp
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+            tx_hash, log_index, block_number, chain_id, timestamp
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
           ON CONFLICT (tx_hash, log_index) DO NOTHING
         `, [
           poolId,
@@ -422,7 +423,8 @@ client.watchEvent({
           price,  // snapshot price at this swap
           txHash,
           logIndex,
-          Number(blockNumber)
+          Number(blockNumber),
+          CHAIN_ID,
         ])
         
       } catch (error) {
@@ -438,7 +440,7 @@ client.watchEvent({
 // ============================================================================
 async function refresh24hStats() {
   try {
-    // Per-token 24h stats from swaps table
+    // Per-token 24h stats from swaps table (scoped to this chain)
     await query(`
       UPDATE tokens t SET
         volume_24h = COALESCE(s.vol, 0),
@@ -454,21 +456,23 @@ async function refresh24hStats() {
           COUNT(*) FILTER (WHERE is_buy = false) as sells
         FROM swaps
         WHERE timestamp > NOW() - INTERVAL '24 hours'
+          AND chain_id = $1
         GROUP BY token_address
       ) s
-      WHERE t.address = s.token_address
-    `)
+      WHERE t.address = s.token_address AND t.chain_id = $1
+    `, [CHAIN_ID])
     
     // Zero out tokens with no swaps in 24h
     await query(`
       UPDATE tokens SET
         volume_24h = 0, tx_count_24h = 0, buys_24h = 0, sells_24h = 0,
         price_change_24h = 0
-      WHERE address NOT IN (
+      WHERE chain_id = $1 AND address NOT IN (
         SELECT DISTINCT token_address FROM swaps
         WHERE timestamp > NOW() - INTERVAL '24 hours'
+          AND chain_id = $1
       )
-    `)
+    `, [CHAIN_ID])
 
     // Compute price_change_24h: compare current price to the earliest swap price within 24h window
     await query(`
@@ -483,21 +487,22 @@ async function refresh24hStats() {
           price_at_swap as old_price
         FROM swaps
         WHERE timestamp > NOW() - INTERVAL '24 hours'
+          AND chain_id = $1
           AND price_at_swap IS NOT NULL
           AND price_at_swap > 0
         ORDER BY token_address, timestamp ASC
       ) p
-      WHERE t.address = p.token_address
-    `)
+      WHERE t.address = p.token_address AND t.chain_id = $1
+    `, [CHAIN_ID])
     
     // Platform-wide 24h stats
     await query(`
       UPDATE stats SET
-        total_volume_24h = COALESCE((SELECT SUM(CASE WHEN is_buy THEN amount_in ELSE amount_out END) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours'), 0),
-        total_txs_24h = COALESCE((SELECT COUNT(*) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours'), 0),
+        total_volume_24h = COALESCE((SELECT SUM(CASE WHEN is_buy THEN amount_in ELSE amount_out END) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours' AND chain_id = $1), 0),
+        total_txs_24h = COALESCE((SELECT COUNT(*) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours' AND chain_id = $1), 0),
         updated_at = NOW()
-      WHERE id = 1
-    `)
+      WHERE chain_id = $1
+    `, [CHAIN_ID])
     
     console.log('🔄 24h stats refreshed from swap data')
   } catch (error) {

@@ -15,6 +15,19 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
+// Default chain ID for API queries — can be overridden per request via ?chain_id=
+const DEFAULT_CHAIN_ID = parseInt(process.env.CHAIN_ID || '8453')
+
+/** Extract chain_id from query params, falling back to env default */
+function getChainId(req: express.Request): number {
+  const qParam = req.query.chain_id
+  if (qParam) {
+    const parsed = parseInt(qParam as string)
+    if (!isNaN(parsed)) return parsed
+  }
+  return DEFAULT_CHAIN_ID
+}
+
 // Multer: accept logo (max 2MB) and banner (max 5MB) in memory
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -33,6 +46,7 @@ const upload = multer({
 // ============================================================================
 app.get('/api/stats', async (req, res) => {
   try {
+    const chainId = getChainId(req)
     const result = await query(`
       SELECT 
         s.total_tokens,
@@ -45,10 +59,10 @@ app.get('/api/stats', async (req, res) => {
         COALESCE(m.total_mcap, 0) as total_market_cap_eth
       FROM stats s
       CROSS JOIN (
-        SELECT COALESCE(SUM(current_mcap), 0) as total_mcap FROM tokens WHERE graduated = false
+        SELECT COALESCE(SUM(current_mcap), 0) as total_mcap FROM tokens WHERE graduated = false AND chain_id = $1
       ) m
-      WHERE s.id = 1
-    `)
+      WHERE s.chain_id = $1
+    `, [chainId])
     
     res.json({ ...result.rows[0], eth_price_usd: getETHPriceSync() })
   } catch (error) {
@@ -62,6 +76,7 @@ app.get('/api/stats', async (req, res) => {
 // ============================================================================
 app.get('/api/stats/agents', async (req, res) => {
   try {
+    const chainId = getChainId(req)
     const result = await query(`
       SELECT 
         COUNT(*) as total_agents,
@@ -69,8 +84,8 @@ app.get('/api/stats/agents', async (req, res) => {
         COALESCE(SUM(volume_24h), 0) as agent_volume_24h,
         COALESCE(SUM(volume_total), 0) as agent_volume_total
       FROM tokens
-      WHERE is_agent = TRUE
-    `)
+      WHERE is_agent = TRUE AND chain_id = $1
+    `, [chainId])
     
     res.json(result.rows[0])
   } catch (error) {
@@ -84,11 +99,12 @@ app.get('/api/stats/agents', async (req, res) => {
 // ============================================================================
 app.get('/api/stats/agents/graduated', async (req, res) => {
   try {
+    const chainId = getChainId(req)
     const result = await query(`
       SELECT COUNT(*) as graduated_agents
       FROM tokens
-      WHERE is_agent = TRUE AND graduated = TRUE
-    `)
+      WHERE is_agent = TRUE AND graduated = TRUE AND chain_id = $1
+    `, [chainId])
     
     res.json(result.rows[0])
   } catch (error) {
@@ -103,6 +119,7 @@ app.get('/api/stats/agents/graduated', async (req, res) => {
 app.get('/api/agents/recent', async (req, res) => {
   try {
     const { limit = 10 } = req.query
+    const chainId = getChainId(req)
     
     const result = await query(`
       SELECT 
@@ -121,10 +138,10 @@ app.get('/api/agents/recent', async (req, res) => {
         launch_type,
         launched_at
       FROM tokens
-      WHERE is_agent = TRUE
+      WHERE is_agent = TRUE AND chain_id = $2
       ORDER BY launched_at DESC
       LIMIT $1
-    `, [limit])
+    `, [limit, chainId])
     
     res.json(result.rows)
   } catch (error) {
@@ -146,6 +163,7 @@ app.get('/api/tokens', async (req, res) => {
       graduated,
       launch_type,
     } = req.query
+    const chainId = getChainId(req)
     
     let orderBy = 'launched_at DESC'
     if (sort === 'hot') orderBy = 'volume_24h DESC'
@@ -153,8 +171,8 @@ app.get('/api/tokens', async (req, res) => {
     if (sort === 'volume') orderBy = 'volume_24h DESC'
     if (sort === 'volume_total') orderBy = 'volume_total DESC'
     
-    let whereClause = 'WHERE 1=1'
-    const params: any[] = []
+    let whereClause = 'WHERE chain_id = $1'
+    const params: any[] = [chainId]
     
     if (search) {
       whereClause += ` AND (LOWER(name) LIKE $${params.length + 1} OR LOWER(symbol) LIKE $${params.length + 1} OR LOWER(address) LIKE $${params.length + 1})`
@@ -217,10 +235,11 @@ app.get('/api/tokens', async (req, res) => {
 app.get('/api/token/:address', async (req, res) => {
   try {
     const { address } = req.params
+    const chainId = getChainId(req)
     
     const tokenResult = await query(`
-      SELECT * FROM tokens WHERE LOWER(address) = LOWER($1)
-    `, [address])
+      SELECT * FROM tokens WHERE LOWER(address) = LOWER($1) AND chain_id = $2
+    `, [address, chainId])
     
     if (tokenResult.rows.length === 0) {
       return res.status(404).json({ error: 'Token not found' })
@@ -232,7 +251,7 @@ app.get('/api/token/:address', async (req, res) => {
         trader, amount_in, amount_out, is_buy,
         fee_amount, tax_bps, tx_hash, block_number, timestamp
       FROM swaps
-      WHERE LOWER(token_address) = LOWER($1)
+      WHERE LOWER(token_address) = LOWER($1) AND chain_id = $2
       ORDER BY timestamp DESC
       LIMIT 50
     `, [address])
@@ -253,16 +272,17 @@ app.get('/api/token/:address', async (req, res) => {
 // ============================================================================
 app.get('/api/tokens/trending', async (req, res) => {
   try {
+    const chainId = getChainId(req)
     const result = await query(`
       SELECT 
         address, name, symbol, current_price, current_mcap,
         volume_24h, price_change_24h, tx_count_24h,
         logo_url, banner_url, launch_type
       FROM tokens
-      WHERE launched_at > NOW() - INTERVAL '7 days'
+      WHERE launched_at > NOW() - INTERVAL '7 days' AND chain_id = $1
       ORDER BY volume_24h DESC
       LIMIT 10
-    `)
+    `, [chainId])
     
     res.json({ tokens: result.rows, eth_price_usd: getETHPriceSync() })
   } catch (error) {
