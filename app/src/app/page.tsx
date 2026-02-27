@@ -288,8 +288,8 @@ export default function Home() {
             className="space-y-6"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
-              <div className="w-2 h-2 rounded-full bg-[#00D4AA] animate-pulse"></div>
-              <span className="text-sm text-[#00D4AA] font-semibold">🟢 Live on Base Mainnet</span>
+              <div className="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></div>
+              <span className="text-sm text-white font-semibold">🔵 Live on <span className="text-[#0052FF]">Base</span> Mainnet</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
