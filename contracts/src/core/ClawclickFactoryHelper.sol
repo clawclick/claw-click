@@ -53,10 +53,10 @@ contract ClawclickFactoryHelper is ReentrancyGuard {
         // Clear recycled ETH once (will receive it)
         factoryCore.clearRecycledETH(poolId);
         
-        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
-            PriceMath.calculatePositionRanges(startingMCAP, totalSupply);
-        
         (, PoolKey memory poolKey,,,,,,) = factoryCore.getLaunchInfo(poolId);
+        
+        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
+            PriceMath.calculatePositionRanges(startingMCAP, totalSupply, poolKey.tickSpacing);
         
         // Mint all 5 positions
         for (uint256 i = 0; i < 5; i++) {
@@ -92,10 +92,10 @@ contract ClawclickFactoryHelper is ReentrancyGuard {
         (, bool[5] memory minted,) = factoryCore.getPoolFlags(poolId);
         require(!minted[positionIndex], "Already minted");
         
-        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
-            PriceMath.calculatePositionRanges(startingMCAP, totalSupply);
-        
         (, PoolKey memory poolKey,,,,,,) = factoryCore.getLaunchInfo(poolId);
+        
+        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
+            PriceMath.calculatePositionRanges(startingMCAP, totalSupply, poolKey.tickSpacing);
         
         (uint160 curSqrtPrice,,,) = poolManager.getSlot0(poolId);
         uint160 sqrtLower = TickMath.getSqrtPriceAtTick(tickLowers[positionIndex]);

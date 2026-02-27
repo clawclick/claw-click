@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { usePublicClient } from 'wagmi'
 import { formatEther, type Address } from 'viem'
-import { CONTRACTS, SEPOLIA_CHAIN_ID } from '../contracts'
+import { CONTRACTS, CHAIN_ID } from '../contracts'
 import { HOOK_READ_ABI } from '../utils/swap'
 
 interface QuoteResult {
@@ -16,7 +16,7 @@ interface QuoteResult {
 
 /**
  * Hook to estimate swap output for a given input amount.
- * Reads on-chain pool state from the Hook contract on Sepolia.
+ * Reads on-chain pool state from the Hook contract on Base.
  */
 export function useSwapQuote(
   tokenAddress: Address | undefined,
@@ -25,7 +25,7 @@ export function useSwapQuote(
 ) {
   const [quote, setQuote] = useState<QuoteResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const publicClient = usePublicClient({ chainId: SEPOLIA_CHAIN_ID })
+  const publicClient = usePublicClient({ chainId: CHAIN_ID })
 
   const fetchQuote = useCallback(async () => {
     if (!tokenAddress || !inputAmount || !publicClient || parseFloat(inputAmount) <= 0) {

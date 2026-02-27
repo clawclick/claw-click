@@ -147,9 +147,8 @@ contract AgentBirthCertificateNFT is ERC721, Ownable {
             nftId
         ));
         
-        // Mint to msg.sender (creator) so they own the NFT
-        // wallet param is the agent's wallet for identification/lookup
-        _safeMint(msg.sender, nftId);
+        // Mint to agent wallet
+        _safeMint(wallet, nftId);
         
         // Create agent data
         AgentBirth memory birth = AgentBirth({

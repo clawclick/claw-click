@@ -322,10 +322,10 @@ We take security seriously. If you find a vulnerability, please report it to:
 ### Base Mainnet 🟢 LIVE
 
 ```
-Config:        0x51790f81a24AbA3dac35381296696ef4695a9cC8
-Hook:          0x789A96D44e33c2eEA2294b74cd3b59c9b3932ac8
-Factory:       TBA (deploying soon)
-BootstrapETH:  0x17Aa352F2D811B4dC65eC7Eba9738e6c0B393A67
+Config:        0x2b54d1481AB59EdeDc740c791DcF62E26dA5e62B
+Hook:          0xE97DC8b79855F65ac4da26c985cB37b7367A6ac8
+Factory:       0xC14E9357783425d5b936283C3b9CF75f6EB74Bc8
+BootstrapETH:  0x375efC6c486b4e96DDf67Dc9160ecf3A5d6e41A7
 Treasury:      0xFf7549B06E68186C91a6737bc0f0CDE1245e349b
 PoolManager:   0x498581fF718922c3f8e6A244956aF099B2652b2b (Uniswap V4)
 PositionMgr:   0x7C5f5A4bBd8fD63184577525326123b519429bDc (Uniswap V4)

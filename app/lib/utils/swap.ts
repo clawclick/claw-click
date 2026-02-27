@@ -1,7 +1,7 @@
 import { type Address } from 'viem'
 
-// ===== Sepolia PoolSwapTest (Uniswap V4 official) =====
-export const POOL_SWAP_TEST_ADDRESS = '0x9b6b46e2c869aa39918db7f52f5557fe577b6eee' as Address
+// ===== Base Mainnet PoolSwapTest (deployed for Claw.click) =====
+export const POOL_SWAP_TEST_ADDRESS = '0x0883Ff016151255Ad3161CbF5D4Ed720D9f26243' as Address
 
 // Tick-math price limits
 export const MIN_SQRT_PRICE = 4295128739n + 1n
@@ -10,7 +10,7 @@ export const MAX_SQRT_PRICE = 1461446703485210103287273052203988822378723970342n
 // ===== ABIs =====
 
 /**
- * PoolSwapTest ABI — the official Uniswap V4 test swap router on Sepolia.
+ * PoolSwapTest ABI — Uniswap V4 swap router on Base.
  * Hook uses tx.origin, so calling PoolSwapTest directly works fine.
  * Buy: zeroForOne=true, send ETH value
  * Sell: zeroForOne=false, approve token to PoolSwapTest first

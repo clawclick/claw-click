@@ -214,6 +214,22 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     error LiquidityAddFailed();
     error InvalidFeeSplit();
     error ZeroAddressInSplit();
+    error OnlyBootstrapOrPM();
+    error BootstrapFailed();
+    error InvalidPosition();
+    error AlreadyMinted();
+    error ZeroLiquidity();
+    error OnlyHook();
+    error NotMinted();
+    error AlreadyRetired();
+    error InvalidTokenId();
+    error PoolIdNotFound();
+    error LaunchNotFound();
+    error AgentOnly();
+    error OnlyCreatorOrOwner();
+    error FirstBuyWindowActive();
+    error NotAuthorized();
+    error TransferFailed();
 
     /*//////////////////////////////////////////////////////////////
                               CONSTRUCTOR
@@ -244,10 +260,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
      */
     receive() external payable {
         // Accept ETH from bootstrap contract or PoolManager
-        require(
-            msg.sender == address(bootstrapETH) || msg.sender == address(poolManager),
-            "Only bootstrap or poolManager"
-        );
+        if (msg.sender != address(bootstrapETH) && msg.sender != address(poolManager)) revert OnlyBootstrapOrPM();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -282,7 +295,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         // Option 2: Fallback to free bootstrap from BootstrapETH contract
         else if (address(bootstrapETH) != address(0) && bootstrapETH.isEligible(msg.sender)) {
             bool success = bootstrapETH.requestBootstrap(msg.sender, bootstrapAmount);
-            require(success, "Bootstrap request failed");
+            if (!success) revert BootstrapFailed();
             emit FreeBootstrapUsed(msg.sender, bootstrapAmount);
         } 
         // Option 3: User has no funds and not eligible for free bootstrap
@@ -323,12 +336,12 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             params.agentWallet
         ));
         
-        // 2. Calculate deterministic sqrtPrice from target MCAP (via external library)
-        uint256 totalSupply = TOTAL_SUPPLY;
-        uint160 sqrtPriceX96 = PriceMath.calculateSqrtPrice(params.targetMcapETH, totalSupply);
-        
-        // 3. Create pool key
+        // 2. Create pool key (needed for tickSpacing before sqrtPrice calculation)
         PoolKey memory key = _createPoolKey(token, params.launchType);
+        
+        // 3. Calculate deterministic sqrtPrice from target MCAP, aligned to tickSpacing
+        uint256 totalSupply = TOTAL_SUPPLY;
+        uint160 sqrtPriceX96 = PriceMath.calculateSqrtPrice(params.targetMcapETH, totalSupply, key.tickSpacing);
         poolId = key.toId();
         
         // 4. Initialize pool at calculated price
@@ -341,7 +354,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         
         // 6. Calculate position ranges (via external library)
         (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
-            PriceMath.calculatePositionRanges(params.targetMcapETH, totalSupply);
+            PriceMath.calculatePositionRanges(params.targetMcapETH, totalSupply, key.tickSpacing);
         
         // 7. Mint positions at launch
         //    P1: tokens + bootstrap ETH (full-range, always succeeds)
@@ -460,15 +473,15 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint256 positionIndex
     ) external nonReentrant {
         PoolState storage state = poolStates[poolId];
-        require(positionIndex < 5, "Invalid position");
-        require(!state.positionMinted[positionIndex], "Already minted");
-        
-        // Get pre-calculated ranges from library
-        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
-            PriceMath.calculatePositionRanges(state.startingMCAP, state.totalSupply);
+        if (positionIndex >= 5) revert InvalidPosition();
+        if (state.positionMinted[positionIndex]) revert AlreadyMinted();
         
         // Get pool key
         LaunchInfo memory info = _launchByPoolId[poolId];
+        
+        // Get pre-calculated ranges from library
+        (int24[5] memory tickLowers, int24[5] memory tickUppers, uint256[5] memory allocations) = 
+            PriceMath.calculatePositionRanges(state.startingMCAP, state.totalSupply, info.poolKey.tickSpacing);
         
         // Pre-check: ensure liquidity will be > 0 at current price
         (uint160 curSqrtPrice,,,) = poolManager.getSlot0(poolId);
@@ -481,7 +494,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         uint128 liq = LiquidityAmounts.getLiquidityForAmounts(
             curSqrtPrice, sqrtLower, sqrtUpper, ethToAdd, allocations[positionIndex]
         );
-        require(liq > 0, "Position liquidity still 0 at current price");
+        if (liq == 0) revert ZeroLiquidity();
         
         state.recycledETH = 0;
         
@@ -514,14 +527,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         PoolId poolId,
         uint256 positionIndex
     ) external nonReentrant {
-        require(msg.sender == address(hook), "Only hook");
+        if (msg.sender != address(hook)) revert OnlyHook();
         PoolState storage state = poolStates[poolId];
-        require(positionIndex < 5, "Invalid position");
-        require(state.positionMinted[positionIndex], "Not minted");
-        require(!state.positionRetired[positionIndex], "Already retired");
+        if (positionIndex >= 5) revert InvalidPosition();
+        if (!state.positionMinted[positionIndex]) revert NotMinted();
+        if (state.positionRetired[positionIndex]) revert AlreadyRetired();
         
         uint256 tokenId = state.positionTokenIds[positionIndex];
-        require(tokenId != 0, "Invalid token ID");
+        if (tokenId == 0) revert InvalidTokenId();
         
         // Withdraw liquidity from position
         (uint256 ethRecovered, uint256 tokensRecovered) = _withdrawPositionViaManager(tokenId);
@@ -567,7 +580,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             tokenAmount
         );
         
-        require(liquidity > 0, "Liquidity must be > 0");
+        if (liquidity == 0) revert ZeroLiquidity();
         
         // Approve tokens for Permit2 and PositionManager
         ClawclickToken(token).approve(PERMIT2, tokenAmount);
@@ -624,11 +637,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     ) internal returns (uint256 ethAmount, uint256 tokenAmount) {
         // Get position liquidity
         uint128 liquidity = IPositionManager(positionManager).getPositionLiquidity(tokenId);
-        require(liquidity > 0, "No liquidity");
+        if (liquidity == 0) revert ZeroLiquidity();
         
         // FIX: Get PoolKey from stored mapping
         PoolId poolId = tokenIdToPoolId[tokenId];
-        require(PoolId.unwrap(poolId) != bytes32(0), "PoolId not found");
+        if (PoolId.unwrap(poolId) == bytes32(0)) revert PoolIdNotFound();
         
         LaunchInfo storage launch = _launchByPoolId[poolId];
         PoolKey memory key = launch.poolKey;
@@ -681,22 +694,16 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         LaunchInfo storage info = _launchByPoolId[poolId];
         
         // Must be a valid launch
-        require(info.token != address(0), "Launch not found");
+        if (info.token == address(0)) revert LaunchNotFound();
         
         // AGENT flow only (DIRECT has no hook or dev override)
-        require(info.launchType == LaunchType.AGENT, "AGENT flow only");
+        if (info.launchType != LaunchType.AGENT) revert AgentOnly();
         
         // Only creator or factory owner can call
-        require(
-            msg.sender == info.creator || msg.sender == owner(),
-            "Only creator or owner"
-        );
+        if (msg.sender != info.creator && msg.sender != owner()) revert OnlyCreatorOrOwner();
         
         // Check if 1 minute has passed since launch
-        require(
-            block.timestamp >= info.createdAt + 1 minutes,
-            "First-buy window still active"
-        );
+        if (block.timestamp < info.createdAt + 1 minutes) revert FirstBuyWindowActive();
         
         // Clear the override flag
         ClawclickHook(hook).setActivationInProgress(poolId, false);
@@ -751,11 +758,11 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @notice Preview sqrtPrice for a given target MCAP
+     * @notice Preview sqrtPrice for a given target MCAP and tick spacing
      * @dev Useful for UI to show expected price before launch
      */
-    function previewSqrtPrice(uint256 targetMcapETH) external pure returns (uint160) {
-        return PriceMath.calculateSqrtPrice(targetMcapETH, TOTAL_SUPPLY);
+    function previewSqrtPrice(uint256 targetMcapETH, int24 tickSpacing) external pure returns (uint160) {
+        return PriceMath.calculateSqrtPrice(targetMcapETH, TOTAL_SUPPLY, tickSpacing);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -769,12 +776,12 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
         Currency currency1 = Currency.wrap(token);
         
         if (launchType == LaunchType.DIRECT) {
-            // DIRECT (claws.fun): No hook, 1% LP fee
+            // DIRECT (claws.fun): No hook, 1% LP fee (canonical Uniswap V4 tier)
             return PoolKey({
                 currency0: currency0,
                 currency1: currency1,
-                fee: 100,              // 1% fee
-                tickSpacing: 60,
+                fee: 10000,            // 1% fee (10000 bps)
+                tickSpacing: 200,
                 hooks: IHooks(address(0))
             });
         } else {
@@ -804,23 +811,18 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
      */
     function collectFeesFromPosition(PoolId poolId, uint256 positionIndex) external nonReentrant {
         PoolState storage state = poolStates[poolId];
-        require(positionIndex < 5, "Invalid position");
-        require(state.positionMinted[positionIndex], "Position not minted");
-        require(!state.positionRetired[positionIndex], "Position retired");
+        if (positionIndex >= 5) revert InvalidPosition();
+        if (!state.positionMinted[positionIndex]) revert NotMinted();
+        if (state.positionRetired[positionIndex]) revert AlreadyRetired();
         
         uint256 tokenId = state.positionTokenIds[positionIndex];
-        require(tokenId != 0, "No position");
+        if (tokenId == 0) revert InvalidTokenId();
         
         LaunchInfo storage info = _launchByPoolId[poolId];
         PoolKey memory key = info.poolKey;
         
         // ✅ ACCESS CONTROL: Token creator OR ecosystem deployer can claim
-        require(
-            msg.sender == info.creator || 
-            msg.sender == info.beneficiary ||
-            msg.sender == owner(),
-            "Only creator, beneficiary, or owner"
-        );
+        if (msg.sender != info.creator && msg.sender != info.beneficiary && msg.sender != owner()) revert NotAuthorized();
         
         uint256 ethBefore = address(this).balance;
         uint256 tokenBefore = ClawclickToken(info.token).balanceOf(address(this));
@@ -853,7 +855,7 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
             // Pay platform first (30%)
             if (platformETH > 0) {
                 (bool ok,) = config.treasury().call{value: platformETH}("");
-                require(ok, "Platform ETH transfer failed");
+                if (!ok) revert TransferFailed();
             }
             
             // Pay creator(s) (70%) - check for fee split wallets
@@ -866,14 +868,14 @@ contract ClawclickFactory is Ownable, ReentrancyGuard {
                         
                         if (walletShare > 0) {
                             (bool ok,) = wallet.call{value: walletShare}("");
-                            require(ok, "Wallet ETH transfer failed");
+                            if (!ok) revert TransferFailed();
                             emit FeeSplitDistributed(poolId, wallet, walletShare);
                         }
                     }
                 } else {
                     // Single beneficiary gets all 70%
                     (bool ok,) = info.beneficiary.call{value: beneficiaryETH}("");
-                    require(ok, "Beneficiary ETH transfer failed");
+                    if (!ok) revert TransferFailed();
                 }
             }
         }

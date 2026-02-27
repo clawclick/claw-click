@@ -1,36 +1,36 @@
 // Claw.click Contract Addresses and Configuration
-// Network: Ethereum Sepolia (Chain ID: 11155111)
-// Deployed: February 24, 2026
-// Status: Verified on Blockscout, Ownership Transferred to SAFE
+// Network: Base Mainnet (Chain ID: 8453)
+// Status: Live
 
-export const SEPOLIA_CHAIN_ID = 11155111
+export const CHAIN_ID = 8453
+
+/** @deprecated Use CHAIN_ID */
+export const SEPOLIA_CHAIN_ID = CHAIN_ID
 
 export const CONTRACTS = {
-  FACTORY: '0xe6f52084209699491aCc2532e857e3510e4c5e13',
-  HOOK: '0x582c8085b3857E44561a3E9442Adc064E94e2ac8',
-  CONFIG: '0xB1a21A851Bd69BFFACfD66d759eFA197E92abaE5',
-  BOOTSTRAP_ETH: '0xd5B8d732B816F5c3E33746dE45E71C5683665cdA',
+  FACTORY: '0xC14E9357783425d5b936283C3b9CF75f6EB74Bc8',
+  HOOK: '0xE97DC8b79855F65ac4da26c985cB37b7367A6ac8',
+  CONFIG: '0x2b54d1481AB59EdeDc740c791DcF62E26dA5e62B',
+  BOOTSTRAP_ETH: '0x375efC6c486b4e96DDf67Dc9160ecf3A5d6e41A7',
   
-  // Uniswap V4 (Official Ethereum Sepolia Deployment - CORRECT)
-  POOL_MANAGER: '0xE03A1074c86CFeDd5C142C4F04F1a1536e203543',
-  POSITION_MANAGER: '0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4',
+  // Uniswap V4 (Base Mainnet)
+  POOL_MANAGER: '0x498581fF718922c3f8e6A244956aF099B2652b2b',
+  POSITION_MANAGER: '0x7C5f5A4bBd8fD63184577525326123B519429bDc',
+  UNIVERSAL_ROUTER: '0x6fF5693b99212Da76ad316178A184AB56D299b43',
+  PERMIT2: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
 } as const
 
-export const SEPOLIA_RPC_URL = 'https://eth-sepolia.g.alchemy.com/v2/BdgPEmQddox2due7mrt9J'
+export const BASE_RPC_URL = 'https://base-mainnet.g.alchemy.com/v2/8fwq-KqQ3XRiUCWg_q_xJ'
 
-export const EXPLORER_URL = 'https://eth-sepolia.blockscout.com'
-export const ETHERSCAN_URL = 'https://sepolia.etherscan.io'
+export const EXPLORER_URL = 'https://basescan.org'
+export const ETHERSCAN_URL = 'https://basescan.org'
 
-export const NETWORK_NAME = 'Ethereum Sepolia'
-
-// SAFE Multisig (Contract Owner)
-export const SAFE_ADDRESS = '0xFf7549B06E68186C91a6737bc0f0CDE1245e349b'
+export const NETWORK_NAME = 'Base'
 
 // Deployment block - start querying events from here
-export const DEPLOYMENT_BLOCK = 7400000n // Feb 24, 2026 deployment
+export const DEPLOYMENT_BLOCK = 0n
 
-// Helper function to get explorer link (defaults to Blockscout since contracts are verified there)
-export function getExplorerLink(type: 'tx' | 'address' | 'token', hash: string, useEtherscan = false): string {
-  const baseUrl = useEtherscan ? ETHERSCAN_URL : EXPLORER_URL
-  return `${baseUrl}/${type}/${hash}`
+// Helper function to get explorer link
+export function getExplorerLink(type: 'tx' | 'address' | 'token', hash: string): string {
+  return `${EXPLORER_URL}/${type}/${hash}`
 }

@@ -21,13 +21,16 @@ library PriceMath {
     error SqrtPriceOverflow();
 
     /**
-     * @notice Calculate sqrtPriceX96 from target MCAP using exact Q64.96 math
-     * @dev sqrtPriceX96 = sqrt(totalSupply / targetMcap) * 2^96
+     * @notice Calculate sqrtPriceX96 from target MCAP, rounded to tickSpacing
+     * @dev Returns sqrtPrice at the tick-spacing-aligned tick for the target MCAP.
+     *      This ensures the pool initializes at the exact same tick that P1's upper
+     *      bound uses, so liquidity is in range at launch.
      * @param targetMcapETH Target market cap in ETH (1-10 ETH)
      * @param totalSupply Total token supply
+     * @param tickSpacing Pool tick spacing (60 for AGENT, 200 for DIRECT)
      * @return sqrtPriceX96 The sqrt price in Q64.96 format
      */
-    function calculateSqrtPrice(uint256 targetMcapETH, uint256 totalSupply) 
+    function calculateSqrtPrice(uint256 targetMcapETH, uint256 totalSupply, int24 tickSpacing) 
         external 
         pure 
         returns (uint160 sqrtPriceX96) 
@@ -36,18 +39,13 @@ library PriceMath {
             revert InvalidTargetMcap();
         }
         
-        // Calculate ratio = totalSupply / targetMcap (price inverted for token/ETH)
-        // Use FullMath.mulDiv for precision: ratio * 2^96
-        uint256 ratioX96 = FullMath.mulDiv(totalSupply, FixedPoint96.Q96, targetMcapETH);
+        // Get the tick-spacing-rounded tick for this MCAP (same as P1 tickUpper)
+        int24 tick = _mcapToTick(targetMcapETH, totalSupply, tickSpacing);
         
-        // Take square root of (ratio * 2^96)
-        // Result is sqrt(ratio) * 2^48
-        uint256 sqrtRatioX48 = _sqrt(ratioX96);
-        
-        // Final sqrtPrice = sqrtRatio * 2^48
-        // sqrtRatioX48 is already sqrt(ratio) * 2^48
-        // So we multiply by 2^48 again
-        sqrtPriceX96 = uint160((sqrtRatioX48 * (1 << 48)) / (1 << 0));
+        // Initialize 1 tick BELOW the P1 upper bound.
+        // In Uniswap V4, position range [tickLower, tickUpper) is exclusive on the upper end,
+        // so init at tickUpper puts us OUT of range. tick-1 puts us firmly inside P1.
+        sqrtPriceX96 = TickMath.getSqrtPriceAtTick(tick - 1);
         
         if (sqrtPriceX96 == 0) revert SqrtPriceOverflow();
         
@@ -72,7 +70,8 @@ library PriceMath {
      */
     function calculatePositionRanges(
         uint256 targetMcapETH,
-        uint256 totalSupply
+        uint256 totalSupply,
+        int24 tickSpacing
     ) external pure returns (
         int24[5] memory tickLowers,
         int24[5] memory tickUppers,
@@ -104,19 +103,19 @@ library PriceMath {
         uint256 BPS = 10000;
         uint256 overlapBps = 500; // 5% overlap
 
-        int24 TICK_LOWER = -887220;
-        int24 TICK_UPPER = 887220;
-        int24 spacing = 60;
+        int24 TICK_LOWER = -(887272 / tickSpacing) * tickSpacing;
+        int24 TICK_UPPER = (887272 / tickSpacing) * tickSpacing;
+        int24 spacing = tickSpacing;
 
         // Calculate tick ranges with 5% overlap
         for (uint256 i = 0; i < 5; i++) {
             if (i == 0) {
                 // P1: starts at initial MCAP
-                tickLowers[i] = _mcapToTick(targetMcapETH, totalSupply);
+                tickLowers[i] = _mcapToTick(targetMcapETH, totalSupply, tickSpacing);
             } else {
                 // P2-P5: start 5% before previous end (overlap)
                 uint256 lowerMCAP = (mcapMilestones[i-1] * (BPS - overlapBps)) / BPS;
-                tickLowers[i] = _mcapToTick(lowerMCAP, totalSupply);
+                tickLowers[i] = _mcapToTick(lowerMCAP, totalSupply, tickSpacing);
             }
 
             if (i == 4) {
@@ -125,7 +124,7 @@ library PriceMath {
             } else {
                 // P1-P4: end 5% after milestone (overlap)
                 uint256 upperMCAP = (mcapMilestones[i] * (BPS + overlapBps)) / BPS;
-                tickUppers[i] = _mcapToTick(upperMCAP, totalSupply);
+                tickUppers[i] = _mcapToTick(upperMCAP, totalSupply, tickSpacing);
             }
 
             // Ensure tick spacing alignment
@@ -158,7 +157,8 @@ library PriceMath {
      */
     function _mcapToTick(
         uint256 mcap,
-        uint256 totalSupply
+        uint256 totalSupply,
+        int24 tickSpacing
     ) internal pure returns (int24 tick) {
         // Calculate sqrtPrice for this MCAP
         uint256 ratioX96 = FullMath.mulDiv(totalSupply, FixedPoint96.Q96, mcap);
@@ -168,11 +168,11 @@ library PriceMath {
         // Convert sqrtPrice to tick
         tick = TickMath.getTickAtSqrtPrice(sqrtPriceX96);
         
-        // Round to nearest valid tick (tickSpacing = 60)
-        int24 remainder = tick % 60;
+        // Round to nearest valid tick
+        int24 remainder = tick % tickSpacing;
         if (remainder != 0) {
-            if (remainder > 30) {
-                tick = tick + (60 - remainder);
+            if (remainder > tickSpacing / 2) {
+                tick = tick + (tickSpacing - remainder);
             } else {
                 tick = tick - remainder;
             }

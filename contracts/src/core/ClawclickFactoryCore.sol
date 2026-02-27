@@ -154,8 +154,8 @@ contract ClawclickFactoryCore is Ownable, ReentrancyGuard {
             params.agentWallet
         ));
         
-        uint160 sqrtPriceX96 = PriceMath.calculateSqrtPrice(params.targetMcapETH, TOTAL_SUPPLY);
         PoolKey memory key = _createPoolKey(token, params.launchType);
+        uint160 sqrtPriceX96 = PriceMath.calculateSqrtPrice(params.targetMcapETH, TOTAL_SUPPLY, key.tickSpacing);
         poolId = key.toId();
         
         poolManager.initialize(key, sqrtPriceX96);
@@ -223,8 +223,8 @@ contract ClawclickFactoryCore is Ownable, ReentrancyGuard {
             return PoolKey({
                 currency0: currency0,
                 currency1: currency1,
-                fee: 100,
-                tickSpacing: 60,
+                fee: 10000,
+                tickSpacing: 200,
                 hooks: IHooks(address(0))
             });
         } else {

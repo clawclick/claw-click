@@ -12,7 +12,7 @@ import {
   usePublicClient,
 } from 'wagmi'
 import { parseEther, formatEther, formatUnits, type Address } from 'viem'
-import { sepolia } from 'wagmi/chains'
+import { base } from 'wagmi/chains'
 import { useSwapQuote } from '../../../lib/hooks/useSwapQuote'
 import {
   POOL_SWAP_TEST_ABI,
@@ -22,8 +22,7 @@ import {
   FACTORY_ABI,
   ERC20_ABI,
 } from '../../../lib/utils/swap'
-import { CONTRACTS } from '../../../lib/contracts'
-import { ETHERSCAN_URL } from '../../../lib/contracts'
+import { CONTRACTS, ETHERSCAN_URL } from '../../../lib/contracts'
 
 interface TradeModalProps {
   isOpen: boolean
@@ -52,14 +51,14 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
 
   const { address, chainId } = useAccount()
   const { switchChain } = useSwitchChain()
-  const publicClient = usePublicClient({ chainId: sepolia.id })
+  const publicClient = usePublicClient({ chainId: base.id })
 
   const tokenAddress = token.token as Address
 
   // ETH balance
   const { data: ethBalance } = useBalance({
     address,
-    chainId: sepolia.id,
+    chainId: base.id,
   })
 
   // Token balance
@@ -68,7 +67,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
     abi: ERC20_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    chainId: sepolia.id,
+    chainId: base.id,
   })
 
   // Get swap quote
@@ -122,16 +121,16 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
     }
   })()
 
-  // Handle swap execution via PoolSwapTest on Sepolia
+  // Handle swap execution via PoolSwapTest on Base
   const handleSwap = async () => {
     if (!address || !inputAmount || parseFloat(inputAmount) <= 0) return
 
     // Switch chain if needed
-    if (chainId !== sepolia.id) {
+    if (chainId !== base.id) {
       try {
-        await switchChain({ chainId: sepolia.id })
+        await switchChain({ chainId: base.id })
       } catch {
-        setErrorMsg('Please switch to Sepolia network')
+        setErrorMsg('Please switch to Base network')
         return
       }
     }
@@ -172,7 +171,8 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
             '0x' as `0x${string}`, // hookData — hook uses tx.origin
           ],
           value: amountInWei,
-          chainId: sepolia.id,
+          chainId: base.id,
+          gas: 500_000n,
         })
       } else {
         // --- SELL: Token → ETH via PoolSwapTest.swap ---
@@ -196,7 +196,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
             abi: ERC20_ABI,
             functionName: 'approve',
             args: [POOL_SWAP_TEST_ADDRESS, BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')],
-            chainId: sepolia.id,
+            chainId: base.id,
           })
           // Wait for approval to actually confirm on-chain
           await publicClient!.waitForTransactionReceipt({ hash: approveHash })
@@ -222,7 +222,8 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
             },
             '0x' as `0x${string}`,
           ],
-          chainId: sepolia.id,
+          chainId: base.id,
+          gas: 500_000n,
         })
       }
     } catch (err: any) {
@@ -604,7 +605,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                   rel="noopener noreferrer"
                   className="text-xs text-[#E8523D] hover:underline"
                 >
-                  View on Etherscan ↗
+                  View on BaseScan ↗
                 </a>
               </div>
             )}
@@ -613,7 +614,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
           {/* Footer Info */}
           <div className="px-4 pb-4">
             <div className="bg-[#141414] rounded-lg px-3 py-2 text-[10px] text-[#666] text-center">
-              Trades via Uniswap V4 on Sepolia • Powered by Claw.click Hooks
+              Trades via Uniswap V4 on Base • Powered by Claw.click Hooks
             </div>
           </div>
         </motion.div>
