@@ -59,18 +59,31 @@ npx clawclick info --token 0xTOKEN_ADDRESS
 npx clawclick upload --token 0xTOKEN_ADDRESS --logo ./logo.png
 ```
 
-### Contract Addresses (Sepolia)
+### Contract Addresses
+
+#### Base Mainnet 🟢 LIVE
 
 | Contract | Address |
 |----------|---------|
-| Factory | `0x5C92E6f1Add9a2113C6977DfF15699e948e017Db` |
-| Hook | `0xa2FF089271e4527025Ee614EB165368875A12AC8` |
-| SwapExecutor | `0xFB3b0319BAA5E987a8A024De512272288E818824` |
-| PoolManager | `0xE03A1074c86CFeDd5C142C4F04F1a1536e203543` |
+| Config | `0x51790f81a24AbA3dac35381296696ef4695a9cC8` |
+| Hook | `0x789A96D44e33c2eEA2294b74cd3b59c9b3932ac8` |
+| Factory | `TBA` (deploying soon) |
+| BootstrapETH | `0x17Aa352F2D811B4dC65eC7Eba9738e6c0B393A67` |
+| Treasury | `0xFf7549B06E68186C91a6737bc0f0CDE1245e349b` |
+| PoolManager | `0x498581fF718922c3f8e6A244956aF099B2652b2b` (Uniswap V4) |
+| PositionManager | `0x7C5f5A4bBd8fD63184577525326123b519429bDc` (Uniswap V4) |
 
-### Mainnet
+#### Sepolia Testnet (Reference)
 
-Coming soon on Base, Ethereum, and BSC.
+| Contract | Address |
+|----------|---------|
+| Factory | `0xe6f52084209699491aCc2532e857e3510e4c5e13` |
+| Hook | `0x582c8085b3857E44561a3E9442Adc064E94e2ac8` |
+| Config | `0xB1a21A851Bd69BFFACfD66d759eFA197E92abaE5` |
+| BootstrapETH | `0xd5B8d732B816F5c3E33746dE45E71C5683665cdA` |
+| SwapExecutor | `0xCE03f9aeD760f3F5C471C1A76Ff4a8F84743b795` |
+| PoolManager | `0xE03A1074c86CFeDd5C142C4F04F1a1536e203543` (Uniswap V4) |
+| PositionManager | `0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4` (Uniswap V4) |
 
 ---
 

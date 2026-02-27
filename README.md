@@ -3,8 +3,8 @@
 **Revolutionary Multi-Position Progressive Liquidity System**
 
 [![Website](https://img.shields.io/badge/Website-claw.click-E8523D?style=for-the-badge)](https://claw.click)
-[![Status](https://img.shields.io/badge/Status-Beta-yellow?style=for-the-badge)]()
-[![Network](https://img.shields.io/badge/Network-Sepolia-627EEA?style=for-the-badge)]()
+[![Status](https://img.shields.io/badge/Status-LIVE-00D4AA?style=for-the-badge)]()
+[![Network](https://img.shields.io/badge/Network-Base%20Mainnet-0052FF?style=for-the-badge)]()
 [![Powered By](https://img.shields.io/badge/Powered%20By-Uniswap%20V4-FF007A?style=for-the-badge)]()
 
 ---
@@ -319,20 +319,29 @@ We take security seriously. If you find a vulnerability, please report it to:
 
 ## 🌐 Deployment
 
-### Testnet (Sepolia)
+### Base Mainnet 🟢 LIVE
 
 ```
-Config:   0x... (Coming Soon)
-Hook:     0x... (Coming Soon)
-Factory:  0x... (Coming Soon)
+Config:        0x51790f81a24AbA3dac35381296696ef4695a9cC8
+Hook:          0x789A96D44e33c2eEA2294b74cd3b59c9b3932ac8
+Factory:       TBA (deploying soon)
+BootstrapETH:  0x17Aa352F2D811B4dC65eC7Eba9738e6c0B393A67
+Treasury:      0xFf7549B06E68186C91a6737bc0f0CDE1245e349b
+PoolManager:   0x498581fF718922c3f8e6A244956aF099B2652b2b (Uniswap V4)
+PositionMgr:   0x7C5f5A4bBd8fD63184577525326123b519429bDc (Uniswap V4)
 ```
 
-### Mainnet
+Ecosystem Token: `$CLAW` - TBA (launching soon)
+
+### Sepolia Testnet (Reference)
 
 ```
-Status: Pre-launch
-Expected: Q1 2026
-Networks: Base, Ethereum, BSC (planned)
+Config:        0xB1a21A851Bd69BFFACfD66d759eFA197E92abaE5
+Hook:          0x582c8085b3857E44561a3E9442Adc064E94e2ac8
+Factory:       0xe6f52084209699491aCc2532e857e3510e4c5e13
+BootstrapETH:  0xd5B8d732B816F5c3E33746dE45E71C5683665cdA
+PoolManager:   0xE03A1074c86CFeDd5C142C4F04F1a1536e203543 (Uniswap V4)
+PositionMgr:   0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4 (Uniswap V4)
 ```
 
 ---

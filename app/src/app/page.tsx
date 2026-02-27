@@ -30,7 +30,7 @@ export default function Home() {
   const { tokens, isLoading: tokensLoading } = useTokenList({ sort: currentSort, limit: 50 })
   const { trending: trendingTokens } = useTrendingTokens()
 
-  const clawTokenCA = '0x7b4nvtm5vmt5vy1234567890abcdefghij1234567890enj8900'
+  const clawTokenCA = '0x0000000000000000000000000000000000000000'  // TBA - Launching Soon
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(clawTokenCA)
@@ -288,8 +288,8 @@ export default function Home() {
             className="space-y-6"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
-              <div className="w-2 h-2 rounded-full bg-[#E8523D] animate-pulse"></div>
-              <span className="text-sm text-[#9AA4B2]">🚧 Building on Sepolia Testnet</span>
+              <div className="w-2 h-2 rounded-full bg-[#00D4AA] animate-pulse"></div>
+              <span className="text-sm text-[#00D4AA] font-semibold">🟢 Live on Base Mainnet</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
@@ -334,28 +334,42 @@ export default function Home() {
                     </code>
                   </div>
                 </div>
-                <button
-                  onClick={copyToClipboard}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E8523D]/10 hover:bg-[#E8523D]/20 border border-[#E8523D]/30 transition-all"
-                  title="Copy contract address"
-                >
-                  {copied ? (
-                    <>
-                      <svg className="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span className="text-xs text-green-400 font-semibold">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4 text-[#FF8C4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span className="text-xs text-[#9AA4B2] font-semibold">Copy</span>
-                    </>
-                  )}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={copyToClipboard}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E8523D]/10 hover:bg-[#E8523D]/20 border border-[#E8523D]/30 transition-all"
+                    title="Copy contract address"
+                  >
+                    {copied ? (
+                      <>
+                        <svg className="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span className="text-xs text-green-400 font-semibold">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 text-[#FF8C4A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span className="text-xs text-[#9AA4B2] font-semibold">Copy</span>
+                      </>
+                    )}
+                  </button>
+                  <a
+                    href={`https://app.uniswap.org/swap?outputCurrency=${clawTokenCA}&chain=base`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#00D4AA]/10 hover:bg-[#00D4AA]/20 border border-[#00D4AA]/30 transition-all"
+                    title="Trade on Uniswap"
+                  >
+                    <svg className="w-4 h-4 text-[#00D4AA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M7 17L17 7M17 7H7M17 7V17" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="text-xs text-[#00D4AA] font-semibold">Swap</span>
+                  </a>
+                </div>
               </div>
             </motion.div>
 
