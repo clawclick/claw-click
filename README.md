@@ -321,28 +321,42 @@ We take security seriously. If you find a vulnerability, please report it to:
 
 ### Base Mainnet 🟢 LIVE
 
+**Deployment Date:** February 27, 2026  
+**Status:** ✅ All wiring verified 100% correct
+
 ```
-Config:        0x2b54d1481AB59EdeDc740c791DcF62E26dA5e62B
-Hook:          0xE97DC8b79855F65ac4da26c985cB37b7367A6ac8
-Factory:       0xC14E9357783425d5b936283C3b9CF75f6EB74Bc8
-BootstrapETH:  0x375efC6c486b4e96DDf67Dc9160ecf3A5d6e41A7
-Treasury:      0xFf7549B06E68186C91a6737bc0f0CDE1245e349b
+Config:        0x95fC848677Bd29ad067688F64BE60d5C6C44c2a4
+Hook:          0xCD7568392159C4860ea4b9b14c5f41e720173404
+Factory:       0x4b32C39D9608de2D6FCD77715316E539fC90f962
+BootstrapETH:  0x8dEA9ffca272F0D5F4EF23F9002f974a4995712C
+BirthCert:     0x15520eD8CF71383FAF18D68120bC1C8d9eE68B5A
+MemoryStorage: 0x9F4945213A3EA9a3A1714579CdBE72c3893cd161
+Treasury:      0xFf7549B06E68186C91a6737bc0f0CDE1245e349b (SAFE Multisig)
 PoolManager:   0x498581fF718922c3f8e6A244956aF099B2652b2b (Uniswap V4)
 PositionMgr:   0x7C5f5A4bBd8fD63184577525326123b519429bDc (Uniswap V4)
 ```
 
+🔍 **[View on Basescan](https://basescan.org/address/0x4b32C39D9608de2D6FCD77715316E539fC90f962)**
+
 Ecosystem Token: `$CLAW` - TBA (launching soon)
 
-### Sepolia Testnet (Reference)
+### Sepolia Testnet (For Testing)
+
+**Deployment Date:** February 27, 2026  
+**Status:** ✅ All wiring verified 100% correct
 
 ```
-Config:        0xB1a21A851Bd69BFFACfD66d759eFA197E92abaE5
-Hook:          0x582c8085b3857E44561a3E9442Adc064E94e2ac8
-Factory:       0xe6f52084209699491aCc2532e857e3510e4c5e13
-BootstrapETH:  0xd5B8d732B816F5c3E33746dE45E71C5683665cdA
+Config:        0xf01514F68Df33689046F6Dd4184edCaA54fF4492
+Hook:          0xf537a9356f6909df0A633C8BC48e504D2a30B111
+Factory:       0x3f4bFd32362D058157A5F43d7861aCdC0484C415
+BootstrapETH:  0xC52b027928AfAa54f1f0FeC0e4D7b6397026f660
+BirthCert:     0xE13532b0bD16E87088383f9F909EaCB03009a2e9
+MemoryStorage: 0xC2D9c0ccc1656535e29B5c2398a609ef936aad75
 PoolManager:   0xE03A1074c86CFeDd5C142C4F04F1a1536e203543 (Uniswap V4)
 PositionMgr:   0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4 (Uniswap V4)
 ```
+
+🔍 **[View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x3f4bFd32362D058157A5F43d7861aCdC0484C415)**
 
 ---
 
