@@ -80,7 +80,8 @@ app.get('/api/stats', async (req, res) => {
       `)
     }
     
-    res.json({ ...result.rows[0], eth_price_usd: getETHPriceSync() })
+    const chainIdVal = chainId ?? (result.rows[0]?.chain_id || null)
+    res.json({ ...result.rows[0], chain_id: chainIdVal, eth_price_usd: getETHPriceSync() })
   } catch (error) {
     console.error('Error fetching stats:', error)
     res.status(500).json({ error: 'Failed to fetch stats' })
@@ -105,7 +106,7 @@ app.get('/api/stats/agents', async (req, res) => {
       WHERE is_agent = TRUE ${chainFilter}
     `, params)
     
-    res.json(result.rows[0])
+    res.json({ ...result.rows[0], chain_id: chainId })
   } catch (error) {
     console.error('Error fetching agent stats:', error)
     res.status(500).json({ error: 'Failed to fetch agent stats' })
@@ -126,7 +127,7 @@ app.get('/api/stats/agents/graduated', async (req, res) => {
       WHERE is_agent = TRUE AND graduated = TRUE ${chainFilter}
     `, params)
     
-    res.json(result.rows[0])
+    res.json({ ...result.rows[0], chain_id: chainId })
   } catch (error) {
     console.error('Error fetching graduated agents:', error)
     res.status(500).json({ error: 'Failed to fetch graduated agents' })
@@ -158,7 +159,8 @@ app.get('/api/agents/recent', async (req, res) => {
         current_epoch,
         logo_url,
         launch_type,
-        launched_at
+        launched_at,
+        chain_id
       FROM tokens
       WHERE is_agent = TRUE ${chainFilter}
       ORDER BY launched_at DESC
@@ -230,7 +232,8 @@ app.get('/api/tokens', async (req, res) => {
         graduated, launched_at,
         current_epoch, current_position,
         logo_url, banner_url,
-        launch_type
+        launch_type,
+        chain_id
       FROM tokens
       ${whereClause}
       ORDER BY ${orderBy}
@@ -277,7 +280,8 @@ app.get('/api/token/:address', async (req, res) => {
     const swapsResult = await query(`
       SELECT 
         trader, amount_in, amount_out, is_buy,
-        fee_amount, tax_bps, tx_hash, block_number, timestamp
+        fee_amount, tax_bps, tx_hash, block_number, timestamp,
+        chain_id
       FROM swaps
       WHERE LOWER(token_address) = LOWER($1) ${chainFilter}
       ORDER BY timestamp DESC
@@ -307,7 +311,8 @@ app.get('/api/tokens/trending', async (req, res) => {
       SELECT 
         address, name, symbol, current_price, current_mcap,
         volume_24h, price_change_24h, tx_count_24h,
-        logo_url, banner_url, launch_type
+        logo_url, banner_url, launch_type,
+        chain_id
       FROM tokens
       WHERE launched_at > NOW() - INTERVAL '7 days' ${chainFilter}
       ORDER BY volume_24h DESC
