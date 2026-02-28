@@ -619,27 +619,27 @@ function ContractsTab() {
             <div className="space-y-2 text-sm font-mono">
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Config:</span>
-                <span className="text-[#E8523D]">0x9C7dF9a7c5b24c90FBaf723c36a98C3674a8E5a2</span>
+                <span className="text-[#E8523D]">0x95fC848677Bd29ad067688F64BE60d5C6C44c2a4</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Hook:</span>
-                <span className="text-[#FF8C4A]">0xa48f3fE21c5896cEbB3Ae8f7ccE65Eb45fEb6AC8</span>
+                <span className="text-[#FF8C4A]">0xCD7568392159C4860ea4b9b14c5f41e720173404</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Factory:</span>
-                <span className="text-yellow-400">0x1e291bC803E1b4509ffB9dC5DaDfB0767b6f40e7</span>
+                <span className="text-yellow-400">0x4b32C39D9608de2D6FCD77715316E539fC90f962</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Bootstrap ETH:</span>
-                <span className="text-green-400">0xcF39aC8D34074789CE25053aE165511296194716</span>
+                <span className="text-green-400">0x8dEA9ffca272F0D5F4EF23F9002f974a4995712C</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Birth Certificate:</span>
-                <span className="text-blue-400">0xB172A0f896DEE5c5BC79dD01A87ef1D288d03995</span>
+                <span className="text-blue-400">0x15520eD8CF71383FAF18D68120bC1C8d9eE68B5A</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Memory Storage:</span>
-                <span className="text-purple-400">0xD93F688BCc17c91FbdfC3EF49D10638e814A1e81</span>
+                <span className="text-purple-400">0x9F4945213A3EA9a3A1714579CdBE72c3893cd161</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Launch Bundler:</span>
@@ -656,27 +656,27 @@ function ContractsTab() {
             <div className="space-y-2 text-sm font-mono">
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Config:</span>
-                <span className="text-[#E8523D]">0xC8923F485e4A49984C3f559DC4213E20dA416a91</span>
+                <span className="text-[#E8523D]">0xf01514F68Df33689046F6Dd4184edCaA54fF4492</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Hook:</span>
-                <span className="text-[#FF8C4A]">0x3af71003eE83f27a34F8816527cC4A63f14C6ac8</span>
+                <span className="text-[#FF8C4A]">0xf537a9356f6909df0A633C8BC48e504D2a30B111</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Factory:</span>
-                <span className="text-yellow-400">0x140b8B4495291b354A4fc1f36e9E207d10D58DbD</span>
+                <span className="text-yellow-400">0x3f4bFd32362D058157A5F43d7861aCdC0484C415</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Bootstrap ETH:</span>
-                <span className="text-green-400">0x8e1d1C966f1f8E74fCf96BD4025A06107114403C</span>
+                <span className="text-green-400">0xC52b027928AfAa54f1f0FeC0e4D7b6397026f660</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Birth Certificate:</span>
-                <span className="text-blue-400">0xb0a9f434f349fBB62CA83d7Af1f1e25DcA0FA76D</span>
+                <span className="text-blue-400">0xE13532b0bD16E87088383f9F909EaCB03009a2e9</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Memory Storage:</span>
-                <span className="text-purple-400">0x20c2B4b96d1cd78449F009F49cbb897B3619e2A6</span>
+                <span className="text-purple-400">0xC2D9c0ccc1656535e29B5c2398a609ef936aad75</span>
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Launch Bundler:</span>
