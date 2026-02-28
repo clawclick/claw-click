@@ -34,6 +34,31 @@ export const NETWORK_NAME = 'Base'
 export const DEPLOYMENT_BLOCK = 0n
 
 // Helper function to get explorer link
-export function getExplorerLink(type: 'tx' | 'address' | 'token', hash: string): string {
-  return `${EXPLORER_URL}/${type}/${hash}`
+export function getExplorerLink(type: 'tx' | 'address' | 'token', hash: string, chainId?: number): string {
+  const base = getExplorerUrl(chainId)
+  return `${base}/${type}/${hash}`
+}
+
+// Chain ID → display name
+export function getChainDisplayName(chainId: number | undefined | null): string {
+  switch (chainId) {
+    case 8453: return 'BASE'
+    case 1: return 'ETH'
+    case 11155111: return 'SEPOLIA'
+    case 56: return 'BSC'
+    case 84532: return 'BASE_SEPOLIA'
+    default: return chainId ? `CHAIN_${chainId}` : 'UNKNOWN'
+  }
+}
+
+// Chain ID → explorer base URL
+export function getExplorerUrl(chainId: number | undefined | null): string {
+  switch (chainId) {
+    case 8453: return 'https://basescan.org'
+    case 1: return 'https://etherscan.io'
+    case 11155111: return 'https://sepolia.etherscan.io'
+    case 56: return 'https://bscscan.com'
+    case 84532: return 'https://sepolia.basescan.org'
+    default: return EXPLORER_URL
+  }
 }

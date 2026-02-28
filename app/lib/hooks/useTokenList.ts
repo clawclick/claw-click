@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { getExplorerLink } from '../contracts'
+import { getExplorerLink, getChainDisplayName } from '../contracts'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
 
@@ -106,9 +106,9 @@ export function useTokenList(options?: {
           sellCount: parseInt(t.sells_24h || '0'),
 
           chartUrl: '#',
-          scanUrl: getExplorerLink('token', t.address),
+          scanUrl: getExplorerLink('token', t.address, t.chain_id),
           hot: parseInt(t.tx_count_24h || '0') > 100,
-          chain: 'SEPOLIA',
+          chain: getChainDisplayName(t.chain_id),
           logoUrl: t.logo_url || null,
           bannerUrl: t.banner_url || null,
         }

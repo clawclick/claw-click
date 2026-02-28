@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { getChainDisplayName } from '../contracts'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com'
 
@@ -37,7 +38,7 @@ export function useTrendingTokens() {
           ticker: `$${t.symbol}`,
           change: changeStr,
           mcap: `$${(mcapETH * ethPrice).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-          chain: 'SEPOLIA',
+          chain: getChainDisplayName(t.chain_id),
           address: t.address,
           logoUrl: t.logo_url || null,
         }
