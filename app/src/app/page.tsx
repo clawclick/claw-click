@@ -626,7 +626,7 @@ export default function Home() {
                           <div className="flex items-center justify-center gap-2">
                             {/* Chart link - DexScreener */}
                             <a 
-                              href={`https://dexscreener.com/base/${token.poolId || token.token}`} 
+                              href={`https://dexscreener.com/${token.chain === 'BASE' ? 'base' : token.chain === 'SEPOLIA' ? 'ethereum' : token.chain.toLowerCase()}/${token.poolId || token.token}`} 
                               target="_blank" 
                               rel="noopener noreferrer" 
                               className="text-[#9AA4B2] hover:text-[#E8523D] transition-colors" 
