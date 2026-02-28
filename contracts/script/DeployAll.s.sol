@@ -15,7 +15,7 @@ import "../src/utils/BootstrapETH.sol";
 contract DeployAll is Script {
     // Uniswap V4 addresses on Base mainnet
     address constant POOL_MANAGER = 0x498581fF718922c3f8e6A244956aF099B2652b2b;
-    address constant POSITION_MANAGER = 0x7C5f5A4bBd8fD63184577525326123b519429bDc;
+    address constant POSITION_MANAGER = 0x7C5f5A4bBd8fD63184577525326123B519429bDc;
     
     // Treasury for fees
     address constant TREASURY = 0xFf7549B06E68186C91a6737bc0f0CDE1245e349b;
