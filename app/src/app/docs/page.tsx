@@ -643,7 +643,7 @@ function ContractsTab() {
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Launch Bundler:</span>
-                <span className="text-pink-400">0xfFeFE440130799247cFC6E919fB79947cd4EfE2D</span>
+                <span className="text-pink-400">0x4bB9811E9bf3384F5Df8B1dcAA4c05C298Fc44dD</span>
               </div>
             </div>
           </div>
@@ -680,7 +680,7 @@ function ContractsTab() {
               </div>
               <div className="flex justify-between bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-white/60">Launch Bundler:</span>
-                <span className="text-pink-400">0x891824F47dBa21466DeEf6D3Fde2f30994f43955</span>
+                <span className="text-pink-400">0x579F512FA05CFd66033B06d8816915bA2Be971CE</span>
               </div>
             </div>
           </div>
