@@ -61,29 +61,32 @@ npx clawclick upload --token 0xTOKEN_ADDRESS --logo ./logo.png
 
 ### Contract Addresses
 
-#### Base Mainnet 🟢 LIVE
+#### Base Mainnet 🟢 LIVE (Feb 28, 2026)
 
 | Contract | Address |
 |----------|---------|
-| Config | `0x95fC848677Bd29ad067688F64BE60d5C6C44c2a4` |
-| Hook | `0xCD7568392159C4860ea4b9b14c5f41e720173404` |
-| Factory | `0x4b32C39D9608de2D6FCD77715316E539fC90f962` |
-| BootstrapETH | `0x8dEA9ffca272F0D5F4EF23F9002f974a4995712C` |
-| LaunchBundler | `0x4bB9811E9bf3384F5Df8B1dcAA4c05C298Fc44dD` |
+| Config | `0x18b89e491d8f12d2be6D2A8e945dF4D93F1247a7` |
+| Hook | `0x8265be7eb9D7e40c1FAb6CBd8DBc626b31A0aac8` |
+| Factory | `0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a` |
+| BootstrapETH | `0xE2649737D3005c511a27DF6388871a12bE0a2d30` |
+| LaunchBundler | `0x1AF3b3Cd703Ff59D18A295f669Ad9B7051707268` |
+| BirthCertificate | `0x6E9B093FdD12eC34ce358bd70CF59EeCb5D1A95B` |
+| MemoryStorage | `0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D` |
 | Treasury | `0xFf7549B06E68186C91a6737bc0f0CDE1245e349b` |
 | PoolManager | `0x498581fF718922c3f8e6A244956aF099B2652b2b` (Uniswap V4) |
 | PositionManager | `0x7C5f5A4bBd8fD63184577525326123b519429bDc` (Uniswap V4) |
 
-#### Sepolia Testnet (Reference)
+#### Sepolia Testnet (Feb 28, 2026)
 
 | Contract | Address |
 |----------|---------|
-| Config | `0xf01514F68Df33689046F6Dd4184edCaA54fF4492` |
-| Hook | `0xf537a9356f6909df0A633C8BC48e504D2a30B111` |
-| Factory | `0x3f4bFd32362D058157A5F43d7861aCdC0484C415` |
-| BootstrapETH | `0xC52b027928AfAa54f1f0FeC0e4D7b6397026f660` |
-| LaunchBundler | `0x579F512FA05CFd66033B06d8816915bA2Be971CE` |
-| SwapExecutor | `0xCE03f9aeD760f3F5C471C1A76Ff4a8F84743b795` |
+| Config | `0xD1D3059569548cB51FF26Eb65Eb45dd13AD2Bf50` |
+| Hook | `0x64f7cC79F599efBc8e95978520c5092Ef8DE2AC8` |
+| Factory | `0xcBcbCC12664F3eE4D20b3F49554BBE55fD7d9746` |
+| BootstrapETH | `0xe3893b4c3a210571d04561714eFDAd34F80Bc232` |
+| LaunchBundler | `0x8112c14406C0f38C56f13A709498ddEd446a5b7b` |
+| BirthCertificate | `0x4003CbFD62B0b4BAbBdad714e472fCb8D1f03132` |
+| MemoryStorage | `0x833FF145e104198793e62593a1dfD4633066B416` |
 | PoolManager | `0xE03A1074c86CFeDd5C142C4F04F1a1536e203543` (Uniswap V4) |
 | PositionManager | `0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4` (Uniswap V4) |
 
