@@ -335,6 +335,7 @@ LaunchBundler: 0x1AF3b3Cd703Ff59D18A295f669Ad9B7051707268
 Treasury:      0xFf7549B06E68186C91a6737bc0f0CDE1245e349b (SAFE Multisig)
 PoolManager:   0x498581fF718922c3f8e6A244956aF099B2652b2b (Uniswap V4)
 PositionMgr:   0x7C5f5A4bBd8fD63184577525326123b519429bDc (Uniswap V4)
+PoolSwapTest:  0xBbB04538530970f3409e3844bF99475b5324912e (Router for trading)
 ```
 
 🔍 **[View on Basescan](https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a)**
@@ -356,6 +357,7 @@ MemoryStorage: 0x833FF145e104198793e62593a1dfD4633066B416
 LaunchBundler: 0x8112c14406C0f38C56f13A709498ddEd446a5b7b
 PoolManager:   0xE03A1074c86CFeDd5C142C4F04F1a1536e203543 (Uniswap V4)
 PositionMgr:   0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4 (Uniswap V4)
+PoolSwapTest:  0x449F992c283d7641c6D0c06C6517396992ca29d7 (Router for trading)
 ```
 
 🔍 **[View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0xcBcbCC12664F3eE4D20b3F49554BBE55fD7d9746)**

@@ -1,7 +1,9 @@
 import { type Address } from 'viem'
 
-// ===== Base Mainnet PoolSwapTest (deployed for Claw.click) =====
-export const POOL_SWAP_TEST_ADDRESS = '0x0883Ff016151255Ad3161CbF5D4Ed720D9f26243' as Address
+// ===== PoolSwapTest Routers (Feb 28, 2026 deployment) =====
+// Compatible with V4 core used in Hook deployment
+export const POOL_SWAP_TEST_ADDRESS = '0xBbB04538530970f3409e3844bF99475b5324912e' as Address // BASE
+export const POOL_SWAP_TEST_ADDRESS_SEPOLIA = '0x449F992c283d7641c6D0c06C6517396992ca29d7' as Address // Sepolia testnet
 
 // Tick-math price limits
 export const MIN_SQRT_PRICE = 4295128739n + 1n

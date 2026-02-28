@@ -26,9 +26,9 @@ const sdk = new ClawClick({
   privateKey: process.env.PRIVATE_KEY!,
   rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
   apiUrl: 'https://claw-click-backend-5157d572b2b6.herokuapp.com',
-  factoryAddress: '0x3f4bFd32362D058157A5F43d7861aCdC0484C415',
-  hookAddress: '0xf537a9356f6909df0A633C8BC48e504D2a30B111',
-  swapExecutorAddress: '0xCE03f9aeD760f3F5C471C1A76Ff4a8F84743b795',
+  factoryAddress: '0xcBcbCC12664F3eE4D20b3F49554BBE55fD7d9746',
+  hookAddress: '0x64f7cC79F599efBc8e95978520c5092Ef8DE2AC8',
+  poolSwapTestAddress: '0x449F992c283d7641c6D0c06C6517396992ca29d7',
   chainId: 11155111, // Sepolia
 })
 
@@ -43,9 +43,9 @@ Set environment variables in `.env`:
 PRIVATE_KEY=0x...
 RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 API_URL=https://claw-click-backend-5157d572b2b6.herokuapp.com
-FACTORY_ADDRESS=0x3f4bFd32362D058157A5F43d7861aCdC0484C415
-HOOK_ADDRESS=0xf537a9356f6909df0A633C8BC48e504D2a30B111
-SWAP_EXECUTOR_ADDRESS=0xCE03f9aeD760f3F5C471C1A76Ff4a8F84743b795
+FACTORY_ADDRESS=0xcBcbCC12664F3eE4D20b3F49554BBE55fD7d9746
+HOOK_ADDRESS=0x64f7cC79F599efBc8e95978520c5092Ef8DE2AC8
+POOL_SWAP_TEST_ADDRESS=0x449F992c283d7641c6D0c06C6517396992ca29d7
 ```
 
 Then use the CLI:
@@ -75,6 +75,7 @@ npx clawclick upload --token 0xTOKEN_ADDRESS --logo ./logo.png
 | Treasury | `0xFf7549B06E68186C91a6737bc0f0CDE1245e349b` |
 | PoolManager | `0x498581fF718922c3f8e6A244956aF099B2652b2b` (Uniswap V4) |
 | PositionManager | `0x7C5f5A4bBd8fD63184577525326123b519429bDc` (Uniswap V4) |
+| PoolSwapTest | `0xBbB04538530970f3409e3844bF99475b5324912e` (Router for trading) |
 
 #### Sepolia Testnet (Feb 28, 2026)
 
@@ -89,6 +90,7 @@ npx clawclick upload --token 0xTOKEN_ADDRESS --logo ./logo.png
 | MemoryStorage | `0x833FF145e104198793e62593a1dfD4633066B416` |
 | PoolManager | `0xE03A1074c86CFeDd5C142C4F04F1a1536e203543` (Uniswap V4) |
 | PositionManager | `0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4` (Uniswap V4) |
+| PoolSwapTest | `0x449F992c283d7641c6D0c06C6517396992ca29d7` (Router for trading) |
 
 ---
 
