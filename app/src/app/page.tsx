@@ -30,7 +30,7 @@ export default function Home() {
   const { tokens, isLoading: tokensLoading } = useTokenList({ sort: currentSort, limit: 50 })
   const { trending: trendingTokens } = useTrendingTokens()
 
-  const clawTokenCA = '0x0000000000000000000000000000000000000000'  // TBA - Launching Soon
+  const clawTokenCA = '0xddce43b4d3263e1f67c64233a152b5e852a8357e'
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(clawTokenCA)
