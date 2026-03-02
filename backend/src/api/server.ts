@@ -224,7 +224,18 @@ app.get('/api/agents/recent', async (req, res) => {
       LIMIT $1
     `, params)
     
-    res.json(result.rows)
+    const ethPrice = getETHPriceSync()
+    const agents = result.rows.map((t: any) => {
+      const mcapETH = parseFloat(t.current_mcap || '0')
+      const pricePerToken = mcapETH / 1_000_000_000
+      return {
+        ...t,
+        price_usd: (pricePerToken * ethPrice).toFixed(10),
+        mcap_usd: (mcapETH * ethPrice).toFixed(2),
+      }
+    })
+    
+    res.json({ agents, eth_price_usd: ethPrice })
   } catch (error) {
     console.error('Error fetching recent agents:', error)
     res.status(500).json({ error: 'Failed to fetch recent agents' })
@@ -376,7 +387,18 @@ app.get('/api/tokens/trending', async (req, res) => {
       LIMIT 10
     `, params)
     
-    res.json({ tokens: result.rows, eth_price_usd: getETHPriceSync() })
+    const ethPrice = getETHPriceSync()
+    const tokens = result.rows.map((t: any) => {
+      const mcapETH = parseFloat(t.current_mcap || '0')
+      const pricePerToken = mcapETH / 1_000_000_000
+      return {
+        ...t,
+        price_usd: (pricePerToken * ethPrice).toFixed(10),
+        mcap_usd: (mcapETH * ethPrice).toFixed(2),
+      }
+    })
+    
+    res.json({ tokens, eth_price_usd: ethPrice })
   } catch (error) {
     console.error('Error fetching trending:', error)
     res.status(500).json({ error: 'Failed to fetch trending tokens' })
