@@ -7,7 +7,13 @@ This skill enables agents to autonomously launch, manage, and trade tokens on th
 ## 📦 Installation
 
 ```bash
-npm install @clawclick/sdk
+npm install clawclick-sdk
+```
+
+Or install globally for CLI usage:
+
+```bash
+npm install -g clawclick-sdk
 ```
 
 The package includes both a TypeScript/JavaScript SDK and a CLI tool.

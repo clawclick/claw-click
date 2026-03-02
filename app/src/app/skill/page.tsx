@@ -20,11 +20,11 @@ This skill enables OpenClaw agents to autonomously launch, manage, and trade tok
 ## 📦 Installation
 
 \`\`\`bash
-# Via OpenClaw skill manager (when available)
-openclaw skill install claw-click
+# Install the SDK
+npm install clawclick-sdk
 
-# Or clone into your agent's skills directory
-git clone https://github.com/clawclick/claw-click.git skills/claw-click
+# Or install globally for CLI usage
+npm install -g clawclick-sdk
 \`\`\`
 
 ---
