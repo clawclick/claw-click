@@ -89,6 +89,63 @@ app.get('/api/stats', async (req, res) => {
 })
 
 // ============================================================================
+// CLAWS.FUN STATS (only tokens with NFT-verified agents)
+// ============================================================================
+app.get('/api/stats/clawsfun', async (req, res) => {
+  try {
+    const chainId = getChainId(req)
+    let result
+    if (chainId !== null) {
+      result = await query(`
+        SELECT 
+          s.nft_total_tokens as total_tokens,
+          s.nft_total_volume_eth as total_volume_eth,
+          s.nft_total_volume_24h as total_volume_24h,
+          s.nft_total_txs as total_txs,
+          s.nft_total_txs_24h as total_txs_24h,
+          s.nft_total_fees_eth as total_fees_eth,
+          s.updated_at,
+          COALESCE(m.total_mcap, 0) as total_market_cap_eth,
+          COALESCE(m.graduated_count, 0) as graduated_count
+        FROM stats s
+        CROSS JOIN (
+          SELECT 
+            COALESCE(SUM(current_mcap), 0) as total_mcap,
+            COUNT(*) FILTER (WHERE graduated = true) as graduated_count
+          FROM tokens WHERE has_nft = true AND chain_id = $1
+        ) m
+        WHERE s.chain_id = $1
+      `, [chainId])
+    } else {
+      result = await query(`
+        SELECT 
+          COALESCE(SUM(s.nft_total_tokens), 0) as total_tokens,
+          COALESCE(SUM(s.nft_total_volume_eth), 0) as total_volume_eth,
+          COALESCE(SUM(s.nft_total_volume_24h), 0) as total_volume_24h,
+          COALESCE(SUM(s.nft_total_txs), 0) as total_txs,
+          COALESCE(SUM(s.nft_total_txs_24h), 0) as total_txs_24h,
+          COALESCE(SUM(s.nft_total_fees_eth), 0) as total_fees_eth,
+          MAX(s.updated_at) as updated_at,
+          COALESCE(m.total_mcap, 0) as total_market_cap_eth,
+          COALESCE(m.graduated_count, 0) as graduated_count
+        FROM stats s
+        CROSS JOIN (
+          SELECT 
+            COALESCE(SUM(current_mcap), 0) as total_mcap,
+            COUNT(*) FILTER (WHERE graduated = true) as graduated_count
+          FROM tokens WHERE has_nft = true
+        ) m
+      `)
+    }
+    
+    res.json({ ...result.rows[0], chain_id: chainId, eth_price_usd: getETHPriceSync() })
+  } catch (error) {
+    console.error('Error fetching claws.fun stats:', error)
+    res.status(500).json({ error: 'Failed to fetch claws.fun stats' })
+  }
+})
+
+// ============================================================================
 // AGENT-SPECIFIC STATS (for claws.fun)
 // ============================================================================
 app.get('/api/stats/agents', async (req, res) => {

@@ -150,8 +150,8 @@ function scheduleAgentRecheck(tokenAddress: string, agentWallet: string) {
 
         const hasNFT = await checkNFT(agentWallet)
         if (hasNFT) {
-          await query('UPDATE tokens SET is_agent = true, updated_at = NOW() WHERE LOWER(address) = LOWER($1) AND chain_id = $2', [tokenAddress, CHAIN_ID])
-          await query('UPDATE stats SET total_agents = total_agents + 1, updated_at = NOW() WHERE chain_id = $1', [CHAIN_ID])
+          await query('UPDATE tokens SET is_agent = true, has_nft = true, updated_at = NOW() WHERE LOWER(address) = LOWER($1) AND chain_id = $2', [tokenAddress, CHAIN_ID])
+          await query('UPDATE stats SET total_agents = total_agents + 1, nft_total_tokens = nft_total_tokens + 1, updated_at = NOW() WHERE chain_id = $1', [CHAIN_ID])
           console.log(`🤖 Delayed NFT check: ${tokenAddress} confirmed as agent (wallet: ${agentWallet})`)
         } else {
           console.log(`⏳ Delayed NFT check (${delay/1000}s): ${tokenAddress} still no NFT`)
@@ -186,6 +186,7 @@ client.watchEvent({
         // Then verify with claws.fun NFT check to determine if it's a real agent
         let agentWallet: string | null = null
         let isAgent = false
+        let hasNFT = false
         try {
           const wallet = await client.readContract({
             address: token as `0x${string}`,
@@ -196,6 +197,7 @@ client.watchEvent({
             agentWallet = wallet
             // Verify agent wallet holds a claws.fun NFT
             const nftResult = await checkNFT(wallet)
+            hasNFT = nftResult
             if (nftResult) {
               isAgent = true
               console.log(`🤖 Agent token detected! agentWallet: ${wallet}`)
@@ -210,8 +212,8 @@ client.watchEvent({
         await query(`
           INSERT INTO tokens (
             address, name, symbol, creator, beneficiary, pool_id,
-            target_mcap, current_mcap, sqrt_price_x96, agent_wallet, is_agent, launch_type, chain_id, launched_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
+            target_mcap, current_mcap, sqrt_price_x96, agent_wallet, is_agent, has_nft, launch_type, chain_id, launched_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
           ON CONFLICT (address, chain_id) DO NOTHING
         `, [
           token,
@@ -225,16 +227,34 @@ client.watchEvent({
           sqrtPriceX96?.toString() || '0',
           agentWallet,
           isAgent,
+          hasNFT,
           launchTypeStr,
           CHAIN_ID,
         ])
         
-        // Update total tokens count (and agent count if applicable)
-        if (isAgent) {
+        // Update total tokens count (and agent/nft counts if applicable)
+        if (isAgent && hasNFT) {
           await query(`
             UPDATE stats SET 
               total_tokens = total_tokens + 1,
               total_agents = total_agents + 1,
+              nft_total_tokens = nft_total_tokens + 1,
+              updated_at = NOW()
+            WHERE chain_id = $1
+          `, [CHAIN_ID])
+        } else if (isAgent) {
+          await query(`
+            UPDATE stats SET 
+              total_tokens = total_tokens + 1,
+              total_agents = total_agents + 1,
+              updated_at = NOW()
+            WHERE chain_id = $1
+          `, [CHAIN_ID])
+        } else if (hasNFT) {
+          await query(`
+            UPDATE stats SET 
+              total_tokens = total_tokens + 1,
+              nft_total_tokens = nft_total_tokens + 1,
               updated_at = NOW()
             WHERE chain_id = $1
           `, [CHAIN_ID])
@@ -277,17 +297,18 @@ client.watchEvent({
       try {
         const { poolId, totalFee, isETH } = log.args
         
-        // Get token address from poolId
+        // Get token address and NFT status from poolId
         const tokenResult = await query(`
-          SELECT address FROM tokens WHERE pool_id = $1 AND chain_id = $2
+          SELECT address, has_nft FROM tokens WHERE pool_id = $1 AND chain_id = $2
         `, [poolId, CHAIN_ID])
         
         if (tokenResult.rows.length === 0) continue
         
         const tokenAddress = tokenResult.rows[0].address
+        const tokenHasNFT = tokenResult.rows[0].has_nft
         const feeInEth = isETH ? formatEther(totalFee ?? 0n) : '0'
         
-        console.log(`💰 Fee collected on ${tokenAddress}: ${feeInEth} ETH`)
+        console.log(`💰 Fee collected on ${tokenAddress}: ${feeInEth} ETH (has_nft: ${tokenHasNFT})`)
         
         // Only update all-time totals here.
         // 24h stats are recomputed from the swaps table by refresh24hStats()
@@ -301,6 +322,7 @@ client.watchEvent({
           WHERE address = $2 AND chain_id = $3
         `, [swapVolume, tokenAddress, CHAIN_ID])
         
+        // Update global stats
         await query(`
           UPDATE stats SET
             total_volume_eth = total_volume_eth + $1,
@@ -309,6 +331,17 @@ client.watchEvent({
             updated_at = NOW()
           WHERE chain_id = $3
         `, [swapVolume, feeInEth, CHAIN_ID])
+        
+        // Also update NFT-specific stats if this token has an NFT
+        if (tokenHasNFT) {
+          await query(`
+            UPDATE stats SET
+              nft_total_volume_eth = nft_total_volume_eth + $1,
+              nft_total_fees_eth = nft_total_fees_eth + $2,
+              nft_total_txs = nft_total_txs + 1
+            WHERE chain_id = $3
+          `, [swapVolume, feeInEth, CHAIN_ID])
+        }
         
       } catch (error) {
         console.error('Error processing FeesCollected event:', error)
@@ -500,6 +533,18 @@ async function refresh24hStats() {
       UPDATE stats SET
         total_volume_24h = COALESCE((SELECT SUM(CASE WHEN is_buy THEN amount_in ELSE amount_out END) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours' AND chain_id = $1), 0),
         total_txs_24h = COALESCE((SELECT COUNT(*) FROM swaps WHERE timestamp > NOW() - INTERVAL '24 hours' AND chain_id = $1), 0),
+        nft_total_volume_24h = COALESCE((
+          SELECT SUM(CASE WHEN sw.is_buy THEN sw.amount_in ELSE sw.amount_out END)
+          FROM swaps sw
+          INNER JOIN tokens t ON sw.token_address = t.address AND sw.chain_id = t.chain_id
+          WHERE sw.timestamp > NOW() - INTERVAL '24 hours' AND sw.chain_id = $1 AND t.has_nft = true
+        ), 0),
+        nft_total_txs_24h = COALESCE((
+          SELECT COUNT(*)
+          FROM swaps sw
+          INNER JOIN tokens t ON sw.token_address = t.address AND sw.chain_id = t.chain_id
+          WHERE sw.timestamp > NOW() - INTERVAL '24 hours' AND sw.chain_id = $1 AND t.has_nft = true
+        ), 0),
         updated_at = NOW()
       WHERE chain_id = $1
     `, [CHAIN_ID])
