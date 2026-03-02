@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS swaps (
   UNIQUE(tx_hash, log_index)
 );
 
--- Platform stats table
+-- Platform stats table (single row)
 CREATE TABLE IF NOT EXISTS stats (
   id INTEGER PRIMARY KEY DEFAULT 1,
   total_tokens INTEGER DEFAULT 0,
@@ -62,12 +62,13 @@ CREATE TABLE IF NOT EXISTS stats (
   total_txs BIGINT DEFAULT 0,
   total_txs_24h INTEGER DEFAULT 0,
   total_fees_eth DECIMAL(30,18) DEFAULT 0,
+  total_agents INTEGER DEFAULT 0,
   updated_at TIMESTAMP DEFAULT NOW(),
   CONSTRAINT single_row CHECK (id = 1)
 );
 
--- Insert initial stats row
-INSERT INTO stats (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
+-- Insert initial stats row (if table is empty)
+INSERT INTO stats (id) SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM stats);
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_tokens_launched_at ON tokens(launched_at DESC);
