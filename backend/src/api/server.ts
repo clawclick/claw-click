@@ -15,14 +15,14 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
-/** Extract chain_id from query params. Returns null if not specified (= all chains). */
-function getChainId(req: express.Request): number | null {
+/** Extract chain_id from query params. Defaults to 8453 (Base) if not specified. */
+function getChainId(req: express.Request): number {
   const qParam = req.query.chain_id
   if (qParam) {
     const parsed = parseInt(qParam as string)
     if (!isNaN(parsed)) return parsed
   }
-  return null
+  return 8453
 }
 
 // Multer: accept logo (max 2MB) and banner (max 5MB) in memory

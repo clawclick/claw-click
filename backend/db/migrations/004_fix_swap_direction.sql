@@ -1,6 +1,6 @@
 -- Fix is_buy direction: was inverted because amount0 < 0 was used instead of amount0 > 0
 -- Flip all existing swaps and swap amount_in/amount_out to match
-UPDATE swaps SET
-  is_buy = NOT is_buy,
-  amount_in = amount_out,
-  amount_out = amount_in;
+-- UPDATE swaps SET
+--   is_buy = NOT is_buy,
+--   amount_in = amount_out,
+--   amount_out = amount_in;
