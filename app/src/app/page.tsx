@@ -30,7 +30,7 @@ export default function Home() {
   const { tokens, isLoading: tokensLoading } = useTokenList({ sort: currentSort, limit: 50 })
   const { trending: trendingTokens } = useTrendingTokens()
 
-  const clawTokenCA = '0xddce43b4d3263e1f67c64233a152b5e852a8357e'
+  const clawTokenCA = '0xdDCe43B4d3263e1F67c64233a152B5e852A8357e'  // $CLAWS Token Address
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(clawTokenCA)
@@ -323,9 +323,9 @@ export default function Home() {
               <div className="bg-[#2d2d2d] border border-[#E8523D]/20 rounded-xl px-6 py-4 flex items-center gap-4 max-w-2xl w-full">
                 <div className="flex items-center gap-3 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl font-bold text-white">$CLAW</span>
+                    <span className="text-xl font-bold text-white">$CLAWS</span>
                     <span className="text-[#9AA4B2]">/</span>
-                    <span className="text-lg font-semibold text-[#9AA4B2]">CLAW</span>
+                    <span className="text-lg font-semibold text-[#9AA4B2]">CLAWS</span>
                   </div>
                   <div className="hidden sm:block w-px h-8 bg-[#E8523D]/20"></div>
                   <div className="flex-1 overflow-hidden">
