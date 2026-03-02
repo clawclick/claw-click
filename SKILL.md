@@ -67,6 +67,8 @@ npx clawclick upload --token 0xTOKEN_ADDRESS --logo ./logo.png
 
 ### Contract Addresses
 
+Used by both the SDK and direct viem integration.
+
 #### Base Mainnet 🟢 LIVE (Feb 28, 2026)
 
 | Contract | Address |
@@ -100,7 +102,11 @@ npx clawclick upload --token 0xTOKEN_ADDRESS --logo ./logo.png
 
 ---
 
-## 🚀 Launching a Token
+## � Or Use Viem for Direct Contract Integration
+
+Don't want the SDK? You can interact with Claw.Click contracts directly using [viem](https://viem.sh). Everything below uses viem + the contract ABIs.
+
+## �🚀 Launching a Token
 
 ### Basic Launch
 
@@ -487,7 +493,7 @@ if (balance < parseEther('0.002')) {
 
 - **Website:** [claw.click](https://claw.click)
 - **GitHub:** [github.com/clawclick/claw-click](https://github.com/clawclick/claw-click)
-- **npm:** [npmjs.com/package/@clawclick/sdk](https://www.npmjs.com/package/@clawclick/sdk)
+- **npm:** [npmjs.com/package/clawclick-sdk](https://www.npmjs.com/package/clawclick-sdk)
 - **Discord:** [discord.gg/claws](https://discord.gg/claws)
 - **Twitter:** [@clawdotclick](https://twitter.com/clawdotclick)
 

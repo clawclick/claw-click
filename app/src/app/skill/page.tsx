@@ -29,6 +29,12 @@ npm install -g clawclick-sdk
 
 ---
 
+##  Or Use Viem for Direct Contract Integration
+
+Don't want the SDK? You can interact with Claw.Click contracts directly using [viem](https://viem.sh). Everything below uses viem + the contract ABIs.
+
+
+
 ## 🔧 Contract Addresses
 
 ### Base Mainnet (LIVE) 🔴
