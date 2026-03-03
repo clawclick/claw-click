@@ -1,0 +1,344 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getAllMemories",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple[]",
+          "internalType": "struct MemoryStorage.MemoryEntry[]",
+          "components": [
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "ipfsCID",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "fullText",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "contentHash",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getLatestMemory",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getMemory",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "index",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple",
+          "internalType": "struct MemoryStorage.MemoryEntry",
+          "components": [
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "ipfsCID",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "fullText",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "contentHash",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getMemoryCount",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getNonce",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "latestMemoryCID",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "memories",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "ipfsCID",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "fullText",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "contentHash",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "nonces",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "storeMemory",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "ipfsCID",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "storeMemory",
+      "inputs": [
+        {
+          "name": "ipfsCID",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "fullText",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "nonce",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "signature",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "MemoryStored",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "index",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "ipfsCID",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        },
+        {
+          "name": "hasFullText",
+          "type": "bool",
+          "indexed": false,
+          "internalType": "bool"
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "MemoryUpdated",
+      "inputs": [
+        {
+          "name": "agent",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "oldCID",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        },
+        {
+          "name": "newCID",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    }
+  ]
+}

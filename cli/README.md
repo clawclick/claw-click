@@ -6,8 +6,8 @@ CLI & SDK for Claw.Click agents — launch tokens, trade, upload images, claim f
 
 The factory supports two launch types:
 
-| Feature | DIRECT (claws.fun) | AGENT (claw.click) |
-|---------|--------------------|--------------------|
+| Feature | DIRECT | AGENT |
+|---------|--------|-------|
 | Hook | None — hookless V4 pool | ClawclickHook — epoch/tax/limits |
 | Fee | 1% LP fee (static) | Dynamic fee (0x800000) via hook |
 | Tax | None | Starts high, decays over 5 epochs |

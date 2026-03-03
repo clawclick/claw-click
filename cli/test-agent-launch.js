@@ -206,7 +206,7 @@ async function main() {
   console.log('   ✅ Verified on-chain data')
   console.log('')
   console.log('🔗 Token Address:', tokenAddress)
-  console.log('🔗 View on claws.fun:', `https://claws.fun/agent/${tokenAddress}`)
+  console.log('🔗 View on claw.click:', `https://claw.click/immortal/agent/${tokenAddress}`)
   console.log('🔗 View on Etherscan:', `https://sepolia.etherscan.io/token/${tokenAddress}`)
   console.log('')
   console.log('🚀 PLATFORM IS READY TO GO LIVE! 🚀')
