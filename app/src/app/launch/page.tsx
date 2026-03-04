@@ -25,26 +25,26 @@ export default function LaunchPage() {
     { 
       label: 'Tokens Launched', 
       value: stats.isLoading ? '...' : String(stats.tokensLaunched), 
-      bgColor: 'rgba(139, 92, 246, 0.1)',
-      borderColor: 'rgba(139, 92, 246, 0.2)',
+      bgColor: 'rgba(232, 82, 61, 0.1)',
+      borderColor: 'rgba(232, 82, 61, 0.2)',
     },
     { 
       label: 'Total Volume', 
       value: stats.isLoading ? '...' : stats.totalVolume, 
-      bgColor: 'rgba(234, 179, 8, 0.1)',
-      borderColor: 'rgba(234, 179, 8, 0.2)',
+      bgColor: 'rgba(255, 140, 74, 0.1)',
+      borderColor: 'rgba(255, 140, 74, 0.2)',
     },
     { 
       label: 'Fees Generated', 
       value: stats.isLoading ? '...' : stats.feesGenerated, 
-      bgColor: 'rgba(239, 68, 68, 0.1)',
-      borderColor: 'rgba(239, 68, 68, 0.2)',
+      bgColor: 'rgba(232, 82, 61, 0.1)',
+      borderColor: 'rgba(232, 82, 61, 0.2)',
     },
     { 
       label: 'Total Market Cap', 
       value: stats.isLoading ? '...' : stats.totalMarketCap, 
-      bgColor: 'rgba(34, 197, 94, 0.1)',
-      borderColor: 'rgba(34, 197, 94, 0.2)',
+      bgColor: 'rgba(255, 140, 74, 0.1)',
+      borderColor: 'rgba(255, 140, 74, 0.2)',
     }
   ]
 
@@ -67,7 +67,7 @@ export default function LaunchPage() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
               <div className="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></div>
-              <span className="text-sm text-white font-semibold">🔵 Live on <span className="text-[#0052FF]">Base</span> Mainnet</span>
+              <span className="text-sm text-white font-semibold">Live on <span className="text-[#0052FF]">Base</span> Mainnet</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-bold">
@@ -80,10 +80,10 @@ export default function LaunchPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link href="/skill" className="btn-primary px-8 py-3">
-                🤖 Launch via Skill.md
+                Launch via Skill.md
               </Link>
               <Link href="/readme" className="btn-secondary px-8 py-3">
-                📄 Read Documentation
+                Read Documentation
               </Link>
             </div>
 
@@ -153,8 +153,8 @@ export default function LaunchPage() {
           <div className="flex flex-wrap justify-center gap-3 mb-8">
             {[
               { id: 'all', label: 'All Tokens' },
-              { id: 'hot', label: '🔥 Hot' },
-              { id: 'new', label: '⭐ New' },
+              { id: 'hot', label: 'Hot' },
+              { id: 'new', label: 'New' },
               { id: 'mcap', label: 'MCap' },
               { id: 'volume', label: '24h Vol' },
               { id: 'base', label: 'BASE' },
