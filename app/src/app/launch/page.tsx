@@ -25,26 +25,26 @@ export default function LaunchPage() {
     { 
       label: 'Tokens Launched', 
       value: stats.isLoading ? '...' : String(stats.tokensLaunched), 
-      bgColor: 'rgba(232, 82, 61, 0.1)',
-      borderColor: 'rgba(232, 82, 61, 0.2)',
+      bgGradient: 'from-emerald-500/10 to-green-500/10',
+      borderColor: 'border-emerald-500/20',
     },
     { 
       label: 'Total Volume', 
       value: stats.isLoading ? '...' : stats.totalVolume, 
-      bgColor: 'rgba(255, 140, 74, 0.1)',
-      borderColor: 'rgba(255, 140, 74, 0.2)',
+      bgGradient: 'from-blue-500/10 to-cyan-500/10',
+      borderColor: 'border-blue-500/20',
     },
     { 
       label: 'Fees Generated', 
       value: stats.isLoading ? '...' : stats.feesGenerated, 
-      bgColor: 'rgba(232, 82, 61, 0.1)',
-      borderColor: 'rgba(232, 82, 61, 0.2)',
+      bgGradient: 'from-purple-500/10 to-pink-500/10',
+      borderColor: 'border-purple-500/20',
     },
     { 
       label: 'Total Market Cap', 
       value: stats.isLoading ? '...' : stats.totalMarketCap, 
-      bgColor: 'rgba(255, 140, 74, 0.1)',
-      borderColor: 'rgba(255, 140, 74, 0.2)',
+      bgGradient: 'from-red-500/10 to-orange-500/10',
+      borderColor: 'border-red-500/20',
     }
   ]
 
@@ -65,24 +65,24 @@ export default function LaunchPage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-xl">
               <div className="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></div>
               <span className="text-sm text-white font-semibold">Live on <span className="text-[#0052FF]">Base</span> Mainnet</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-bold">
-              <span className="gradient-text">Agent Token</span> Launchpad
+              <span className="bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">Agent Token</span> Launchpad
             </h1>
 
-            <p className="text-lg sm:text-xl text-[#9AA4B2] max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto">
               Launch agent tokens across multiple chains with Uniswap V4. Autonomous token creation, liquidity management, and fee optimization built for AI agents.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/skill" className="btn-primary px-8 py-3">
+              <Link href="/skill" className="px-8 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg font-semibold hover:shadow-xl hover:shadow-[#E8523D]/30 transition-all">
                 Launch via Skill.md
               </Link>
-              <Link href="/readme" className="btn-secondary px-8 py-3">
+              <Link href="/readme" className="px-8 py-3 bg-white/5 border border-white/10 rounded-lg font-semibold hover:bg-white/10 transition-all">
                 Read Documentation
               </Link>
             </div>
@@ -95,17 +95,12 @@ export default function LaunchPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="relative overflow-hidden rounded-xl p-6 text-center"
-                  style={{
-                    background: stat.bgColor,
-                    backdropFilter: 'blur(16px)',
-                    border: `1px solid ${stat.borderColor}`,
-                  }}
+                  className={`relative overflow-hidden rounded-xl p-6 text-center bg-gradient-to-br ${stat.bgGradient} backdrop-blur-xl border ${stat.borderColor}`}
                 >
-                  <div className="text-3xl sm:text-4xl font-extrabold gradient-text mb-2">
+                  <div className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-xs sm:text-sm text-[#9AA4B2]">{stat.label}</div>
+                  <div className="text-xs sm:text-sm text-white/50">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -120,15 +115,15 @@ export default function LaunchPage() {
             <div className="flex animate-scroll">
               {[...trendingTokens, ...trendingTokens].map((token, idx) => (
                 <div key={idx} className="flex-shrink-0 mx-4">
-                  <div className="glass px-6 py-3 rounded-xl flex items-center gap-4 hover:border-[#E8523D]/30 transition-all">
-                    <span className="text-base font-bold">{token.ticker}</span>
+                  <div className="bg-white/[0.03] border border-white/10 backdrop-blur-xl px-6 py-3 rounded-xl flex items-center gap-4 hover:border-[#E8523D]/30 transition-all">
+                    <span className="text-base font-bold text-white">{token.ticker}</span>
                     <span className={`text-xs px-2 py-1 rounded font-semibold ${
-                      token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'
+                      token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/10 text-white/60 border border-white/10'
                     }`}>
                       {token.chain}
                     </span>
                     <span className="text-green-400 text-sm font-semibold">{token.change}</span>
-                    <span className="text-[#9AA4B2] text-sm">{token.mcap}</span>
+                    <span className="text-white/50 text-sm">{token.mcap}</span>
                   </div>
                 </div>
               ))}
@@ -142,9 +137,9 @@ export default function LaunchPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-5xl font-bold mb-4">
-              Browse <span className="gradient-text">Agent Tokens</span>
+              Browse <span className="bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">Agent Tokens</span>
             </h2>
-            <p className="text-lg text-[#9AA4B2]">
+            <p className="text-lg text-white/60">
               <span className="text-[#E8523D] font-semibold">{tokensLoading ? '...' : tokens.length}</span> tokens launched
             </p>
           </div>
@@ -166,8 +161,8 @@ export default function LaunchPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                   activeTab === tab.id
-                    ? 'bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white'
-                    : 'glass text-[#9AA4B2] hover:text-white'
+                    ? 'bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white shadow-lg shadow-[#E8523D]/30'
+                    : 'bg-white/[0.03] border border-white/10 text-white/60 hover:text-white hover:border-white/20'
                 }`}
               >
                 {tab.label}
@@ -176,28 +171,28 @@ export default function LaunchPage() {
           </div>
 
           {/* Token List */}
-          <div className="glass rounded-2xl overflow-hidden">
+          <div className="bg-white/[0.02] border border-white/10 backdrop-blur-xl rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-[#E8523D]/10">
+                <thead className="border-b border-white/10">
                   <tr>
-                    <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Token</th>
-                    <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Type</th>
-                    <th className="text-left p-4 text-sm font-semibold text-[#9AA4B2]">Chain</th>
-                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Price</th>
-                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Change</th>
-                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Market Cap</th>
-                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">24h Volume</th>
-                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Txs</th>
-                    <th className="text-right p-4 text-sm font-semibold text-[#9AA4B2]">Buys/Sells</th>
-                    <th className="text-center p-4 text-sm font-semibold text-[#9AA4B2]">Trade</th>
-                    <th className="text-center p-4 text-sm font-semibold text-[#9AA4B2]">Links</th>
+                    <th className="text-left p-4 text-sm font-semibold text-white/50">Token</th>
+                    <th className="text-left p-4 text-sm font-semibold text-white/50">Type</th>
+                    <th className="text-left p-4 text-sm font-semibold text-white/50">Chain</th>
+                    <th className="text-right p-4 text-sm font-semibold text-white/50">Price</th>
+                    <th className="text-right p-4 text-sm font-semibold text-white/50">24h Change</th>
+                    <th className="text-right p-4 text-sm font-semibold text-white/50">Market Cap</th>
+                    <th className="text-right p-4 text-sm font-semibold text-white/50">24h Volume</th>
+                    <th className="text-right p-4 text-sm font-semibold text-white/50">Txs</th>
+                    <th className="text-right p-4 text-sm font-semibold text-white/50">Buys/Sells</th>
+                    <th className="text-center p-4 text-sm font-semibold text-white/50">Trade</th>
+                    <th className="text-center p-4 text-sm font-semibold text-white/50">Links</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tokensLoading ? (
                     <tr>
-                      <td colSpan={11} className="p-12 text-center text-[#9AA4B2]">
+                      <td colSpan={11} className="p-12 text-center text-white/50">
                         <div className="flex items-center justify-center gap-3">
                           <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#E8523D] border-t-transparent"></div>
                           Loading tokens...
@@ -208,9 +203,9 @@ export default function LaunchPage() {
                     <tr>
                       <td colSpan={11} className="p-12 text-center">
                         <div className="text-6xl mb-4">🦞</div>
-                        <h3 className="text-xl font-bold mb-2">No Tokens Yet</h3>
-                        <p className="text-[#9AA4B2] mb-6">Be the first agent to launch a token</p>
-                        <Link href="/skill" className="btn-primary inline-block">
+                        <h3 className="text-xl font-bold mb-2 text-white">No Tokens Yet</h3>
+                        <p className="text-white/50 mb-6">Be the first agent to launch a token</p>
+                        <Link href="/skill" className="inline-block px-8 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg font-semibold hover:shadow-xl hover:shadow-[#E8523D]/30 transition-all">
                           Launch First Token
                         </Link>
                       </td>
@@ -222,30 +217,32 @@ export default function LaunchPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: idx * 0.02 }}
-                        className="border-b border-[#E8523D]/5 hover:bg-white/5 transition-colors"
+                        className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
                       >
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            {token.hot && <span>🔥</span>}
-                            {token.isGraduated && <span title="Graduated">🎓</span>}
+                            {token.hot && <span className="text-lg">🔥</span>}
+                            {token.isGraduated && <span className="text-lg" title="Graduated">🎓</span>}
                             <div>
                               <div className="font-bold text-white">{token.name}</div>
-                              <div className="text-sm text-[#9AA4B2]">{token.symbol}</div>
+                              <div className="text-sm text-white/50">{token.symbol}</div>
                             </div>
                           </div>
                         </td>
                         <td className="p-4">
-                          <span className={`text-xs px-2 py-1 rounded font-semibold ${
+                          <span className={`text-xs px-3 py-1.5 rounded-lg font-semibold border ${
                             token.launchType === 'DIRECT' 
-                              ? 'bg-blue-500/20 text-blue-400' 
-                              : 'bg-orange-500/20 text-orange-400'
+                              ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' 
+                              : 'bg-orange-500/10 text-orange-400 border-orange-500/30'
                           }`}>
-                            {token.launchType === 'DIRECT' ? '👤 immortal' : '🚀 token'}
+                            {token.launchType === 'DIRECT' ? 'Immortal' : 'Token'}
                           </span>
                         </td>
                         <td className="p-4">
-                          <span className={`text-xs px-2 py-1 rounded font-semibold ${
-                            token.chain === 'BASE' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'
+                          <span className={`text-xs px-3 py-1.5 rounded-lg font-semibold border ${
+                            token.chain === 'BASE' 
+                              ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' 
+                              : 'bg-white/10 text-white/60 border-white/10'
                           }`}>
                             {token.chain}
                           </span>
@@ -255,24 +252,24 @@ export default function LaunchPage() {
                           <span className={`font-semibold ${
                             token.change24h.startsWith('+') ? 'text-green-400' : 
                             token.change24h.startsWith('-') ? 'text-red-400' : 
-                            'text-[#9AA4B2]'
+                            'text-white/50'
                           }`}>
                             {token.change24h}
                           </span>
                         </td>
                         <td className="p-4 text-right font-mono text-white">{token.mcapUSD}</td>
-                        <td className="p-4 text-right font-mono text-[#9AA4B2]">{token.vol24h}</td>
+                        <td className="p-4 text-right font-mono text-white/60">{token.vol24h}</td>
                         <td className="p-4 text-right font-mono text-white">{token.txCount}</td>
                         <td className="p-4 text-right">
                           <div className="flex flex-col items-end gap-1">
-                            <span className="text-green-400 text-sm">↑ {token.buyCount}</span>
-                            <span className="text-red-400 text-sm">↓ {token.sellCount}</span>
+                            <span className="text-green-400 text-sm font-semibold">↑ {token.buyCount}</span>
+                            <span className="text-red-400 text-sm font-semibold">↓ {token.sellCount}</span>
                           </div>
                         </td>
                         <td className="p-4 text-center">
                           <button
                             onClick={() => setTradeToken(token)}
-                            className="px-4 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white hover:opacity-90 transition-opacity"
+                            className="px-4 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white hover:shadow-lg hover:shadow-[#E8523D]/30 transition-all"
                           >
                             Trade
                           </button>
@@ -283,7 +280,7 @@ export default function LaunchPage() {
                               href={`https://dexscreener.com/${token.chain === 'BASE' ? 'base' : 'ethereum'}/${token.poolId || token.token}`} 
                               target="_blank" 
                               rel="noopener noreferrer" 
-                              className="text-[#9AA4B2] hover:text-[#E8523D] transition-colors"
+                              className="text-white/40 hover:text-[#E8523D] transition-colors"
                               title="Chart"
                             >
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -292,7 +289,7 @@ export default function LaunchPage() {
                                 <line x1="20" y1="20" x2="20" y2="4" strokeLinecap="round"/>
                               </svg>
                             </a>
-                            <a href={token.scanUrl} target="_blank" rel="noopener noreferrer" className="text-[#9AA4B2] hover:text-[#E8523D] transition-colors" title="Explorer">
+                            <a href={token.scanUrl} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-[#E8523D] transition-colors" title="Explorer">
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" strokeLinecap="round"/>
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
