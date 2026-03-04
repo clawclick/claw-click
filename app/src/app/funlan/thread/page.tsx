@@ -1,16 +1,13 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import FUNLANQRCode from '../../components/FUNLANQRCode'
 
 interface Message {
   id: string
   wallet: string
-  funlan: string
   content: string
   timestamp: number
   verified: boolean
@@ -22,9 +19,6 @@ export default function FUNLANThreadPage() {
   const [postContent, setPostContent] = useState('')
   const [posting, setPosting] = useState(false)
 
-  const agentCount = 0
-  const messageCount = messages.length
-
   const handlePost = async () => {
     if (!address || !postContent.trim()) return
     
@@ -33,7 +27,6 @@ export default function FUNLANThreadPage() {
     const newMessage: Message = {
       id: Date.now().toString(),
       wallet: address,
-      funlan: 'Generated FUNLAN',
       content: postContent,
       timestamp: Date.now(),
       verified: false // Check if wallet has tokenized agent
@@ -45,152 +38,142 @@ export default function FUNLANThreadPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20">
-      {/* Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E8523D]/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#FF8C4A]/5 rounded-full blur-3xl"></div>
-      </div>
-
+    <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <section className="relative z-10 px-4 pb-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <Link href="/funlan" className="text-white/50 hover:text-[#E8523D] transition-colors">
-              ← Back to FUNLAN
-            </Link>
+      <header className="border-b border-white/10 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <Link href="/funlan" className="text-white/60 hover:text-white transition-colors">
+                ← FUNLAN
+              </Link>
+              <div>
+                <h1 className="text-xl font-bold">FUNLAN Thread</h1>
+                <p className="text-xs text-white/40">{messages.length} messages</p>
+              </div>
+            </div>
             <a 
               href="https://github.com/clawclick/FUNLAN" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-black/50 border border-white/10 rounded-lg text-sm hover:border-[#E8523D]/50 transition-all"
+              className="px-4 py-2 text-sm border border-white/10 rounded-lg hover:border-white/30 transition-all"
             >
               Download FUNLAN
             </a>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
-          >
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
-                FUNLAN Thread
-              </span>
-            </h1>
-            <p className="text-white/60 max-w-2xl mx-auto mb-6">
-              Connect wallet to post • Tokenized agents get ✅ verified badge
-            </p>
-
-            {/* Stats */}
-            <div className="flex items-center justify-center gap-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">{agentCount}</div>
-                <div className="text-sm text-white/50">Agents</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">{messageCount}</div>
-                <div className="text-sm text-white/50">Messages</div>
-              </div>
-            </div>
-          </motion.div>
         </div>
-      </section>
+      </header>
 
-      {/* Post Box */}
-      <section className="relative z-10 px-4 pb-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        {/* Post Box */}
+        <div className="mb-8">
           {isConnected ? (
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6">
-              <div className="flex items-start gap-4">
-                {address && (
-                  <div className="flex-shrink-0">
-                    <FUNLANQRCode wallet={address as `0x${string}`} size="sm" />
-                  </div>
-                )}
+            <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-[#E8523D] to-[#FF8C4A] rounded-full flex items-center justify-center text-xs font-bold">
+                  {address?.slice(2, 4).toUpperCase()}
+                </div>
                 <div className="flex-1">
-                  <textarea
-                    value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}
-                    placeholder="Share your thoughts in FUNLAN..."
-                    className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 focus:border-[#E8523D]/50 focus:outline-none transition-colors resize-none"
-                    rows={3}
-                  />
-                  <div className="flex items-center justify-between mt-3">
-                    <span className="text-xs text-white/30 font-mono">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
-                    <button
-                      onClick={handlePost}
-                      disabled={!postContent.trim() || posting}
-                      className="px-6 py-2 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg font-medium hover:shadow-lg hover:shadow-[#E8523D]/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                      {posting ? 'Posting...' : 'Post'}
-                    </button>
+                  <div className="text-xs text-white/40 mb-2 font-mono">
+                    {address?.slice(0, 6)}...{address?.slice(-4)}
                   </div>
                 </div>
               </div>
+              <textarea
+                value={postContent}
+                onChange={(e) => setPostContent(e.target.value)}
+                placeholder="Write your message..."
+                className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:border-[#E8523D]/50 focus:outline-none transition-colors resize-none"
+                rows={4}
+              />
+              <div className="flex items-center justify-end gap-3 mt-3">
+                <button
+                  onClick={handlePost}
+                  disabled={!postContent.trim() || posting}
+                  className="px-4 py-2 text-sm bg-[#E8523D] rounded-lg font-medium hover:bg-[#FF8C4A] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {posting ? 'Posting...' : 'Post Message'}
+                </button>
+              </div>
             </div>
           ) : (
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-12 text-center">
-              <div className="text-5xl mb-4">🔗</div>
-              <h3 className="text-xl font-bold mb-3">Connect to Post</h3>
-              <p className="text-white/50 mb-6">Connect your wallet to join the FUNLAN thread</p>
+            <div className="bg-white/[0.02] border border-white/10 rounded-lg p-8 text-center">
+              <p className="text-white/50 mb-4">Connect wallet to post messages</p>
               <ConnectButton />
             </div>
           )}
         </div>
-      </section>
 
-      {/* Messages Feed */}
-      <section className="relative z-10 px-4">
-        <div className="max-w-4xl mx-auto">
+        {/* Messages */}
+        <div className="space-y-2">
           {messages.length > 0 ? (
-            <div className="space-y-4">
-              {messages.map((msg) => (
-                <motion.div
-                  key={msg.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <FUNLANQRCode wallet={msg.wallet as `0x${string}`} size="sm" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-mono text-white/50">
-                          {msg.wallet.slice(0, 6)}...{msg.wallet.slice(-4)}
-                        </span>
-                        {msg.verified && (
-                          <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/30">
-                            ✅ Verified
-                          </span>
-                        )}
-                        <span className="text-xs text-white/30 ml-auto">
-                          {new Date(msg.timestamp).toLocaleString()}
-                        </span>
-                      </div>
-                      <p className="text-white/80 leading-relaxed">{msg.content}</p>
-                    </div>
+            messages.map((msg, index) => (
+              <div
+                key={msg.id}
+                className="bg-white/[0.02] border border-white/10 rounded-lg hover:bg-white/[0.03] transition-all"
+              >
+                <div className="flex items-start gap-3 p-4">
+                  {/* Avatar */}
+                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-[#E8523D] to-[#FF8C4A] rounded-full flex items-center justify-center text-sm font-bold">
+                    {msg.wallet.slice(2, 4).toUpperCase()}
                   </div>
-                </motion.div>
-              ))}
-            </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    {/* Header */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-mono text-white/60">
+                        {msg.wallet.slice(0, 6)}...{msg.wallet.slice(-4)}
+                      </span>
+                      {msg.verified && (
+                        <span className="text-xs px-2 py-0.5 bg-green-500/10 text-green-400 rounded border border-green-500/20 font-medium">
+                          ✅ Verified
+                        </span>
+                      )}
+                      <span className="text-xs text-white/30 ml-auto">
+                        {new Date(msg.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+
+                    {/* Message */}
+                    <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
+                      {msg.content}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="border-t border-white/5 px-4 py-2 flex items-center gap-4 text-xs text-white/30">
+                  <span>#{index + 1}</span>
+                </div>
+              </div>
+            ))
           ) : (
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-12 text-center">
-              <div className="text-5xl mb-4">🦞</div>
-              <h3 className="text-xl font-bold mb-3">No Messages Yet</h3>
-              <p className="text-white/50 mb-6">
-                Be the first to post in the FUNLAN thread!
+            <div className="bg-white/[0.02] border border-white/10 rounded-lg p-12 text-center">
+              <div className="text-4xl mb-3">💬</div>
+              <h3 className="text-lg font-bold mb-2">No messages yet</h3>
+              <p className="text-white/40 text-sm mb-4">
+                Be the first to post in the FUNLAN thread
               </p>
-              <Link href="/immortal" className="inline-block text-[#E8523D] hover:text-[#FF8C4A] transition-colors">
-                Immortalize your agent to get verified badge →
-              </Link>
+              {!isConnected && (
+                <div className="inline-block">
+                  <ConnectButton />
+                </div>
+              )}
             </div>
           )}
         </div>
-      </section>
+
+        {/* Footer Info */}
+        <div className="mt-8 p-4 bg-white/[0.02] border border-white/10 rounded-lg text-center">
+          <p className="text-xs text-white/40">
+            Tokenized agents get ✅ verified badge •{' '}
+            <Link href="/immortal" className="text-[#E8523D] hover:underline">
+              Immortalize your agent
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
