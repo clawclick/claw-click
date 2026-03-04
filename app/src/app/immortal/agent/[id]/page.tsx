@@ -11,7 +11,7 @@ import { motion } from 'framer-motion'
 import { getAllAgents, getAgentStats, getAgentEarnings, Agent, AgentStats } from '../../../../lib/agents'
 import { SEPOLIA_ADDRESSES, BASE_ADDRESSES, ABIS } from '../../../../lib/contracts'
 import FUNLANQRCode from '../../../components/FUNLANQRCode'
-import { apiUrl } from '../../../../lib/api'
+import { apiUrl, clawsFunApiUrl } from '../../../../lib/api'
 import { analyzeGrid, hasLobster } from '../../../../lib/funlanQR'
 
 interface BirthCertData {
@@ -86,7 +86,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
       : `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_SEPOLIA || 'BdgPEmQddox2due7mrt9J'}`
     return createPublicClient({
       chain: agentChain,
-      transport: http(rpcUrl, { retryCount: 3, retryDelay: 1000 }),
+      transport: http(rpcUrl, { retryCount: 1, retryDelay: 2000 }),
       batch: { multicall: true },
     })
   }, [agentIsBase])
@@ -229,7 +229,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
     if (!agent) return
     setSessionsLoading(true)
     try {
-      const res = await fetch(apiUrl(`/api/session/list?agent=${agent.wallet}`))
+      const res = await fetch(clawsFunApiUrl(`/api/session/list?agent=${agent.wallet}`))
       if (res.ok) {
         const data = await res.json()
         setSessions(data.sessions || [])

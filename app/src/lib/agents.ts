@@ -8,15 +8,20 @@ const isMainnet = process.env.NEXT_PUBLIC_NETWORK === 'mainnet'
 const network = isMainnet ? base : sepolia
 const addresses = isMainnet ? BASE_ADDRESSES : SEPOLIA_ADDRESSES
 
-// Create public client for reading
+// Create public client for reading — retryCount: 0 to avoid hammering RPC on 429s
 const rpcUrl = isMainnet 
   ? `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_BASE || 'BdgPEmQddox2due7mrt9J'}`
   : `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_SEPOLIA || 'BdgPEmQddox2due7mrt9J'}`
 
 export const publicClient = createPublicClient({
   chain: network,
-  transport: http(rpcUrl)
+  transport: http(rpcUrl, { retryCount: 0 })
 })
+
+// Simple in-memory cache for getAllAgents to prevent repeated RPC fallback hits
+let _agentsCache: { data: Agent[]; timestamp: number } | null = null
+const AGENTS_CACHE_TTL = 60_000 // 60 seconds
+let _fallbackCooldown = 0 // timestamp until which on-chain fallback is suppressed
 
 export interface Agent {
   wallet: `0x${string}`
@@ -77,6 +82,11 @@ export interface AgentStats {
  * Fetch all agents from claw.click backend (V4 tokenization feed)
  */
 export async function getAllAgents(): Promise<Agent[]> {
+  // Return cached data if still fresh
+  if (_agentsCache && Date.now() - _agentsCache.timestamp < AGENTS_CACHE_TTL) {
+    return _agentsCache.data
+  }
+
   try {
     const CLAWCLICK_BACKEND_URL = 
       process.env.NEXT_PUBLIC_CLAWCLICK_BACKEND_URL || 
@@ -122,11 +132,24 @@ export async function getAllAgents(): Promise<Agent[]> {
       launchedAt: agent.launched_at || undefined,
     }))
 
+    // Cache successful response
+    _agentsCache = { data: agents, timestamp: Date.now() }
     return agents
   } catch (error) {
     console.error('Failed to fetch agents from backend:', error)
     
-    // Fallback: Try querying Birth Certificate NFT for agent count
+    // Return stale cache if available (better than hitting RPC)
+    if (_agentsCache) {
+      console.log('Using stale agents cache')
+      return _agentsCache.data
+    }
+
+    // Fallback: Try querying Birth Certificate NFT — but only if cooldown expired
+    if (Date.now() < _fallbackCooldown) {
+      console.log('RPC fallback on cooldown, skipping')
+      return []
+    }
+
     try {
       const count = await publicClient.readContract({
         address: addresses.birthCertificate as `0x${string}`,
@@ -141,6 +164,8 @@ export async function getAllAgents(): Promise<Agent[]> {
       return []
     } catch (fallbackError) {
       console.error('Fallback query failed:', fallbackError)
+      // Set cooldown to prevent further RPC spam for 2 minutes
+      _fallbackCooldown = Date.now() + 120_000
       return []
     }
   }
@@ -148,8 +173,25 @@ export async function getAllAgents(): Promise<Agent[]> {
 
 /**
  * Get single agent by wallet address
+ * Tries cached agents list first, then falls back to backend, then on-chain (with cooldown)
  */
 export async function getAgentByWallet(wallet: `0x${string}`): Promise<Agent | null> {
+  // Try cache first
+  if (_agentsCache) {
+    const cached = _agentsCache.data.find(a => a.wallet.toLowerCase() === wallet.toLowerCase())
+    if (cached) return cached
+  }
+
+  // Try fetching all agents (which has its own cache)
+  try {
+    const agents = await getAllAgents()
+    const found = agents.find(a => a.wallet.toLowerCase() === wallet.toLowerCase())
+    if (found) return found
+  } catch (_) {}
+
+  // Last resort: direct on-chain call (respects cooldown)
+  if (Date.now() < _fallbackCooldown) return null
+
   try {
     const agentData = await publicClient.readContract({
       address: addresses.clawclick.factory as `0x${string}`,

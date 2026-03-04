@@ -10,7 +10,7 @@ export const config = getDefaultConfig({
   transports: {
     [sepolia.id]: http('https://ethereum-sepolia-rpc.publicnode.com'),
     [base.id]: http(
-      `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_BASE || '8fwq-KqQ3XRiUCWg_q_xJ'}`
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_BASE || 'BdgPEmQddox2due7mrt9J'}`
     ),
     [mainnet.id]: http(
       `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH || 'BdgPEmQddox2due7mrt9J'}`

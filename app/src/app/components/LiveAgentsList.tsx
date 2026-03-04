@@ -11,6 +11,9 @@ export default function LiveAgentsList() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let pollInterval = 60_000 // 60s default, backs off on error
+    let timer: ReturnType<typeof setTimeout>
+
     async function loadAgents() {
       try {
         setLoading(true)
@@ -25,17 +28,20 @@ export default function LiveAgentsList() {
         }
 
         setAgents(fetchedAgents)
+        pollInterval = 60_000 // reset to normal on success
       } catch (err) {
         console.error('Failed to load agents:', err)
         setError('Failed to load agents from blockchain.')
+        // Back off on error: double interval up to 5 minutes
+        pollInterval = Math.min(pollInterval * 2, 300_000)
       } finally {
         setLoading(false)
+        timer = setTimeout(loadAgents, pollInterval)
       }
     }
 
     loadAgents()
-    const interval = setInterval(loadAgents, 30000)
-    return () => clearInterval(interval)
+    return () => clearTimeout(timer)
   }, [])
 
   const getChainName = (chainId?: number) => {
