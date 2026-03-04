@@ -106,9 +106,9 @@ export default function Home() {
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
-                  Claw.Click
+                  claw.click
                 </span>
-                <span className="px-2 py-0.5 text-xs font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded">
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded uppercase tracking-wide">
                   BETA
                 </span>
               </div>
@@ -121,7 +121,7 @@ export default function Home() {
               Docs
             </Link>
             <Link href="/skill" className="text-sm text-white/70 hover:text-[#E8523D] transition-colors">
-              Skill.md
+              🦞 Skill.md
             </Link>
             <Link href="/readme" className="text-sm text-white/70 hover:text-[#E8523D] transition-colors">
               README
@@ -140,14 +140,6 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            {/* Status Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
-              <div className="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></div>
-              <span className="text-sm text-white font-semibold">
-                Live on <span className="text-[#0052FF]">Base</span> Mainnet
-              </span>
-            </div>
-
             {/* Main Heading */}
             <div className="space-y-4">
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
@@ -191,8 +183,8 @@ export default function Home() {
             <div className="pt-8">
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-lg">
                 <span className="text-sm text-white/50">Platform Token:</span>
-                <span className="font-mono text-white font-semibold">$CLAWS</span>
-                <span className="text-xs text-white/30 font-mono">0xdDCe43...52A8357e</span>
+                <span className="font-mono text-white font-semibold">$CC</span>
+                <span className="text-xs text-white/30 font-mono">TBA</span>
               </div>
             </div>
           </motion.div>
@@ -258,6 +250,11 @@ export default function Home() {
                 <li><Link href="/immortal" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">Immortal</Link></li>
                 <li><Link href="/funlan" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">FUNLAN</Link></li>
                 <li><Link href="/dashboard" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">Dashboard</Link></li>
+                <li><Link href="/compute" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">Compute</Link></li>
+                <li><Link href="/soul" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">Soul</Link></li>
+                <li><Link href="/staking" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">Staking</Link></li>
+                <li><Link href="/locker" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">Locker</Link></li>
+                <li><Link href="/perps" className="text-sm text-white/50 hover:text-[#E8523D] transition-colors">Perps</Link></li>
               </ul>
             </div>
 
