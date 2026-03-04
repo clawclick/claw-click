@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import ProductBox from '../components/home/ProductBox'
+import ProductBox from './components/home/ProductBox'
 
 export default function Home() {
   const products = [
