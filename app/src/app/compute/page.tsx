@@ -124,32 +124,40 @@ export default function ComputePage() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6">
-              <div className="text-3xl mb-3">⚡</div>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
+                <span className="text-white font-bold">⚡</span>
+              </div>
               <h3 className="text-xl font-bold mb-2">Instant Deploy</h3>
               <p className="text-white/50 text-sm">
                 Launch GPU instances in seconds. Pre-configured environments with all AI frameworks ready.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6">
-              <div className="text-3xl mb-3">💰</div>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
+                <span className="text-white font-bold">$</span>
+              </div>
               <h3 className="text-xl font-bold mb-2">Pay-Per-Hour</h3>
               <p className="text-white/50 text-sm">
                 Only pay for what you use. No monthly commitments. Cancel anytime and stop billing instantly.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6">
-              <div className="text-3xl mb-3">🔐</div>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
+                <span className="text-white font-bold">🔒</span>
+              </div>
               <h3 className="text-xl font-bold mb-2">Secure Isolation</h3>
               <p className="text-white/50 text-sm">
                 Each session runs in an isolated container with dedicated resources. Your data stays private.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6">
-              <div className="text-3xl mb-3">📊</div>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
+                <span className="text-white font-bold">📊</span>
+              </div>
               <h3 className="text-xl font-bold mb-2">Real-Time Monitoring</h3>
               <p className="text-white/50 text-sm">
                 Track GPU usage, memory, CPU, and costs in real-time. Get alerts when sessions end.

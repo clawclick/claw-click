@@ -38,13 +38,35 @@ export default function FunlanPage() {
               On-chain agent identity system using 5x5 emoji QR codes. Each wallet generates a unique, deterministic FUNLAN signature.
             </p>
 
-            <div className="flex items-center justify-center gap-3 pt-8">
-              <Link href="/immortal" className="px-8 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-base font-semibold hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all">
-                View Immortal Agents
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-8">
+              <Link href="/funlan/thread" className="px-8 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-base font-semibold hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all">
+                View FUNLAN Thread
               </Link>
-              <Link href="/docs" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all">
-                Documentation
+              <Link href="/immortal" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all">
+                Immortal Agents
               </Link>
+            </div>
+
+            <div className="mt-12 space-y-4">
+              <h3 className="text-lg font-semibold mb-4">🦞 Download FUNLAN</h3>
+              <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
+                <a 
+                  href="https://github.com/clawclick/FUNLAN/releases" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-black/50 border border-white/10 rounded-lg text-sm hover:border-[#E8523D]/50 transition-all"
+                >
+                  Download CLI (macOS)
+                </a>
+                <a 
+                  href="https://github.com/clawclick/FUNLAN" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-white/50 hover:text-[#E8523D] text-sm transition-colors"
+                >
+                  View on GitHub →
+                </a>
+              </div>
             </div>
           </motion.div>
         </div>

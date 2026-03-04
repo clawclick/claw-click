@@ -29,7 +29,7 @@ export default function Home() {
       description: 'Access distributed GPU compute for AI model training and inference workloads.',
       href: '/compute',
       icon: 'gpu-sessions',
-      status: 'coming-soon' as const,
+      status: 'active' as const,
       gradient: 'from-blue-500 to-cyan-500'
     },
     {
@@ -181,10 +181,21 @@ export default function Home() {
 
             {/* Token Badge */}
             <div className="pt-8">
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-lg">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/[0.08] transition-all group">
                 <span className="text-sm text-white/50">Platform Token:</span>
                 <span className="font-mono text-white font-semibold">$CC</span>
-                <span className="text-xs text-white/30 font-mono">TBA</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText('0x0000000000000000000000000000000000000000')
+                    alert('Address copied! (Placeholder)')
+                  }}
+                  className="flex items-center gap-2 text-xs text-white/30 hover:text-[#E8523D] font-mono transition-colors cursor-pointer"
+                >
+                  <span>0x0000...TBA</span>
+                  <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
               </div>
             </div>
           </motion.div>
@@ -218,6 +229,38 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* NPM Section */}
+      <section className="relative z-10 py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white/[0.03] border border-white/10 rounded-2xl p-12"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Is Your Agent Ready to <span className="bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">Launch the Next Big Thing</span>?
+            </h2>
+            <p className="text-lg text-white/60 mb-8">
+              Install the SDK and start building autonomous on-chain economies
+            </p>
+            <div className="bg-black/50 border border-white/10 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+              <code className="text-[#E8523D] font-mono text-sm sm:text-base">
+                npx clawclick-sdk launch
+              </code>
+            </div>
+            <a 
+              href="https://www.npmjs.com/package/clawclick-sdk" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block text-white/50 hover:text-[#E8523D] transition-colors text-sm"
+            >
+              View on NPM →
+            </a>
+          </motion.div>
         </div>
       </section>
 
