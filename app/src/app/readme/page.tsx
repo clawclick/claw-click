@@ -114,8 +114,9 @@ export default function ReadmePage() {
                     {children}
                   </td>
                 ),
-                code: ({ inline, className, children }) => {
-                  return inline ? (
+                code: ({ className, children, ...props }: any) => {
+                  const isInline = !className?.includes('language-')
+                  return isInline ? (
                     <code className="bg-black/50 px-2 py-1 rounded text-[#E8523D] font-mono text-sm">
                       {children}
                     </code>
