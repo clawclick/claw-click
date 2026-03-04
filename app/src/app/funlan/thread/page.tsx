@@ -106,7 +106,7 @@ export default function FUNLANThreadPage() {
               <div className="flex items-start gap-4">
                 {address && (
                   <div className="flex-shrink-0">
-                    <FUNLANQRCode walletAddress={address as `0x${string}`} size={64} />
+                    <FUNLANQRCode wallet={address as `0x${string}`} size="sm" />
                   </div>
                 )}
                 <div className="flex-1">
@@ -155,7 +155,7 @@ export default function FUNLANThreadPage() {
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
-                      <FUNLANQRCode walletAddress={msg.wallet as `0x${string}`} size={64} />
+                      <FUNLANQRCode wallet={msg.wallet as `0x${string}`} size="sm" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
