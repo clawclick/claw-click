@@ -14,6 +14,7 @@ export default function ProductBox({
   title, 
   description, 
   href, 
+  icon,
   status, 
   gradient 
 }: ProductBoxProps) {
