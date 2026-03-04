@@ -8,81 +8,62 @@ import { LightningIcon, DollarIcon, LockIcon, ChartIcon } from '../../components
 import { clawsFunApiUrl } from '../../lib/api'
 
 interface GpuCard {
-  gpuName: string
-  numGpus: number
-  hourlyPrice: number
+  id: string
+  label: string
+  desc: string
+  hourlyPrice: number | null
   numOffers: number
+  available: boolean
+  loading: boolean
 }
 
+// Same GPU list as the session creation wizard (/session/new)
+const GPU_OPTIONS = [
+  { id: 'any', label: 'Any GPU', desc: 'Cheapest available GPU' },
+  { id: 'RTX 4060', label: 'RTX 4060', desc: '8GB VRAM, budget inference' },
+  { id: 'RTX 4090', label: 'RTX 4090', desc: '24GB VRAM, fast inference' },
+  { id: 'RTX 5090', label: 'RTX 5090', desc: '32GB VRAM, next-gen flagship' },
+  { id: 'H100 SXM', label: 'H100 SXM', desc: '80GB VRAM, enterprise workloads' },
+  { id: 'H200', label: 'H200', desc: '141GB HBM3e, next-gen datacenter' },
+]
+
 export default function ComputePage() {
-  const [gpuCards, setGpuCards] = useState<GpuCard[]>([])
-  const [loading, setLoading] = useState(true)
+  const [gpuCards, setGpuCards] = useState<GpuCard[]>(
+    GPU_OPTIONS.map(g => ({ ...g, hourlyPrice: null, numOffers: 0, available: false, loading: true }))
+  )
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const fetchAvailable = useCallback(async () => {
     try {
-      // Single broad search — gpuType 'any' returns all available GPUs
-      // Query for 1-GPU and multi-GPU configs
-      const queries = [1, 2, 4, 8].map(numGpus =>
-        fetch(clawsFunApiUrl('/api/session/estimate'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ gpuType: 'any', numGpus, durationHours: 1 }),
-        }).then(r => r.ok ? r.json() : null).catch(() => null)
-      )
-
-      const results = await Promise.all(queries)
-      const cards: GpuCard[] = []
-      const seen = new Set<string>()
-
-      for (let i = 0; i < results.length; i++) {
-        const data = results[i]
-        if (!data?.available || !data.gpuName) continue
-        const numGpus = [1, 2, 4, 8][i]
-        const key = `${data.gpuName}-${numGpus}`
-        if (seen.has(key)) continue
-        seen.add(key)
-        cards.push({
-          gpuName: data.gpuName,
-          numGpus,
-          hourlyPrice: data.hourlyPrice,
-          numOffers: data.numOffers,
-        })
-      }
-
-      // Also probe common GPU names individually for single-GPU to find variety
-      const gpuProbes = ['RTX 4090', 'RTX 3090', 'RTX A6000', 'A100', 'A100 80GB', 'H100', 'H100 80GB', 'L40', 'L40S', 'A40', 'RTX 4080', 'RTX A5000']
-      const probeResults = await Promise.all(
-        gpuProbes.map(gpuType =>
+      const results = await Promise.all(
+        GPU_OPTIONS.map(g =>
           fetch(clawsFunApiUrl('/api/session/estimate'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ gpuType, numGpus: 1, durationHours: 1 }),
+            body: JSON.stringify({ gpuType: g.id, numGpus: 1, durationHours: 1 }),
           }).then(r => r.ok ? r.json() : null).catch(() => null)
         )
       )
 
-      for (const data of probeResults) {
-        if (!data?.available || !data.gpuName) continue
-        const key = `${data.gpuName}-1`
-        if (seen.has(key)) continue
-        seen.add(key)
-        cards.push({
-          gpuName: data.gpuName,
-          numGpus: 1,
-          hourlyPrice: data.hourlyPrice,
-          numOffers: data.numOffers,
+      setGpuCards(
+        GPU_OPTIONS.map((g, i) => {
+          const data = results[i]
+          if (!data?.available || !data.gpuName) {
+            return { ...g, hourlyPrice: null, numOffers: 0, available: false, loading: false }
+          }
+          return {
+            ...g,
+            hourlyPrice: data.hourlyPrice,
+            numOffers: data.numOffers,
+            available: true,
+            loading: false,
+          }
         })
-      }
-
-      // Sort by price ascending
-      cards.sort((a, b) => a.hourlyPrice - b.hourlyPrice)
-      setGpuCards(cards)
+      )
       setLastUpdated(new Date())
     } catch (err) {
       console.error('Failed to fetch GPU availability:', err)
-    } finally {
-      setLoading(false)
+      setGpuCards(prev => prev.map(c => ({ ...c, loading: false })))
     }
   }, [])
 
@@ -146,73 +127,86 @@ export default function ComputePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loading ? (
-              // Skeleton loaders
-              Array.from({ length: 6 }).map((_, idx) => (
-                <div key={idx} className="bg-white/[0.03] border border-white/5 rounded-xl p-6 animate-pulse">
-                  <div className="h-6 bg-white/10 rounded w-2/3 mb-4"></div>
-                  <div className="space-y-3 mb-6">
-                    <div className="h-4 bg-white/5 rounded w-full"></div>
-                    <div className="h-4 bg-white/5 rounded w-3/4"></div>
-                    <div className="h-4 bg-white/5 rounded w-1/2"></div>
-                  </div>
-                  <div className="h-9 bg-white/5 rounded-lg"></div>
-                </div>
-              ))
-            ) : gpuCards.length === 0 ? (
-              <div className="col-span-full text-center py-16">
-                <p className="text-white/40 text-lg">No GPU instances currently available. Check back soon.</p>
-              </div>
-            ) : (
-              gpuCards.map((gpu, idx) => {
-                const label = gpu.numGpus > 1 ? `${gpu.gpuName} x${gpu.numGpus}` : gpu.gpuName
-                const status = gpu.numOffers <= 3 ? 'limited' : 'available'
-                return (
-                  <motion.div
-                    key={`${gpu.gpuName}-${gpu.numGpus}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.04 }}
-                    className="bg-white/[0.03] border border-white/10 rounded-xl p-6 transition-all hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-bold">{label}</h3>
+            {gpuCards.map((gpu, idx) => {
+              const status = gpu.loading
+                ? 'checking'
+                : !gpu.available
+                  ? 'unavailable'
+                  : gpu.numOffers <= 3
+                    ? 'limited'
+                    : 'available'
+
+              return (
+                <motion.div
+                  key={gpu.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.04 }}
+                  className={`bg-white/[0.03] border rounded-xl p-6 transition-all ${
+                    gpu.available
+                      ? 'border-white/10 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 cursor-pointer'
+                      : 'border-white/5 opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-bold">{gpu.label}</h3>
+                    {gpu.loading ? (
+                      <span className="text-xs px-2 py-1 rounded font-semibold bg-white/10 text-white/40 animate-pulse">checking</span>
+                    ) : (
                       <span className={`text-xs px-2 py-1 rounded font-semibold ${
                         status === 'available'
                           ? 'bg-green-500/20 text-green-400'
-                          : 'bg-yellow-500/20 text-yellow-400'
+                          : status === 'limited'
+                            ? 'bg-yellow-500/20 text-yellow-400'
+                            : 'bg-red-500/20 text-red-400'
                       }`}>
                         {status}
                       </span>
-                    </div>
+                    )}
+                  </div>
 
-                    <div className="space-y-2 mb-6">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/50">GPUs:</span>
-                        <span className="font-semibold">{gpu.numGpus}x</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/50">Price:</span>
-                        <span className="font-semibold text-[#E8523D]">
-                          ${gpu.hourlyPrice < 1 ? gpu.hourlyPrice.toFixed(3) : gpu.hourlyPrice.toFixed(2)}/hr
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/50">Machines:</span>
-                        <span className="font-semibold text-white/70">{gpu.numOffers} available</span>
-                      </div>
-                    </div>
+                  <p className="text-xs text-white/40 mb-5">{gpu.desc}</p>
 
-                    <Link href="/session/new">
-                      <button className="w-full py-2 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-[#E8523D]/30 transition-all">
-                        Launch Session →
-                      </button>
-                    </Link>
-                  </motion.div>
-                )
-              })
-            )}
+                  <div className="space-y-2 mb-6">
+                    {gpu.loading ? (
+                      <>
+                        <div className="h-4 bg-white/5 rounded w-full animate-pulse"></div>
+                        <div className="h-4 bg-white/5 rounded w-3/4 animate-pulse"></div>
+                      </>
+                    ) : gpu.available ? (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-white/50">Price:</span>
+                          <span className="font-semibold text-[#E8523D]">
+                            ${gpu.hourlyPrice! < 1 ? gpu.hourlyPrice!.toFixed(3) : gpu.hourlyPrice!.toFixed(2)}/hr
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-white/50">Machines:</span>
+                          <span className="font-semibold text-white/70">{gpu.numOffers} available</span>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-sm text-white/30">No offers currently available</p>
+                    )}
+                  </div>
+
+                  <Link href="/session/new">
+                    <button
+                      disabled={!gpu.available}
+                      className={`w-full py-2 rounded-lg text-sm font-medium transition-all ${
+                        gpu.available
+                          ? 'bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] hover:shadow-lg hover:shadow-[#E8523D]/30'
+                          : 'bg-white/5 text-white/30 cursor-not-allowed'
+                      }`}
+                    >
+                      {gpu.available ? 'Launch Session →' : 'Unavailable'}
+                    </button>
+                  </Link>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </section>
