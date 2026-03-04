@@ -747,7 +747,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
             <p className="text-white/50 mb-4">
               {session.status === 'provisioning'
                 ? 'A Vast.ai GPU instance is being provisioned. This typically takes 1-5 minutes.'
-                : 'The agent is being bootstrapped with its on-chain memories and IPFS data.'}
+                : 'The agent is being bootstrapped with its on-chain memories and IPFS data. Please dont close this page while your openclaw agent is being set up, it may take several minutes depending on the amount of data.'}
             </p>
             <div className="space-y-2 text-sm text-left bg-white/[0.03] rounded-lg p-4 border border-white/10">
               <div className="flex justify-between">
