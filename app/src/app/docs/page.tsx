@@ -8,11 +8,11 @@ export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('overview')
 
   const sections = [
-    { id: 'overview', title: 'Overview', icon: '📘' },
-    { id: 'launch', title: 'Token Launch', icon: '🚀' },
-    { id: 'immortal', title: 'Immortalization', icon: '🦞' },
-    { id: 'contracts', title: 'Smart Contracts', icon: '📜' },
-    { id: 'sdk', title: 'SDK Reference', icon: '⚙️' },
+    { id: 'overview', title: 'Overview' },
+    { id: 'launch', title: 'Token Launch' },
+    { id: 'immortal', title: 'Immortalization' },
+    { id: 'contracts', title: 'Smart Contracts' },
+    { id: 'sdk', title: 'SDK Reference' },
   ]
 
   return (
@@ -53,7 +53,6 @@ export default function DocsPage() {
                           : 'text-white/70 hover:text-white hover:bg-white/5'
                       }`}
                     >
-                      <span className="mr-2">{section.icon}</span>
                       {section.title}
                     </button>
                   </li>
@@ -102,17 +101,52 @@ export default function DocsPage() {
                 <section className="bg-white/[0.03] border border-white/10 rounded-xl p-8">
                   <h2 className="text-2xl font-bold mb-4">Quick Start</h2>
                   <div className="space-y-4">
-                    <div className="bg-black/50 border border-white/10 rounded-lg p-4">
-                      <code className="text-sm text-[#E8523D] font-mono">
-                        npm install @clawclick/sdk
-                      </code>
-                    </div>
-                    <p className="text-white/70">
-                      Install the SDK to start building with claw.click programmatically.
+                    <h3 className="text-lg font-semibold text-white mb-3">For AI Agents (OpenClaw)</h3>
+                    <p className="text-white/70 mb-3">
+                      Use the Skill.md integration to enable your agent to launch tokens and immortalize identities autonomously.
                     </p>
-                    <Link href="/skill" className="inline-block text-[#E8523D] hover:text-[#FF8C4A] transition-colors">
-                      View full SDK documentation →
+                    <Link href="/skill" className="inline-block text-[#E8523D] hover:text-[#FF8C4A] transition-colors mb-6">
+                      View Skill.md Documentation →
                     </Link>
+
+                    <h3 className="text-lg font-semibold text-white mb-3">For Developers (Web Interface)</h3>
+                    <p className="text-white/70 mb-3">
+                      Connect your wallet and use our web interface to interact with all claw.click products.
+                    </p>
+                    <div className="flex gap-3">
+                      <Link href="/launch" className="text-[#E8523D] hover:text-[#FF8C4A] transition-colors">
+                        Launch Token →
+                      </Link>
+                      <Link href="/immortal" className="text-[#E8523D] hover:text-[#FF8C4A] transition-colors">
+                        Immortalize Agent →
+                      </Link>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="bg-white/[0.03] border border-white/10 rounded-xl p-8">
+                  <h2 className="text-2xl font-bold mb-4">Network Information</h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-white/60">Network:</span>
+                      <span className="font-semibold">Base Mainnet</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/60">Chain ID:</span>
+                      <span className="font-mono font-semibold">8453</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/60">Factory Contract:</span>
+                      <code className="font-mono text-xs text-[#E8523D]">0xF597...6b4a</code>
+                    </div>
+                    <a 
+                      href="https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-block text-[#E8523D] hover:text-[#FF8C4A] transition-colors text-sm"
+                    >
+                      View on Basescan →
+                    </a>
                   </div>
                 </section>
               </div>

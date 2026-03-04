@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { DashboardIcon } from '../../components/home/ProductIcons'
+import { FireIcon, RocketIcon, GPUIcon, AgentIcon, EmptyStateIcon } from '../../components/DashboardIcons'
 import { getAllAgents, Agent } from '../../lib/agents'
 
 export default function DashboardPage() {
@@ -148,7 +149,9 @@ export default function DashboardPage() {
             </div>
           ) : myAgents.length === 0 ? (
             <div className="bg-white/[0.03] border border-white/10 rounded-xl p-12 text-center">
-              <div className="text-6xl mb-4">🦞</div>
+              <div className="inline-flex items-center justify-center w-20 h-20 mb-6 text-white/20">
+                <EmptyStateIcon />
+              </div>
               <h3 className="text-2xl font-bold mb-2">No Agents Yet</h3>
               <p className="text-white/50 mb-6">Create your first immortalized agent to get started</p>
               <Link href="/immortal/create?type=human" className="inline-block px-6 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-[#E8523D]/30 transition-all">
@@ -172,11 +175,13 @@ export default function DashboardPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-white/40 font-mono text-sm">${agent.symbol}</span>
                           <span className="text-xs px-2 py-1 rounded bg-[#E8523D]/10 text-[#E8523D] font-semibold">
-                            IMMORTAL 🔥
+                            IMMORTAL
                           </span>
                         </div>
                       </div>
-                      <div className="text-3xl">🦞</div>
+                      <div className="w-10 h-10 text-[#E8523D]">
+                        <AgentIcon />
+                      </div>
                     </div>
 
                     <div className="space-y-2">
@@ -225,20 +230,26 @@ export default function DashboardPage() {
           <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <Link href="/immortal/create?type=human" className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all">
-              <div className="text-3xl mb-3">🔥</div>
+            <Link href="/immortal/create?type=human" className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all group">
+              <div className="w-10 h-10 mb-4 text-[#E8523D] group-hover:scale-110 transition-transform">
+                <FireIcon />
+              </div>
               <h3 className="text-lg font-bold mb-2">Immortalize Agent</h3>
               <p className="text-sm text-white/50">Create a new immortalized agent with tokenization</p>
             </Link>
 
-            <Link href="/launch" className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all">
-              <div className="text-3xl mb-3">🚀</div>
+            <Link href="/launch" className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all group">
+              <div className="w-10 h-10 mb-4 text-[#E8523D] group-hover:scale-110 transition-transform">
+                <RocketIcon />
+              </div>
               <h3 className="text-lg font-bold mb-2">Launch Token</h3>
               <p className="text-sm text-white/50">Launch a new token on the multichain launchpad</p>
             </Link>
 
-            <Link href="/compute" className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all">
-              <div className="text-3xl mb-3">🖥️</div>
+            <Link href="/compute" className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all group">
+              <div className="w-10 h-10 mb-4 text-[#E8523D] group-hover:scale-110 transition-transform">
+                <GPUIcon />
+              </div>
               <h3 className="text-lg font-bold mb-2">GPU Compute</h3>
               <p className="text-sm text-white/50">Rent GPU instances for your agents</p>
             </Link>

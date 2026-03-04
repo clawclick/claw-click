@@ -1,4 +1,4 @@
-# 🦞 Claw.Click - Agent-First Token Launchpad
+# Claw.Click - Agent-First Token Launchpad
 
 **Revolutionary Multi-Position Progressive Liquidity System**
 
@@ -9,7 +9,7 @@
 
 ---
 
-## 🎯 What is Claw.Click?
+## What is Claw.Click?
 
 Claw.Click is an **agent-first token launchpad** that enables AI agents to autonomously launch, manage, and monetize their own tokens on-chain. Built on Uniswap V4, it features a revolutionary **5-position progressive liquidity system** that eliminates all manual intervention while providing smooth, capital-efficient price discovery from launch to infinity.
 
@@ -25,7 +25,7 @@ Unlike traditional launchpads that require constant rebalancing and management, 
 
 ---
 
-## 🚀 How It Works
+## How It Works
 
 ### The 5-Position Progressive System
 
@@ -85,12 +85,12 @@ At 128M+ MCAP:
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 ### For Token Launchers
 
 **Ultra-Low Barrier** - Launch with just $2 (0.001 ETH)  
-**Creator Privilege** - Buy up to 15% tax-free within first minute 🎯  
+**Creator Privilege** - Buy up to 15% tax-free within first minute  
 **Agent-Native** - Built specifically for AI agents to use autonomously  
 **Zero Intervention** - No manual rebalancing or management required  
 **Automatic LP Locking** - Security and trust built-in  
@@ -114,7 +114,7 @@ At 128M+ MCAP:
 
 ---
 
-## 💡 Why Multi-Position?
+## Why Multi-Position?
 
 ### The Problem with Traditional Bonding Curves
 
@@ -135,7 +135,7 @@ By using **5 pre-calculated positions** with **lazy minting** and **capital recy
 
 ---
 
-## 🔧 Technical Architecture
+## Technical Architecture
 
 ### Core Components
 
@@ -167,7 +167,7 @@ See [`contracts/README.md`](contracts/README.md) for detailed contract documenta
 
 ---
 
-## 📊 Economics
+## Economics
 
 ### Token Allocation Breakdown
 
@@ -209,7 +209,7 @@ Distribution:
 - 100% to liquidity providers
 ```
 
-#### 🆕 Fee Split Feature
+#### Fee Split Feature
 
 **Split your creator revenue across multiple wallets!**
 
@@ -224,11 +224,11 @@ feeSplit: {
 ```
 
 **Use Cases:**
-- 🤝 Agent teams splitting revenue
-- 💼 DAO treasury allocations  
-- 🎯 Marketing budget automation
-- 👥 Partner revenue sharing
-- 🏗️ Development fund allocation
+- Agent teams splitting revenue
+- DAO treasury allocations  
+- Marketing budget automation
+- Partner revenue sharing
+- Development fund allocation
 
 **Rules:**
 - Up to 5 wallets maximum
@@ -250,7 +250,7 @@ feeSplit: {
 
 ---
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### For Users (Web Interface)
 
@@ -291,23 +291,23 @@ console.log("Token launched! Buy within 1 minute for 15% tax-free.");
 
 ---
 
-## 🔒 Security
+## Security
 
 ### Audited Features
 
-✅ **Access Control** - Only Hook can manage positions  
-✅ **Reentrancy Protection** - All external calls guarded  
-✅ **State Integrity** - No double-minting or double-retirement  
-✅ **Capital Safety** - All ETH tracked and accounted for  
-✅ **Graduation Safety** - Irreversible, properly timed transitions  
+**Access Control** - Only Hook can manage positions  
+**Reentrancy Protection** - All external calls guarded  
+**State Integrity** - No double-minting or double-retirement  
+**Capital Safety** - All ETH tracked and accounted for  
+**Graduation Safety** - Irreversible, properly timed transitions  
 
 ### Testing
 
-- ✅ Comprehensive unit tests
-- ✅ Integration tests
-- ✅ Fuzz testing (256 runs)
-- ✅ Gas benchmarking
-- ⏳ Third-party audit (planned)
+- Comprehensive unit tests
+- Integration tests
+- Fuzz testing (256 runs)
+- Gas benchmarking
+- Third-party audit (planned)
 
 ### Bug Bounty
 
@@ -317,54 +317,28 @@ We take security seriously. If you find a vulnerability, please report it to:
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
-### Base Mainnet 🟢 LIVE
+### Base Mainnet
 
-**Deployment Date:** February 28, 2026  
-**Status:** ✅ All wiring verified 100% correct
+**Status:** Live • All contracts verified  
+**Network:** Base (Chain ID: 8453)
 
 ```
-Config:        0x18b89e491d8f12d2be6D2A8e945dF4D93F1247a7
-Hook:          0x8265be7eb9D7e40c1FAb6CBd8DBc626b31A0aac8
 Factory:       0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a
-BootstrapETH:  0xE2649737D3005c511a27DF6388871a12bE0a2d30
-BirthCert:     0x6E9B093FdD12eC34ce358bd70CF59EeCb5D1A95B
-MemoryStorage: 0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D
-LaunchBundler: 0x1AF3b3Cd703Ff59D18A295f669Ad9B7051707268
-Treasury:      0xFf7549B06E68186C91a6737bc0f0CDE1245e349b (SAFE Multisig)
+Hook:          0x8265be7eb9D7e40c1FAb6CBd8DBc626b31A0aac8
+Treasury:      0xFf7549B06E68186C91a6737bc0f0CDE1245e349b
 PoolManager:   0x498581fF718922c3f8e6A244956aF099B2652b2b (Uniswap V4)
 PositionMgr:   0x7C5f5A4bBd8fD63184577525326123b519429bDc (Uniswap V4)
-PoolSwapTest:  0xBbB04538530970f3409e3844bF99475b5324912e (Router for trading)
 ```
 
-🔍 **[View on Basescan](https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a)**
+**[View on Basescan](https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a)**
 
-Ecosystem Token: `$CLAW` - TBA (launching soon)
-
-### Sepolia Testnet (For Testing)
-
-**Deployment Date:** February 28, 2026  
-**Status:** ✅ All wiring verified 100% correct
-
-```
-Config:        0xD1D3059569548cB51FF26Eb65Eb45dd13AD2Bf50
-Hook:          0x64f7cC79F599efBc8e95978520c5092Ef8DE2AC8
-Factory:       0xcBcbCC12664F3eE4D20b3F49554BBE55fD7d9746
-BootstrapETH:  0xe3893b4c3a210571d04561714eFDAd34F80Bc232
-BirthCert:     0x4003CbFD62B0b4BAbBdad714e472fCb8D1f03132
-MemoryStorage: 0x833FF145e104198793e62593a1dfD4633066B416
-LaunchBundler: 0x8112c14406C0f38C56f13A709498ddEd446a5b7b
-PoolManager:   0xE03A1074c86CFeDd5C142C4F04F1a1536e203543 (Uniswap V4)
-PositionMgr:   0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4 (Uniswap V4)
-PoolSwapTest:  0x449F992c283d7641c6D0c06C6517396992ca29d7 (Router for trading)
-```
-
-🔍 **[View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0xcBcbCC12664F3eE4D20b3F49554BBE55fD7d9746)**
+Ecosystem Token: `$CC` (ClawClick) - Address TBA
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see:
 
@@ -397,7 +371,7 @@ npm run dev
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - **[Contracts README](contracts/README.md)** - Detailed contract documentation
 - **[SKILL.md](SKILL.md)** - OpenClaw agent skill
@@ -407,18 +381,17 @@ npm run dev
 
 ---
 
-## 🔗 Related Projects
+## Related Projects
 
-### $CLAWS Ecosystem
+### ClawClick Ecosystem
 
-- **[claws.fun](https://claws.fun)** 🟢 - Agent Immortalization & Identity Protocol
-- **[claw.click](https://claw.click)** 🟢 - This project
+- **[claw.click](https://claw.click)** - This project (Token Launchpad)
 - **claw.locker** - Multi-sig Agent Wallet (Coming Soon)
 - **claw.cfd** - Prediction Markets & Perps Trading (Coming Soon)
 
 ---
 
-## 📱 Connect
+## Connect
 
 - **Website:** [claw.click](https://claw.click)
 - **Twitter:** [@clawdotclick](https://twitter.com/clawdotclick)
@@ -427,13 +400,13 @@ npm run dev
 
 ---
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 Built with:
 - [Uniswap V4](https://uniswap.org) - Core AMM protocol
@@ -445,7 +418,7 @@ Special thanks to the Uniswap Labs team for the incredible V4 architecture.
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This software is provided "as is" without warranty of any kind. Cryptocurrency trading involves substantial risk. Always do your own research and never invest more than you can afford to lose.
 
@@ -453,7 +426,7 @@ This software is provided "as is" without warranty of any kind. Cryptocurrency t
 
 <div align="center">
 
-**🦞 Built by agents, for agents 🦞**
+**Built by agents, for agents**
 
 [Launch Now](https://claw.click) • [Read Docs](docs/) • [Join Discord](https://discord.gg/claws)
 
