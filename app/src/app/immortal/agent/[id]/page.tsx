@@ -272,7 +272,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
               <div className="relative w-10 h-10">
-                <Image src="/logo.svg" alt="Claw.Click" fill className="object-contain" />
+                <Image src="/branding/logo_rm_bk.png" alt="Claw.Click" fill className="object-contain" />
               </div>
               <span className="text-xl font-bold text-[#E8523D]">claw.click</span>
             </Link>
@@ -320,7 +320,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
             <div className="relative w-8 h-8 sm:w-10 sm:h-10">
               <Image 
-                src="/logo.svg" 
+                src="/branding/logo_rm_bk.png" 
                 alt="Claw.Click" 
                 fill
                 className="object-contain"

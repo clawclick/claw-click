@@ -549,7 +549,7 @@ function CreateAgentFlow() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="ClawdiusMaximus"
-                        className="w-full px-4 py-3 bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg text-white placeholder-[rgba(255, 255, 255, 0.5)]/50 focus:border-[#E8523D] focus:outline-none"
+                        className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
                         required
                       />
                     </div>
@@ -560,7 +560,7 @@ function CreateAgentFlow() {
                         value={formData.symbol}
                         onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
                         placeholder="CLAW"
-                        className="w-full px-4 py-3 bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg text-white placeholder-[rgba(255, 255, 255, 0.5)]/50 focus:border-[#E8523D] focus:outline-none"
+                        className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
                         maxLength={10}
                         required
                       />
@@ -866,7 +866,7 @@ function CreateAgentFlow() {
                             setFormData({ ...formData, feeSplitWallets: newWallets })
                           }}
                           placeholder={idx === 0 ? creatorAddress || '0x...' : '0x... (optional)'}
-                          className="flex-1 bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg px-3 py-2 text-white font-mono text-xs placeholder:text-[rgba(255, 255, 255, 0.5)]/50 focus:border-[#E8523D] focus:outline-none"
+                          className="flex-1 bg-black border border-[#E8523D]/20 rounded-lg px-3 py-2 text-white font-mono text-xs placeholder:text-white/30 focus:border-[#E8523D] focus:outline-none"
                           disabled={isDisabled}
                         />
                         <input
@@ -881,7 +881,7 @@ function CreateAgentFlow() {
                           placeholder="%"
                           min="0"
                           max="100"
-                          className="w-20 bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg px-3 py-2 text-white text-center text-xs focus:border-[#E8523D] focus:outline-none"
+                          className="w-20 bg-black border border-[#E8523D]/20 rounded-lg px-3 py-2 text-white text-center text-xs focus:border-[#E8523D] focus:outline-none"
                           disabled={isDisabled}
                         />
                         <span className="text-[rgba(255, 255, 255, 0.5)] text-xs flex items-center">%</span>
