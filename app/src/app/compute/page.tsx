@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { GPUSessionsIcon } from '../../components/home/ProductIcons'
+import { LightningIcon, DollarIcon, LockIcon, ChartIcon } from '../../components/ComputeIcons'
 
 export default function ComputePage() {
   const gpuOptions = [
@@ -124,42 +125,50 @@ export default function ComputePage() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
-                <span className="text-white font-bold">⚡</span>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-white">
+                  <LightningIcon />
+                </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Instant Deploy</h3>
-              <p className="text-white/50 text-sm">
+              <p className="text-white/50 text-sm leading-relaxed">
                 Launch GPU instances in seconds. Pre-configured environments with all AI frameworks ready.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
-                <span className="text-white font-bold">$</span>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-white">
+                  <DollarIcon />
+                </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Pay-Per-Hour</h3>
-              <p className="text-white/50 text-sm">
+              <p className="text-white/50 text-sm leading-relaxed">
                 Only pay for what you use. No monthly commitments. Cancel anytime and stop billing instantly.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
-                <span className="text-white font-bold">🔒</span>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-white">
+                  <LockIcon />
+                </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Secure Isolation</h3>
-              <p className="text-white/50 text-sm">
+              <p className="text-white/50 text-sm leading-relaxed">
                 Each session runs in an isolated container with dedicated resources. Your data stays private.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-3">
-                <span className="text-white font-bold">📊</span>
+            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-white">
+                  <ChartIcon />
+                </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Real-Time Monitoring</h3>
-              <p className="text-white/50 text-sm">
+              <p className="text-white/50 text-sm leading-relaxed">
                 Track GPU usage, memory, CPU, and costs in real-time. Get alerts when sessions end.
               </p>
             </div>
