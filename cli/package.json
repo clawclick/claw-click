@@ -18,6 +18,7 @@
     "token-launcher",
     "agent-sdk"
   ],
+  "homepage": "https://claw.click",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
