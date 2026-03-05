@@ -1,0 +1,35 @@
+{
+  "name": "@claw-click/nftid",
+  "version": "1.0.0",
+  "description": "Clawd NFTid - Generative identity NFTs for autonomous agents",
+  "main": "index.js",
+  "scripts": {
+    "deploy:sepolia": "forge script scripts/Deploy.s.sol:DeployScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify",
+    "deploy:base": "forge script scripts/Deploy.s.sol:DeployScript --rpc-url $BASE_RPC_URL --broadcast --verify",
+    "register:sepolia": "forge script scripts/RegisterTraits.s.sol:RegisterTraitsScript --rpc-url $SEPOLIA_RPC_URL --broadcast",
+    "register:base": "forge script scripts/RegisterTraits.s.sol:RegisterTraitsScript --rpc-url $BASE_RPC_URL --broadcast",
+    "test": "forge test",
+    "test:gas": "forge test --gas-report",
+    "compositor": "node backend/compositor/server.js",
+    "indexer": "node backend/indexer/server.js"
+  },
+  "keywords": [
+    "nft",
+    "generative",
+    "autonomous-agents",
+    "ethereum",
+    "base"
+  ],
+  "author": "claw.click",
+  "license": "MIT",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "ethers": "^6.11.0",
+    "express": "^4.18.2",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  }
+}

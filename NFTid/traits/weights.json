@@ -1,0 +1,60 @@
+{
+  "auras": [
+    { "index": 0, "name": "Aura 1", "weight": 10, "file": "1_transparent.png" },
+    { "index": 1, "name": "Aura 2", "weight": 15, "file": "2_transparent.png" },
+    { "index": 2, "name": "Aura 3", "weight": 20, "file": "3_transparent.png" },
+    { "index": 3, "name": "Aura 4", "weight": 25, "file": "4_transparent.png" },
+    { "index": 4, "name": "Aura 5", "weight": 30, "file": "5_transparent.png" },
+    { "index": 5, "name": "Aura 6", "weight": 40, "file": "6_transparent.png" },
+    { "index": 6, "name": "Aura 7", "weight": 50, "file": "7_transparent.png" },
+    { "index": 7, "name": "Aura 8", "weight": 65, "file": "8_transparent.png" },
+    { "index": 8, "name": "Aura 9", "weight": 80, "file": "9_transparent.png" },
+    { "index": 9, "name": "Cosmic Aura", "weight": 95, "file": "10_transparent.png" }
+  ],
+  "backgrounds": [
+    { "index": 0, "name": "Neural Network", "weight": 10, "file": "background-1.png" },
+    { "index": 1, "name": "Digital Void", "weight": 15, "file": "background-2.png" },
+    { "index": 2, "name": "Quantum Field", "weight": 20, "file": "background-3.png" },
+    { "index": 3, "name": "Data Stream", "weight": 25, "file": "background-4.png" },
+    { "index": 4, "name": "Cyber Grid", "weight": 30, "file": "background-5.png" },
+    { "index": 5, "name": "Matrix Code", "weight": 40, "file": "background-6.png" },
+    { "index": 6, "name": "Neon City", "weight": 50, "file": "background-7.png" },
+    { "index": 7, "name": "Plasma Storm", "weight": 65, "file": "background-8.png" },
+    { "index": 8, "name": "Cosmic Nebula", "weight": 80, "file": "background-9.png" },
+    { "index": 9, "name": "Genesis Field", "weight": 95, "file": "background-10.png" }
+  ],
+  "cores": [
+    { "index": 0, "name": "Genesis Core", "weight": 10, "file": "clawd-genesis-core.png" },
+    { "index": 1, "name": "Crimson Core", "weight": 20, "file": "clawd-crimson-core.png" },
+    { "index": 2, "name": "Frozen Core", "weight": 25, "file": "clawd-frozen-core.png" },
+    { "index": 3, "name": "Solar Core", "weight": 30, "file": "clawd-solar-core.png" },
+    { "index": 4, "name": "Neural Core", "weight": 40, "file": "clawd-neural-core.png" },
+    { "index": 5, "name": "Overclock Core", "weight": 50, "file": "clawd-overclock-core.png" },
+    { "index": 6, "name": "Plasma Core", "weight": 60, "file": "clawd-plasma-core.png" },
+    { "index": 7, "name": "Void Core", "weight": 75, "file": "clawd-void-core.png" },
+    { "index": 8, "name": "Quantum Core", "weight": 85, "file": "clawd-quantum-core.png" },
+    { "index": 9, "name": "Dark Matter Core", "weight": 100, "file": "clawd-dark-matter-core.png" }
+  ],
+  "eyes": [
+    { "index": 0, "name": "No Eyes", "weight": 5, "file": "no-eyes.png" },
+    { "index": 1, "name": "Normal Eyes", "weight": 10, "file": "normal_eyes.png" },
+    { "index": 2, "name": "Hollow Eyes", "weight": 20, "file": "hollow-eyes.png" },
+    { "index": 3, "name": "Binary Eyes", "weight": 30, "file": "binary-eyes-v2.png" },
+    { "index": 4, "name": "Tridot Eyes", "weight": 40, "file": "tridot-eyes-v2.png" },
+    { "index": 5, "name": "Vertical Lines", "weight": 50, "file": "vertical-lines-v2.png" },
+    { "index": 6, "name": "Cross Eyes", "weight": 60, "file": "cross-eyes-v2.png" },
+    { "index": 7, "name": "Glitched Eyes", "weight": 75, "file": "glitched-eyes-v2.png" },
+    { "index": 8, "name": "Laser Eyes", "weight": 95, "file": "laser_eyes.png" }
+  ],
+  "overlays": [
+    { "index": 0, "name": "Overlay 1", "weight": 10, "file": "1_transparent.png" },
+    { "index": 1, "name": "Overlay 2", "weight": 15, "file": "2_transparent.png" },
+    { "index": 2, "name": "Overlay 3", "weight": 20, "file": "3_transparent.png" },
+    { "index": 3, "name": "Overlay 4", "weight": 25, "file": "4_transparent.png" },
+    { "index": 4, "name": "Overlay 5", "weight": 35, "file": "5_transparent.png" },
+    { "index": 5, "name": "Overlay 6", "weight": 45, "file": "6_transparent.png" },
+    { "index": 6, "name": "Overlay 7", "weight": 60, "file": "7_transparent.png" },
+    { "index": 7, "name": "Overlay 8", "weight": 80, "file": "8_transparent.png" },
+    { "index": 8, "name": "Overlay 9", "weight": 90, "file": "9_transparent.png" }
+  ]
+}
