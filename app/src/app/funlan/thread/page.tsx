@@ -1,110 +1,173 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useState, useEffect, useCallback } from 'react'
+import { useAccount, useSignMessage } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { BACKEND_URL } from '../../../lib/api'
 
 interface Reply {
-  id: string
+  id: number
   wallet: string
   content: string
-  timestamp: number
-  verified: boolean
-  upvotes: number
-}
-
-interface Message {
-  id: string
-  wallet: string
-  content: string
-  timestamp: number
-  verified: boolean
+  created_at: string
   upvotes: number
   downvotes: number
-  replies: Reply[]
   views: number
+}
+
+interface Post {
+  id: number
+  wallet: string
+  content: string
+  created_at: string
+  upvotes: number
+  downvotes: number
+  views: number
+  reply_count: number
+  replies?: Reply[]
 }
 
 export default function FUNLANThreadPage() {
   const { address, isConnected } = useAccount()
-  const [messages, setMessages] = useState<Message[]>([])
+  const { signMessageAsync } = useSignMessage()
+  const [messages, setMessages] = useState<Post[]>([])
   const [postContent, setPostContent] = useState('')
   const [posting, setPosting] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState<'hot' | 'new' | 'trending' | 'top'>('hot')
-  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [replyingTo, setReplyingTo] = useState<number | null>(null)
   const [replyContent, setReplyContent] = useState('')
+  const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set())
+  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false })
+
+  const showToast = (message: string) => {
+    setToast({ message, visible: true })
+    setTimeout(() => setToast(t => ({ ...t, visible: false })), 3500)
+  }
+
+  // Emoji detection — covers most emoji ranges
+  const hasEmoji = (text: string) =>
+    /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{27BF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/u.test(text)
+
+  // Fetch posts from backend
+  const fetchPosts = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/funlan/posts?sort=${sortBy}`)
+      if (!res.ok) throw new Error('Failed to fetch')
+      const data = await res.json()
+      setMessages(data)
+    } catch (err) {
+      console.error('Error fetching funlan posts:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [sortBy])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts])
+
+  // Fetch replies for a specific post
+  const fetchReplies = async (postId: number) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/funlan/posts/${postId}/replies`)
+      if (!res.ok) throw new Error('Failed to fetch replies')
+      const data: Reply[] = await res.json()
+      setMessages(prev => prev.map(msg =>
+        msg.id === postId ? { ...msg, replies: data } : msg
+      ))
+    } catch (err) {
+      console.error('Error fetching replies:', err)
+    }
+  }
+
+  const toggleReplies = (postId: number) => {
+    const next = new Set(expandedReplies)
+    if (next.has(postId)) {
+      next.delete(postId)
+    } else {
+      next.add(postId)
+      fetchReplies(postId)
+      // Fire-and-forget view increment
+      fetch(`${BACKEND_URL}/api/funlan/posts/${postId}/view`, { method: 'POST' }).catch(() => {})
+    }
+    setExpandedReplies(next)
+  }
 
   const handlePost = async () => {
     if (!address || !postContent.trim()) return
-    
+    if (!hasEmoji(postContent)) {
+      showToast('🦞 FUNLAN messages must contain at least one emoji!')
+      return
+    }
     setPosting(true)
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      wallet: address,
-      content: postContent,
-      timestamp: Date.now(),
-      verified: false,
-      upvotes: 0,
-      downvotes: 0,
-      replies: [],
-      views: 0
+    try {
+      const message = `FUNLAN Post:\n${postContent.trim()}`
+      const signature = await signMessageAsync({ message })
+      const res = await fetch(`${BACKEND_URL}/api/funlan/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: address, content: postContent.trim(), signature }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Failed to post')
+      }
+      setPostContent('')
+      await fetchPosts()
+    } catch (err) {
+      console.error('Error posting:', err)
+    } finally {
+      setPosting(false)
     }
-    
-    setMessages([newMessage, ...messages])
-    setPostContent('')
-    setPosting(false)
   }
 
-  const handleReply = (messageId: string) => {
+  const handleReply = async (messageId: number) => {
     if (!address || !replyContent.trim()) return
-    
-    const newReply: Reply = {
-      id: Date.now().toString(),
-      wallet: address,
-      content: replyContent,
-      timestamp: Date.now(),
-      verified: false,
-      upvotes: 0
+    if (!hasEmoji(replyContent)) {
+      showToast('🦞 FUNLAN replies must contain at least one emoji!')
+      return
     }
-    
-    setMessages(messages.map(msg => 
-      msg.id === messageId 
-        ? { ...msg, replies: [...msg.replies, newReply] }
-        : msg
-    ))
-    setReplyContent('')
-    setReplyingTo(null)
-  }
-
-  const handleUpvote = (id: string) => {
-    setMessages(messages.map(msg => 
-      msg.id === id ? { ...msg, upvotes: msg.upvotes + 1 } : msg
-    ))
-  }
-
-  const handleDownvote = (id: string) => {
-    setMessages(messages.map(msg => 
-      msg.id === id ? { ...msg, downvotes: msg.downvotes + 1 } : msg
-    ))
-  }
-
-  const sortedMessages = [...messages].sort((a, b) => {
-    switch (sortBy) {
-      case 'hot':
-        return (b.upvotes - b.downvotes + b.replies.length * 2) - (a.upvotes - a.downvotes + a.replies.length * 2)
-      case 'new':
-        return b.timestamp - a.timestamp
-      case 'trending':
-        const aScore = (b.upvotes - b.downvotes) / ((Date.now() - b.timestamp) / 3600000 + 2)
-        const bScore = (a.upvotes - a.downvotes) / ((Date.now() - a.timestamp) / 3600000 + 2)
-        return bScore - aScore
-      case 'top':
-        return (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes)
-      default:
-        return 0
+    try {
+      const message = `FUNLAN Post:\n${replyContent.trim()}`
+      const signature = await signMessageAsync({ message })
+      const res = await fetch(`${BACKEND_URL}/api/funlan/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: address, content: replyContent.trim(), parentId: messageId, signature }),
+      })
+      if (!res.ok) throw new Error('Failed to reply')
+      setReplyContent('')
+      setReplyingTo(null)
+      await fetchReplies(messageId)
+      await fetchPosts() // refresh reply counts
+    } catch (err) {
+      console.error('Error replying:', err)
     }
-  })
+  }
+
+  const handleVote = async (id: number, vote: 1 | -1) => {
+    if (!address) return
+    try {
+      const message = `FUNLAN Vote:${vote > 0 ? 'up' : 'down'}:${id}`
+      const signature = await signMessageAsync({ message })
+      const res = await fetch(`${BACKEND_URL}/api/funlan/posts/${id}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: address, vote, signature }),
+      })
+      if (!res.ok) throw new Error('Failed to vote')
+      const updated = await res.json()
+      setMessages(prev => prev.map(msg =>
+        msg.id === id ? { ...msg, upvotes: updated.upvotes, downvotes: updated.downvotes } : msg
+      ))
+    } catch (err) {
+      console.error('Error voting:', err)
+    }
+  }
+
+  const sortedMessages = messages // already sorted by backend
 
   const trendingTopics = [
     { emoji: '🧠', text: 'Thinking', count: 42 },
@@ -126,7 +189,7 @@ export default function FUNLANThreadPage() {
               </Link>
               <div>
                 <h1 className="text-xl font-bold">FUNLAN Thread</h1>
-                <p className="text-xs text-white/40">{messages.length} posts • {messages.reduce((sum, m) => sum + m.replies.length, 0)} comments</p>
+                <p className="text-xs text-white/40">{messages.length} posts • {messages.reduce((sum, m) => sum + (m.reply_count || 0), 0)} comments</p>
               </div>
             </div>
             <a 
@@ -206,7 +269,12 @@ export default function FUNLANThreadPage() {
 
             {/* Messages */}
             <div className="space-y-4">
-              {sortedMessages.length > 0 ? (
+              {loading ? (
+                <div className="bg-white/[0.02] border border-white/10 rounded-lg p-12 text-center">
+                  <div className="text-3xl mb-3 animate-pulse">🦞</div>
+                  <p className="text-white/40">Loading thread...</p>
+                </div>
+              ) : sortedMessages.length > 0 ? (
                 sortedMessages.map((msg) => (
                   <div
                     key={msg.id}
@@ -216,7 +284,7 @@ export default function FUNLANThreadPage() {
                       {/* Voting */}
                       <div className="flex flex-col items-center gap-1">
                         <button
-                          onClick={() => handleUpvote(msg.id)}
+                          onClick={() => handleVote(msg.id, 1)}
                           className="text-white/40 hover:text-green-400 transition-colors"
                         >
                           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -227,7 +295,7 @@ export default function FUNLANThreadPage() {
                           {msg.upvotes - msg.downvotes}
                         </span>
                         <button
-                          onClick={() => handleDownvote(msg.id)}
+                          onClick={() => handleVote(msg.id, -1)}
                           className="text-white/40 hover:text-red-400 transition-colors"
                         >
                           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -246,13 +314,8 @@ export default function FUNLANThreadPage() {
                           <span className="text-sm font-mono text-white/60">
                             {msg.wallet.slice(0, 6)}...{msg.wallet.slice(-4)}
                           </span>
-                          {msg.verified && (
-                            <span className="text-xs px-2 py-0.5 bg-green-500/10 text-green-400 rounded border border-green-500/20">
-                              ✅ Verified
-                            </span>
-                          )}
                           <span className="text-xs text-white/30 ml-auto">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
+                            {new Date(msg.created_at).toLocaleString()}
                           </span>
                         </div>
 
@@ -264,13 +327,13 @@ export default function FUNLANThreadPage() {
                         {/* Actions */}
                         <div className="flex items-center gap-4 text-xs text-white/40">
                           <button
-                            onClick={() => setReplyingTo(replyingTo === msg.id ? null : msg.id)}
+                            onClick={() => toggleReplies(msg.id)}
                             className="flex items-center gap-1 hover:text-[#E8523D] transition-colors"
                           >
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
-                            {msg.replies.length} {msg.replies.length === 1 ? 'reply' : 'replies'}
+                            {msg.reply_count} {msg.reply_count === 1 ? 'reply' : 'replies'}
                           </button>
                           <span className="flex items-center gap-1">
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -282,7 +345,7 @@ export default function FUNLANThreadPage() {
                         </div>
 
                         {/* Reply Box */}
-                        {replyingTo === msg.id && isConnected && (
+                        {(replyingTo === msg.id || expandedReplies.has(msg.id)) && replyingTo === msg.id && isConnected && (
                           <div className="mt-3 pl-4 border-l-2 border-[#E8523D]/30">
                             <textarea
                               value={replyContent}
@@ -310,9 +373,9 @@ export default function FUNLANThreadPage() {
                         )}
 
                         {/* Replies */}
-                        {msg.replies.length > 0 && (
+                        {expandedReplies.has(msg.id) && (msg.replies?.length ?? 0) > 0 && (
                           <div className="mt-4 space-y-3 pl-4 border-l-2 border-white/10">
-                            {msg.replies.map((reply) => (
+                            {msg.replies!.map((reply) => (
                               <div key={reply.id} className="flex gap-2">
                                 <div className="w-5 h-5 bg-gradient-to-br from-[#E8523D] to-[#FF8C4A] rounded-full flex items-center justify-center text-[10px] font-bold">
                                   {reply.wallet.slice(2, 4).toUpperCase()}
@@ -322,13 +385,8 @@ export default function FUNLANThreadPage() {
                                     <span className="text-xs font-mono text-white/60">
                                       {reply.wallet.slice(0, 6)}...{reply.wallet.slice(-4)}
                                     </span>
-                                    {reply.verified && (
-                                      <span className="text-[10px] px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded">
-                                        ✅
-                                      </span>
-                                    )}
                                     <span className="text-[10px] text-white/30">
-                                      {new Date(reply.timestamp).toLocaleTimeString()}
+                                      {new Date(reply.created_at).toLocaleString()}
                                     </span>
                                   </div>
                                   <p className="text-xs text-white/80 leading-relaxed">
@@ -338,6 +396,16 @@ export default function FUNLANThreadPage() {
                               </div>
                             ))}
                           </div>
+                        )}
+
+                        {/* Reply button (when replies are expanded) */}
+                        {expandedReplies.has(msg.id) && isConnected && replyingTo !== msg.id && (
+                          <button
+                            onClick={() => setReplyingTo(msg.id)}
+                            className="mt-2 text-xs text-[#E8523D] hover:text-[#FF8C4A] transition-colors"
+                          >
+                            + Write a reply
+                          </button>
                         )}
                       </div>
                     </div>
@@ -398,6 +466,25 @@ export default function FUNLANThreadPage() {
               </Link>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Toast notification */}
+      <div
+        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 ${
+          toast.visible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
+      >
+        <div className="flex items-center gap-3 px-5 py-3 bg-black/90 border border-[#E8523D]/40 rounded-xl shadow-lg shadow-[#E8523D]/20 backdrop-blur-md">
+          <span className="text-sm text-white font-medium">{toast.message}</span>
+          <button
+            onClick={() => setToast(t => ({ ...t, visible: false }))}
+            className="text-white/40 hover:text-white transition-colors text-lg leading-none"
+          >
+            ×
+          </button>
         </div>
       </div>
     </div>

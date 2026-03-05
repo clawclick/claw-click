@@ -567,6 +567,182 @@ app.post(
 )
 
 // ============================================================================
+// FUNLAN THREAD
+// ============================================================================
+
+/** GET /api/funlan/posts — list top-level posts with reply counts */
+app.get('/api/funlan/posts', async (req, res) => {
+  try {
+    const { sort = 'hot', limit = 50, offset = 0 } = req.query
+
+    let orderBy: string
+    switch (sort) {
+      case 'new':
+        orderBy = 'p.created_at DESC'
+        break
+      case 'top':
+        orderBy = '(p.upvotes - p.downvotes) DESC'
+        break
+      case 'trending':
+        orderBy = '((p.upvotes - p.downvotes)::float / (EXTRACT(EPOCH FROM (NOW() - p.created_at)) / 3600 + 2)) DESC'
+        break
+      case 'hot':
+      default:
+        orderBy = '(p.upvotes - p.downvotes + reply_count * 2) DESC'
+        break
+    }
+
+    const result = await query(`
+      SELECT
+        p.*,
+        COALESCE(rc.reply_count, 0)::int AS reply_count
+      FROM funlan_posts p
+      LEFT JOIN (
+        SELECT parent_id, COUNT(*) AS reply_count
+        FROM funlan_posts
+        WHERE parent_id IS NOT NULL
+        GROUP BY parent_id
+      ) rc ON rc.parent_id = p.id
+      WHERE p.parent_id IS NULL
+      ORDER BY ${orderBy}
+      LIMIT $1 OFFSET $2
+    `, [Number(limit), Number(offset)])
+
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error fetching funlan posts:', error)
+    res.status(500).json({ error: 'Failed to fetch posts' })
+  }
+})
+
+/** GET /api/funlan/posts/:id/replies — replies for a post */
+app.get('/api/funlan/posts/:id/replies', async (req, res) => {
+  try {
+    const { id } = req.params
+    const result = await query(`
+      SELECT * FROM funlan_posts
+      WHERE parent_id = $1
+      ORDER BY created_at ASC
+    `, [Number(id)])
+
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error fetching replies:', error)
+    res.status(500).json({ error: 'Failed to fetch replies' })
+  }
+})
+
+/** POST /api/funlan/posts — create a post or reply (wallet-signed) */
+app.post('/api/funlan/posts', async (req, res) => {
+  try {
+    const { wallet, content, parentId, signature } = req.body
+
+    if (!wallet || !content?.trim() || !signature) {
+      return res.status(400).json({ error: 'wallet, content, and signature are required' })
+    }
+
+    if (content.length > 2000) {
+      return res.status(400).json({ error: 'Content too long (max 2000 chars)' })
+    }
+
+    // Verify the wallet signed this message
+    const message = `FUNLAN Post:\n${content.trim()}`
+    const valid = await verifyMessage({ address: wallet as `0x${string}`, message, signature })
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid signature' })
+    }
+
+    // If parentId given, verify parent exists
+    if (parentId) {
+      const parent = await query('SELECT id FROM funlan_posts WHERE id = $1', [Number(parentId)])
+      if (parent.rows.length === 0) {
+        return res.status(404).json({ error: 'Parent post not found' })
+      }
+    }
+
+    const result = await query(`
+      INSERT INTO funlan_posts (wallet, content, parent_id)
+      VALUES ($1, $2, $3)
+      RETURNING *
+    `, [wallet.toLowerCase(), content.trim(), parentId ? Number(parentId) : null])
+
+    res.status(201).json(result.rows[0])
+  } catch (error) {
+    console.error('Error creating funlan post:', error)
+    res.status(500).json({ error: 'Failed to create post' })
+  }
+})
+
+/** POST /api/funlan/posts/:id/vote — upvote or downvote (wallet-signed) */
+app.post('/api/funlan/posts/:id/vote', async (req, res) => {
+  try {
+    const { id } = req.params
+    const { wallet, vote, signature } = req.body // vote: 1 or -1
+
+    if (!wallet || !signature || ![1, -1].includes(vote)) {
+      return res.status(400).json({ error: 'wallet, vote (1 or -1), and signature are required' })
+    }
+
+    // Verify signature
+    const message = `FUNLAN Vote:${vote > 0 ? 'up' : 'down'}:${id}`
+    const valid = await verifyMessage({ address: wallet as `0x${string}`, message, signature })
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid signature' })
+    }
+
+    const postId = Number(id)
+    const walletLower = wallet.toLowerCase()
+
+    // Upsert vote
+    const existing = await query(
+      'SELECT vote FROM funlan_votes WHERE post_id = $1 AND wallet = $2',
+      [postId, walletLower]
+    )
+
+    if (existing.rows.length > 0) {
+      const oldVote = existing.rows[0].vote
+      if (oldVote === vote) {
+        // Same vote → remove it (toggle off)
+        await query('DELETE FROM funlan_votes WHERE post_id = $1 AND wallet = $2', [postId, walletLower])
+        const col = vote === 1 ? 'upvotes' : 'downvotes'
+        await query(`UPDATE funlan_posts SET ${col} = GREATEST(${col} - 1, 0) WHERE id = $1`, [postId])
+      } else {
+        // Opposite vote → flip
+        await query('UPDATE funlan_votes SET vote = $1 WHERE post_id = $2 AND wallet = $3', [vote, postId, walletLower])
+        if (vote === 1) {
+          await query('UPDATE funlan_posts SET upvotes = upvotes + 1, downvotes = GREATEST(downvotes - 1, 0) WHERE id = $1', [postId])
+        } else {
+          await query('UPDATE funlan_posts SET downvotes = downvotes + 1, upvotes = GREATEST(upvotes - 1, 0) WHERE id = $1', [postId])
+        }
+      }
+    } else {
+      // New vote
+      await query('INSERT INTO funlan_votes (post_id, wallet, vote) VALUES ($1, $2, $3)', [postId, walletLower, vote])
+      const col = vote === 1 ? 'upvotes' : 'downvotes'
+      await query(`UPDATE funlan_posts SET ${col} = ${col} + 1 WHERE id = $1`, [postId])
+    }
+
+    // Return updated post
+    const updated = await query('SELECT upvotes, downvotes FROM funlan_posts WHERE id = $1', [postId])
+    res.json(updated.rows[0])
+  } catch (error) {
+    console.error('Error voting on funlan post:', error)
+    res.status(500).json({ error: 'Failed to vote' })
+  }
+})
+
+/** POST /api/funlan/posts/:id/view — increment view count */
+app.post('/api/funlan/posts/:id/view', async (req, res) => {
+  try {
+    const { id } = req.params
+    await query('UPDATE funlan_posts SET views = views + 1 WHERE id = $1', [Number(id)])
+    res.json({ ok: true })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to increment view' })
+  }
+})
+
+// ============================================================================
 // HEALTH CHECK
 // ============================================================================
 app.get('/health', async (req, res) => {

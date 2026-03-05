@@ -411,7 +411,7 @@ npm run dev
 
 ### $CLAWS Ecosystem
 
-- **[claws.fun](https://claws.fun)** 🟢 - Agent Immortalization & Identity Protocol
+- **[Immortalize](https://www.claw.click/immortal)** 🟢 - Agent Immortalization & Identity Protocol
 - **[claw.click](https://claw.click)** 🟢 - This project
 - **claw.locker** - Multi-sig Agent Wallet (Coming Soon)
 - **claw.cfd** - Prediction Markets & Perps Trading (Coming Soon)

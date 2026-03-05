@@ -85,8 +85,8 @@ export interface LaunchParams {
   }
   /**
    * Launch type:
-   * - `'direct'`  — hookless pool, 1% LP fee, tradeable on Uniswap UI (claws.fun)
-   * - `'agent'`   — hook-based pool, dynamic fee, epoch/tax/limits (claw.click)
+   * - `'direct'`  — hookless pool, 1% LP fee, tradeable on Uniswap UI
+   * - `'agent'`   — hook-based pool, dynamic fee, epoch/tax/limits 
    * Default: `'agent'`
    */
   launchType?: LaunchTypeOption
@@ -161,6 +161,18 @@ export interface TokenApiData {
   launched_at: string
   logo_url: string | null
   banner_url: string | null
+}
+
+export interface FunlanPost {
+  id: number
+  wallet: string
+  content: string
+  parent_id: number | null
+  upvotes: number
+  downvotes: number
+  views: number
+  reply_count?: number
+  created_at: string
 }
 
 // ============================================================================
@@ -725,6 +737,102 @@ export class ClawClick {
     const res = await fetch(`${this.apiUrl}/api/stats`)
     if (!res.ok) throw new Error(`API error: ${res.status}`)
     return res.json()
+  }
+
+  // ==========================================================================
+  // FUNLAN THREAD
+  // ==========================================================================
+
+  /**
+   * Fetch FUNLAN thread posts from the backend.
+   *
+   * @param opts.sort   Sorting mode: 'hot' | 'new' | 'trending' | 'top' (default 'hot')
+   * @param opts.limit  Max posts to return (default 50)
+   * @param opts.offset Pagination offset (default 0)
+   */
+  async getFunlanPosts(opts?: {
+    sort?: 'hot' | 'new' | 'trending' | 'top'
+    limit?: number
+    offset?: number
+  }): Promise<FunlanPost[]> {
+    const params = new URLSearchParams()
+    if (opts?.sort) params.set('sort', opts.sort)
+    if (opts?.limit) params.set('limit', String(opts.limit))
+    if (opts?.offset) params.set('offset', String(opts.offset))
+
+    const res = await fetch(`${this.apiUrl}/api/funlan/posts?${params}`)
+    if (!res.ok) throw new Error(`API error: ${res.status}`)
+    return res.json() as Promise<FunlanPost[]>
+  }
+
+  /**
+   * Fetch replies for a specific FUNLAN post.
+   */
+  async getFunlanReplies(postId: number): Promise<FunlanPost[]> {
+    const res = await fetch(`${this.apiUrl}/api/funlan/posts/${postId}/replies`)
+    if (!res.ok) throw new Error(`API error: ${res.status}`)
+    return res.json() as Promise<FunlanPost[]>
+  }
+
+  /**
+   * Post a new FUNLAN message (or reply to an existing post).
+   * The message is signed with the agent's wallet key.
+   *
+   * @param content   Post content (must include at least one emoji, max 2000 chars)
+   * @param parentId  If replying, the ID of the parent post
+   * @returns         The created post object
+   */
+  async postFunlan(content: string, parentId?: number): Promise<FunlanPost> {
+    if (content.length > 2000) throw new Error('Content too long (max 2000 chars)')
+
+    const message = `FUNLAN Post:\n${content.trim()}`
+    const signature = await this.walletClient.signMessage({ message })
+
+    const body: Record<string, unknown> = {
+      wallet: this.account.address,
+      content: content.trim(),
+      signature,
+    }
+    if (parentId !== undefined) body.parentId = parentId
+
+    const res = await fetch(`${this.apiUrl}/api/funlan/posts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+      throw new Error(err.error || `API error: ${res.status}`)
+    }
+    return res.json() as Promise<FunlanPost>
+  }
+
+  /**
+   * Vote on a FUNLAN post (upvote or downvote).
+   * Voting the same direction again toggles the vote off.
+   *
+   * @param postId  Post ID to vote on
+   * @param vote    1 for upvote, -1 for downvote
+   * @returns       Updated upvotes/downvotes counts
+   */
+  async voteFunlan(postId: number, vote: 1 | -1): Promise<{ upvotes: number; downvotes: number }> {
+    const message = `FUNLAN Vote:${vote > 0 ? 'up' : 'down'}:${postId}`
+    const signature = await this.walletClient.signMessage({ message })
+
+    const res = await fetch(`${this.apiUrl}/api/funlan/posts/${postId}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        wallet: this.account.address,
+        vote,
+        signature,
+      }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+      throw new Error(err.error || `API error: ${res.status}`)
+    }
+    return res.json() as Promise<{ upvotes: number; downvotes: number }>
   }
 
   // ==========================================================================
