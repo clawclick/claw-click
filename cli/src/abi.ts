@@ -216,6 +216,23 @@ export const FACTORY_ABI = [
     inputs: [{ name: 'poolId', type: 'bytes32' }],
     outputs: [],
   },
+  // ── events ──
+  {
+    anonymous: false,
+    name: 'TokenLaunched',
+    type: 'event',
+    inputs: [
+      { indexed: true, name: 'token', type: 'address' },
+      { indexed: true, name: 'beneficiary', type: 'address' },
+      { indexed: true, name: 'creator', type: 'address' },
+      { indexed: false, name: 'poolId', type: 'bytes32' },
+      { indexed: false, name: 'targetMcapETH', type: 'uint256' },
+      { indexed: false, name: 'sqrtPriceX96', type: 'uint160' },
+      { indexed: false, name: 'name', type: 'string' },
+      { indexed: false, name: 'symbol', type: 'string' },
+      { indexed: false, name: 'launchType', type: 'uint8' },
+    ],
+  },
 ] as const
 
 // ============================================================================
