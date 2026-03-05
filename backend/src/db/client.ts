@@ -5,26 +5,44 @@ dotenv.config()
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 20,
+  max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 10000,
   // Heroku Postgres requires SSL but uses self-signed certs
   ssl: process.env.NODE_ENV === 'production'
     ? { rejectUnauthorized: false }
     : undefined,
 })
 
+// Log pool errors but don't crash — let the pool recover
 pool.on('error', (err) => {
-  console.error('Unexpected database error:', err)
-  process.exit(-1)
+  console.error('Pool background error (non-fatal):', err.message)
 })
 
+async function queryWithRetry(text: string, params?: any[], retries = 2): Promise<any> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const start = Date.now()
+      const res = await pool.query(text, params)
+      return res
+    } catch (err: any) {
+      const isConnectionError = err.message?.includes('Connection terminated') ||
+        err.message?.includes('connection timeout') ||
+        err.message?.includes('ECONNREFUSED') ||
+        err.code === 'ECONNRESET'
+      
+      if (isConnectionError && attempt < retries) {
+        console.warn(`DB query retry ${attempt + 1}/${retries} after: ${err.message}`)
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)))
+        continue
+      }
+      throw err
+    }
+  }
+}
+
 export async function query(text: string, params?: any[]) {
-  const start = Date.now()
-  const res = await pool.query(text, params)
-  const duration = Date.now() - start
-  // console.log('Executed query', { text: text.slice(0, 100), duration, rows: res.rowCount })
-  return res
+  return queryWithRetry(text, params)
 }
 
 export async function getClient() {
