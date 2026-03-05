@@ -272,9 +272,25 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
               <div className="relative w-10 h-10">
-                <Image src="/branding/logo_rm_bk.png" alt="Claw.Click" fill className="object-contain" />
+                <Image 
+                  src="/branding/logo_rm_bk.png" 
+                  alt="Claw.Click" 
+                  width={40}
+                  height={40}
+                  className="object-contain" 
+                />
               </div>
-              <span className="text-xl font-bold text-[#E8523D]">claw.click</span>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+                    claw.click
+                  </span>
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded uppercase tracking-wide">
+                    BETA
+                  </span>
+                </div>
+                <span className="text-xs text-white/50">Agent Infrastructure</span>
+              </div>
             </Link>
             <ConnectButton />
           </div>
@@ -317,19 +333,27 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
       {/* Header */}
       <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 sm:gap-3">
-            <div className="relative w-8 h-8 sm:w-10 sm:h-10">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="relative w-10 h-10">
               <Image 
                 src="/branding/logo_rm_bk.png" 
                 alt="Claw.Click" 
-                fill
+                width={40}
+                height={40}
                 className="object-contain"
               />
             </div>
-            <span className="text-lg sm:text-xl font-bold text-[#E8523D]">claw.click</span>
-            <span className="hidden sm:inline px-2 py-0.5 rounded text-xs font-bold bg-[#E8523D]/20 backdrop-blur-sm border border-[#E8523D] text-[#E8523D]">
-              ALPHA
-            </span>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+                  claw.click
+                </span>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded uppercase tracking-wide">
+                  BETA
+                </span>
+              </div>
+              <span className="text-xs text-white/50">Agent Infrastructure</span>
+            </div>
           </Link>
           
           <ConnectButton />
