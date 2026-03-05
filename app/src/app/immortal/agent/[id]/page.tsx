@@ -475,13 +475,13 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
               </a>
 
               <a
-                href={`https://www.dextools.io/app/base/pair-explorer/${agent.token}`}
+                href={`https://www.geckoterminal.com/base/pools/${agent.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 hover:border-[#E8523D]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
               >
                 <div>
-                  <div className="text-white font-semibold mb-1">DEXTools</div>
+                  <div className="text-white font-semibold mb-1">GeckoTerminal</div>
                   <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Real-time trading</div>
                 </div>
                 <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[#E8523D] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -934,18 +934,20 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   </div>
                 </div>
 
-                {/* Price Chart - DEXTools Embed */}
+                {/* Price Chart - GeckoTerminal Embed */}
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4">📈 Live Price Chart</h3>
                   <div className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[#E8523D]/20 overflow-hidden">
                     <iframe 
-                      src={`https://www.dextools.io/widget-chart/en/base/pe-light/${agent.token}?theme=dark&chartType=2&chartResolution=30&drawingToolbars=false`}
+                      src={`https://www.geckoterminal.com/base/pools/${agent.token}?embed=1&info=0&swaps=0&grayscale=0&light_chart=0`}
                       className="w-full h-[600px] border-0"
-                      title="DEXTools Chart"
+                      title="GeckoTerminal Chart"
+                      allow="clipboard-write"
+                      allowFullScreen
                     />
                   </div>
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2 text-center">
-                    Powered by DEXTools • Real-time price data on Base
+                    Powered by GeckoTerminal • Real-time price data on Base
                   </p>
                 </div>
 
@@ -953,9 +955,9 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4">🔄 Recent Swaps</h3>
                   {stats?.recentSwaps && stats.recentSwaps.length > 0 ? (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto max-h-[400px] overflow-y-auto rounded-lg border border-[#E8523D]/20">
                       <table className="w-full text-sm">
-                        <thead>
+                        <thead className="sticky top-0 bg-[#1a1a2e] z-10">
                           <tr className="border-b border-[#E8523D]/20 text-[rgba(255, 255, 255, 0.5)] text-xs">
                             <th className="text-left py-2 px-3">Type</th>
                             <th className="text-right py-2 px-3">ETH</th>
