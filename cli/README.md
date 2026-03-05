@@ -180,15 +180,15 @@ const tokenData = await sdk.getTokenFromAPI(tokenAddress)
 ```
 ┌──────────────┐     createLaunch(DIRECT)     ┌──────────────────┐
 │              │  ──────────────────────────►  │                  │
-│   CLI / SDK  │                               │  ClawclickFactory │
+│   CLI / SDK  │                               │ ClawclickFactory│
 │              │  ──────────────────────────►  │                  │
 └──────┬───────┘     createLaunch(AGENT)       └────────┬─────────┘
        │                                                │
        │ buy / sell                                     │ AGENT only
        ▼                                                ▼
 ┌──────────────┐                               ┌──────────────────┐
-│ PoolSwapTest │  ─────── swap() ──────────►   │  Uniswap V4      │
-│              │                               │  PoolManager      │
+│ CLawPoolSwap │  ─────── swap() ──────────►   │  Uniswap V4      │
+│              │                               │  PoolManager     │
 └──────────────┘                               └────────┬─────────┘
                                                         │
                                                ┌────────┴─────────┐

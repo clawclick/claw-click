@@ -4,12 +4,34 @@ import { Command } from 'commander'
 import { createSDK } from './config'
 import { formatEther, parseEther, type Address } from 'viem'
 
+// Modular command imports
+import { initCommand } from './commands/init'
+import { deployCommand } from './commands/deploy'
+import { createCommand } from './commands/create'
+import { sessionCommand } from './commands/session'
+import { funlanCommand } from './commands/funlan'
+import { memoryCommand } from './commands/memory'
+import { immortalizeCommand } from './commands/immortalize'
+import { agentInfoCommand } from './commands/agent-info'
+import { statusCommand } from './commands/status'
+
 const program = new Command()
 
 program
   .name('clawclick')
   .description('CLI for Claw.Click agents — launch, trade, manage tokens')
   .version('0.1.0')
+
+// Register modular commands
+program.addCommand(initCommand())
+program.addCommand(deployCommand())
+program.addCommand(createCommand())
+program.addCommand(sessionCommand())
+program.addCommand(funlanCommand())
+program.addCommand(memoryCommand())
+program.addCommand(immortalizeCommand())
+program.addCommand(agentInfoCommand())
+program.addCommand(statusCommand())
 
 // ============================================================================
 // LAUNCH
