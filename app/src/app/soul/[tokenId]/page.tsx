@@ -153,9 +153,9 @@ export default function NFTidDetailPage({ params }: PageProps) {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-white/[0.02] border border-white/10 rounded-2xl p-8"
             >
-              <div className="aspect-square rounded-lg overflow-hidden mb-6">
+              <div className="w-full aspect-square rounded-lg overflow-hidden mb-6 flex items-center justify-center bg-black/30">
                 {parsedTraits ? (
-                  <NFTidCompositor traits={parsedTraits} size={500} />
+                  <NFTidCompositor traits={parsedTraits} size={500} className="w-full h-full" />
                 ) : (
                   <div className="w-full h-full bg-black/50 flex items-center justify-center">
                     <div className="w-8 h-8 border-2 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin"></div>

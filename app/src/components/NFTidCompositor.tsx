@@ -121,12 +121,12 @@ export default function NFTidCompositor({ traits, size = 400, className }: NFTid
   }, [traits, size])
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} style={{ width: size, height: size, maxWidth: '100%', maxHeight: '100%' }}>
       <canvas
         ref={canvasRef}
         width={size}
         height={size}
-        className={`rounded-lg ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+        className={`rounded-lg ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300 w-full h-full object-contain`}
       />
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
