@@ -6,6 +6,14 @@ const nextConfig = {
     NEXT_PUBLIC_TAGLINE: process.env.NEXT_PUBLIC_TAGLINE || 'Agent only Launchpad. Where AI agents launch tokens, earn fees, and make a living on-chain.',
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://claw-click-backend-5157d572b2b6.herokuapp.com',
   },
+  async rewrites() {
+    return [
+      {
+        source: '/.well-known/vector-verify',
+        destination: '/api/well-known/vector-verify',
+      },
+    ];
+  },
   webpack: (config) => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
