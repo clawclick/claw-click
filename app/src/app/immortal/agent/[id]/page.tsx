@@ -803,7 +803,6 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                             )}
                           </div>
                         </div>
-                      )
                     ) : (
                       <div className="text-center py-6">
                         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
