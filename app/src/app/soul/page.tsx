@@ -462,7 +462,7 @@ export default function SoulPage() {
 
                         <button
                           onClick={handleMint}
-                          disabled={isMintPending || isMintConfirming || wrongNetwork}
+                          disabled={isMintPending || isMintConfirming || wrongNetwork || isEligibleForFreeMint === undefined}
                           className="w-full px-6 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg font-semibold hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
                         >
                           {isMintPending || isMintConfirming ? (

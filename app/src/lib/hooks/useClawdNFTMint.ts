@@ -49,7 +49,8 @@ export function useClawdNFTMint() {
 
   const handleMint = () => {
     const maxAttempts = 50 // Reasonable limit for finding unique combo
-    const value = isEligibleForFreeMint ? parseEther('0') : (currentPrice || parseEther('0.0015'))
+    // Explicitly check if eligible is true (not undefined or false)
+    const value = isEligibleForFreeMint === true ? parseEther('0') : (currentPrice || parseEther('0.0015'))
 
     mint({
       address: CLAWD_NFT_ADDRESS.sepolia,
