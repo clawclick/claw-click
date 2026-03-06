@@ -4,11 +4,27 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { getAllAgents, Agent } from '../../lib/agents'
+import { getNFTidForAgent } from '../../lib/nftidLinkage'
+import NFTidCompositor from '../../components/NFTidCompositor'
+import { createPublicClient, http } from 'viem'
+import { sepolia } from 'viem/chains'
+import { ABIS } from '../../lib/contracts'
+
+interface AgentWithNFTid extends Agent {
+  nftidTokenId?: number | null
+  nftidTraits?: { aura: number; background: number; core: number; eyes: number; overlay: number } | null
+}
 
 export default function LiveAgentsList() {
-  const [agents, setAgents] = useState<Agent[]>([])
+  const [agents, setAgents] = useState<AgentWithNFTid[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // Public client for reading NFTid traits
+  const sepoliaClient = createPublicClient({
+    chain: sepolia,
+    transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_SEPOLIA || 'BdgPEmQddox2due7mrt9J'}`),
+  })
 
   useEffect(() => {
     let pollInterval = 60_000 // 60s default, backs off on error
@@ -27,7 +43,40 @@ export default function LiveAgentsList() {
           return
         }
 
-        setAgents(fetchedAgents)
+        // Enrich with NFTid data
+        const enrichedAgents = await Promise.all(
+          fetchedAgents.map(async (agent) => {
+            const nftidTokenId = getNFTidForAgent(agent.wallet)
+            if (!nftidTokenId) return { ...agent, nftidTokenId: null, nftidTraits: null }
+            
+            // Fetch traits from contract
+            try {
+              const traits = await sepoliaClient.readContract({
+                address: '0x6c4618080761925A6D92526c0AA443eF03a92C96' as `0x${string}`,
+                abi: ABIS.ClawdNFT,
+                functionName: 'getTraits',
+                args: [BigInt(nftidTokenId)],
+              }) as [number, number, number, number, number]
+
+              return {
+                ...agent,
+                nftidTokenId,
+                nftidTraits: {
+                  aura: traits[0],
+                  background: traits[1],
+                  core: traits[2],
+                  eyes: traits[3],
+                  overlay: traits[4],
+                },
+              }
+            } catch (err) {
+              console.warn(`Failed to fetch traits for NFTid #${nftidTokenId}:`, err)
+              return { ...agent, nftidTokenId, nftidTraits: null }
+            }
+          })
+        )
+
+        setAgents(enrichedAgents)
         pollInterval = 60_000 // reset to normal on success
       } catch (err) {
         console.error('Failed to load agents:', err)
@@ -109,7 +158,17 @@ export default function LiveAgentsList() {
                       )}
                     </div>
                   </div>
-                  <div className="text-3xl">🦞</div>
+                  
+                  {/* NFTid or Lobster */}
+                  <div className="flex-shrink-0">
+                    {agent.nftidTraits ? (
+                      <div className="w-16 h-16 rounded-lg overflow-hidden border border-[#E8523D]/30">
+                        <NFTidCompositor traits={agent.nftidTraits} size={64} />
+                      </div>
+                    ) : (
+                      <div className="text-3xl">🦞</div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Stats */}

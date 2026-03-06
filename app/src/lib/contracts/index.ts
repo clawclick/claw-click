@@ -54,6 +54,9 @@ import AgentBirthCertificateNFTABI from "./AgentBirthCertificateNFT.json";
 import MemoryStorageABI from "./MemoryStorage.json";
 import ClawclickConfigABI from "./clawclick/config.json";
 import ClawclickTokenABI from "./clawclick/token.json";
+import { CLAWD_NFT_ABI } from "./clawdNFT";
+import { NFTID_REGISTRY_ABI, NFTID_REGISTRY_ADDRESS } from "./nftidRegistry";
+import { BIRTH_CERTIFICATE_ABI, BIRTH_CERTIFICATE_ADDRESS } from "./birthCertificate";
 
 // ============================================================================
 // LaunchType enum — claw.click always uses DIRECT
@@ -423,11 +426,18 @@ export const ABIS = {
   ERC20: ERC20_ABI,
   // Bundler (1-tx launch + mint)
   LaunchBundler: LAUNCH_BUNDLER_ABI,
+  // NFTid (Soul NFT)
+  ClawdNFT: CLAWD_NFT_ABI,
+  NFTidRegistry: NFTID_REGISTRY_ABI,
+  BirthCertificate: BIRTH_CERTIFICATE_ABI,
   // V3 ABIs (deprecated — minimal versions for backwards compatibility)
   AgentFactory: AgentFactoryABI,
   AgentToken: AgentTokenABI,
   FeeCollector: FeeCollectorABI,
 } as const;
+
+// Export NFTid Registry addresses
+export { NFTID_REGISTRY_ADDRESS, BIRTH_CERTIFICATE_ADDRESS };
 
 // Helper to get addresses based on network (supports chainId)
 export function getAddresses(network: 'sepolia' | 'base' | number = 'sepolia') {

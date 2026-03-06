@@ -66,10 +66,10 @@ export default function Home() {
     },
     {
       title: 'Soul',
-      description: 'On-chain agent personality and behavioral trait storage system.',
+      description: 'Generative identity NFTs for autonomous agents. Unique trait-based NFTids with no duplicates.',
       href: '/soul',
       icon: 'soul',
-      status: 'coming-soon' as const,
+      status: 'active' as const,
       gradient: 'from-pink-500 to-rose-500'
     },
     {

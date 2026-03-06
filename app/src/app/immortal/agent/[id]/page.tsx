@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { usePublicClient } from 'wagmi'
+import { usePublicClient, useAccount, useReadContract } from 'wagmi'
 import { createPublicClient, http } from 'viem'
 import { base, sepolia } from 'viem/chains'
 import Link from 'next/link'
@@ -13,6 +13,9 @@ import { SEPOLIA_ADDRESSES, BASE_ADDRESSES, ABIS } from '../../../../lib/contrac
 import FUNLANQRCode from '../../../components/FUNLANQRCode'
 import { apiUrl, clawsFunApiUrl } from '../../../../lib/api'
 import { analyzeGrid, hasLobster } from '../../../../lib/funlanQR'
+import { getNFTidForAgent, linkNFTidToAgent, unlinkAgent } from '../../../../lib/nftidLinkage'
+import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../../lib/contracts/clawdNFT'
+import NFTidCompositor from '../../../../components/NFTidCompositor'
 
 interface BirthCertData {
   nftId: number
@@ -64,6 +67,14 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
   const [memoriesLoading, setMemoriesLoading] = useState(false)
   const [memoryCount, setMemoryCount] = useState<number>(0)
   const publicClient = usePublicClient()
+  
+  // NFTid linkage state
+  const { address: connectedAddress } = useAccount()
+  const [linkedNFTid, setLinkedNFTid] = useState<number | null>(null)
+  const [linkedNFTidTraits, setLinkedNFTidTraits] = useState<any>(null)
+  const [ownedNFTids, setOwnedNFTids] = useState<number[]>([])
+  const [selectedNFTid, setSelectedNFTid] = useState<number | null>(null)
+  const [isAgentOwner, setIsAgentOwner] = useState(false)
 
   const connectedChainId = publicClient?.chain?.id
   const isMainnet = connectedChainId === 8453 || process.env.NEXT_PUBLIC_NETWORK === 'mainnet'
@@ -688,6 +699,92 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                       View on {explorerName} →
                     </a>
                   </div>
+                </div>
+
+                {/* NFTid Linkage (TODO: Add complete implementation with hooks) */}
+                <div className="bg-gradient-to-br from-[#E8523D]/10 to-[#FF8C4A]/10 border border-[#E8523D]/30 rounded-xl p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-2xl">🦞</span>
+                    <div>
+                      <h4 className="text-lg font-bold text-white">Soul NFTid</h4>
+                      <p className="text-xs text-white/50">Visual identity for this agent</p>
+                    </div>
+                  </div>
+
+                  {(() => {
+                    const linkedId = getNFTidForAgent(agent.wallet)
+                    
+                    if (linkedId) {
+                      return (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-20 h-20 rounded-lg overflow-hidden border border-[#E8523D]/30 flex-shrink-0 bg-black/50">
+                              <div className="text-center py-6 text-xs text-white/50">
+                                #{linkedId}
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm font-bold text-white mb-1">
+                                NFTid #{linkedId} Linked
+                              </div>
+                              <div className="text-xs text-white/50">
+                                This agent uses a custom visual identity
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <Link
+                              href={`/soul/${linkedId}`}
+                              className="flex-1 px-4 py-2 bg-black/50 border border-white/10 hover:border-[#E8523D]/50 rounded-lg text-sm text-center text-white transition-all"
+                            >
+                              View NFTid →
+                            </Link>
+                            {connectedAddress && birthCert && connectedAddress.toLowerCase() === birthCert.creator.toLowerCase() && (
+                              <button
+                                onClick={() => {
+                                  if (confirm('Unlink this NFTid from the agent?')) {
+                                    unlinkAgent(agent.wallet)
+                                    window.location.reload()
+                                  }
+                                }}
+                                className="px-4 py-2 bg-black/50 border border-red-500/30 hover:border-red-500/60 text-red-400 text-sm rounded-lg transition-all"
+                              >
+                                Unlink
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    } else {
+                      return (
+                        <div className="text-center py-4">
+                          <div className="text-white/30 text-sm mb-3">
+                            No NFTid linked yet
+                          </div>
+                          {connectedAddress && birthCert && connectedAddress.toLowerCase() === birthCert.creator.toLowerCase() ? (
+                            <div className="space-y-3">
+                              <p className="text-xs text-white/40">
+                                Link a Soul NFTid to give this agent a unique visual identity
+                              </p>
+                              <Link
+                                href="/soul"
+                                className="inline-block px-6 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-black font-semibold rounded-lg hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all text-sm"
+                              >
+                                Mint NFTid (Free for Cert Holders) →
+                              </Link>
+                              <p className="text-xs text-white/30">
+                                After minting, return here to link it
+                              </p>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-white/30">
+                              Only the agent creator can link NFTids
+                            </p>
+                          )}
+                        </div>
+                      )
+                    }
+                  })()}
                 </div>
 
                 {/* Properties Row */}

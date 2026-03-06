@@ -22,6 +22,7 @@ contract ClawdNFT is ERC721, Ownable, ReentrancyGuard {
     // State
     uint256 public totalSupply;
     address public birthCertificateContract;
+    address public treasury;
     string public baseMetadataURI;
     
     // Traits: [aura, background, core, eyes, overlay]
@@ -52,9 +53,12 @@ contract ClawdNFT is ERC721, Ownable, ReentrancyGuard {
     
     constructor(
         address _birthCertificateContract,
+        address _treasury,
         string memory _baseMetadataURI
     ) ERC721("Clawd Identity", "CLAWD") Ownable(msg.sender) {
+        require(_treasury != address(0), "Invalid treasury");
         birthCertificateContract = _birthCertificateContract;
+        treasury = _treasury;
         baseMetadataURI = _baseMetadataURI;
     }
     
@@ -119,6 +123,12 @@ contract ClawdNFT is ERC721, Ownable, ReentrancyGuard {
             traits.overlay,
             eligibleForFreeMint
         );
+        
+        // Send payment to treasury
+        if (requiredPrice > 0) {
+            (bool success, ) = treasury.call{value: requiredPrice}("");
+            require(success, "Payment to treasury failed");
+        }
         
         // Refund excess payment
         if (msg.value > requiredPrice) {
@@ -223,13 +233,21 @@ contract ClawdNFT is ERC721, Ownable, ReentrancyGuard {
     }
     
     /**
-     * @notice Withdraw collected funds
+     * @notice Update treasury address
+     */
+    function setTreasury(address _treasury) external onlyOwner {
+        require(_treasury != address(0), "Invalid treasury");
+        treasury = _treasury;
+    }
+    
+    /**
+     * @notice Emergency withdraw (only if funds somehow get stuck)
      */
     function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
         
-        (bool success, ) = owner().call{value: balance}("");
+        (bool success, ) = treasury.call{value: balance}("");
         require(success, "Withdrawal failed");
     }
 }

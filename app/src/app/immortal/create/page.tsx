@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, Suspense, useEffect, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi'
 import { parseEther, Hex, decodeEventLog } from 'viem'
@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SEPOLIA_ADDRESSES, BASE_ADDRESSES, ABIS, LaunchType } from '../../../lib/contracts'
 import { uploadToPinata } from '../../../lib/ipfs'
+import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../lib/contracts/clawdNFT'
 
 // Minimum bootstrap ETH required by the factory
 const MIN_BOOTSTRAP_ETH = 0.001;
@@ -19,6 +20,7 @@ const IMMORTALIZATION_FEE = 0.005;
 
 function CreateAgentFlow() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const initialType = searchParams?.get('type') as 'human' | 'agent' | null
   
   const [step, setStep] = useState(initialType ? 1 : 0)
@@ -33,6 +35,10 @@ function CreateAgentFlow() {
   const [birthCertNftId, setBirthCertNftId] = useState<bigint | null>(null)
   const [deployPhase, setDeployPhase] = useState<'idle' | 'launching' | 'confirming' | 'done'>('idle')
   const [deployError, setDeployError] = useState<string | null>(null)
+  
+  // NFTid minting state
+  const [nftidMintPhase, setNftidMintPhase] = useState<'idle' | 'minting' | 'confirming' | 'done'>('idle')
+  const [mintedNftidTokenId, setMintedNftidTokenId] = useState<bigint | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     symbol: '',
@@ -72,6 +78,20 @@ function CreateAgentFlow() {
     isSuccess: isConfirmed,
     data: receipt 
   } = useWaitForTransactionReceipt({ hash })
+
+  // Separate hook for NFTid minting
+  const {
+    data: nftidMintHash,
+    writeContractAsync: writeNftidMint,
+    isPending: isNftidMintPending,
+    error: nftidMintError,
+  } = useWriteContract()
+
+  const {
+    isLoading: isNftidMintConfirming,
+    isSuccess: isNftidMintSuccess,
+    data: nftidMintReceipt,
+  } = useWaitForTransactionReceipt({ hash: nftidMintHash })
 
   // Auto-fill creator wallet as first fee split wallet when connected
   useEffect(() => {
@@ -281,6 +301,60 @@ function CreateAgentFlow() {
 
   const handleNext = () => setStep(step + 1)
   const handleBack = () => setStep(step - 1)
+
+  // Handle free NFTid mint
+  const handleFreeMint = async () => {
+    try {
+      setNftidMintPhase('minting')
+      
+      const mintTx = await writeNftidMint({
+        address: CLAWD_NFT_ADDRESS.sepolia,
+        abi: CLAWD_NFT_ABI,
+        functionName: 'mint',
+        args: [BigInt(50)], // max attempts
+        value: BigInt(0), // free for birth cert holders
+        chainId: 11155111, // Sepolia
+      })
+
+      setNftidMintPhase('confirming')
+    } catch (error: any) {
+      console.error('Free mint failed:', error)
+      setNftidMintPhase('idle')
+      alert('Free mint failed: ' + (error.shortMessage || error.message))
+    }
+  }
+
+  // Parse minted token ID from receipt and redirect
+  useEffect(() => {
+    if (isNftidMintSuccess && nftidMintReceipt && publicClient) {
+      setNftidMintPhase('done')
+      
+      // Parse Minted event to get token ID
+      try {
+        for (const log of nftidMintReceipt.logs) {
+          try {
+            const decoded = decodeEventLog({
+              abi: CLAWD_NFT_ABI,
+              data: log.data,
+              topics: log.topics,
+            })
+            if (decoded.eventName === 'Minted') {
+              const tokenId = (decoded.args as any).tokenId
+              setMintedNftidTokenId(tokenId)
+              
+              // Redirect after 2 seconds
+              setTimeout(() => {
+                router.push(`/soul/${tokenId.toString()}`)
+              }, 2000)
+              break
+            }
+          } catch { /* not this event */ }
+        }
+      } catch (err) {
+        console.error('Failed to parse Minted event:', err)
+      }
+    }
+  }, [isNftidMintSuccess, nftidMintReceipt, publicClient, router])
   
   const handleMemoryUpload = async () => {
     if (formData.memoryFiles.length === 0) {
@@ -1038,6 +1112,55 @@ function CreateAgentFlow() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {agentWallet && <Link href={`/agent/${launchedToken || agentWallet}`} className="bg-[#E8523D] font-semibold rounded-lg py-3 text-center text-black">View Dashboard</Link>}
                   <a href={`${explorerUrl}/tx/${hash}`} target="_blank" className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] rounded-lg py-3 text-center">Block Explorer</a>
+                </div>
+
+                {/* Free NFTid Mint for Birth Certificate Holders */}
+                <div className="mt-6 p-4 bg-gradient-to-br from-[#E8523D]/10 to-[#FF8C4A]/10 border border-[#E8523D]/30 rounded-xl">
+                  <div className="flex items-center gap-3 mb-3 justify-center">
+                    <span className="text-3xl">🦞</span>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-white">Claim Your Agent's NFTid</p>
+                      <p className="text-xs text-white/60">Free for Birth Certificate holders</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-white/50 mb-4">
+                    Create a unique visual identity for your agent — generative trait-based NFT with guaranteed uniqueness.
+                  </p>
+                  
+                  {nftidMintPhase === 'idle' && (
+                    <button
+                      onClick={handleFreeMint}
+                      disabled={isNftidMintPending}
+                      className="w-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-black font-semibold px-6 py-3 rounded-lg hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Claim Free NFTid →
+                    </button>
+                  )}
+
+                  {(nftidMintPhase === 'minting' || nftidMintPhase === 'confirming') && (
+                    <div className="flex items-center justify-center gap-2 py-3">
+                      <div className="w-4 h-4 border-2 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin"></div>
+                      <span className="text-sm text-white">
+                        {nftidMintPhase === 'minting' ? 'Confirm in wallet...' : 'Minting NFTid...'}
+                      </span>
+                    </div>
+                  )}
+
+                  {nftidMintPhase === 'done' && mintedNftidTokenId && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center gap-2 text-green-400">
+                        <span>✓</span>
+                        <span className="text-sm font-semibold">NFTid #{mintedNftidTokenId.toString()} Minted!</span>
+                      </div>
+                      <p className="text-xs text-white/50 text-center">Redirecting to your NFTid...</p>
+                    </div>
+                  )}
+
+                  {nftidMintError && (
+                    <div className="text-xs text-red-400 mt-2 text-center">
+                      {(nftidMintError as any).shortMessage || nftidMintError.message}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}

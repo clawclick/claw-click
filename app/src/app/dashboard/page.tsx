@@ -18,18 +18,28 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadAgents() {
       try {
+        console.log('[Dashboard] Loading all agents...')
         const allAgents = await getAllAgents()
+        console.log('[Dashboard] Loaded agents:', allAgents.length)
+        console.log('[Dashboard] First agent:', allAgents[0])
+        console.log('[Dashboard] Connected address:', address)
+        
         setAgents(allAgents)
         
         if (address) {
           // Filter agents created by connected wallet
-          const userAgents = allAgents.filter(
-            a => a.creator.toLowerCase() === address.toLowerCase()
-          )
+          // Check both creator field and match against connected wallet
+          const userAgents = allAgents.filter(a => {
+            const creatorMatch = a.creator && a.creator.toLowerCase() === address.toLowerCase()
+            console.log(`[Dashboard] Agent ${a.name} creator: ${a.creator}, match: ${creatorMatch}`)
+            return creatorMatch
+          })
+          
+          console.log('[Dashboard] User agents:', userAgents.length)
           setMyAgents(userAgents)
         }
       } catch (err) {
-        console.error('Failed to load agents:', err)
+        console.error('[Dashboard] Failed to load agents:', err)
       } finally {
         setLoading(false)
       }
@@ -136,6 +146,23 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
+
+      {/* Debug: Show all agents count */}
+      {!loading && agents.length > 0 && myAgents.length === 0 && (
+        <section className="relative z-10 px-4 pb-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+              <p className="text-sm text-yellow-400">
+                <strong>Debug:</strong> Found {agents.length} total agents on-chain, but none match your address ({address?.slice(0, 6)}...{address?.slice(-4)}).
+                Check the browser console for details.
+              </p>
+              <Link href="/immortal/create?type=human" className="inline-block mt-3 text-sm text-yellow-400 underline">
+                Create your first agent →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* My Agents */}
       <section className="relative z-10 px-4">
