@@ -454,8 +454,105 @@ function CreateAgentFlow() {
               </motion.div>
             )}
 
-            {/* Step 1: Configure Your Launch */}
-            {step === 1 && isConnected && (
+            {/* Agent CLI Instructions (when creatorType === 'agent') */}
+            {step === 1 && isConnected && creatorType === 'agent' && (
+              <motion.div key="agent-cli" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
+                <div className="text-center mb-8">
+                  <div className="text-6xl mb-4">🤖</div>
+                  <h2 className="text-2xl font-black text-white mb-2">Agent Identity</h2>
+                  <p className="text-[rgba(255, 255, 255, 0.5)]">Agents use CLI commands to self-create. Follow these steps:</p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Step 1: Init */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
+                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[#E8523D]">Step 1:</span> Initialize Identity
+                    </h3>
+                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
+                      <code className="text-sm text-[#E8523D] break-all">
+                        npx @clawclick/clawclick init --name "YourAgent" --symbol "AGENT"
+                      </code>
+                    </div>
+                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Generates wallet, creates config file</p>
+                  </div>
+
+                  {/* Step 2: FUNLAN */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
+                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[#E8523D]">Step 2:</span> Generate FUNLAN Identity
+                    </h3>
+                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
+                      <code className="text-sm text-[#E8523D] break-all">
+                        npx @clawclick/clawclick funlan --generate
+                      </code>
+                    </div>
+                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Creates FUNLAN.md with your emoji identity grid</p>
+                  </div>
+
+                  {/* Step 3: Memory */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
+                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[#E8523D]">Step 3:</span> Upload Memory (Optional)
+                    </h3>
+                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
+                      <code className="text-sm text-[#E8523D] break-all">
+                        npx @clawclick/clawclick memory upload ./memories/
+                      </code>
+                    </div>
+                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Uploads memory files to IPFS with wallet signature</p>
+                  </div>
+
+                  {/* Step 4: Deploy */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
+                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[#E8523D]">Step 4:</span> Deploy & Tokenize
+                    </h3>
+                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
+                      <code className="text-sm text-[#E8523D] break-all">
+                        npx @clawclick/clawclick deploy --network base --starting-mcap 5
+                      </code>
+                    </div>
+                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Deploys token with 5 ETH starting MCAP. Mints birth certificate! 🚀</p>
+                  </div>
+
+                  {/* One-liner */}
+                  <div className="bg-gradient-to-br from-[#E8523D]/10 to-[#FF8C4A]/10 rounded-xl p-6 border border-[#E8523D]/30">
+                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[#FF8C4A]">⚡</span> One-liner (all steps)
+                    </h3>
+                    <div className="bg-black/50 rounded-lg p-4 border border-[#E8523D]/20 mb-2">
+                      <code className="text-sm text-[#FF8C4A] break-all">
+                        npx @clawclick/clawclick create --name "YourAgent" --symbol "AGENT" --network base --starting-mcap 5
+                      </code>
+                    </div>
+                  </div>
+
+                  {/* Documentation Link */}
+                  <div className="text-center pt-4">
+                    <Link
+                      href="/docs/cli"
+                      className="inline-flex items-center gap-2 text-[#E8523D] hover:text-[#FF8C4A] transition-colors text-sm"
+                    >
+                      <span>📚</span> View full CLI documentation for all options and flags.
+                    </Link>
+                  </div>
+
+                  {/* Back button */}
+                  <div className="flex justify-center pt-6">
+                    <button
+                      onClick={() => { setStep(0); setCreatorType(null) }}
+                      className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all"
+                    >
+                      ← Back to Creator Selection
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 1: Configure Your Launch (Human only) */}
+            {step === 1 && isConnected && creatorType === 'human' && (
               <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
                 <div className="text-center mb-8">
                   <div className="text-6xl mb-4">🚀</div>
@@ -559,112 +656,46 @@ function CreateAgentFlow() {
               </motion.div>
             )}
 
-            {/* Step 2: Agent Naming */}
-            {step === 2 && isConnected && (
+            {/* Step 2: Agent Naming (Human only) */}
+            {step === 2 && isConnected && creatorType === 'human' && (
               <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
                 <h2 className="text-2xl font-black text-white mb-6">Agent Identity</h2>
                 
-                {creatorType === 'agent' ? (
-                  <>
-                    <p className="text-[rgba(255, 255, 255, 0.5)] mb-4">Agents use CLI commands to self-create. Follow these steps:</p>
-                    
-                    {/* CLI Commands... (keeping same) */}
-                    <div className="bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg p-4 mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-[#E8523D] font-semibold">Step 1: Initialize Identity</span>
-                        <button onClick={() => copyToClipboard('npx @clawclick/clawclick init --name "YourAgent" --symbol "AGENT"', 'init-cmd')} className="text-xs text-[#E8523D] hover:text-[#E8523D] px-2 py-1 rounded border border-[#E8523D]/30">
-                          {copiedField === 'init-cmd' ? '✓ Copied' : 'Copy'}
-                        </button>
-                      </div>
-                      <code className="text-sm text-white font-mono block">npx @clawclick/clawclick init --name "YourAgent" --symbol "AGENT"</code>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2">Generates wallet, creates config file</p>
-                    </div>
-
-                    <div className="bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg p-4 mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-[#E8523D] font-semibold">Step 2: Generate FUNLAN Identity</span>
-                        <button onClick={() => copyToClipboard('npx @clawclick/clawclick funlan --generate', 'funlan-cmd')} className="text-xs text-[#E8523D] hover:text-[#E8523D] px-2 py-1 rounded border border-[#E8523D]/30">
-                          {copiedField === 'funlan-cmd' ? '✓ Copied' : 'Copy'}
-                        </button>
-                      </div>
-                      <code className="text-sm text-white font-mono block">npx @clawclick/clawclick funlan --generate</code>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2">Creates FUNLAN.md with your emoji identity grid</p>
-                    </div>
-
-                    <div className="bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg p-4 mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-[#E8523D] font-semibold">Step 3: Upload Memory (Optional)</span>
-                        <button onClick={() => copyToClipboard('npx @clawclick/clawclick memory upload ./memories/', 'memory-cmd')} className="text-xs text-[#E8523D] hover:text-[#E8523D] px-2 py-1 rounded border border-[#E8523D]/30">
-                          {copiedField === 'memory-cmd' ? '✓ Copied' : 'Copy'}
-                        </button>
-                      </div>
-                      <code className="text-sm text-white font-mono block">npx @clawclick/clawclick memory upload ./memories/</code>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2">Uploads memory files to IPFS with wallet signature</p>
-                    </div>
-
-                    <div className="bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/20 rounded-lg p-4 mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-[#E8523D] font-semibold">Step 4: Deploy & Tokenize</span>
-                        <button onClick={() => copyToClipboard('npx @clawclick/clawclick deploy --network base --starting-mcap 5', 'deploy-cmd')} className="text-xs text-[#E8523D] hover:text-[#E8523D] px-2 py-1 rounded border border-[#E8523D]/30">
-                          {copiedField === 'deploy-cmd' ? '✓ Copied' : 'Copy'}
-                        </button>
-                      </div>
-                      <code className="text-sm text-white font-mono block">npx @clawclick/clawclick deploy --network base --starting-mcap 5</code>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2">Deploys token with 5 ETH starting MCAP. Mints birth certificate!</p>
-                    </div>
-
-                    <div className="bg-[#E8523D]/10 border border-[#E8523D]/30 rounded-lg p-4 mb-6">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-[#E8523D] font-semibold">🚀 One-liner (all steps)</span>
-                        <button onClick={() => copyToClipboard('npx @clawclick/clawclick create --name "YourAgent" --symbol "AGENT" --network base --starting-mcap 5', 'full-cmd')} className="text-xs text-[#E8523D] hover:text-[#E8523D] px-2 py-1 rounded border border-[#E8523D]/30">
-                          {copiedField === 'full-cmd' ? '✓ Copied' : 'Copy'}
-                        </button>
-                      </div>
-                      <code className="text-sm text-white font-mono block break-all">npx @clawclick/clawclick create --name "YourAgent" --symbol "AGENT" --network base --starting-mcap 5</code>
-                    </div>
-
-                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-6">
-                      📚 <a href="/docs?page=cli" className="text-[#E8523D] hover:underline">View full CLI documentation</a> for all options and flags.
-                    </p>
-                  </>
-                ) : (
-                  <div className="space-y-6 mb-8">
-                    <div>
-                      <label className="block text-sm font-medium text-[rgba(255, 255, 255, 0.5)] mb-2">Agent Name *</label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="ClawdiusMaximus"
-                        className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-[rgba(255, 255, 255, 0.5)] mb-2">Token Symbol *</label>
-                      <input
-                        type="text"
-                        value={formData.symbol}
-                        onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
-                        placeholder="CLAW"
-                        className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
-                        maxLength={10}
-                        required
-                      />
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2">Must be unique and uppercase</p>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[rgba(255, 255, 255, 0.5)] mb-2">Agent Name *</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="ClawdiusMaximus"
+                      className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
+                      required
+                    />
                   </div>
-                )}
+                  <div>
+                    <label className="block text-sm font-medium text-[rgba(255, 255, 255, 0.5)] mb-2">Token Symbol *</label>
+                    <input
+                      type="text"
+                      value={formData.symbol}
+                      onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
+                      placeholder="CLAW"
+                      className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
+                      maxLength={10}
+                      required
+                    />
+                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2">Must be unique and uppercase</p>
+                  </div>
+                </div>
 
                 <div className="flex gap-4">
                   <button onClick={handleBack} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
-                  <button onClick={handleNext} disabled={creatorType === 'human' && (!formData.name || !formData.symbol)} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">Continue</button>
+                  <button onClick={handleNext} disabled={!formData.name || !formData.symbol} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">Continue</button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 3: Network */}
-            {step === 3 && isConnected && (
+            {/* Step 3: Network (Human only) */}
+            {step === 3 && isConnected && creatorType === 'human' && (
               <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
                 <h2 className="text-2xl font-black text-white mb-6">Select Network</h2>
                 <p className="text-[rgba(255, 255, 255, 0.5)] mb-6">Choose the blockchain network for your agent:</p>
@@ -739,8 +770,8 @@ function CreateAgentFlow() {
               </motion.div>
             )}
 
-            {/* Step 4: FUNLAN */}
-            {step === 4 && isConnected && (
+            {/* Step 4: FUNLAN (Human only) */}
+            {step === 4 && isConnected && creatorType === 'human' && (
               <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <span className="text-4xl">🦞</span>
@@ -835,8 +866,8 @@ function CreateAgentFlow() {
               </motion.div>
             )}
 
-            {/* Step 5: Memory */}
-            {step === 5 && isConnected && (
+            {/* Step 5: Memory (Human only) */}
+            {step === 5 && isConnected && creatorType === 'human' && (
               <motion.div key="step5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-3xl">🧠</span>
@@ -917,8 +948,8 @@ function CreateAgentFlow() {
               </motion.div>
             )}
 
-            {/* Step 6: Deploy & Review */}
-            {step === 6 && isConnected && (
+            {/* Step 6: Deploy & Review (Human only) */}
+            {step === 6 && isConnected && creatorType === 'human' && (
               <motion.div key="step6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
                 <h2 className="text-2xl font-black text-white mb-6">Deploy Agent: {formData.name} (${formData.symbol})</h2>
                 
