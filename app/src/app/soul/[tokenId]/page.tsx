@@ -380,14 +380,6 @@ export default function NFTidDetailPage({ params }: PageProps) {
                 >
                   View on Etherscan →
                 </Link>
-                
-                <Link
-                  href={`https://testnets.opensea.io/assets/sepolia/${CLAWD_NFT_ADDRESS.sepolia}/${tokenId}`}
-                  target="_blank"
-                  className="block w-full px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-center transition-all"
-                >
-                  View on OpenSea →
-                </Link>
               </div>
             </motion.div>
           </div>
