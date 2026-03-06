@@ -8,8 +8,10 @@ import { sepolia } from 'viem/chains'
 import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../lib/contracts/clawdNFT'
 import { useLinkNFTid } from '../../../lib/hooks/useLinkNFTid'
 import NFTidCompositor from '../../../components/NFTidCompositor'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { isAddress } from 'viem'
+import { getAgentByWallet } from '../../../lib/agents'
+import { calculateRarityScore, getRarityTier, getTraitName, TRAIT_NAMES } from '../../../lib/utils/rarityCalculator'
 
 interface PageProps {
   params: Promise<{ tokenId: string }>
@@ -21,6 +23,8 @@ export default function NFTidDetailPage(props: PageProps) {
   const { address, isConnected } = useAccount()
   const [agentAddressInput, setAgentAddressInput] = useState('')
   const [showLinkForm, setShowLinkForm] = useState(false)
+  const [linkedAgentData, setLinkedAgentData] = useState<any>(null)
+  const [loadingAgent, setLoadingAgent] = useState(false)
 
   const {
     linkNFTid,
@@ -62,6 +66,24 @@ export default function NFTidDetailPage(props: PageProps) {
 
   const isOwner = address && owner && address.toLowerCase() === (owner as string).toLowerCase()
 
+  // Fetch linked agent data
+  useEffect(() => {
+    async function fetchAgentData() {
+      if (!linkedAgent || linkedAgent === '0x0000000000000000000000000000000000000000') return
+      setLoadingAgent(true)
+      try {
+        const agent = await getAgentByWallet(linkedAgent as `0x${string}`)
+        setLinkedAgentData(agent)
+      } catch (err) {
+        console.error('Failed to fetch agent data:', err)
+      } finally {
+        setLoadingAgent(false)
+      }
+    }
+
+    fetchAgentData()
+  }, [linkedAgent])
+
   const handleLink = async () => {
     if (!isAddress(agentAddressInput)) {
       alert('Invalid agent address')
@@ -86,6 +108,10 @@ export default function NFTidDetailPage(props: PageProps) {
     eyes: Number(traits[3]),
     overlay: Number(traits[4]),
   } : null
+
+  // Calculate rarity
+  const rarityScore = parsedTraits ? calculateRarityScore(parsedTraits) : 0
+  const rarityInfo = getRarityTier(rarityScore)
 
   return (
     <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
@@ -125,16 +151,37 @@ export default function NFTidDetailPage(props: PageProps) {
                 )}
               </div>
 
+              {/* Rarity Score */}
+              {parsedTraits && (
+                <div className="mb-6 p-4 bg-gradient-to-br from-black/50 to-black/20 rounded-lg border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-white/50">Rarity Score</span>
+                    <span className="text-2xl font-bold text-white">{rarityScore}</span>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${rarityInfo.color} text-white text-sm font-bold text-center`}>
+                    {rarityInfo.tier}
+                  </div>
+                  <p className="text-xs text-white/40 text-center mt-2">{rarityInfo.description}</p>
+                </div>
+              )}
+
               {/* Traits */}
               {parsedTraits && (
                 <div className="space-y-2">
                   <h3 className="text-sm font-bold text-white/70 mb-3">Traits</h3>
-                  {Object.entries(parsedTraits).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between text-sm">
-                      <span className="text-white/50 capitalize">{key}</span>
-                      <span className="font-mono text-[#E8523D]">#{value}</span>
-                    </div>
-                  ))}
+                  {Object.entries(parsedTraits).map(([key, value]) => {
+                    const traitKey = key as keyof typeof TRAIT_NAMES
+                    const traitName = getTraitName(traitKey, value)
+                    return (
+                      <div key={key} className="flex items-center justify-between text-sm">
+                        <div className="flex flex-col">
+                          <span className="text-white/50 capitalize text-xs">{key}</span>
+                          <span className="text-white text-sm">{traitName}</span>
+                        </div>
+                        <span className="font-mono text-[#E8523D]">#{value}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </motion.div>
@@ -183,10 +230,61 @@ export default function NFTidDetailPage(props: PageProps) {
                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                       <span className="text-sm text-green-400">Linked to Agent</span>
                     </div>
-                    <div className="p-4 bg-black/30 rounded-lg">
-                      <p className="text-xs text-white/50 mb-2">Agent Wallet</p>
-                      <p className="font-mono text-sm text-white break-all">{linkedAgent as string}</p>
-                    </div>
+
+                    {loadingAgent ? (
+                      <div className="p-4 bg-black/30 rounded-lg text-center">
+                        <div className="w-6 h-6 border-2 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin mx-auto mb-2"></div>
+                        <p className="text-xs text-white/50">Loading agent data...</p>
+                      </div>
+                    ) : linkedAgentData ? (
+                      <div className="p-4 bg-black/30 rounded-lg border border-white/5 space-y-3">
+                        <div>
+                          <p className="text-xs text-white/50 mb-1">Agent Name</p>
+                          <p className="text-base font-bold text-white">{linkedAgentData.name}</p>
+                          <p className="text-xs text-white/40">${linkedAgentData.symbol}</p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
+                          <div>
+                            <p className="text-xs text-white/50 mb-1">Price</p>
+                            <p className="text-sm text-white">
+                              {linkedAgentData.priceUsd ? `$${linkedAgentData.priceUsd.toFixed(6)}` : '—'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-white/50 mb-1">Market Cap</p>
+                            <p className="text-sm text-white">
+                              {linkedAgentData.mcapUsd 
+                                ? linkedAgentData.mcapUsd >= 1_000 
+                                  ? `$${(linkedAgentData.mcapUsd / 1_000).toFixed(1)}K`
+                                  : `$${linkedAgentData.mcapUsd.toFixed(0)}`
+                                : '$0'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="pt-3 border-t border-white/5">
+                          <p className="text-xs text-white/50 mb-1">Wallet Address</p>
+                          <p className="font-mono text-xs text-white/70 break-all">{linkedAgent as string}</p>
+                        </div>
+                        <Link
+                          href={`/immortal/agent/${linkedAgent}`}
+                          className="block w-full px-4 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-center text-white font-semibold hover:shadow-lg hover:shadow-[#E8523D]/40 transition-all"
+                        >
+                          View Agent Page →
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="p-4 bg-black/30 rounded-lg">
+                        <p className="text-xs text-white/50 mb-2">Agent Wallet</p>
+                        <p className="font-mono text-sm text-white break-all mb-3">{linkedAgent as string}</p>
+                        <Link
+                          href={`/immortal/agent/${linkedAgent}`}
+                          className="block w-full px-4 py-3 bg-black/50 border border-white/10 hover:border-[#E8523D]/50 rounded-lg text-center text-white transition-all"
+                        >
+                          View Agent Page →
+                        </Link>
+                      </div>
+                    )}
+
                     {isOwner && (
                       <button
                         onClick={handleUnlink}

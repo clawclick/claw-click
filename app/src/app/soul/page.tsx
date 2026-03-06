@@ -14,6 +14,7 @@ import LobsterIcon from '../../components/icons/LobsterIcon'
 import AnimatedNFTShowcase from '../../components/AnimatedNFTShowcase'
 import NFTidCompositor from '../../components/NFTidCompositor'
 import { getNFTidForAgentSync } from '../../lib/nftidLinkage'
+import { calculateRarityScore, getRarityTier } from '../../lib/utils/rarityCalculator'
 
 // Minted NFTs for collection feed
 const MINTED_NFTS = [
@@ -588,39 +589,55 @@ export default function SoulPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {ownedNFTs.map((nft) => (
-                    <Link key={nft.tokenId} href={`/soul/${nft.tokenId}`}>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.03 }}
-                        className="bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-4 transition-all cursor-pointer group"
-                      >
-                        {/* NFT Image */}
-                        <div className="mb-3 rounded-lg overflow-hidden aspect-square w-full">
-                          <NFTidCompositor traits={nft.traits} size={300} />
-                        </div>
-
-                        {/* Info */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-white group-hover:text-[#E8523D] transition-colors">
-                              NFTid #{nft.tokenId}
-                            </span>
-                            <span className="text-xs px-2 py-1 rounded bg-[#E8523D]/10 text-[#E8523D] font-semibold">
-                              OWNED
-                            </span>
-                          </div>
-                          
-                          {nft.linkedAgent && (
-                            <div className="text-xs text-white/50 bg-black/30 rounded px-2 py-1">
-                              🔗 Linked to Agent
+                  {ownedNFTs.map((nft) => {
+                    const rarityScore = calculateRarityScore(nft.traits)
+                    const rarityInfo = getRarityTier(rarityScore)
+                    
+                    return (
+                      <Link key={nft.tokenId} href={`/soul/${nft.tokenId}`}>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          whileHover={{ scale: 1.03 }}
+                          className="bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-4 transition-all cursor-pointer group"
+                        >
+                          {/* NFT Image */}
+                          <div className="mb-3 rounded-lg overflow-hidden aspect-square w-full relative">
+                            <NFTidCompositor traits={nft.traits} size={300} />
+                            {/* Rarity Badge */}
+                            <div className="absolute top-2 right-2">
+                              <div className={`px-2 py-1 rounded-lg bg-gradient-to-r ${rarityInfo.color} text-white text-xs font-bold shadow-lg`}>
+                                {rarityInfo.tier}
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    </Link>
-                  ))}
+                          </div>
+
+                          {/* Info */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-bold text-white group-hover:text-[#E8523D] transition-colors">
+                                NFTid #{nft.tokenId}
+                              </span>
+                              <span className="text-xs px-2 py-1 rounded bg-[#E8523D]/10 text-[#E8523D] font-semibold">
+                                OWNED
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-white/40">Rarity Score</span>
+                              <span className="text-white font-mono">{rarityScore}</span>
+                            </div>
+                            
+                            {nft.linkedAgent && (
+                              <div className="text-xs text-white/50 bg-black/30 rounded px-2 py-1">
+                                🔗 Linked to Agent
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      </Link>
+                    )
+                  })}
                 </div>
               )}
             </motion.div>
