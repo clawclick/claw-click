@@ -100,14 +100,28 @@ export default function NFTidDetailPage(props: PageProps) {
     }
   }
 
-  // Parse traits
-  const parsedTraits = traits ? {
-    aura: Number(traits[0]),
-    background: Number(traits[1]),
-    core: Number(traits[2]),
-    eyes: Number(traits[3]),
-    overlay: Number(traits[4]),
-  } : null
+  // Parse traits - handle both array and object formats
+  const parsedTraits = traits ? (() => {
+    if (Array.isArray(traits)) {
+      return {
+        aura: Number(traits[0]),
+        background: Number(traits[1]),
+        core: Number(traits[2]),
+        eyes: Number(traits[3]),
+        overlay: Number(traits[4]),
+      }
+    } else if (typeof traits === 'object') {
+      const t = traits as any
+      return {
+        aura: Number(t.aura || t[0]),
+        background: Number(t.background || t[1]),
+        core: Number(t.core || t[2]),
+        eyes: Number(t.eyes || t[3]),
+        overlay: Number(t.overlay || t[4]),
+      }
+    }
+    return null
+  })() : null
 
   // Calculate rarity
   const rarityScore = parsedTraits ? calculateRarityScore(parsedTraits) : 0

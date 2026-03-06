@@ -16,13 +16,19 @@ export interface Traits {
 }
 
 export function calculateRarityScore(traits: Traits): number {
-  return (
-    TRAIT_WEIGHTS.auras[traits.aura] +
-    TRAIT_WEIGHTS.backgrounds[traits.background] +
-    TRAIT_WEIGHTS.cores[traits.core] +
-    TRAIT_WEIGHTS.eyes[traits.eyes] +
-    TRAIT_WEIGHTS.overlays[traits.overlay]
-  )
+  // Validate traits
+  if (!traits || typeof traits !== 'object') {
+    console.error('Invalid traits object:', traits)
+    return 0
+  }
+
+  const auraScore = TRAIT_WEIGHTS.auras[traits.aura] || 0
+  const backgroundScore = TRAIT_WEIGHTS.backgrounds[traits.background] || 0
+  const coreScore = TRAIT_WEIGHTS.cores[traits.core] || 0
+  const eyesScore = TRAIT_WEIGHTS.eyes[traits.eyes] || 0
+  const overlayScore = TRAIT_WEIGHTS.overlays[traits.overlay] || 0
+
+  return auraScore + backgroundScore + coreScore + eyesScore + overlayScore
 }
 
 export function getRarityTier(score: number): {

@@ -59,6 +59,25 @@ export default function NFTidCompositor({ traits, size = 400, className }: NFTid
     setIsLoading(true)
     setError(null)
 
+    // Validate traits
+    if (
+      typeof traits.background !== 'number' ||
+      typeof traits.core !== 'number' ||
+      typeof traits.eyes !== 'number' ||
+      typeof traits.overlay !== 'number' ||
+      typeof traits.aura !== 'number' ||
+      isNaN(traits.background) ||
+      isNaN(traits.core) ||
+      isNaN(traits.eyes) ||
+      isNaN(traits.overlay) ||
+      isNaN(traits.aura)
+    ) {
+      console.error('Invalid traits:', traits)
+      setError('Invalid trait data')
+      setIsLoading(false)
+      return
+    }
+
     // Layer order: Background → Core → Eyes → Overlay → Aura
     const layers = [
       TRAIT_FILES.backgrounds[traits.background],
@@ -67,6 +86,8 @@ export default function NFTidCompositor({ traits, size = 400, className }: NFTid
       TRAIT_FILES.overlays[traits.overlay],
       TRAIT_FILES.auras[traits.aura],
     ]
+
+    console.log('Loading NFTid layers:', { traits, layers })
 
     // Load all images
     Promise.all(
