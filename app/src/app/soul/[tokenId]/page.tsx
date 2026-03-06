@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { use } from 'react'
 import { useAccount, useReadContract } from 'wagmi'
 import { sepolia } from 'viem/chains'
 import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../lib/contracts/clawdNFT'
@@ -14,11 +13,10 @@ import { getAgentByWallet } from '../../../lib/agents'
 import { calculateRarityScore, getRarityTier, getTraitName, TRAIT_NAMES } from '../../../lib/utils/rarityCalculator'
 
 interface PageProps {
-  params: Promise<{ tokenId: string }>
+  params: { tokenId: string }
 }
 
-export default function NFTidDetailPage(props: PageProps) {
-  const params = use(props.params)
+export default function NFTidDetailPage({ params }: PageProps) {
   const tokenId = parseInt(params.tokenId)
   const { address, isConnected } = useAccount()
   const [agentAddressInput, setAgentAddressInput] = useState('')
