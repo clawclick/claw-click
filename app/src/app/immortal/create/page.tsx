@@ -661,6 +661,7 @@ function CreateAgentFlow() {
               <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
                 <h2 className="text-2xl font-black text-white mb-6">Agent Identity</h2>
                 
+                <div className="space-y-6 mb-8">
                   <div>
                     <label className="block text-sm font-medium text-[rgba(255, 255, 255, 0.5)] mb-2">Agent Name *</label>
                     <input
