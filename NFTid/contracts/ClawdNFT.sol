@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ClawdNFT
@@ -53,7 +53,7 @@ contract ClawdNFT is ERC721, Ownable, ReentrancyGuard {
     constructor(
         address _birthCertificateContract,
         string memory _baseMetadataURI
-    ) ERC721("Clawd Identity", "CLAWD") {
+    ) ERC721("Clawd Identity", "CLAWD") Ownable(msg.sender) {
         birthCertificateContract = _birthCertificateContract;
         baseMetadataURI = _baseMetadataURI;
     }
@@ -189,7 +189,7 @@ contract ClawdNFT is ERC721, Ownable, ReentrancyGuard {
      * @notice Get traits for a token
      */
     function getTraits(uint256 tokenId) external view returns (Traits memory) {
-        require(_exists(tokenId), "Token does not exist");
+        _requireOwned(tokenId);
         return tokenTraits[tokenId];
     }
     
@@ -197,7 +197,7 @@ contract ClawdNFT is ERC721, Ownable, ReentrancyGuard {
      * @notice Token URI points to off-chain metadata service
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "Token does not exist");
+        _requireOwned(tokenId);
         
         return string(
             abi.encodePacked(
