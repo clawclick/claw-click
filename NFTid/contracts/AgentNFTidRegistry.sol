@@ -10,6 +10,24 @@ interface IClawdNFT {
 
 interface IAgentBirthCertificate {
     function nftByWallet(address wallet) external view returns (uint256);
+    
+    struct AgentBirth {
+        uint256 nftId;
+        uint256 birthTimestamp;
+        string name;
+        address wallet;
+        address tokenAddress;
+        address creator;
+        string socialHandle;
+        string memoryCID;
+        string avatarCID;
+        string ensName;
+        bytes32 dnaHash;
+        bool immortalized;
+        uint256 spawnedAgents;
+    }
+    
+    function agentByNFT(uint256 nftId) external view returns (AgentBirth memory);
 }
 
 /**
@@ -43,7 +61,9 @@ contract AgentNFTidRegistry is Ownable {
      * @notice Link an NFTid to an agent wallet
      * @param nftidTokenId The ClawdNFT token ID to link
      * @param agentWallet The agent wallet address to link to
-     * @dev Caller must own the NFTid AND be the creator of the agent (via birth certificate)
+     * @dev Caller must own the NFTid AND be authorized for the agent:
+     *      - Agent creator (from birth certificate), OR
+     *      - Agent wallet itself
      */
     function linkNFTid(uint256 nftidTokenId, address agentWallet) external {
         require(agentWallet != address(0), "Invalid agent address");
@@ -55,6 +75,16 @@ contract AgentNFTidRegistry is Ownable {
         // Verify agent has a birth certificate
         uint256 birthCertId = IAgentBirthCertificate(birthCertificateAddress).nftByWallet(agentWallet);
         require(birthCertId > 0, "Agent has no birth certificate");
+
+        // Verify caller is authorized to link this agent
+        // Caller must be either:
+        // 1. The agent creator (from birth certificate)
+        // 2. The agent wallet itself
+        IAgentBirthCertificate.AgentBirth memory agentData = IAgentBirthCertificate(birthCertificateAddress).agentByNFT(birthCertId);
+        require(
+            msg.sender == agentData.creator || msg.sender == agentWallet,
+            "Not authorized: must be agent creator or agent wallet"
+        );
 
         // Check for existing links and unlink them first
         if (nftidToAgent[nftidTokenId] != address(0)) {
@@ -74,11 +104,25 @@ contract AgentNFTidRegistry is Ownable {
     /**
      * @notice Unlink an NFTid from its agent
      * @param nftidTokenId The ClawdNFT token ID to unlink
-     * @dev Caller must own the NFTid
+     * @dev Caller must own the NFTid AND be authorized for the linked agent
      */
     function unlinkNFTid(uint256 nftidTokenId) external {
         address nftOwner = IClawdNFT(clawdNFTAddress).ownerOf(nftidTokenId);
         require(nftOwner == msg.sender, "You don't own this NFTid");
+        
+        // Get linked agent to verify authorization
+        address linkedAgent = nftidToAgent[nftidTokenId];
+        require(linkedAgent != address(0), "NFTid not linked");
+        
+        // Verify caller is authorized to unlink this agent
+        uint256 birthCertId = IAgentBirthCertificate(birthCertificateAddress).nftByWallet(linkedAgent);
+        require(birthCertId > 0, "Agent has no birth certificate");
+        
+        IAgentBirthCertificate.AgentBirth memory agentData = IAgentBirthCertificate(birthCertificateAddress).agentByNFT(birthCertId);
+        require(
+            msg.sender == agentData.creator || msg.sender == linkedAgent,
+            "Not authorized: must be agent creator or agent wallet"
+        );
         
         _unlinkNFTid(nftidTokenId);
     }
@@ -86,16 +130,28 @@ contract AgentNFTidRegistry is Ownable {
     /**
      * @notice Unlink an agent from its NFTid
      * @param agentWallet The agent wallet address to unlink
-     * @dev Caller must be the agent creator (verified via birth certificate creator)
+     * @dev Caller must be authorized: agent creator, agent wallet, or NFTid owner
      */
     function unlinkAgent(address agentWallet) external {
-        // Verification would require fetching creator from birth certificate
-        // For simplicity, allowing NFTid owner to unlink
         uint256 linkedNFTid = agentToNFTid[agentWallet];
         require(linkedNFTid > 0, "Agent has no linked NFTid");
         
+        // Verify caller is authorized
+        // Must be either:
+        // 1. NFTid owner
+        // 2. Agent creator
+        // 3. Agent wallet itself
         address nftOwner = IClawdNFT(clawdNFTAddress).ownerOf(linkedNFTid);
-        require(nftOwner == msg.sender, "You don't own the linked NFTid");
+        
+        uint256 birthCertId = IAgentBirthCertificate(birthCertificateAddress).nftByWallet(agentWallet);
+        require(birthCertId > 0, "Agent has no birth certificate");
+        
+        IAgentBirthCertificate.AgentBirth memory agentData = IAgentBirthCertificate(birthCertificateAddress).agentByNFT(birthCertId);
+        
+        require(
+            msg.sender == nftOwner || msg.sender == agentData.creator || msg.sender == agentWallet,
+            "Not authorized: must be NFTid owner, agent creator, or agent wallet"
+        );
 
         _unlinkAgent(agentWallet);
     }
