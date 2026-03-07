@@ -27,7 +27,8 @@ interface IAgentBirthCertificate {
         uint256 spawnedAgents;
     }
     
-    function agentByNFT(uint256 nftId) external view returns (AgentBirth memory);
+    // Use getAgent function instead of public mapping getter
+    function getAgent(uint256 nftId) external view returns (AgentBirth memory);
 }
 
 /**
@@ -78,7 +79,7 @@ contract SimpleAgentNFTidRegistry is Ownable {
         uint256 birthCertId = IAgentBirthCertificate(birthCertificateAddress).nftByToken(tokenAddress);
         require(birthCertId > 0, "Token has no birth certificate");
 
-        IAgentBirthCertificate.AgentBirth memory agent = IAgentBirthCertificate(birthCertificateAddress).agentByNFT(birthCertId);
+        IAgentBirthCertificate.AgentBirth memory agent = IAgentBirthCertificate(birthCertificateAddress).getAgent(birthCertId);
         require(agent.creator == msg.sender, "You did not create this token");
 
         // Unlink any existing links

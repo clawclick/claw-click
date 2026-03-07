@@ -2,7 +2,7 @@
 
 export const NFTID_REGISTRY_ADDRESS = {
   sepolia: '0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D' as const,
-  base: '0x515685B303BB79a991664F8a8DcA9B5369103371' as const,  // SIMPLE: NFTid → Token Address
+  base: '0xd1C127c68D45ed264ce5251342A47f1C47F39dcF' as const,  // V2 FIXED: Uses getAgent() not agentByNFT mapping
 } as const
 
 export const NFTID_REGISTRY_ABI = [
