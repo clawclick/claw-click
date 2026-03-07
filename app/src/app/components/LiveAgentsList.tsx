@@ -46,7 +46,7 @@ export default function LiveAgentsList() {
         // Enrich with NFTid data
         const enrichedAgents = await Promise.all(
           fetchedAgents.map(async (agent) => {
-            const nftidTokenId = getNFTidForAgent(agent.wallet)
+            const nftidTokenId = await getNFTidForAgent(agent.wallet)
             if (!nftidTokenId) return { ...agent, nftidTokenId: null, nftidTraits: null }
             
             // Fetch traits from contract
