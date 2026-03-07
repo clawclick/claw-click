@@ -46,7 +46,7 @@ export default function SoulPage() {
   const [loadingOwnedNFTs, setLoadingOwnedNFTs] = useState(false)
 
   // Read balance of connected wallet
-  const { data: balance } = useReadContract({
+  const { data: balance, refetch: refetchBalance } = useReadContract({
     address: CLAWD_NFT_ADDRESS.base,
     abi: [{
       name: 'balanceOf',
@@ -59,6 +59,13 @@ export default function SoulPage() {
     args: address ? [address] : undefined,
     chainId: base.id,
   })
+  
+  // Refetch balance after successful mint
+  useEffect(() => {
+    if (isMintSuccess) {
+      setTimeout(() => refetchBalance(), 2000)
+    }
+  }, [isMintSuccess, refetchBalance])
 
   const getCurrentTier = () => {
     const supply = Number(totalSupply || 0)
@@ -106,37 +113,12 @@ export default function SoulPage() {
           return
         }
 
-        // Get all Transfer events where user is the recipient
-        const logs = await publicClient.getLogs({
-          address: CLAWD_NFT_ADDRESS.base,
-          event: {
-            type: 'event',
-            name: 'Transfer',
-            inputs: [
-              { indexed: true, name: 'from', type: 'address' },
-              { indexed: true, name: 'to', type: 'address' },
-              { indexed: true, name: 'tokenId', type: 'uint256' }
-            ]
-          },
-          args: {
-            to: address,
-          },
-          fromBlock: 0n,
-          toBlock: 'latest',
-        })
-
-        console.log(`Found ${logs.length} Transfer events to ${address}`)
-
-        // Extract token IDs and check current ownership (in case they were transferred away)
-        const tokenIds = new Set<number>()
-        for (const log of logs) {
-          if (log.args.tokenId) {
-            tokenIds.add(Number(log.args.tokenId))
-          }
-        }
-
-        // Verify current ownership and fetch traits
-        for (const tokenId of Array.from(tokenIds)) {
+        // Simple approach: check all tokens from 0 to currentSupply
+        // Works fine for small supply (<1000 tokens)
+        const numOwned = Number(balance)
+        let found = 0
+        
+        for (let tokenId = 0; tokenId < currentSupply && found < numOwned; tokenId++) {
           try {
             // Check if user still owns this token
             const owner = await publicClient.readContract({
@@ -153,9 +135,10 @@ export default function SoulPage() {
             })
 
             if (owner.toLowerCase() !== address.toLowerCase()) {
-              console.log(`Token ${tokenId} transferred away, skipping`)
               continue
             }
+
+            found++
 
             // Fetch traits
             const traitsResponse = await publicClient.readContract({
@@ -165,16 +148,11 @@ export default function SoulPage() {
               args: [BigInt(tokenId)],
             })
 
-            console.log(`Raw traits for token ${tokenId}:`, traitsResponse)
-
             // Parse traits using helper
             const parsedTraits = parseTraits(traitsResponse)
             if (!parsedTraits || !validateTraits(parsedTraits)) {
-              console.error(`Invalid trait data for token ${tokenId}:`, traitsResponse)
               continue
             }
-
-            console.log(`Parsed traits for token ${tokenId}:`, parsedTraits)
 
             const linkedAgent = getAgentForNFTidSync(tokenId)
 
@@ -184,7 +162,8 @@ export default function SoulPage() {
               linkedAgent,
             })
           } catch (err) {
-            console.warn(`Failed to fetch data for token ${tokenId}:`, err)
+            // Token might not exist or query failed, continue
+            continue
           }
         }
 
