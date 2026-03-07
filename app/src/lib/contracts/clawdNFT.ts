@@ -2,7 +2,7 @@
 
 export const CLAWD_NFT_ADDRESS = {
   sepolia: '0x6c4618080761925A6D92526c0AA443eF03a92C96' as const,
-  base: '0x553016FA9Ead8ACFa1d96220901f1e91EEB135f4' as const,
+  base: '0x86d7d293DD9bFE25CA3CAF4Cb09f8d2c266823E0' as const,  // V2 - Fixed free mint logic
 } as const
 
 export const CLAWD_NFT_ABI = [
@@ -121,6 +121,49 @@ export const CLAWD_NFT_ABI = [
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      }
+    ],
+    "name": "countAgentsCreated",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getRemainingFreeMints",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "useFreeMint",
+        "type": "bool"
+      },
       {
         "internalType": "uint256",
         "name": "maxAttempts",

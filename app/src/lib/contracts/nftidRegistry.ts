@@ -2,7 +2,7 @@
 
 export const NFTID_REGISTRY_ADDRESS = {
   sepolia: '0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D' as const,
-  base: '0x4774B9387e7067624755eC9BB917aDA8095Adb4d' as const,
+  base: '0xA51fa0faD4bCec2909B2f1e33bdfaa80f3f7d76B' as const,  // V2 - Points to ClawdNFT V2
 } as const
 
 export const NFTID_REGISTRY_ABI = [

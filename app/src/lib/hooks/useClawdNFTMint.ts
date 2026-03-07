@@ -32,6 +32,24 @@ export function useClawdNFTMint() {
     chainId,
   })
 
+  // Get remaining free mints (V2)
+  const { data: remainingFreeMints } = useReadContract({
+    address: CLAWD_NFT_ADDRESS.base,
+    abi: CLAWD_NFT_ABI,
+    functionName: 'getRemainingFreeMints',
+    args: address ? [address] : undefined,
+    chainId,
+  })
+
+  // Count agents created by user (V2)
+  const { data: agentsCreated } = useReadContract({
+    address: CLAWD_NFT_ADDRESS.base,
+    abi: CLAWD_NFT_ABI,
+    functionName: 'countAgentsCreated',
+    args: address ? [address] : undefined,
+    chainId,
+  })
+
   // Mint function
   const {
     writeContract: mint,
@@ -50,13 +68,14 @@ export function useClawdNFTMint() {
   const handleMint = () => {
     const maxAttempts = 10 // Reduced from 50 to lower gas usage
     // Explicitly check if eligible is true (not undefined or false)
-    const value = isEligibleForFreeMint === true ? parseEther('0') : (currentPrice || parseEther('0.0015'))
+    const useFreeMint = isEligibleForFreeMint === true
+    const value = useFreeMint ? parseEther('0') : (currentPrice || parseEther('0.0015'))
 
     mint({
       address: CLAWD_NFT_ADDRESS.base,
       abi: CLAWD_NFT_ABI,
       functionName: 'mint',
-      args: [BigInt(maxAttempts)],
+      args: [useFreeMint, BigInt(maxAttempts)],  // V2: useFreeMint boolean first
       value,
       gas: 1000000n, // 1M gas - conservative limit, plenty for ~10 iterations
     })
@@ -67,6 +86,8 @@ export function useClawdNFTMint() {
     totalSupply,
     currentPrice,
     isEligibleForFreeMint,
+    remainingFreeMints,  // V2
+    agentsCreated,       // V2
     
     // Mint actions
     handleMint,

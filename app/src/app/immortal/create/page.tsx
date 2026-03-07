@@ -311,9 +311,9 @@ function CreateAgentFlow() {
         address: CLAWD_NFT_ADDRESS.base,
         abi: CLAWD_NFT_ABI,
         functionName: 'mint',
-        args: [BigInt(50)], // max attempts
+        args: [true, BigInt(50)], // useFreeMint = true, max attempts = 50
         value: BigInt(0), // free for birth cert holders
-        chainId: 8453, // Sepolia
+        chainId: 8453, // Base mainnet
       })
 
       setNftidMintPhase('confirming')
