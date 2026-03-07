@@ -63,6 +63,17 @@ export default function NFTidDetailPage({ params }: PageProps) {
   const { data: isLinked, refetch: refetchLinked } = useIsNFTidLinked(tokenId)
   const { data: linkedToken, refetch: refetchToken } = useGetTokenForNFTid(tokenId)
   
+  // Debug: log the query results
+  useEffect(() => {
+    console.log('[NFTid] Query results:', { 
+      tokenId, 
+      isLinked, 
+      linkedToken,
+      linkedTokenType: typeof linkedToken,
+      isZeroAddress: linkedToken === '0x0000000000000000000000000000000000000000'
+    })
+  }, [tokenId, isLinked, linkedToken])
+  
   // Refetch link status when link succeeds (multiple times to force cache update)
   useEffect(() => {
     if (isLinkSuccess) {
@@ -260,7 +271,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
               <div className="bg-white/[0.02] border border-white/10 rounded-xl p-6">
                 <h3 className="text-sm font-bold text-white/70 mb-3">Token Linkage</h3>
                 
-                {isLinked && linkedToken ? (
+                {isLinked && linkedToken && linkedToken !== '0x0000000000000000000000000000000000000000' ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -398,11 +409,11 @@ export default function NFTidDetailPage({ params }: PageProps) {
               {/* Actions */}
               <div className="space-y-3">
                 <Link
-                  href={`https://sepolia.etherscan.io/token/${CLAWD_NFT_ADDRESS.sepolia}?a=${tokenId}`}
+                  href={`https://basescan.org/token/${CLAWD_NFT_ADDRESS.base}?a=${tokenId}`}
                   target="_blank"
                   className="block w-full px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-center transition-all"
                 >
-                  View on Etherscan →
+                  View on Basescan →
                 </Link>
               </div>
             </motion.div>
