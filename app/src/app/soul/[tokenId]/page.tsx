@@ -322,14 +322,6 @@ export default function NFTidDetailPage({ params }: PageProps) {
                           </button>
                         ) : (
                           <div className="space-y-3">
-                            <div className="p-3 bg-[#E8523D]/5 border border-[#E8523D]/20 rounded-lg space-y-2">
-                              <p className="text-xs text-white/70 font-semibold">✅ SIMPLE:</p>
-                              <ul className="text-xs text-white/50 space-y-1 pl-4 list-disc">
-                                <li>Paste your <strong className="text-white">TOKEN ADDRESS</strong> (the ERC-20 contract)</li>
-                                <li>You must be the creator of the token</li>
-                                <li>Token must be immortalized</li>
-                              </ul>
-                            </div>
                             <input
                               type="text"
                               placeholder="Paste token address (0x...)"
