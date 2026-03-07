@@ -152,10 +152,15 @@ export default function DashboardPage() {
         <section className="relative z-10 px-4 pb-8">
           <div className="max-w-6xl mx-auto">
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
-              <p className="text-sm text-yellow-400">
-                <strong>Debug:</strong> Found {agents.length} total agents on-chain, but none match your address ({address?.slice(0, 6)}...{address?.slice(-4)}).
-                Check the browser console for details.
+              <p className="text-sm text-yellow-400 mb-2">
+                <strong>Debug:</strong> Found {agents.length} total agents, but none match your address.
               </p>
+              <div className="text-xs font-mono text-yellow-300/70 mb-2">
+                Your address: {address}
+              </div>
+              <div className="text-xs font-mono text-yellow-300/70 mb-2">
+                Sample agent creators: {agents.slice(0, 3).map(a => a.creator).join(', ')}
+              </div>
               <Link href="/immortal/create?type=human" className="inline-block mt-3 text-sm text-yellow-400 underline">
                 Create your first agent →
               </Link>
@@ -188,11 +193,12 @@ export default function DashboardPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {myAgents.map((agent) => (
-                <Link key={agent.wallet} href={`/immortal/agent/${agent.wallet}`}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all cursor-pointer group"
+                <motion.div
+                  key={agent.wallet}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <Link href={`/immortal/agent/${agent.wallet}`} className="block bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 transition-all cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
@@ -243,8 +249,8 @@ export default function DashboardPage() {
                         {agent.wallet.slice(0, 10)}...{agent.wallet.slice(-8)}
                       </div>
                     </div>
-                  </motion.div>
-                </Link>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           )}

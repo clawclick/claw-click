@@ -637,12 +637,13 @@ export default function SoulPage() {
                     const rarityInfo = getRarityTier(rarityScore)
                     
                     return (
-                      <Link key={nft.tokenId} href={`/soul/${nft.tokenId}`}>
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          whileHover={{ scale: 1.03 }}
-                          className="bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-4 transition-all cursor-pointer group"
+                      <motion.div
+                        key={nft.tokenId}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        whileHover={{ scale: 1.03 }}
+                      >
+                        <Link href={`/soul/${nft.tokenId}`} className="block bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-4 transition-all cursor-pointer group"
                         >
                           {/* NFT Image */}
                           <div className="mb-3 rounded-lg overflow-hidden aspect-square w-full relative">
@@ -677,8 +678,8 @@ export default function SoulPage() {
                               </div>
                             )}
                           </div>
-                        </motion.div>
-                      </Link>
+                        </Link>
+                      </motion.div>
                     )
                   })}
                 </div>
@@ -698,12 +699,13 @@ export default function SoulPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {MINTED_NFTS.map((nft) => (
-                <Link key={nft.tokenId} href={`/soul/${nft.tokenId}`}>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    whileHover={{ scale: 1.03 }}
-                    className="bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-6 transition-all cursor-pointer group"
+                <motion.div
+                  key={nft.tokenId}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.03 }}
+                >
+                  <Link href={`/soul/${nft.tokenId}`} className="block bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-6 transition-all cursor-pointer group"
                   >
                     {/* NFT Image */}
                     <div className="mb-4 rounded-lg overflow-hidden aspect-square w-full">
@@ -733,8 +735,8 @@ export default function SoulPage() {
                         View TX →
                       </Link>
                     </div>
-                  </motion.div>
-                </Link>
+                  </Link>
+                </motion.div>
               ))}
             </div>
 
