@@ -58,7 +58,7 @@ export default function Home() {
     },
     {
       title: 'Staking',
-      description: 'Stake $CLAWS tokens to earn platform fees and governance rights.',
+      description: 'Stake $CC tokens to earn platform fees and governance rights.',
       href: '/staking',
       icon: 'staking',
       status: 'coming-soon' as const,
