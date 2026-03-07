@@ -59,6 +59,7 @@ export function useClawdNFTMint() {
       args: [BigInt(maxAttempts)],
       value,
       chainId,
+      gas: 5000000n, // Set explicit gas limit (5M - well under 16.7M cap)
     })
   }
 
