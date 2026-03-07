@@ -48,7 +48,7 @@ export function useClawdNFTMint() {
   })
 
   const handleMint = () => {
-    const maxAttempts = 50 // Reasonable limit for finding unique combo
+    const maxAttempts = 10 // Reduced from 50 to lower gas usage
     // Explicitly check if eligible is true (not undefined or false)
     const value = isEligibleForFreeMint === true ? parseEther('0') : (currentPrice || parseEther('0.0015'))
 
@@ -58,8 +58,7 @@ export function useClawdNFTMint() {
       functionName: 'mint',
       args: [BigInt(maxAttempts)],
       value,
-      chainId,
-      gas: 5000000n, // Set explicit gas limit (5M - well under 16.7M cap)
+      gas: 1000000n, // 1M gas - conservative limit, plenty for ~10 iterations
     })
   }
 
