@@ -6,17 +6,36 @@ All critical issues have been fixed and deployed to production:
 
 ### 1. ✅ Vercel Build Errors (CRITICAL)
 **Status:** **FIXED**  
-**Commit:** `c824ce4`
+**Commits:** `c824ce4`, `5cfce42`
 
-**Problem:** All 20 Vercel builds failing with TypeScript error
+**Problem 1:** All 20 Vercel builds failing with TypeScript error in `LiveAgentsList.tsx`
 ```
 Type error: Argument of type 'Promise<number | null>' is not assignable...
 ```
 
-**Fix:** Added missing `await` in `LiveAgentsList.tsx`:
+**Fix 1:** Added missing `await`:
 ```typescript
 // Before: const nftidTokenId = getNFTidForAgent(agent.wallet)
 const nftidTokenId = await getNFTidForAgent(agent.wallet)
+```
+
+**Problem 2:** TypeScript error in agent page `[id]/page.tsx`
+```
+Type error: Conversion of type '{ aura: number; ... }' to type '[number, ...]' may be a mistake
+```
+
+**Fix 2:** Handle both array and object trait formats:
+```typescript
+const traitsResponse = await sepoliaClient.readContract(...) as any
+
+// Handle both formats
+const parsedTraits = Array.isArray(traitsResponse) ? {
+  aura: Number(traitsResponse[0]),
+  // ...
+} : {
+  aura: Number(traitsResponse.aura),
+  // ...
+}
 ```
 
 **Result:** TypeScript compilation now passes. Vercel builds will succeed.
@@ -105,12 +124,14 @@ const nftidTokenId = await getNFTidForAgent(agent.wallet)
 **Vercel auto-deploying:** ⏳ (2-3 minutes)
 
 **Latest Commits:**
-1. `71b31e3` - Documentation
-2. `c824ce4` - **Vercel build fix** (CRITICAL)
-3. `563a564` - Hydration + dashboard debug
-4. `90ed19b` - NFTid loading
-5. `9153d6c` - Gas limit fix
-6. `fe8e6a4` - Ticker update
+1. `5cfce42` - **Vercel build fix #2** (CRITICAL) - Agent page traits
+2. `a0f7842` - Documentation
+3. `71b31e3` - Documentation  
+4. `c824ce4` - **Vercel build fix #1** (CRITICAL) - LiveAgentsList
+5. `563a564` - Hydration + dashboard debug
+6. `90ed19b` - NFTid loading
+7. `9153d6c` - Gas limit fix
+8. `fe8e6a4` - Ticker update
 
 ---
 
@@ -154,9 +175,11 @@ These are **NOT** committed to git for security.
 ## What Was The Actual Problem?
 
 **Root cause of all Vercel build failures:**
-One missing `await` keyword in `LiveAgentsList.tsx` line 48.
 
-This single-character fix resolves ALL 20 failed builds. 🎉
+1. Missing `await` keyword in `LiveAgentsList.tsx` line 48
+2. TypeScript type mismatch in `agent/[id]/page.tsx` (array vs object trait formats)
+
+Both issues related to the recent NFTid on-chain registry integration. Fixed in commits `c824ce4` and `5cfce42`. 🎉
 
 ---
 
