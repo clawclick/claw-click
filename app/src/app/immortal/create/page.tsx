@@ -942,7 +942,7 @@ function CreateAgentFlow() {
 
                 <div className="flex gap-4">
                   <button onClick={handleBack} disabled={isUploadingMemory} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3 disabled:opacity-50">Back</button>
-                  <button onClick={creatorType === 'agent' ? handleNext : handleMemoryUpload} disabled={isUploadingMemory} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50">
+                  <button onClick={handleMemoryUpload} disabled={isUploadingMemory} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50">
                     {isUploadingMemory ? 'Uploading to IPFS...' : formData.memoryFiles.length > 0 ? 'Upload & Continue' : 'Skip for now'}
                   </button>
                 </div>
