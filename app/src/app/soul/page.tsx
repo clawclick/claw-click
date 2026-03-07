@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation'
 import LobsterIcon from '../../components/icons/LobsterIcon'
 import AnimatedNFTShowcase from '../../components/AnimatedNFTShowcase'
 import NFTidCompositor from '../../components/NFTidCompositor'
-import { getNFTidForAgentSync } from '../../lib/nftidLinkage'
+import { getAgentForNFTidSync } from '../../lib/nftidLinkage'
 import { calculateRarityScore, getRarityTier } from '../../lib/utils/rarityCalculator'
 
 // Minted NFTs for collection feed
@@ -235,7 +235,7 @@ export default function SoulPage() {
               continue
             }
 
-            const linkedAgent = getNFTidForAgentSync(tokenId)
+            const linkedAgent = getAgentForNFTidSync(tokenId)
 
             const parsedTraits = {
               aura: Number(traits[0]),
