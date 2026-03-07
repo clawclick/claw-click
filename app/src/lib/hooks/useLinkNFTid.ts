@@ -24,6 +24,7 @@ export function useLinkNFTid() {
       chainId: base.id,
       query: {
         enabled: !!nftidTokenId,
+        refetchInterval: 5000,  // Refetch every 5 seconds
       },
     })
   }
@@ -66,6 +67,7 @@ export function useLinkNFTid() {
       chainId: base.id,
       query: {
         enabled: !!nftidTokenId,
+        refetchInterval: 5000,  // Refetch every 5 seconds
       },
     })
   }

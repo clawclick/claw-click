@@ -63,13 +63,30 @@ export default function NFTidDetailPage({ params }: PageProps) {
   const { data: isLinked, refetch: refetchLinked } = useIsNFTidLinked(tokenId)
   const { data: linkedToken, refetch: refetchToken } = useGetTokenForNFTid(tokenId)
   
-  // Refetch link status when link succeeds
+  // Refetch link status when link succeeds (multiple times to force cache update)
   useEffect(() => {
     if (isLinkSuccess) {
+      // Refetch immediately
+      refetchLinked()
+      refetchToken()
+      
+      // Refetch again after 1 second
       setTimeout(() => {
         refetchLinked()
         refetchToken()
-      }, 2000)
+      }, 1000)
+      
+      // And again after 3 seconds
+      setTimeout(() => {
+        refetchLinked()
+        refetchToken()
+      }, 3000)
+      
+      // And again after 5 seconds
+      setTimeout(() => {
+        refetchLinked()
+        refetchToken()
+      }, 5000)
     }
   }, [isLinkSuccess, refetchLinked, refetchToken])
 
