@@ -279,20 +279,29 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
               transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_SEPOLIA || 'BdgPEmQddox2due7mrt9J'}`),
             })
             
-            const traits = await sepoliaClient.readContract({
+            const traitsResponse = await sepoliaClient.readContract({
               address: CLAWD_NFT_ADDRESS.sepolia,
               abi: CLAWD_NFT_ABI,
               functionName: 'getTraits',
               args: [BigInt(nftidTokenId)],
-            }) as [number, number, number, number, number]
+            }) as any
 
-            setLinkedNFTidTraits({
-              aura: Number(traits[0]),
-              background: Number(traits[1]),
-              core: Number(traits[2]),
-              eyes: Number(traits[3]),
-              overlay: Number(traits[4]),
-            })
+            // Handle both array and object formats
+            const parsedTraits = Array.isArray(traitsResponse) ? {
+              aura: Number(traitsResponse[0]),
+              background: Number(traitsResponse[1]),
+              core: Number(traitsResponse[2]),
+              eyes: Number(traitsResponse[3]),
+              overlay: Number(traitsResponse[4]),
+            } : {
+              aura: Number(traitsResponse.aura),
+              background: Number(traitsResponse.background),
+              core: Number(traitsResponse.core),
+              eyes: Number(traitsResponse.eyes),
+              overlay: Number(traitsResponse.overlay),
+            }
+
+            setLinkedNFTidTraits(parsedTraits)
           } catch (err) {
             console.error('Failed to fetch NFTid traits:', err)
           }
