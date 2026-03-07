@@ -2,7 +2,7 @@
 
 export const NFTID_REGISTRY_ADDRESS = {
   sepolia: '0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D' as const,
-  base: '0x0000000000000000000000000000000000000000' as const, // TBD
+  base: '0x4774B9387e7067624755eC9BB917aDA8095Adb4d' as const,
 } as const
 
 export const NFTID_REGISTRY_ABI = [

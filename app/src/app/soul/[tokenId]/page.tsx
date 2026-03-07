@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useAccount, useReadContract } from 'wagmi'
-import { sepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../lib/contracts/clawdNFT'
 import { useLinkNFTid } from '../../../lib/hooks/useLinkNFTid'
 import NFTidCompositor from '../../../components/NFTidCompositor'
@@ -37,16 +37,16 @@ export default function NFTidDetailPage({ params }: PageProps) {
 
   // Get NFT traits
   const { data: traits } = useReadContract({
-    address: CLAWD_NFT_ADDRESS.sepolia,
+    address: CLAWD_NFT_ADDRESS.base,
     abi: CLAWD_NFT_ABI,
     functionName: 'getTraits',
     args: [BigInt(tokenId)],
-    chainId: sepolia.id,
+    chainId: base.id,
   })
 
   // Get NFT owner
   const { data: owner } = useReadContract({
-    address: CLAWD_NFT_ADDRESS.sepolia,
+    address: CLAWD_NFT_ADDRESS.base,
     abi: [{
       name: 'ownerOf',
       type: 'function',
@@ -56,7 +56,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
     }],
     functionName: 'ownerOf',
     args: [BigInt(tokenId)],
-    chainId: sepolia.id,
+    chainId: base.id,
   })
 
   // Check if linked

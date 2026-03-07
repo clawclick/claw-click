@@ -6,7 +6,7 @@
  */
 
 import { createPublicClient, http } from 'viem'
-import { sepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { NFTID_REGISTRY_ADDRESS, NFTID_REGISTRY_ABI } from './contracts/nftidRegistry'
 
 export interface NFTidLink {
@@ -18,9 +18,9 @@ export interface NFTidLink {
 const STORAGE_KEY = 'nftid_agent_links'
 
 // Create public client for reading from contract
-const sepoliaClient = createPublicClient({
-  chain: sepolia,
-  transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_SEPOLIA || 'BdgPEmQddox2due7mrt9J'}`),
+const baseClient = createPublicClient({
+  chain: base,
+  transport: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_BASE || 'BdgPEmQddox2due7mrt9J'}`),
 })
 
 // Get all linkages from localStorage (backup)
@@ -57,8 +57,8 @@ export function linkNFTidToAgent(nftidTokenId: number, agentWallet: string): voi
 // Get agent linked to an NFTid (reads from contract first, falls back to localStorage)
 export async function getAgentForNFTid(nftidTokenId: number): Promise<string | null> {
   try {
-    const agent = await sepoliaClient.readContract({
-      address: NFTID_REGISTRY_ADDRESS.sepolia,
+    const agent = await baseClient.readContract({
+      address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
       functionName: 'getAgentForNFTid',
       args: [BigInt(nftidTokenId)],
@@ -80,8 +80,8 @@ export async function getAgentForNFTid(nftidTokenId: number): Promise<string | n
 // Get NFTid linked to an agent (reads from contract first, falls back to localStorage)
 export async function getNFTidForAgent(agentWallet: string): Promise<number | null> {
   try {
-    const nftidBigInt = await sepoliaClient.readContract({
-      address: NFTID_REGISTRY_ADDRESS.sepolia,
+    const nftidBigInt = await baseClient.readContract({
+      address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
       functionName: 'getNFTidForAgent',
       args: [agentWallet as `0x${string}`],

@@ -6,7 +6,7 @@ import { useAccount, useReadContract, usePublicClient } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useClawdNFTMint } from '../../lib/hooks/useClawdNFTMint'
 import { useEffect, useState } from 'react'
-import { sepolia } from 'viem/chains'
+import { sepolia, base } from 'viem/chains'
 import { formatEther } from 'viem'
 import { CLAWD_NFT_ADDRESS, PRICE_TIERS, CLAWD_NFT_ABI } from '../../lib/contracts/clawdNFT'
 import { useRouter } from 'next/navigation'
@@ -17,63 +17,7 @@ import { getAgentForNFTidSync } from '../../lib/nftidLinkage'
 import { calculateRarityScore, getRarityTier } from '../../lib/utils/rarityCalculator'
 import { parseTraits, validateTraits } from '../../lib/utils/traitParser'
 
-// Minted NFTs for collection feed
-const MINTED_NFTS = [
-  {
-    tokenId: 1,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0xbb1d40e46477e3c8835c2a4b50ffbe253820d9bdb4a187ae96b80095f1251ea2',
-    traits: { aura: 5, background: 2, core: 2, eyes: 2, overlay: 4 },
-  },
-  {
-    tokenId: 2,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0x5f5efa4d7623e089e25326d8b9b2ad88858c0110854ef0118666316186798d26',
-    traits: { aura: 5, background: 3, core: 3, eyes: 4, overlay: 8 },
-  },
-  {
-    tokenId: 3,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0x0e55b5805ed939c134f71c0d00c618bb27e55e9d6c2cc35a1c2347cf42544063',
-    traits: { aura: 0, background: 8, core: 4, eyes: 3, overlay: 2 },
-  },
-  {
-    tokenId: 4,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0x0e3b615684c0b03e69d5a737f1ce99bf42fe61117a035abbdb8fa7c03a6aff48',
-    traits: { aura: 1, background: 9, core: 4, eyes: 2, overlay: 4 },
-  },
-  {
-    tokenId: 5,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0x751e03087630464a95cd12590e0fe6bd6d771ed95d8bdf088edfb0b96c28f7cc',
-    traits: { aura: 8, background: 1, core: 4, eyes: 1, overlay: 8 },
-  },
-  {
-    tokenId: 6,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0x37fec3c541ef8e736f69060ea2151f8b67039be1d679780aaac187d1b87957c8',
-    traits: { aura: 1, background: 5, core: 8, eyes: 7, overlay: 7 },
-  },
-  {
-    tokenId: 7,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0xb7ad3f338fcfd10fcbb36b2a8c2db9f57138874b6d1222f169c19ef85f2c5396',
-    traits: { aura: 3, background: 7, core: 7, eyes: 3, overlay: 3 },
-  },
-  {
-    tokenId: 8,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0xae81e2382bef1ffd8b574ee5f8eddb45c918be15fb1d9b79783a45d7d135c5ba',
-    traits: { aura: 3, background: 7, core: 9, eyes: 7, overlay: 5 },
-  },
-  {
-    tokenId: 9,
-    minter: '0x958fC4d5688F7e7425EEa770F54d5126a46A9104',
-    txHash: '0x31df28dd7df12275827a057024cfde52de8e00a32ccc2354fd7e07387e256c0e',
-    traits: { aura: 1, background: 3, core: 3, eyes: 5, overlay: 2 },
-  },
-]
+// No hardcoded minted NFTs - will load from chain
 
 export default function SoulPage() {
   const router = useRouter()
@@ -91,7 +35,7 @@ export default function SoulPage() {
     mintError,
   } = useClawdNFTMint()
 
-  const wrongNetwork = chain && chain.id !== sepolia.id
+  const wrongNetwork = chain && chain.id !== base.id
 
   // State for owned NFTs
   const [ownedNFTs, setOwnedNFTs] = useState<Array<{
@@ -103,7 +47,7 @@ export default function SoulPage() {
 
   // Read balance of connected wallet
   const { data: balance } = useReadContract({
-    address: CLAWD_NFT_ADDRESS.sepolia,
+    address: CLAWD_NFT_ADDRESS.base,
     abi: [{
       name: 'balanceOf',
       type: 'function',
@@ -113,7 +57,7 @@ export default function SoulPage() {
     }],
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    chainId: sepolia.id,
+    chainId: base.id,
   })
 
   const getCurrentTier = () => {
@@ -196,7 +140,7 @@ export default function SoulPage() {
           try {
             // Check if user still owns this token
             const owner = await publicClient.readContract({
-              address: CLAWD_NFT_ADDRESS.sepolia,
+              address: CLAWD_NFT_ADDRESS.base,
               abi: [{
                 name: 'ownerOf',
                 type: 'function',
@@ -215,7 +159,7 @@ export default function SoulPage() {
 
             // Fetch traits
             const traitsResponse = await publicClient.readContract({
-              address: CLAWD_NFT_ADDRESS.sepolia,
+              address: CLAWD_NFT_ADDRESS.base,
               abi: CLAWD_NFT_ABI,
               functionName: 'getTraits',
               args: [BigInt(tokenId)],
@@ -292,7 +236,7 @@ export default function SoulPage() {
             </p>
 
             <Link
-              href={`https://sepolia.etherscan.io/address/${CLAWD_NFT_ADDRESS.sepolia}`}
+              href={`https://basescan.org/address/${CLAWD_NFT_ADDRESS.base}`}
               target="_blank"
               className="inline-block mt-6 text-white/40 hover:text-[#E8523D] text-sm transition-colors"
             >
@@ -433,7 +377,7 @@ export default function SoulPage() {
                   className="bg-red-500/10 border border-red-500/30 rounded-xl p-6"
                 >
                   <p className="text-red-400 text-sm">
-                    ⚠️ Please switch to Sepolia testnet to mint
+                    ⚠️ Please switch to Base network to mint
                   </p>
                 </motion.div>
               )}
@@ -500,7 +444,7 @@ export default function SoulPage() {
                           >
                             <p className="text-green-400 text-sm mb-2">✓ Minted successfully! Redirecting...</p>
                             <Link
-                              href={`https://sepolia.etherscan.io/tx/${mintHash}`}
+                              href={`https://basescan.org/tx/${mintHash}`}
                               target="_blank"
                               className="text-xs text-white/50 hover:text-[#E8523D] transition-colors"
                             >
@@ -558,7 +502,7 @@ export default function SoulPage() {
                       >
                         <p className="text-green-400 text-sm mb-2">✓ Minted successfully! Redirecting...</p>
                         <Link
-                          href={`https://sepolia.etherscan.io/tx/${mintHash}`}
+                          href={`https://basescan.org/tx/${mintHash}`}
                           target="_blank"
                           className="text-xs text-white/50 hover:text-[#E8523D] transition-colors"
                         >
@@ -674,67 +618,24 @@ export default function SoulPage() {
             </motion.div>
           )}
 
-          {/* Collection Feed */}
+          {/* Collection Feed - Shows minted NFTs from chain */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
+            className="text-center"
           >
-            <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
               Recent Mints
             </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {MINTED_NFTS.map((nft) => (
-                <motion.div
-                  key={nft.tokenId}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  whileHover={{ scale: 1.03 }}
-                >
-                  <Link href={`/soul/${nft.tokenId}`} className="block bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-6 transition-all cursor-pointer group"
-                  >
-                    {/* NFT Image */}
-                    <div className="mb-4 rounded-lg overflow-hidden aspect-square w-full">
-                      <NFTidCompositor traits={nft.traits} size={300} />
-                    </div>
-
-                    {/* Info */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-white/50">NFTid</span>
-                        <span className="text-sm font-mono font-bold text-white group-hover:text-[#E8523D] transition-colors">
-                          #{nft.tokenId}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-white/50">Minted by</span>
-                        <span className="text-sm font-mono text-white/70">
-                          {nft.minter.slice(0, 6)}...{nft.minter.slice(-4)}
-                        </span>
-                      </div>
-                      <Link
-                        href={`https://sepolia.etherscan.io/tx/${nft.txHash}`}
-                        target="_blank"
-                        className="text-xs text-[#E8523D] hover:underline block"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View TX →
-                      </Link>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-
-            <p className="text-center text-white/40 text-sm mt-8">
-              View all mints on{' '}
+            <p className="text-white/50 mb-4">
+              View all minted NFTids on{' '}
               <Link
-                href={`https://sepolia.etherscan.io/address/${CLAWD_NFT_ADDRESS.sepolia}#events`}
+                href={`https://basescan.org/address/${CLAWD_NFT_ADDRESS.base}#events`}
                 target="_blank"
                 className="text-[#E8523D] hover:underline"
               >
-                Etherscan
+                Basescan
               </Link>
             </p>
           </motion.div>

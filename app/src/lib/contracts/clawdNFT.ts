@@ -2,7 +2,7 @@
 
 export const CLAWD_NFT_ADDRESS = {
   sepolia: '0x6c4618080761925A6D92526c0AA443eF03a92C96' as const,
-  base: '0x0000000000000000000000000000000000000000' as const, // TBD
+  base: '0x553016FA9Ead8ACFa1d96220901f1e91EEB135f4' as const,
 } as const
 
 export const CLAWD_NFT_ABI = [

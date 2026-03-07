@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi'
-import { sepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { NFTID_REGISTRY_ADDRESS, NFTID_REGISTRY_ABI } from '../contracts/nftidRegistry'
 import { linkNFTidToAgent, unlinkNFTid as unlinkNFTidLocal } from '../nftidLinkage'
 
@@ -11,17 +11,17 @@ export function useLinkNFTid() {
 
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-    chainId: sepolia.id,
+    chainId: base.id,
   })
 
   // Check if an NFTid is already linked
   const useIsNFTidLinked = (nftidTokenId?: number) => {
     return useReadContract({
-      address: NFTID_REGISTRY_ADDRESS.sepolia,
+      address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
       functionName: 'isNFTidLinked',
       args: nftidTokenId ? [BigInt(nftidTokenId)] : undefined,
-      chainId: sepolia.id,
+      chainId: base.id,
       query: {
         enabled: !!nftidTokenId,
       },
@@ -31,11 +31,11 @@ export function useLinkNFTid() {
   // Check if an agent is already linked
   const useIsAgentLinked = (agentWallet?: string) => {
     return useReadContract({
-      address: NFTID_REGISTRY_ADDRESS.sepolia,
+      address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
       functionName: 'isAgentLinked',
       args: agentWallet ? [agentWallet as `0x${string}`] : undefined,
-      chainId: sepolia.id,
+      chainId: base.id,
       query: {
         enabled: !!agentWallet,
       },
@@ -45,11 +45,11 @@ export function useLinkNFTid() {
   // Get NFTid for an agent
   const useGetNFTidForAgent = (agentWallet?: string) => {
     return useReadContract({
-      address: NFTID_REGISTRY_ADDRESS.sepolia,
+      address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
       functionName: 'getNFTidForAgent',
       args: agentWallet ? [agentWallet as `0x${string}`] : undefined,
-      chainId: sepolia.id,
+      chainId: base.id,
       query: {
         enabled: !!agentWallet,
       },
@@ -59,11 +59,11 @@ export function useLinkNFTid() {
   // Get agent for an NFTid
   const useGetAgentForNFTid = (nftidTokenId?: number) => {
     return useReadContract({
-      address: NFTID_REGISTRY_ADDRESS.sepolia,
+      address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
       functionName: 'getAgentForNFTid',
       args: nftidTokenId ? [BigInt(nftidTokenId)] : undefined,
-      chainId: sepolia.id,
+      chainId: base.id,
       query: {
         enabled: !!nftidTokenId,
       },
@@ -74,11 +74,11 @@ export function useLinkNFTid() {
     setIsLinking(true)
     try {
       writeContract({
-        address: NFTID_REGISTRY_ADDRESS.sepolia,
+        address: NFTID_REGISTRY_ADDRESS.base,
         abi: NFTID_REGISTRY_ABI,
         functionName: 'linkNFTid',
         args: [BigInt(nftidTokenId), agentWallet as `0x${string}`],
-        chainId: sepolia.id,
+        chainId: base.id,
       })
 
       // Also update localStorage as backup
@@ -94,11 +94,11 @@ export function useLinkNFTid() {
     setIsLinking(true)
     try {
       writeContract({
-        address: NFTID_REGISTRY_ADDRESS.sepolia,
+        address: NFTID_REGISTRY_ADDRESS.base,
         abi: NFTID_REGISTRY_ABI,
         functionName: 'unlinkNFTid',
         args: [BigInt(nftidTokenId)],
-        chainId: sepolia.id,
+        chainId: base.id,
       })
 
       // Also update localStorage as backup
@@ -114,11 +114,11 @@ export function useLinkNFTid() {
     setIsLinking(true)
     try {
       writeContract({
-        address: NFTID_REGISTRY_ADDRESS.sepolia,
+        address: NFTID_REGISTRY_ADDRESS.base,
         abi: NFTID_REGISTRY_ABI,
         functionName: 'unlinkAgent',
         args: [agentWallet as `0x${string}`],
-        chainId: sepolia.id,
+        chainId: base.id,
       })
     } catch (err) {
       console.error('Failed to unlink agent:', err)

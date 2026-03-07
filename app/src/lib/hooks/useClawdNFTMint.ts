@@ -1,15 +1,15 @@
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { sepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../contracts/clawdNFT'
 import { parseEther } from 'viem'
 
 export function useClawdNFTMint() {
   const { address } = useAccount()
-  const chainId = sepolia.id // TODO: Support multiple chains
+  const chainId = base.id // Base mainnet
 
   // Read total supply
   const { data: totalSupply, refetch: refetchSupply } = useReadContract({
-    address: CLAWD_NFT_ADDRESS.sepolia,
+    address: CLAWD_NFT_ADDRESS.base,
     abi: CLAWD_NFT_ABI,
     functionName: 'totalSupply',
     chainId,
@@ -17,7 +17,7 @@ export function useClawdNFTMint() {
 
   // Read current price
   const { data: currentPrice } = useReadContract({
-    address: CLAWD_NFT_ADDRESS.sepolia,
+    address: CLAWD_NFT_ADDRESS.base,
     abi: CLAWD_NFT_ABI,
     functionName: 'getCurrentPrice',
     chainId,
@@ -25,7 +25,7 @@ export function useClawdNFTMint() {
 
   // Check free mint eligibility
   const { data: isEligibleForFreeMint } = useReadContract({
-    address: CLAWD_NFT_ADDRESS.sepolia,
+    address: CLAWD_NFT_ADDRESS.base,
     abi: CLAWD_NFT_ABI,
     functionName: 'isEligibleForFreeMint',
     args: address ? [address] : undefined,
@@ -53,7 +53,7 @@ export function useClawdNFTMint() {
     const value = isEligibleForFreeMint === true ? parseEther('0') : (currentPrice || parseEther('0.0015'))
 
     mint({
-      address: CLAWD_NFT_ADDRESS.sepolia,
+      address: CLAWD_NFT_ADDRESS.base,
       abi: CLAWD_NFT_ABI,
       functionName: 'mint',
       args: [BigInt(maxAttempts)],
