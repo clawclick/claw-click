@@ -85,8 +85,50 @@ export default function NFTidDetailPage({ params }: PageProps) {
 
   const handleLink = async () => {
     if (!isAddress(agentAddressInput)) {
-      alert('Invalid agent address')
+      alert('❌ Invalid address format. Please enter a valid Ethereum address (0x...)')
       return
+    }
+    
+    // PRE-FLIGHT CHECK: Verify agent has birth certificate using fetch
+    try {
+      const BIRTH_CERT_ADDRESS = '0x6E9B093FdD12eC34ce358bd70CF59EeCb5D1A95B'
+      const RPC_URL = 'https://base-mainnet.g.alchemy.com/v2/BdgPEmQddox2due7mrt9J'
+      
+      // Call nftByWallet
+      const calldata = '0x' + 
+        'dcfac1aa' + // function selector for nftByWallet(address)
+        agentAddressInput.slice(2).padStart(64, '0')
+      
+      const response = await fetch(RPC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_call',
+          params: [{
+            to: BIRTH_CERT_ADDRESS,
+            data: calldata
+          }, 'latest']
+        })
+      })
+      
+      const data = await response.json()
+      const birthCertId = BigInt(data.result || '0x0')
+      
+      if (birthCertId === 0n) {
+        alert(`❌ This address does not have a Birth Certificate.\n\n` +
+          `Only immortalized AGENT WALLETS can be linked, not token addresses.\n\n` +
+          `Tip: Check the agent page to find the correct agent wallet address (usually shown as "Agent Wallet" or "Deployed To").\n\n` +
+          `Example:\n` +
+          `✅ Agent Wallet: 0xdd563db...\n` +
+          `❌ Token Address: 0x645164c...`)
+        return
+      }
+      
+    } catch (preflightErr) {
+      console.error('Pre-flight check failed:', preflightErr)
+      // Continue anyway if pre-flight fails (fallback to on-chain validation)
     }
     
     try {
@@ -99,13 +141,13 @@ export default function NFTidDetailPage({ params }: PageProps) {
       // Show user-friendly error message
       const errorMsg = err.shortMessage || err.message || 'Unknown error'
       if (errorMsg.includes('Not authorized') || errorMsg.includes('must be agent creator')) {
-        alert('You must be the creator of this agent to link it. Check that you deployed this agent from your wallet.')
+        alert('❌ You must be the creator of this agent to link it.')
       } else if (errorMsg.includes('Agent has no birth certificate')) {
-        alert('This agent does not have a birth certificate. Only immortalized agents can be linked.')
+        alert('❌ This agent does not have a birth certificate. Only immortalized agents can be linked.')
       } else if (errorMsg.includes('rejected')) {
-        alert('Transaction rejected. Make sure you approved the transaction in your wallet.')
+        alert('❌ Transaction rejected in wallet.')
       } else {
-        alert(`Link failed: ${errorMsg}`)
+        alert(`❌ Link failed: ${errorMsg}`)
       }
     }
   }
@@ -323,15 +365,23 @@ export default function NFTidDetailPage({ params }: PageProps) {
                           </button>
                         ) : (
                           <div className="space-y-3">
-                            <p className="text-xs text-white/50 p-3 bg-[#E8523D]/5 border border-[#E8523D]/20 rounded-lg">
-                              ℹ️ You can only link agents that YOU created from this wallet. Paste the agent wallet address below.
-                            </p>
+                            <div className="p-3 bg-[#E8523D]/5 border border-[#E8523D]/20 rounded-lg space-y-2">
+                              <p className="text-xs text-white/70 font-semibold">⚠️ Important:</p>
+                              <ul className="text-xs text-white/50 space-y-1 pl-4 list-disc">
+                                <li>Use the <strong className="text-white">AGENT WALLET</strong> address, NOT the token address</li>
+                                <li>Only agents YOU created can be linked</li>
+                                <li>Agent must be immortalized (have birth certificate)</li>
+                              </ul>
+                              <p className="text-xs text-white/40 mt-2">
+                                💡 Find the agent wallet on the agent page — it's shown as "Agent Wallet" or "Deployed To"
+                              </p>
+                            </div>
                             <input
                               type="text"
-                              placeholder="Enter agent wallet address (0x...)"
+                              placeholder="Paste agent wallet address (NOT token address)"
                               value={agentAddressInput}
                               onChange={(e) => setAgentAddressInput(e.target.value)}
-                              className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#E8523D]/50"
+                              className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#E8523D]/50 font-mono"
                             />
                             <div className="flex gap-2">
                               <button
