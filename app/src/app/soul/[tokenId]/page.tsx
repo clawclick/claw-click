@@ -20,10 +20,10 @@ interface PageProps {
 export default function NFTidDetailPage({ params }: PageProps) {
   const tokenId = parseInt(params.tokenId)
   const { address, isConnected } = useAccount()
-  const [agentAddressInput, setAgentAddressInput] = useState('')
+  const [tokenAddressInput, setTokenAddressInput] = useState('')
   const [showLinkForm, setShowLinkForm] = useState(false)
-  const [linkedAgentData, setLinkedAgentData] = useState<any>(null)
-  const [loadingAgent, setLoadingAgent] = useState(false)
+  const [linkedTokenData, setLinkedTokenData] = useState<any>(null)
+  const [loadingToken, setLoadingToken] = useState(false)
 
   const {
     linkNFTid,
@@ -31,7 +31,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
     isLinking,
     isLinkSuccess,
     linkError,
-    useGetAgentForNFTid,
+    useGetTokenForNFTid,
     useIsNFTidLinked,
   } = useLinkNFTid()
 
@@ -61,89 +61,46 @@ export default function NFTidDetailPage({ params }: PageProps) {
 
   // Check if linked
   const { data: isLinked } = useIsNFTidLinked(tokenId)
-  const { data: linkedAgent } = useGetAgentForNFTid(tokenId)
+  const { data: linkedToken } = useGetTokenForNFTid(tokenId)
 
   const isOwner = address && owner && address.toLowerCase() === (owner as string).toLowerCase()
 
-  // Fetch linked agent data
+  // Fetch linked token data
   useEffect(() => {
-    async function fetchAgentData() {
-      if (!linkedAgent || linkedAgent === '0x0000000000000000000000000000000000000000') return
-      setLoadingAgent(true)
+    async function fetchTokenData() {
+      if (!linkedToken || linkedToken === '0x0000000000000000000000000000000000000000') return
+      setLoadingToken(true)
       try {
-        const agent = await getAgentByWallet(linkedAgent as `0x${string}`)
-        setLinkedAgentData(agent)
+        const agent = await getAgentByWallet(linkedToken as `0x${string}`)
+        setLinkedTokenData(agent)
       } catch (err) {
-        console.error('Failed to fetch agent data:', err)
+        console.error('Failed to fetch token data:', err)
       } finally {
-        setLoadingAgent(false)
+        setLoadingToken(false)
       }
     }
 
-    fetchAgentData()
-  }, [linkedAgent])
+    fetchTokenData()
+  }, [linkedToken])
 
   const handleLink = async () => {
-    if (!isAddress(agentAddressInput)) {
-      alert('❌ Invalid address format. Please enter a valid Ethereum address (0x...)')
+    if (!isAddress(tokenAddressInput)) {
+      alert('❌ Invalid address. Please enter a valid token address (0x...)')
       return
     }
     
-    // PRE-FLIGHT CHECK: Verify agent has birth certificate using fetch
     try {
-      const BIRTH_CERT_ADDRESS = '0x6E9B093FdD12eC34ce358bd70CF59EeCb5D1A95B'
-      const RPC_URL = 'https://base-mainnet.g.alchemy.com/v2/BdgPEmQddox2due7mrt9J'
-      
-      // Call nftByWallet
-      const calldata = '0x' + 
-        'dcfac1aa' + // function selector for nftByWallet(address)
-        agentAddressInput.slice(2).padStart(64, '0')
-      
-      const response = await fetch(RPC_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'eth_call',
-          params: [{
-            to: BIRTH_CERT_ADDRESS,
-            data: calldata
-          }, 'latest']
-        })
-      })
-      
-      const data = await response.json()
-      const birthCertId = BigInt(data.result || '0x0')
-      
-      if (birthCertId === 0n) {
-        alert(`❌ This address does not have a Birth Certificate.\n\n` +
-          `Only immortalized AGENT WALLETS can be linked, not token addresses.\n\n` +
-          `Tip: Check the agent page to find the correct agent wallet address (usually shown as "Agent Wallet" or "Deployed To").\n\n` +
-          `Example:\n` +
-          `✅ Agent Wallet: 0xdd563db...\n` +
-          `❌ Token Address: 0x645164c...`)
-        return
-      }
-      
-    } catch (preflightErr) {
-      console.error('Pre-flight check failed:', preflightErr)
-      // Continue anyway if pre-flight fails (fallback to on-chain validation)
-    }
-    
-    try {
-      await linkNFTid(tokenId, agentAddressInput)
+      await linkNFTid(tokenId, tokenAddressInput)
       setShowLinkForm(false)
-      setAgentAddressInput('')
+      setTokenAddressInput('')
     } catch (err: any) {
       console.error('Link failed:', err)
       
-      // Show user-friendly error message
       const errorMsg = err.shortMessage || err.message || 'Unknown error'
-      if (errorMsg.includes('Not authorized') || errorMsg.includes('must be agent creator')) {
-        alert('❌ You must be the creator of this agent to link it.')
-      } else if (errorMsg.includes('Agent has no birth certificate')) {
-        alert('❌ This agent does not have a birth certificate. Only immortalized agents can be linked.')
+      if (errorMsg.includes('You did not create this token')) {
+        alert('❌ You must be the creator of this token to link it.')
+      } else if (errorMsg.includes('Token has no birth certificate')) {
+        alert('❌ This token has no birth certificate. Only immortalized tokens can be linked.')
       } else if (errorMsg.includes('rejected')) {
         alert('❌ Transaction rejected in wallet.')
       } else {
@@ -272,53 +229,53 @@ export default function NFTidDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Linkage Status */}
+              {/* Token Linkage */}
               <div className="bg-white/[0.02] border border-white/10 rounded-xl p-6">
-                <h3 className="text-sm font-bold text-white/70 mb-3">Agent Linkage</h3>
+                <h3 className="text-sm font-bold text-white/70 mb-3">Token Linkage</h3>
                 
-                {isLinked && linkedAgent ? (
+                {isLinked && linkedToken ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                      <span className="text-sm text-green-400">Linked to Agent</span>
+                      <span className="text-sm text-green-400">Linked to Token</span>
                     </div>
 
-                    {loadingAgent ? (
+                    {loadingToken ? (
                       <div className="p-4 bg-black/30 rounded-lg text-center">
                         <div className="w-6 h-6 border-2 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin mx-auto mb-2"></div>
-                        <p className="text-xs text-white/50">Loading agent data...</p>
+                        <p className="text-xs text-white/50">Loading token data...</p>
                       </div>
-                    ) : linkedAgentData ? (
+                    ) : linkedTokenData ? (
                       <div className="p-4 bg-black/30 rounded-lg border border-white/5 space-y-3">
                         <div>
-                          <p className="text-xs text-white/50 mb-1">Agent Name</p>
-                          <p className="text-base font-bold text-white">{linkedAgentData.name}</p>
-                          <p className="text-xs text-white/40">${linkedAgentData.symbol}</p>
+                          <p className="text-xs text-white/50 mb-1">Token Name</p>
+                          <p className="text-base font-bold text-white">{linkedTokenData.name}</p>
+                          <p className="text-xs text-white/40">${linkedTokenData.symbol}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
                           <div>
                             <p className="text-xs text-white/50 mb-1">Price</p>
                             <p className="text-sm text-white">
-                              {linkedAgentData.priceUsd ? `$${linkedAgentData.priceUsd.toFixed(6)}` : '—'}
+                              {linkedTokenData.priceUsd ? `$${linkedTokenData.priceUsd.toFixed(6)}` : '—'}
                             </p>
                           </div>
                           <div>
                             <p className="text-xs text-white/50 mb-1">Market Cap</p>
                             <p className="text-sm text-white">
-                              {linkedAgentData.mcapUsd 
-                                ? linkedAgentData.mcapUsd >= 1_000 
-                                  ? `$${(linkedAgentData.mcapUsd / 1_000).toFixed(1)}K`
-                                  : `$${linkedAgentData.mcapUsd.toFixed(0)}`
+                              {linkedTokenData.mcapUsd 
+                                ? linkedTokenData.mcapUsd >= 1_000 
+                                  ? `$${(linkedTokenData.mcapUsd / 1_000).toFixed(1)}K`
+                                  : `$${linkedTokenData.mcapUsd.toFixed(0)}`
                                 : '$0'}
                             </p>
                           </div>
                         </div>
                         <div className="pt-3 border-t border-white/5">
-                          <p className="text-xs text-white/50 mb-1">Wallet Address</p>
-                          <p className="font-mono text-xs text-white/70 break-all">{linkedAgent as string}</p>
+                          <p className="text-xs text-white/50 mb-1">Token Address</p>
+                          <p className="font-mono text-xs text-white/70 break-all">{linkedToken as string}</p>
                         </div>
                         <Link
-                          href={`/immortal/agent/${linkedAgent}`}
+                          href={`/immortal/agent/${linkedToken}`}
                           className="block w-full px-4 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-center text-white font-semibold hover:shadow-lg hover:shadow-[#E8523D]/40 transition-all"
                         >
                           View Agent Page →
@@ -326,10 +283,10 @@ export default function NFTidDetailPage({ params }: PageProps) {
                       </div>
                     ) : (
                       <div className="p-4 bg-black/30 rounded-lg">
-                        <p className="text-xs text-white/50 mb-2">Agent Wallet</p>
-                        <p className="font-mono text-sm text-white break-all mb-3">{linkedAgent as string}</p>
+                        <p className="text-xs text-white/50 mb-2">Token Address</p>
+                        <p className="font-mono text-sm text-white break-all mb-3">{linkedToken as string}</p>
                         <Link
-                          href={`/immortal/agent/${linkedAgent}`}
+                          href={`/immortal/agent/${linkedToken}`}
                           className="block w-full px-4 py-3 bg-black/50 border border-white/10 hover:border-[#E8523D]/50 rounded-lg text-center text-white transition-all"
                         >
                           View Agent Page →
@@ -343,7 +300,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
                         disabled={isLinking}
                         className="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg transition-all disabled:opacity-50"
                       >
-                        {isLinking ? 'Unlinking...' : 'Unlink Agent'}
+                        {isLinking ? 'Unlinking...' : 'Unlink Token'}
                       </button>
                     )}
                   </div>
@@ -361,32 +318,29 @@ export default function NFTidDetailPage({ params }: PageProps) {
                             onClick={() => setShowLinkForm(true)}
                             className="w-full px-4 py-3 bg-[#E8523D]/10 hover:bg-[#E8523D]/20 border border-[#E8523D]/30 text-[#E8523D] rounded-lg transition-all"
                           >
-                            Link to Agent
+                            Link to Token
                           </button>
                         ) : (
                           <div className="space-y-3">
                             <div className="p-3 bg-[#E8523D]/5 border border-[#E8523D]/20 rounded-lg space-y-2">
-                              <p className="text-xs text-white/70 font-semibold">⚠️ Important:</p>
+                              <p className="text-xs text-white/70 font-semibold">✅ SIMPLE:</p>
                               <ul className="text-xs text-white/50 space-y-1 pl-4 list-disc">
-                                <li>Use the <strong className="text-white">AGENT WALLET</strong> address, NOT the token address</li>
-                                <li>Only agents YOU created can be linked</li>
-                                <li>Agent must be immortalized (have birth certificate)</li>
+                                <li>Paste your <strong className="text-white">TOKEN ADDRESS</strong> (the ERC-20 contract)</li>
+                                <li>You must be the creator of the token</li>
+                                <li>Token must be immortalized</li>
                               </ul>
-                              <p className="text-xs text-white/40 mt-2">
-                                💡 Find the agent wallet on the agent page — it's shown as "Agent Wallet" or "Deployed To"
-                              </p>
                             </div>
                             <input
                               type="text"
-                              placeholder="Paste agent wallet address (NOT token address)"
-                              value={agentAddressInput}
-                              onChange={(e) => setAgentAddressInput(e.target.value)}
+                              placeholder="Paste token address (0x...)"
+                              value={tokenAddressInput}
+                              onChange={(e) => setTokenAddressInput(e.target.value)}
                               className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#E8523D]/50 font-mono"
                             />
                             <div className="flex gap-2">
                               <button
                                 onClick={handleLink}
-                                disabled={isLinking || !agentAddressInput}
+                                disabled={isLinking || !tokenAddressInput}
                                 className="flex-1 px-4 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg font-semibold hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all disabled:opacity-50"
                               >
                                 {isLinking ? 'Linking...' : 'Confirm Link'}

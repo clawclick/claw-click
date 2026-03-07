@@ -28,40 +28,40 @@ export function useLinkNFTid() {
     })
   }
 
-  // Check if an agent is already linked
-  const useIsAgentLinked = (agentWallet?: string) => {
+  // Check if a token is already linked
+  const useIsTokenLinked = (tokenAddress?: string) => {
     return useReadContract({
       address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
-      functionName: 'isAgentLinked',
-      args: agentWallet ? [agentWallet as `0x${string}`] : undefined,
+      functionName: 'isTokenLinked',
+      args: tokenAddress ? [tokenAddress as `0x${string}`] : undefined,
       chainId: base.id,
       query: {
-        enabled: !!agentWallet,
+        enabled: !!tokenAddress,
       },
     })
   }
 
-  // Get NFTid for an agent
-  const useGetNFTidForAgent = (agentWallet?: string) => {
+  // Get NFTid for a token
+  const useGetNFTidForToken = (tokenAddress?: string) => {
     return useReadContract({
       address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
-      functionName: 'getNFTidForAgent',
-      args: agentWallet ? [agentWallet as `0x${string}`] : undefined,
+      functionName: 'getNFTidForToken',
+      args: tokenAddress ? [tokenAddress as `0x${string}`] : undefined,
       chainId: base.id,
       query: {
-        enabled: !!agentWallet,
+        enabled: !!tokenAddress,
       },
     })
   }
 
-  // Get agent for an NFTid
-  const useGetAgentForNFTid = (nftidTokenId?: number) => {
+  // Get token for an NFTid
+  const useGetTokenForNFTid = (nftidTokenId?: number) => {
     return useReadContract({
       address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
-      functionName: 'getAgentForNFTid',
+      functionName: 'getTokenForNFTid',
       args: nftidTokenId ? [BigInt(nftidTokenId)] : undefined,
       chainId: base.id,
       query: {
@@ -70,23 +70,23 @@ export function useLinkNFTid() {
     })
   }
 
-  const linkNFTid = async (nftidTokenId: number, agentWallet: string) => {
+  const linkNFTid = async (nftidTokenId: number, tokenAddress: string) => {
     setIsLinking(true)
     try {
       writeContract({
         address: NFTID_REGISTRY_ADDRESS.base,
         abi: NFTID_REGISTRY_ABI,
         functionName: 'linkNFTid',
-        args: [BigInt(nftidTokenId), agentWallet as `0x${string}`],
+        args: [BigInt(nftidTokenId), tokenAddress as `0x${string}`],
         chainId: base.id,
-        gas: 500000n,  // Explicit gas limit to prevent estimation issues
+        gas: 500000n,  // Explicit gas limit
       })
 
       // Also update localStorage as backup
-      linkNFTidToAgent(nftidTokenId, agentWallet)
+      linkNFTidToAgent(nftidTokenId, tokenAddress)
     } catch (err) {
       console.error('Failed to link NFTid:', err)
-      throw err  // Re-throw to allow UI to handle
+      throw err
     } finally {
       setIsLinking(false)
     }
@@ -112,35 +112,17 @@ export function useLinkNFTid() {
     }
   }
 
-  const unlinkAgent = async (agentWallet: string) => {
-    setIsLinking(true)
-    try {
-      writeContract({
-        address: NFTID_REGISTRY_ADDRESS.base,
-        abi: NFTID_REGISTRY_ABI,
-        functionName: 'unlinkAgent',
-        args: [agentWallet as `0x${string}`],
-        chainId: base.id,
-      })
-    } catch (err) {
-      console.error('Failed to unlink agent:', err)
-    } finally {
-      setIsLinking(false)
-    }
-  }
-
   return {
     linkNFTid,
     unlinkNFTid,
-    unlinkAgent,
     linkHash: hash,
     isLinking: isPending || isConfirming || isLinking,
     isLinkSuccess: isSuccess,
     linkError,
     // Export hooks for use in components
     useIsNFTidLinked,
-    useIsAgentLinked,
-    useGetNFTidForAgent,
-    useGetAgentForNFTid,
+    useIsTokenLinked,
+    useGetNFTidForToken,
+    useGetTokenForNFTid,
   }
 }

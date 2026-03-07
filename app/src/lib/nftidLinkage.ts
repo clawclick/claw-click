@@ -54,18 +54,18 @@ export function linkNFTidToAgent(nftidTokenId: number, agentWallet: string): voi
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered))
 }
 
-// Get agent linked to an NFTid (reads from contract first, falls back to localStorage)
+// Get token linked to an NFTid (reads from contract first, falls back to localStorage)
 export async function getAgentForNFTid(nftidTokenId: number): Promise<string | null> {
   try {
-    const agent = await baseClient.readContract({
+    const token = await baseClient.readContract({
       address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
-      functionName: 'getAgentForNFTid',
+      functionName: 'getTokenForNFTid',
       args: [BigInt(nftidTokenId)],
     }) as `0x${string}`
 
-    if (agent && agent !== '0x0000000000000000000000000000000000000000') {
-      return agent.toLowerCase()
+    if (token && token !== '0x0000000000000000000000000000000000000000') {
+      return token.toLowerCase()
     }
   } catch (err) {
     console.warn('Failed to read from contract, using localStorage:', err)
@@ -77,13 +77,13 @@ export async function getAgentForNFTid(nftidTokenId: number): Promise<string | n
   return link ? link.agentWallet : null
 }
 
-// Get NFTid linked to an agent (reads from contract first, falls back to localStorage)
+// Get NFTid linked to a token (reads from contract first, falls back to localStorage)
 export async function getNFTidForAgent(agentWallet: string): Promise<number | null> {
   try {
     const nftidBigInt = await baseClient.readContract({
       address: NFTID_REGISTRY_ADDRESS.base,
       abi: NFTID_REGISTRY_ABI,
-      functionName: 'getNFTidForAgent',
+      functionName: 'getNFTidForToken',
       args: [agentWallet as `0x${string}`],
     }) as bigint
 

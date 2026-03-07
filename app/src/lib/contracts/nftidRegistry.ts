@@ -1,8 +1,8 @@
-// AgentNFTidRegistry Contract Configuration
+// SimpleAgentNFTidRegistry Contract Configuration
 
 export const NFTID_REGISTRY_ADDRESS = {
   sepolia: '0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D' as const,
-  base: '0xA51fa0faD4bCec2909B2f1e33bdfaa80f3f7d76B' as const,  // V2 - Points to ClawdNFT V2
+  base: '0x515685B303BB79a991664F8a8DcA9B5369103371' as const,  // SIMPLE: NFTid → Token Address
 } as const
 
 export const NFTID_REGISTRY_ABI = [
@@ -34,7 +34,7 @@ export const NFTID_REGISTRY_ABI = [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "agentWallet",
+        "name": "tokenAddress",
         "type": "address"
       },
       {
@@ -59,13 +59,7 @@ export const NFTID_REGISTRY_ABI = [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "agentWallet",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "unlinker",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
@@ -80,7 +74,7 @@ export const NFTID_REGISTRY_ABI = [
         "type": "uint256"
       }
     ],
-    "name": "getAgentForNFTid",
+    "name": "getTokenForNFTid",
     "outputs": [
       {
         "internalType": "address",
@@ -95,11 +89,11 @@ export const NFTID_REGISTRY_ABI = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "agentWallet",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
-    "name": "getNFTidForAgent",
+    "name": "getNFTidForToken",
     "outputs": [
       {
         "internalType": "uint256",
@@ -114,11 +108,11 @@ export const NFTID_REGISTRY_ABI = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "agentWallet",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
-    "name": "isAgentLinked",
+    "name": "isTokenLinked",
     "outputs": [
       {
         "internalType": "bool",
@@ -157,24 +151,11 @@ export const NFTID_REGISTRY_ABI = [
       },
       {
         "internalType": "address",
-        "name": "agentWallet",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
     "name": "linkNFTid",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "agentWallet",
-        "type": "address"
-      }
-    ],
-    "name": "unlinkAgent",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
