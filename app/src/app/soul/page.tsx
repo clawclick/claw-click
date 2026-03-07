@@ -151,18 +151,50 @@ export default function SoulPage() {
           linkedAgent: string | null
         }> = []
 
-        // Query Transfer events to find owned tokens
-        // Alternative: iterate through all tokenIds and check ownership (expensive!)
-        // For now, use a simple approach: query recent Minted events
+        // Query all Transfer events TO the user address
+        // This is more reliable than checking last 100 tokens
         const currentSupply = Number(totalSupply || 0)
         
-        // Check last 100 minted tokens for ownership (simple approach)
-        const startToken = Math.max(1, currentSupply - 99)
-        const tokenChecks = []
-        
-        for (let tokenId = startToken; tokenId <= currentSupply; tokenId++) {
-          tokenChecks.push(
-            publicClient.readContract({
+        if (currentSupply === 0) {
+          setOwnedNFTs([])
+          setLoadingOwnedNFTs(false)
+          return
+        }
+
+        // Get all Transfer events where user is the recipient
+        const logs = await publicClient.getLogs({
+          address: CLAWD_NFT_ADDRESS.sepolia,
+          event: {
+            type: 'event',
+            name: 'Transfer',
+            inputs: [
+              { indexed: true, name: 'from', type: 'address' },
+              { indexed: true, name: 'to', type: 'address' },
+              { indexed: true, name: 'tokenId', type: 'uint256' }
+            ]
+          },
+          args: {
+            to: address,
+          },
+          fromBlock: 0n,
+          toBlock: 'latest',
+        })
+
+        console.log(`Found ${logs.length} Transfer events to ${address}`)
+
+        // Extract token IDs and check current ownership (in case they were transferred away)
+        const tokenIds = new Set<number>()
+        for (const log of logs) {
+          if (log.args.tokenId) {
+            tokenIds.add(Number(log.args.tokenId))
+          }
+        }
+
+        // Verify current ownership and fetch traits
+        for (const tokenId of Array.from(tokenIds)) {
+          try {
+            // Check if user still owns this token
+            const owner = await publicClient.readContract({
               address: CLAWD_NFT_ADDRESS.sepolia,
               abi: [{
                 name: 'ownerOf',
@@ -173,25 +205,14 @@ export default function SoulPage() {
               }],
               functionName: 'ownerOf',
               args: [BigInt(tokenId)],
-            }).then(owner => ({ tokenId, owner }))
-          )
-        }
+            })
 
-        const results = await Promise.allSettled(tokenChecks)
-        const ownedTokenIds: number[] = []
-
-        results.forEach(result => {
-          if (result.status === 'fulfilled' && result.value.owner) {
-            const owner = result.value.owner as string
-            if (owner.toLowerCase() === address.toLowerCase()) {
-              ownedTokenIds.push(result.value.tokenId)
+            if (owner.toLowerCase() !== address.toLowerCase()) {
+              console.log(`Token ${tokenId} transferred away, skipping`)
+              continue
             }
-          }
-        })
 
-        // Fetch traits for owned tokens
-        for (const tokenId of ownedTokenIds) {
-          try {
+            // Fetch traits
             const traitsResponse = await publicClient.readContract({
               address: CLAWD_NFT_ADDRESS.sepolia,
               abi: CLAWD_NFT_ABI,
@@ -232,9 +253,12 @@ export default function SoulPage() {
               linkedAgent,
             })
           } catch (err) {
-            console.warn(`Failed to fetch traits for token ${tokenId}:`, err)
+            console.warn(`Failed to fetch data for token ${tokenId}:`, err)
           }
         }
+
+        // Sort by tokenId (newest first)
+        owned.sort((a, b) => b.tokenId - a.tokenId)
 
         setOwnedNFTs(owned)
       } catch (err) {
