@@ -1,7 +1,7 @@
 // AgentNFTidRegistry Contract Configuration
 
 export const NFTID_REGISTRY_ADDRESS = {
-  sepolia: '0x6E9B093FdD12eC34ce358bd70CF59EeCb5D1A95B' as const,
+  sepolia: '0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D' as const,
   base: '0x0000000000000000000000000000000000000000' as const, // TBD
 } as const
 
