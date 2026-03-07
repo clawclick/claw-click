@@ -308,12 +308,12 @@ function CreateAgentFlow() {
       setNftidMintPhase('minting')
       
       const mintTx = await writeNftidMint({
-        address: CLAWD_NFT_ADDRESS.sepolia,
+        address: CLAWD_NFT_ADDRESS.base,
         abi: CLAWD_NFT_ABI,
         functionName: 'mint',
         args: [BigInt(50)], // max attempts
         value: BigInt(0), // free for birth cert holders
-        chainId: 11155111, // Sepolia
+        chainId: 8453, // Sepolia
       })
 
       setNftidMintPhase('confirming')

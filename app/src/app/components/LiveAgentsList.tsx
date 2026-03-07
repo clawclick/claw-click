@@ -7,7 +7,7 @@ import { getAllAgents, Agent } from '../../lib/agents'
 import { getNFTidForAgent } from '../../lib/nftidLinkage'
 import NFTidCompositor from '../../components/NFTidCompositor'
 import { createPublicClient, http } from 'viem'
-import { sepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { ABIS } from '../../lib/contracts'
 
 interface AgentWithNFTid extends Agent {
@@ -21,9 +21,9 @@ export default function LiveAgentsList() {
   const [error, setError] = useState<string | null>(null)
   
   // Public client for reading NFTid traits
-  const sepoliaClient = createPublicClient({
-    chain: sepolia,
-    transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_SEPOLIA || 'BdgPEmQddox2due7mrt9J'}`),
+  const baseClient = createPublicClient({
+    chain: base,
+    transport: http(`https://eth-base.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_base || 'BdgPEmQddox2due7mrt9J'}`),
   })
 
   useEffect(() => {
@@ -51,8 +51,8 @@ export default function LiveAgentsList() {
             
             // Fetch traits from contract
             try {
-              const traits = await sepoliaClient.readContract({
-                address: '0x6c4618080761925A6D92526c0AA443eF03a92C96' as `0x${string}`,
+              const traits = await baseClient.readContract({
+                address: '0x553016FA9Ead8ACFa1d96220901f1e91EEB135f4' as `0x${string}`,
                 abi: ABIS.ClawdNFT,
                 functionName: 'getTraits',
                 args: [BigInt(nftidTokenId)],
@@ -104,7 +104,7 @@ export default function LiveAgentsList() {
 
   const getChainName = (chainId?: number) => {
     if (chainId === 8453) return 'Base'
-    if (chainId === 11155111) return 'Sepolia'
+    if (chainId === 8453) return 'base'
     return 'Unknown'
   }
 

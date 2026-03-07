@@ -108,7 +108,7 @@ export default function SoulPage() {
 
         // Get all Transfer events where user is the recipient
         const logs = await publicClient.getLogs({
-          address: CLAWD_NFT_ADDRESS.sepolia,
+          address: CLAWD_NFT_ADDRESS.base,
           event: {
             type: 'event',
             name: 'Transfer',
