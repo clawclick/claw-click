@@ -59,9 +59,19 @@ export default function NFTidDetailPage({ params }: PageProps) {
     chainId: base.id,
   })
 
-  // Check if linked
-  const { data: isLinked } = useIsNFTidLinked(tokenId)
-  const { data: linkedToken } = useGetTokenForNFTid(tokenId)
+  // Check if linked (refetch every 5 seconds after link success)
+  const { data: isLinked, refetch: refetchLinked } = useIsNFTidLinked(tokenId)
+  const { data: linkedToken, refetch: refetchToken } = useGetTokenForNFTid(tokenId)
+  
+  // Refetch link status when link succeeds
+  useEffect(() => {
+    if (isLinkSuccess) {
+      setTimeout(() => {
+        refetchLinked()
+        refetchToken()
+      }, 2000)
+    }
+  }, [isLinkSuccess, refetchLinked, refetchToken])
 
   const isOwner = address && owner && address.toLowerCase() === (owner as string).toLowerCase()
 
