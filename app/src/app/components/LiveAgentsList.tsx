@@ -56,18 +56,27 @@ export default function LiveAgentsList() {
                 abi: ABIS.ClawdNFT,
                 functionName: 'getTraits',
                 args: [BigInt(nftidTokenId)],
-              }) as [number, number, number, number, number]
+              }) as any
+
+              // Handle both array and object formats
+              const parsedTraits = Array.isArray(traits) ? {
+                aura: Number(traits[0]),
+                background: Number(traits[1]),
+                core: Number(traits[2]),
+                eyes: Number(traits[3]),
+                overlay: Number(traits[4]),
+              } : {
+                aura: Number(traits.aura),
+                background: Number(traits.background),
+                core: Number(traits.core),
+                eyes: Number(traits.eyes),
+                overlay: Number(traits.overlay),
+              }
 
               return {
                 ...agent,
                 nftidTokenId,
-                nftidTraits: {
-                  aura: traits[0],
-                  background: traits[1],
-                  core: traits[2],
-                  eyes: traits[3],
-                  overlay: traits[4],
-                },
+                nftidTraits: parsedTraits,
               }
             } catch (err) {
               console.warn(`Failed to fetch traits for NFTid #${nftidTokenId}:`, err)
