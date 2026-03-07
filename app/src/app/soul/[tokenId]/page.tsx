@@ -88,9 +88,26 @@ export default function NFTidDetailPage({ params }: PageProps) {
       alert('Invalid agent address')
       return
     }
-    await linkNFTid(tokenId, agentAddressInput)
-    setShowLinkForm(false)
-    setAgentAddressInput('')
+    
+    try {
+      await linkNFTid(tokenId, agentAddressInput)
+      setShowLinkForm(false)
+      setAgentAddressInput('')
+    } catch (err: any) {
+      console.error('Link failed:', err)
+      
+      // Show user-friendly error message
+      const errorMsg = err.shortMessage || err.message || 'Unknown error'
+      if (errorMsg.includes('Not authorized') || errorMsg.includes('must be agent creator')) {
+        alert('You must be the creator of this agent to link it. Check that you deployed this agent from your wallet.')
+      } else if (errorMsg.includes('Agent has no birth certificate')) {
+        alert('This agent does not have a birth certificate. Only immortalized agents can be linked.')
+      } else if (errorMsg.includes('rejected')) {
+        alert('Transaction rejected. Make sure you approved the transaction in your wallet.')
+      } else {
+        alert(`Link failed: ${errorMsg}`)
+      }
+    }
   }
 
   const handleUnlink = async () => {
@@ -306,6 +323,9 @@ export default function NFTidDetailPage({ params }: PageProps) {
                           </button>
                         ) : (
                           <div className="space-y-3">
+                            <p className="text-xs text-white/50 p-3 bg-[#E8523D]/5 border border-[#E8523D]/20 rounded-lg">
+                              ℹ️ You can only link agents that YOU created from this wallet. Paste the agent wallet address below.
+                            </p>
                             <input
                               type="text"
                               placeholder="Enter agent wallet address (0x...)"

@@ -79,12 +79,14 @@ export function useLinkNFTid() {
         functionName: 'linkNFTid',
         args: [BigInt(nftidTokenId), agentWallet as `0x${string}`],
         chainId: base.id,
+        gas: 500000n,  // Explicit gas limit to prevent estimation issues
       })
 
       // Also update localStorage as backup
       linkNFTidToAgent(nftidTokenId, agentWallet)
     } catch (err) {
       console.error('Failed to link NFTid:', err)
+      throw err  // Re-throw to allow UI to handle
     } finally {
       setIsLinking(false)
     }
