@@ -15,6 +15,7 @@ import AnimatedNFTShowcase from '../../components/AnimatedNFTShowcase'
 import NFTidCompositor from '../../components/NFTidCompositor'
 import { getAgentForNFTidSync } from '../../lib/nftidLinkage'
 import { calculateRarityScore, getRarityTier } from '../../lib/utils/rarityCalculator'
+import { parseTraits, validateTraits } from '../../lib/utils/traitParser'
 
 // Minted NFTs for collection feed
 const MINTED_NFTS = [
@@ -222,30 +223,16 @@ export default function SoulPage() {
 
             console.log(`Raw traits for token ${tokenId}:`, traitsResponse)
 
-            // Contract returns struct, wagmi may return it differently
-            let traits: any
-            if (Array.isArray(traitsResponse)) {
-              traits = traitsResponse
-            } else if (typeof traitsResponse === 'object') {
-              // Struct returned as object
-              const t = traitsResponse as any
-              traits = [t.aura, t.background, t.core, t.eyes, t.overlay]
-            } else {
-              console.error(`Unexpected traits format for token ${tokenId}:`, traitsResponse)
+            // Parse traits using helper
+            const parsedTraits = parseTraits(traitsResponse)
+            if (!parsedTraits || !validateTraits(parsedTraits)) {
+              console.error(`Invalid trait data for token ${tokenId}:`, traitsResponse)
               continue
             }
 
-            const linkedAgent = getAgentForNFTidSync(tokenId)
-
-            const parsedTraits = {
-              aura: Number(traits[0]),
-              background: Number(traits[1]),
-              core: Number(traits[2]),
-              eyes: Number(traits[3]),
-              overlay: Number(traits[4]),
-            }
-
             console.log(`Parsed traits for token ${tokenId}:`, parsedTraits)
+
+            const linkedAgent = getAgentForNFTidSync(tokenId)
 
             owned.push({
               tokenId,

@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react'
 import { isAddress } from 'viem'
 import { getAgentByWallet } from '../../../lib/agents'
 import { calculateRarityScore, getRarityTier, getTraitName, TRAIT_NAMES } from '../../../lib/utils/rarityCalculator'
+import { parseTraits, validateTraits } from '../../../lib/utils/traitParser'
 
 interface PageProps {
   params: { tokenId: string }
@@ -98,28 +99,8 @@ export default function NFTidDetailPage({ params }: PageProps) {
     }
   }
 
-  // Parse traits - handle both array and object formats
-  const parsedTraits = traits ? (() => {
-    if (Array.isArray(traits)) {
-      return {
-        aura: Number(traits[0]),
-        background: Number(traits[1]),
-        core: Number(traits[2]),
-        eyes: Number(traits[3]),
-        overlay: Number(traits[4]),
-      }
-    } else if (typeof traits === 'object') {
-      const t = traits as any
-      return {
-        aura: Number(t.aura || t[0]),
-        background: Number(t.background || t[1]),
-        core: Number(t.core || t[2]),
-        eyes: Number(t.eyes || t[3]),
-        overlay: Number(t.overlay || t[4]),
-      }
-    }
-    return null
-  })() : null
+  // Parse traits using helper
+  const parsedTraits = traits ? parseTraits(traits) : null
 
   // Calculate rarity
   const rarityScore = parsedTraits ? calculateRarityScore(parsedTraits) : 0

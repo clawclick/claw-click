@@ -16,6 +16,8 @@ import { analyzeGrid, hasLobster } from '../../../../lib/funlanQR'
 import { getNFTidForAgent, linkNFTidToAgent, unlinkAgent } from '../../../../lib/nftidLinkage'
 import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../../lib/contracts/clawdNFT'
 import NFTidCompositor from '../../../../components/NFTidCompositor'
+import IDIcon from '../../../../components/icons/IDIcon'
+import { parseTraits, validateTraits } from '../../../../lib/utils/traitParser'
 
 interface BirthCertData {
   nftId: number
@@ -286,22 +288,13 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
               args: [BigInt(nftidTokenId)],
             }) as any
 
-            // Handle both array and object formats
-            const parsedTraits = Array.isArray(traitsResponse) ? {
-              aura: Number(traitsResponse[0]),
-              background: Number(traitsResponse[1]),
-              core: Number(traitsResponse[2]),
-              eyes: Number(traitsResponse[3]),
-              overlay: Number(traitsResponse[4]),
-            } : {
-              aura: Number(traitsResponse.aura),
-              background: Number(traitsResponse.background),
-              core: Number(traitsResponse.core),
-              eyes: Number(traitsResponse.eyes),
-              overlay: Number(traitsResponse.overlay),
+            // Parse traits using helper
+            const parsedTraits = parseTraits(traitsResponse)
+            if (parsedTraits && validateTraits(parsedTraits)) {
+              setLinkedNFTidTraits(parsedTraits)
+            } else {
+              console.error('Invalid trait data for NFTid:', nftidTokenId, traitsResponse)
             }
-
-            setLinkedNFTidTraits(parsedTraits)
           } catch (err) {
             console.error('Failed to fetch NFTid traits:', err)
           }
@@ -815,7 +808,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                     ) : (
                       <div className="text-center py-6">
                         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
-                          <span className="text-2xl">🆔</span>
+                          <IDIcon size={32} className="text-white/40" />
                         </div>
                         <p className="text-sm text-white/50 mb-2">No NFTid linked yet</p>
                         <p className="text-xs text-white/30 mb-4">
