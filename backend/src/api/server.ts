@@ -327,6 +327,62 @@ app.get('/api/tokens', async (req, res) => {
 })
 
 // ============================================================================
+// TOKENS BY CREATOR WALLET
+// ============================================================================
+app.get('/api/tokens/by-creator/:wallet', async (req, res) => {
+  try {
+    const { wallet } = req.params
+    const chainId = getChainId(req)
+    const chainFilter = chainId !== null ? 'AND chain_id = $2' : ''
+    const params = chainId !== null ? [wallet, chainId] : [wallet]
+
+    const result = await query(`
+      SELECT
+        address,
+        name,
+        symbol,
+        creator,
+        beneficiary,
+        agent_wallet,
+        target_mcap,
+        current_mcap,
+        current_price,
+        volume_24h,
+        volume_total,
+        tx_count_24h,
+        graduated,
+        graduated_at,
+        current_epoch,
+        logo_url,
+        launch_type,
+        is_agent,
+        has_nft,
+        launched_at,
+        chain_id
+      FROM tokens
+      WHERE LOWER(creator) = LOWER($1) ${chainFilter}
+      ORDER BY launched_at DESC
+    `, params)
+
+    const ethPrice = getETHPriceSync()
+    const tokens = result.rows.map((t: any) => {
+      const mcapETH = parseFloat(t.current_mcap || '0')
+      const pricePerToken = mcapETH / 1_000_000_000
+      return {
+        ...t,
+        price_usd: (pricePerToken * ethPrice).toFixed(10),
+        mcap_usd: (mcapETH * ethPrice).toFixed(2),
+      }
+    })
+
+    res.json({ tokens, eth_price_usd: ethPrice })
+  } catch (error) {
+    console.error('Error fetching tokens by creator:', error)
+    res.status(500).json({ error: 'Failed to fetch tokens by creator' })
+  }
+})
+
+// ============================================================================
 // SINGLE TOKEN DETAILS
 // ============================================================================
 app.get('/api/token/:address', async (req, res) => {

@@ -172,6 +172,50 @@ export async function getAllAgents(): Promise<Agent[]> {
 }
 
 /**
+ * Fetch all tokens/agents created by a specific wallet address
+ */
+export async function getAgentsByCreator(creatorWallet: string): Promise<Agent[]> {
+  try {
+    const CLAWCLICK_BACKEND_URL =
+      process.env.NEXT_PUBLIC_CLAWCLICK_BACKEND_URL ||
+      'https://claw-click-backend-5157d572b2b6.herokuapp.com'
+
+    const response = await fetch(
+      `${CLAWCLICK_BACKEND_URL}/api/tokens/by-creator/${creatorWallet}`
+    )
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`)
+    }
+
+    const data = await response.json()
+    const backendTokens = data.tokens || []
+
+    return backendTokens.map((t: any) => ({
+      wallet: (t.agent_wallet || '0x0000000000000000000000000000000000000000') as `0x${string}`,
+      token: t.address as `0x${string}`,
+      creator: t.creator as `0x${string}`,
+      name: t.name,
+      symbol: t.symbol,
+      birthBlock: BigInt(0),
+      immortalized: true,
+      avatarCID: t.logo_url,
+      chainId: t.chain_id,
+      priceUsd: t.price_usd ? parseFloat(t.price_usd) : undefined,
+      mcapUsd: t.mcap_usd ? parseFloat(t.mcap_usd) : undefined,
+      volume24h: t.volume_24h ? parseFloat(t.volume_24h) : undefined,
+      graduated: !!t.graduated,
+      launchedAt: t.launched_at || undefined,
+      isAgent: !!t.is_agent,
+      launchType: t.launch_type,
+    }))
+  } catch (error) {
+    console.error('Failed to fetch agents by creator:', error)
+    return []
+  }
+}
+
+/**
  * Get single agent by wallet address
  * Tries cached agents list first, then falls back to backend, then on-chain (with cooldown)
  */

@@ -7,27 +7,23 @@ import { useAccount } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { DashboardIcon } from '../../components/home/ProductIcons'
 import { FireIcon, RocketIcon, GPUIcon, AgentIcon, EmptyStateIcon } from '../../components/DashboardIcons'
-import { getAllAgents, Agent } from '../../lib/agents'
+import { getAgentsByCreator, Agent } from '../../lib/agents'
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount()
-  const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
   const [myAgents, setMyAgents] = useState<Agent[]>([])
 
   useEffect(() => {
-    async function loadAgents() {
+    async function loadMyAgents() {
+      if (!address) {
+        setMyAgents([])
+        setLoading(false)
+        return
+      }
       try {
-        const allAgents = await getAllAgents()
-        setAgents(allAgents)
-        
-        if (address) {
-          // Filter agents created by connected wallet
-          const userAgents = allAgents.filter(a => 
-            a.creator && a.creator.toLowerCase() === address.toLowerCase()
-          )
-          setMyAgents(userAgents)
-        }
+        const userAgents = await getAgentsByCreator(address)
+        setMyAgents(userAgents)
       } catch (err) {
         console.error('[Dashboard] Failed to load agents:', err)
       } finally {
@@ -35,7 +31,8 @@ export default function DashboardPage() {
       }
     }
 
-    loadAgents()
+    setLoading(true)
+    loadMyAgents()
   }, [address])
 
   // Calculate total earnings
