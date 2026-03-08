@@ -270,19 +270,19 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
       if (!agent) return
       setLoadingNFTid(true)
       try {
-        const nftidTokenId = await getNFTidForAgent(agent.wallet)
+        const nftidTokenId = await getNFTidForAgent(agent.token)
         if (nftidTokenId) {
           setLinkedNFTid(nftidTokenId)
           
-          // Fetch NFTid traits from Sepolia
+          // Fetch NFTid traits from Base
           try {
-            const sepoliaClient = createPublicClient({
-              chain: sepolia,
-              transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_ETH_SEPOLIA || 'BdgPEmQddox2due7mrt9J'}`),
+            const baseRpcClient = createPublicClient({
+              chain: base,
+              transport: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_BASE || 'BdgPEmQddox2due7mrt9J'}`),
             })
             
-            const traitsResponse = await sepoliaClient.readContract({
-              address: CLAWD_NFT_ADDRESS.sepolia,
+            const traitsResponse = await baseRpcClient.readContract({
+              address: CLAWD_NFT_ADDRESS.base,
               abi: CLAWD_NFT_ABI,
               functionName: 'getTraits',
               args: [BigInt(nftidTokenId)],
