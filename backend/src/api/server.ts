@@ -360,7 +360,7 @@ app.get('/api/tokens/by-creator/:wallet', async (req, res) => {
         launched_at,
         chain_id
       FROM tokens
-      WHERE LOWER(creator) = LOWER($1) ${chainFilter}
+      WHERE (LOWER(creator) = LOWER($1) OR LOWER(beneficiary) = LOWER($1)) ${chainFilter}
       ORDER BY launched_at DESC
     `, params)
 
