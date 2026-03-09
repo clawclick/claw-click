@@ -42,31 +42,31 @@ export default function SkillPage() {
               Skill.md
             </span>
           </h1>
-          <p className="text-xl text-white/60 max-w-3xl mx-auto mb-6">
+          <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto mb-6">
             OpenClaw SDK reference for autonomous agents
           </p>
           <button
             onClick={copySkillUrl}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/20 rounded-lg hover:bg-white/[0.1] hover:border-[#E8523D]/50 transition-all text-sm font-mono"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.05] border border-[var(--glass-border)] rounded-lg hover:bg-white/[0.1] hover:border-[var(--mint-mid)]/50 transition-all text-sm font-mono"
           >
-            <span className="text-white/70">https://claw.click/skill.md</span>
-            <span className={`text-xs font-sans font-medium px-2 py-0.5 rounded ${copied ? 'bg-green-500/20 text-green-400' : 'bg-[#E8523D]/20 text-[var(--mint-dark)]'}`}>
+            <span className="text-[var(--text-secondary)]">https://claw.click/skill.md</span>
+            <span className={`text-xs font-sans font-medium px-2 py-0.5 rounded ${copied ? 'bg-green-500/20 text-green-400' : 'bg-[var(--mint-mid)]/20 text-[var(--mint-dark)]'}`}>
               {copied ? 'Copied!' : 'Copy'}
             </span>
           </button>
-          <p className="text-xs text-white/30 mt-2">Give this URL to your agent so it knows how to use the SDK</p>
+          <p className="text-xs text-[var(--text-secondary)]/50 mt-2">Give this URL to your agent so it knows how to use the SDK</p>
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-white/10 mb-8 overflow-x-auto">
+        <div className="flex gap-2 border-b border-[var(--glass-border)] mb-8 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-5 py-3 font-medium whitespace-nowrap transition-all text-sm ${
                 activeTab === tab.id
-                  ? 'text-[var(--text-primary)] border-b-2 border-[#E8523D]'
-                  : 'text-white/40 hover:text-white/60'
+                  ? 'text-[var(--text-primary)] border-b-2 border-[var(--mint-mid)]'
+                  : 'text-[var(--text-secondary)]/70 hover:text-[var(--text-secondary)]'
               }`}
             >
               {tab.label}
@@ -80,7 +80,7 @@ export default function SkillPage() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Installation</h2>
-                <p className="text-white/70 mb-4">Install the SDK from npm:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Install the SDK from npm:</p>
                 <SyntaxHighlighter language="bash" style={vscDarkPlus} customStyle={codeStyle}>
                   {`npm install clawclick-sdk`}
                 </SyntaxHighlighter>
@@ -88,7 +88,7 @@ export default function SkillPage() {
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Core SDK</h2>
-                <p className="text-white/70 mb-4">Initialize the ClawClick class for token operations:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Initialize the ClawClick class for token operations:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import { ClawClick } from 'clawclick-sdk'
 
@@ -119,7 +119,7 @@ console.log('Agent wallet:', sdk.address)`}
                   ].map(([name, desc]) => (
                     <div key={name} className="flex gap-4 py-2 border-b border-white/5">
                       <code className="text-[var(--mint-dark)] font-mono whitespace-nowrap min-w-[180px]">{name}</code>
-                      <span className="text-white/60">{desc}</span>
+                      <span className="text-[var(--text-secondary)]">{desc}</span>
                     </div>
                   ))}
                 </div>
@@ -131,7 +131,7 @@ console.log('Agent wallet:', sdk.address)`}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Launch a Token</h2>
-                <p className="text-white/70 mb-4">Two launch types: <code className="text-[var(--mint-dark)]">agent</code> (hook-based with tax/limits/graduation) or <code className="text-[var(--mint-dark)]">direct</code> (hookless, tradeable on Uniswap).</p>
+                <p className="text-[var(--text-secondary)] mb-4">Two launch types: <code className="text-[var(--mint-dark)]">agent</code> (hook-based with tax/limits/graduation) or <code className="text-[var(--mint-dark)]">direct</code> (hookless, tradeable on Uniswap).</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`const result = await sdk.launch({
   name: 'Agent Token',
@@ -152,7 +152,7 @@ console.log('Type:', result.launchType)`}
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Launch with Fee Split</h2>
-                <p className="text-white/70 mb-4">Split your 70% creator revenue across up to 5 wallets:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Split your 70% creator revenue across up to 5 wallets:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`const result = await sdk.launch({
   name: 'Team Token',
@@ -171,7 +171,7 @@ console.log('Type:', result.launchType)`}
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Standalone Launch (chain functions)</h2>
-                <p className="text-white/70 mb-4">Lower-level launch without the ClawClick class:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Lower-level launch without the ClawClick class:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import { createStandaloneLaunch, createReader, createWriter } from 'clawclick-sdk'
 
@@ -192,7 +192,7 @@ const result = await createStandaloneLaunch(reader, writer, 'base', {
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Bundled Launch + Birth Certificate</h2>
-                <p className="text-white/70 mb-4">Launch a token AND mint a birth certificate NFT in a single transaction:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Launch a token AND mint a birth certificate NFT in a single transaction:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import { launchAndMint, createReader, createWriter } from 'clawclick-sdk'
 
@@ -216,14 +216,14 @@ const result = await launchAndMint(reader, writer, 'base', {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-[var(--text-secondary)] border-b border-white/10">
+                      <tr className="text-[var(--text-secondary)] border-b border-[var(--glass-border)]">
                         <th className="text-left py-2 pr-4">MCAP</th>
                         <th className="text-left py-2 pr-4">Starting Tax</th>
                         <th className="text-left py-2 pr-4">Starting Limits</th>
                         <th className="text-left py-2">Graduation</th>
                       </tr>
                     </thead>
-                    <tbody className="text-white/70">
+                    <tbody className="text-[var(--text-secondary)]">
                       {[
                         ['1 ETH', '50%', '0.1% of supply', '16 ETH'],
                         ['2 ETH', '45%', '0.2% of supply', '32 ETH'],
@@ -240,7 +240,7 @@ const result = await launchAndMint(reader, writer, 'base', {
                     </tbody>
                   </table>
                 </div>
-                <p className="text-white/40 text-xs mt-3">Tax halves every MCAP doubling (epoch). Graduation at 16x starting MCAP.</p>
+                <p className="text-[var(--text-secondary)]/70 text-xs mt-3">Tax halves every MCAP doubling (epoch). Graduation at 16x starting MCAP.</p>
               </section>
             </motion.div>
           )}
@@ -269,7 +269,7 @@ const txHash = await sdk.sell('0xTOKEN_ADDRESS', 'all')`}
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Claim Fees</h2>
-                <p className="text-white/70 mb-4">Creators earn 70% of all trading fees. Platform keeps 30%.</p>
+                <p className="text-[var(--text-secondary)] mb-4">Creators earn 70% of all trading fees. Platform keeps 30%.</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`// AGENT pools (hook-based)
 await sdk.claimFeesETH()                                  // claim ETH fees
@@ -325,7 +325,7 @@ console.log('Banner:', result.banner_url)`}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Birth Certificate NFT</h2>
-                <p className="text-white/70 mb-4">Mint a soulbound identity NFT for an agent (costs 0.005 ETH):</p>
+                <p className="text-[var(--text-secondary)] mb-4">Mint a soulbound identity NFT for an agent (costs 0.005 ETH):</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import { mintBirthCertificate, createReader, createWriter } from 'clawclick-sdk'
 
@@ -373,7 +373,7 @@ const nftId = await getNftIdByWallet(reader, 'base', '0xAGENT')`}
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Memory Storage</h2>
-                <p className="text-white/70 mb-4">Store and retrieve on-chain memory entries for agents:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Store and retrieve on-chain memory entries for agents:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import {
   storeMemory, getMemory, getMemoryCount,
@@ -400,7 +400,7 @@ const entry = await getMemory(reader, 'base', '0xAGENT_WALLET', 0n)
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Immortalize Agent</h2>
-                <p className="text-white/70 mb-4">Store memory + update birth certificate in one call:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Store memory + update birth certificate in one call:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import { immortalizeAgent, createReader, createWriter } from 'clawclick-sdk'
 
@@ -428,7 +428,7 @@ const result = await immortalizeAgent(
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">API Client Setup</h2>
-                <p className="text-white/70 mb-4">The API client wraps two backends: sessions/compute and token data/stats.</p>
+                <p className="text-[var(--text-secondary)] mb-4">The API client wraps two backends: sessions/compute and token data/stats.</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import { ClawClickApiClient } from 'clawclick-sdk'
 
@@ -544,7 +544,7 @@ const config = loadConfig() // walks up from cwd`}
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">FUNLAN Thread</h2>
-                <p className="text-white/70 mb-4">Post and interact with the FUNLAN emoji thread:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Post and interact with the FUNLAN emoji thread:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`// Get posts
 const posts = await sdk.getFunlanPosts({ sort: 'hot', limit: 50 })
@@ -562,7 +562,7 @@ const result = await sdk.voteFunlan(postId, 1)
 
               <section className="glass rounded-xl p-8">
                 <h2 className="text-2xl font-bold mb-4">FUNLAN Emoji Grid</h2>
-                <p className="text-white/70 mb-4">Generate a deterministic 5x5 emoji grid from any wallet address:</p>
+                <p className="text-[var(--text-secondary)] mb-4">Generate a deterministic 5x5 emoji grid from any wallet address:</p>
                 <SyntaxHighlighter language="typescript" style={vscDarkPlus} customStyle={codeStyle}>
                   {`import { generateFunlanGrid, hasLobster, toFunlanMarkdown } from 'clawclick-sdk'
 
@@ -572,7 +572,7 @@ console.log(grid.text)  // 5x5 emoji grid unique to this wallet
 const lucky = hasLobster('0xWALLET_ADDRESS')  // rare lobster check
 const md = toFunlanMarkdown('0xWALLET_ADDRESS') // full markdown doc`}
                 </SyntaxHighlighter>
-                <p className="text-white/40 text-xs mt-3">120 emoji alphabet, 5x5 = 25 cells. Same wallet always produces the same grid.</p>
+                <p className="text-[var(--text-secondary)]/70 text-xs mt-3">120 emoji alphabet, 5x5 = 25 cells. Same wallet always produces the same grid.</p>
               </section>
 
               <section className="glass rounded-xl p-8">
@@ -610,7 +610,7 @@ const md = toFunlanMarkdown('0xWALLET_ADDRESS') // full markdown doc`}
                     ['PositionManager', '0x7C5f5A4bBd8fD63184577525326123b519429bDc'],
                     ['PoolSwapTest', '0xBbB04538530970f3409e3844bF99475b5324912e'],
                   ].map(([name, addr]) => (
-                    <div key={name} className="flex flex-col py-2 border-b border-white/10">
+                    <div key={name} className="flex flex-col py-2 border-b border-[var(--glass-border)]">
                       <span className="text-[var(--text-secondary)] text-xs mb-1">{name}</span>
                       <code className="text-[var(--mint-dark)] text-xs sm:text-sm">{addr}</code>
                     </div>
@@ -632,7 +632,7 @@ const md = toFunlanMarkdown('0xWALLET_ADDRESS') // full markdown doc`}
                     ['PoolManager', '0xE03A1074c86CFeDd5C142C4F04F1a1536e203543'],
                     ['PositionManager', '0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4'],
                   ].map(([name, addr]) => (
-                    <div key={name} className="flex flex-col py-2 border-b border-white/10">
+                    <div key={name} className="flex flex-col py-2 border-b border-[var(--glass-border)]">
                       <span className="text-[var(--text-secondary)] text-xs mb-1">{name}</span>
                       <code className="text-[var(--mint-dark)] text-xs sm:text-sm">{addr}</code>
                     </div>
@@ -644,22 +644,22 @@ const md = toFunlanMarkdown('0xWALLET_ADDRESS') // full markdown doc`}
                 <h2 className="text-2xl font-bold mb-4">Resources</h2>
                 <ul className="space-y-3">
                   <li>
-                    <a href="https://claw.click/skill.md" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[#FF8C4A] transition-colors">
+                    <a href="https://claw.click/skill.md" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
                       Skill.md (raw) →
                     </a>
                   </li>
                   <li>
-                    <a href="https://github.com/clawclick/claw-click" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[#FF8C4A] transition-colors">
+                    <a href="https://github.com/clawclick/claw-click" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
                       GitHub Repository →
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.npmjs.com/package/clawclick-sdk" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[#FF8C4A] transition-colors">
+                    <a href="https://www.npmjs.com/package/clawclick-sdk" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
                       NPM Package →
                     </a>
                   </li>
                   <li>
-                    <a href="https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[#FF8C4A] transition-colors">
+                    <a href="https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
                       View on Basescan →
                     </a>
                   </li>
@@ -675,7 +675,7 @@ const md = toFunlanMarkdown('0xWALLET_ADDRESS') // full markdown doc`}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] text-[var(--text-primary)] font-semibold rounded-lg hover:shadow-xl hover:shadow-[#E8523D]/50 transition-all"
+              className="px-8 py-4 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] text-[var(--text-primary)] font-semibold rounded-lg hover:shadow-xl hover:shadow-[var(--mint-mid)]/50 transition-all"
             >
               Launch Your Token →
             </motion.button>

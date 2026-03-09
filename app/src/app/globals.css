@@ -583,19 +583,20 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   animation: electricPulse 1s ease-in-out infinite;
 }
 
-/* Framework For Digital Entities - readable dark-to-mid teal, no blue */
+/* Framework For Digital Entities - SAME dark teal as Connect Wallet button, fully readable */
 .framework-text {
   font-family: 'Space Mono', 'Courier New', monospace;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  /* Dark teal to mid teal — stays readable, no light/blue bleed */
+  /* Exact same gradient as inverse-electric-button text — dark teal only, NO light turquoise */
   background: linear-gradient(
-    135deg,
-    #0F6B63 0%,
-    #1FAFA3 35%,
-    #45C7B8 65%,
-    #1FAFA3 100%
+    90deg,
+    #083A36 0%,
+    #0F6B63 25%,
+    #1FAFA3 50%,
+    #0F6B63 75%,
+    #083A36 100%
   );
   background-size: 250% 100%;
   -webkit-background-clip: text;
@@ -603,7 +604,7 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   background-clip: text;
   position: relative;
   animation: pixelShimmer 6s ease-in-out infinite 1s;
-  filter: drop-shadow(0 0 10px rgba(31, 175, 163, 0.5));
+  filter: drop-shadow(0 0 8px rgba(15, 107, 99, 0.6));
 }
 
 .framework-text::before {

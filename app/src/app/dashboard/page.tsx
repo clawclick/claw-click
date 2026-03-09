@@ -6,7 +6,8 @@ import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { DashboardIcon } from '../../components/home/ProductIcons'
-import { FireIcon, RocketIcon, GPUIcon, AgentIcon, EmptyStateIcon } from '../../components/DashboardIcons'
+import Image from 'next/image'
+import { FireIcon, RocketIcon, GPUIcon, EmptyStateIcon } from '../../components/DashboardIcons'
 import { getAgentsByCreator, Agent } from '../../lib/agents'
 
 export default function DashboardPage() {
@@ -186,8 +187,14 @@ export default function DashboardPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="w-10 h-10 text-[var(--mint-mid)]">
-                        <AgentIcon />
+                      <div className="w-12 h-12 flex-shrink-0">
+                        <Image
+                          src="/branding/lobster_icon_exact_size-rem_bk.png"
+                          alt="Agent"
+                          width={48}
+                          height={48}
+                          className="object-contain opacity-80 hover:opacity-100 transition-opacity"
+                        />
                       </div>
                     </div>
 

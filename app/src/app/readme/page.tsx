@@ -30,14 +30,14 @@ export default function ReadmePage() {
               README
             </span>
           </h1>
-          <p className="text-xl text-white/60">
+          <p className="text-xl text-[var(--text-secondary)]">
             Project overview and getting started guide
           </p>
         </motion.div>
 
         {/* Markdown Content */}
         <article className="prose prose-invert prose-lg max-w-none">
-          <div className="bg-white/[0.02] border border-white/10 rounded-xl p-8">
+          <div className="bg-white/[0.02] border border-[var(--glass-border)] rounded-xl p-8">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -47,7 +47,7 @@ export default function ReadmePage() {
                   </h1>
                 ),
                 h2: ({ children }) => (
-                  <h2 className="text-3xl font-bold mt-12 mb-4 text-[var(--text-primary)] border-b border-white/10 pb-3">
+                  <h2 className="text-3xl font-bold mt-12 mb-4 text-[var(--text-primary)] border-b border-[var(--glass-border)] pb-3">
                     {children}
                   </h2>
                 ),
@@ -62,12 +62,12 @@ export default function ReadmePage() {
                   </h4>
                 ),
                 p: ({ children }) => (
-                  <p className="text-white/70 leading-relaxed mb-4">
+                  <p className="text-[var(--text-secondary)] leading-relaxed mb-4">
                     {children}
                   </p>
                 ),
                 ul: ({ children }) => (
-                  <ul className="list-none space-y-2 mb-4 text-white/70">
+                  <ul className="list-none space-y-2 mb-4 text-[var(--text-secondary)]">
                     {children}
                   </ul>
                 ),
@@ -78,7 +78,7 @@ export default function ReadmePage() {
                   </li>
                 ),
                 ol: ({ children }) => (
-                  <ol className="list-decimal list-inside space-y-2 mb-4 text-white/70 ml-4">
+                  <ol className="list-decimal list-inside space-y-2 mb-4 text-[var(--text-secondary)] ml-4">
                     {children}
                   </ol>
                 ),
@@ -90,7 +90,7 @@ export default function ReadmePage() {
                   </div>
                 ),
                 thead: ({ children }) => (
-                  <thead className="bg-white/[0.03] border-b-2 border-[#E8523D]/30">
+                  <thead className="bg-white/[0.03] border-b-2 border-[var(--mint-mid)]/30">
                     {children}
                   </thead>
                 ),
@@ -105,12 +105,12 @@ export default function ReadmePage() {
                   </tr>
                 ),
                 th: ({ children }) => (
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)] border-r border-white/10 last:border-r-0">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)] border-r border-[var(--glass-border)] last:border-r-0">
                     {children}
                   </th>
                 ),
                 td: ({ children }) => (
-                  <td className="px-4 py-3 text-sm text-white/70 border-r border-white/10 last:border-r-0">
+                  <td className="px-4 py-3 text-sm text-[var(--text-secondary)] border-r border-[var(--glass-border)] last:border-r-0">
                     {children}
                   </td>
                 ),
@@ -121,20 +121,20 @@ export default function ReadmePage() {
                       {children}
                     </code>
                   ) : (
-                    <code className="block relative/50 border border-white/10 rounded-lg p-4 text-sm text-[var(--mint-dark)] font-mono overflow-x-auto">
+                    <code className="block relative/50 border border-[var(--glass-border)] rounded-lg p-4 text-sm text-[var(--mint-dark)] font-mono overflow-x-auto">
                       {children}
                     </code>
                   )
                 },
                 pre: ({ children }) => (
-                  <pre className="relative/50 border border-white/10 rounded-lg p-4 overflow-x-auto my-4">
+                  <pre className="relative/50 border border-[var(--glass-border)] rounded-lg p-4 overflow-x-auto my-4">
                     {children}
                   </pre>
                 ),
                 a: ({ href, children }) => (
                   <a
                     href={href}
-                    className="text-[var(--mint-dark)] hover:text-[#FF8C4A] transition-colors underline decoration-[#E8523D]/30 hover:decoration-[#FF8C4A]"
+                    className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors underline decoration-[var(--mint-mid)]/30 hover:decoration-[var(--mint-dark)]"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -142,10 +142,10 @@ export default function ReadmePage() {
                   </a>
                 ),
                 hr: () => (
-                  <hr className="my-8 border-t border-white/10" />
+                  <hr className="my-8 border-t border-[var(--glass-border)]" />
                 ),
                 blockquote: ({ children }) => (
-                  <blockquote className="border-l-4 border-[#E8523D] pl-4 italic text-white/60 my-4">
+                  <blockquote className="border-l-4 border-[var(--mint-mid)] pl-4 italic text-[var(--text-secondary)] my-4">
                     {children}
                   </blockquote>
                 ),
@@ -167,7 +167,7 @@ export default function ReadmePage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] text-[var(--text-primary)] font-semibold rounded-lg hover:shadow-xl hover:shadow-[#E8523D]/50 transition-all"
+              className="px-8 py-4 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] text-[var(--text-primary)] font-semibold rounded-lg hover:shadow-xl hover:shadow-[var(--mint-mid)]/50 transition-all"
             >
               Back to Home
             </motion.button>
