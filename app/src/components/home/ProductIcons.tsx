@@ -1,596 +1,349 @@
-// Animated SVG icons for products - Mint/Teal Rebrand
+// Animated SVG icons for products - Mint/Teal Rebrand - HEAVY ANIMATIONS
 
-import { CSSProperties } from 'react'
-
-const iconStyles = `
-@keyframes iconPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-@keyframes iconRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes iconOrbit {
-  from { transform: rotate(0deg) translateX(12px) rotate(0deg); }
-  to { transform: rotate(360deg) translateX(12px) rotate(-360deg); }
-}
-
-@keyframes iconFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
-}
-
-@keyframes iconGlow {
-  0%, 100% { filter: drop-shadow(0 0 4px var(--mint-mid)); }
-  50% { filter: drop-shadow(0 0 8px var(--glow)); }
-}
-
-@keyframes pathDraw {
-  from { stroke-dashoffset: 100; }
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes scale {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
+const css = `
+@keyframes ip-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes ip-rotate-r { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+@keyframes ip-pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.85); } }
+@keyframes ip-pulse2 { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+@keyframes ip-float { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-5px); } }
+@keyframes ip-dash { from { stroke-dashoffset:200; } to { stroke-dashoffset:0; } }
+@keyframes ip-glow { 0%,100% { filter:drop-shadow(0 0 3px #45C7B8); } 50% { filter:drop-shadow(0 0 12px #2EE6D6) drop-shadow(0 0 20px #7DE2D1); } }
+@keyframes ip-orbit { from { transform:rotate(0deg) translateX(14px) rotate(0deg); } to { transform:rotate(360deg) translateX(14px) rotate(-360deg); } }
+@keyframes ip-orbit2 { from { transform:rotate(180deg) translateX(10px) rotate(-180deg); } to { transform:rotate(540deg) translateX(10px) rotate(-540deg); } }
+@keyframes ip-draw { 0% { stroke-dashoffset:100; opacity:0; } 30% { opacity:1; } 100% { stroke-dashoffset:0; opacity:1; } }
+@keyframes ip-flicker { 0%,100% { opacity:1; } 45% { opacity:1; } 50% { opacity:0.2; } 55% { opacity:1; } 75% { opacity:1; } 80% { opacity:0.4; } 85% { opacity:1; } }
+@keyframes ip-spin-y { 0%,100% { transform:scaleX(1); } 50% { transform:scaleX(-1); } }
+@keyframes ip-data { 0% { transform:translateX(-20px); opacity:0; } 50% { opacity:1; } 100% { transform:translateX(20px); opacity:0; } }
+@keyframes ip-wave { 0%,100% { d:path("M6 28 Q12 22 18 28 Q24 34 30 28 Q36 22 42 28"); } 50% { d:path("M6 28 Q12 34 18 28 Q24 22 30 28 Q36 34 42 28"); } }
+@keyframes ip-expand { 0%,100% { transform:scale(1); opacity:0.4; } 50% { transform:scale(1.5); opacity:0; } }
 `
 
-export const ImmortalizeIcon = () => (
-  <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Outer rotating ring */}
-      <circle 
-        cx="24" 
-        cy="24" 
-        r="22" 
-        stroke="currentColor" 
-        strokeWidth="1" 
-        strokeDasharray="4 6" 
-        opacity="0.4"
-        style={{ 
-          animation: 'iconRotate 20s linear infinite',
-          transformOrigin: '24px 24px'
-        }}
-      />
-      
-      {/* Agent head with pulse */}
-      <circle 
-        cx="24" 
-        cy="16" 
-        r="7" 
-        stroke="currentColor" 
-        strokeWidth="2.5"
-        style={{ animation: 'iconPulse 3s ease-in-out infinite' }}
-      />
-      
-      {/* Body path with glow */}
-      <path 
-        d="M12 38C12 31.3726 17.3726 26 24 26C30.6274 26 36 31.3726 36 38" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round"
-        style={{ 
-          filter: 'drop-shadow(0 0 6px currentColor)',
-          animation: 'iconFloat 3s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Orbiting particles */}
-      <circle 
-        cx="24" 
-        cy="24" 
-        r="2" 
-        fill="currentColor" 
-        opacity="0.8"
-        style={{ 
-          animation: 'iconOrbit 4s linear infinite',
-          transformOrigin: '24px 24px'
-        }}
-      />
-      
-      {/* Inner glow ring */}
-      <circle 
-        cx="24" 
-        cy="16" 
-        r="10" 
-        stroke="currentColor" 
-        strokeWidth="0.5" 
-        opacity="0.3"
-        style={{ animation: 'scale 2s ease-in-out infinite' }}
-      />
-    </svg>
-  </>
-)
-
+/* ---------- LAUNCH ICON ---------- */
 export const LaunchIcon = () => (
   <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Rocket path */}
-      <path 
-        d="M14 34L34 14M34 14H20M34 14V28" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        style={{ 
-          filter: 'drop-shadow(0 0 4px currentColor)',
-          animation: 'iconGlow 2s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Exhaust flames */}
-      <path 
-        d="M14 20L20 14" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round"
-        style={{ 
-          opacity: 0.7,
-          animation: 'iconPulse 1s ease-in-out infinite'
-        }}
-      />
-      <path 
-        d="M28 34L34 28" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round"
-        style={{ 
-          opacity: 0.7,
-          animation: 'iconPulse 1s ease-in-out infinite 0.3s'
-        }}
-      />
-      
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* Outer ring rotating */}
+      <circle cx="26" cy="26" r="24" stroke="#45C7B8" strokeWidth="0.8" strokeDasharray="5 7" opacity="0.4"
+        style={{ animation: 'ip-rotate 18s linear infinite', transformOrigin: '26px 26px' }} />
+      {/* Inner ring counter */}
+      <circle cx="26" cy="26" r="16" stroke="#2EE6D6" strokeWidth="0.6" strokeDasharray="3 5" opacity="0.3"
+        style={{ animation: 'ip-rotate-r 10s linear infinite', transformOrigin: '26px 26px' }} />
+      {/* Rocket body */}
+      <path d="M26 8 L32 20 L26 18 L20 20 Z" fill="#45C7B8" opacity="0.9"
+        style={{ animation: 'ip-glow 2.5s ease-in-out infinite' }} />
+      {/* Rocket wings */}
+      <path d="M20 20 L15 28 L20 26" fill="#7DE2D1" opacity="0.7" />
+      <path d="M32 20 L37 28 L32 26" fill="#7DE2D1" opacity="0.7" />
+      {/* Flame jets */}
+      <path d="M22 26 L26 36 L30 26" fill="#2EE6D6" opacity="0.8"
+        style={{ animation: 'ip-pulse 0.8s ease-in-out infinite' }} />
+      <path d="M24 34 L26 42 L28 34" fill="#7DE2D1" opacity="0.5"
+        style={{ animation: 'ip-pulse 0.6s ease-in-out infinite 0.2s' }} />
       {/* Speed lines */}
-      <line 
-        x1="10" 
-        y1="38" 
-        x2="14" 
-        y2="34" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinecap="round"
-        opacity="0.4"
-        style={{ animation: 'pathDraw 2s ease-in-out infinite' }}
-      />
-      <line 
-        x1="6" 
-        y1="34" 
-        x2="10" 
-        y2="30" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinecap="round"
-        opacity="0.4"
-        style={{ animation: 'pathDraw 2s ease-in-out infinite 0.2s' }}
-      />
-      
-      {/* Outer orbit ring */}
-      <circle 
-        cx="24" 
-        cy="24" 
-        r="22" 
-        stroke="currentColor" 
-        strokeWidth="1" 
-        opacity="0.2"
-        strokeDasharray="3 5"
-        style={{ 
-          animation: 'iconRotate 15s linear infinite reverse',
-          transformOrigin: '24px 24px'
-        }}
-      />
+      <line x1="10" y1="36" x2="16" y2="30" stroke="#45C7B8" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"
+        style={{ animation: 'ip-pulse2 1s ease-in-out infinite' }} />
+      <line x1="7" y1="30" x2="13" y2="24" stroke="#2EE6D6" strokeWidth="1" strokeLinecap="round" opacity="0.35"
+        style={{ animation: 'ip-pulse2 1s ease-in-out infinite 0.2s' }} />
+      <line x1="4" y1="24" x2="10" y2="18" stroke="#7DE2D1" strokeWidth="0.8" strokeLinecap="round" opacity="0.2"
+        style={{ animation: 'ip-pulse2 1s ease-in-out infinite 0.4s' }} />
+      {/* Orbiting particle */}
+      <circle r="2.5" fill="#2EE6D6"
+        style={{ animation: 'ip-orbit 3s linear infinite', transformOrigin: '26px 26px', filter: 'drop-shadow(0 0 4px #2EE6D6)' }} />
     </svg>
   </>
 )
 
-export const SoulIcon = () => (
+/* ---------- TRADEAPI ICON (unique - data streams + candles + API brackets) ---------- */
+export const TradeAPIIcon = () => (
   <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Ghost body with float */}
-      <path 
-        d="M24 8C16 8 10 14 10 22V36L14 32L18 36L22 32L26 36L30 32L34 36L38 32V22C38 14 32 8 24 8Z" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinejoin="round"
-        style={{ 
-          animation: 'iconFloat 3s ease-in-out infinite',
-          filter: 'drop-shadow(0 4px 8px rgba(69, 199, 184, 0.3))'
-        }}
-      />
-      
-      {/* Eyes with pulse */}
-      <circle 
-        cx="18" 
-        cy="20" 
-        r="2.5" 
-        fill="currentColor"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite' }}
-      />
-      <circle 
-        cx="30" 
-        cy="20" 
-        r="2.5" 
-        fill="currentColor"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite 0.1s' }}
-      />
-      
-      {/* Smile */}
-      <path 
-        d="M20 26C20 26 22 28 24 28C26 28 28 26 28 26" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round"
-      />
-      
-      {/* Sparkles */}
-      <g opacity="0.6" style={{ animation: 'iconPulse 2s ease-in-out infinite' }}>
-        <line x1="40" y1="12" x2="40" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="38" y1="14" x2="42" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </g>
-      <g opacity="0.6" style={{ animation: 'iconPulse 2s ease-in-out infinite 0.5s' }}>
-        <line x1="8" y1="16" x2="8" y2="20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="6" y1="18" x2="10" y2="18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </g>
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* API brackets */}
+      <path d="M8 12 L4 12 L4 40 L8 40" stroke="#45C7B8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9"
+        style={{ animation: 'ip-glow 3s ease-in-out infinite' }} />
+      <path d="M44 12 L48 12 L48 40 L44 40" stroke="#45C7B8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9"
+        style={{ animation: 'ip-glow 3s ease-in-out infinite 0.5s' }} />
+      {/* Candlestick chart */}
+      <line x1="14" y1="18" x2="14" y2="36" stroke="#7DE2D1" strokeWidth="1" opacity="0.5" />
+      <rect x="11" y="22" width="6" height="10" rx="1" fill="#45C7B8" opacity="0.8"
+        style={{ animation: 'ip-pulse2 2s ease-in-out infinite' }} />
+      <line x1="22" y1="14" x2="22" y2="38" stroke="#7DE2D1" strokeWidth="1" opacity="0.5" />
+      <rect x="19" y="18" width="6" height="14" rx="1" fill="#2EE6D6" opacity="0.9"
+        style={{ animation: 'ip-pulse2 2s ease-in-out infinite 0.4s' }} />
+      <line x1="30" y1="20" x2="30" y2="36" stroke="#7DE2D1" strokeWidth="1" opacity="0.5" />
+      <rect x="27" y="22" width="6" height="8" rx="1" fill="#45C7B8" opacity="0.8"
+        style={{ animation: 'ip-pulse2 2s ease-in-out infinite 0.8s' }} />
+      <line x1="38" y1="12" x2="38" y2="34" stroke="#7DE2D1" strokeWidth="1" opacity="0.5" />
+      <rect x="35" y="14" width="6" height="16" rx="1" fill="#2EE6D6" opacity="0.9"
+        style={{ animation: 'ip-pulse2 2s ease-in-out infinite 1.2s' }} />
+      {/* Trend line */}
+      <polyline points="14,32 22,24 30,28 38,16" stroke="#2EE6D6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+        fill="none" strokeDasharray="50" strokeDashoffset="50"
+        style={{ animation: 'ip-draw 2s ease forwards, ip-glow 2s ease-in-out 2s infinite' }} />
+      {/* Data flowing particle */}
+      <circle cx="26" cy="6" r="2" fill="#2EE6D6" opacity="0.8"
+        style={{ animation: 'ip-pulse 1.5s ease-in-out infinite', filter: 'drop-shadow(0 0 4px #2EE6D6)' }} />
+      <circle cx="26" cy="46" r="2" fill="#2EE6D6" opacity="0.8"
+        style={{ animation: 'ip-pulse 1.5s ease-in-out infinite 0.75s', filter: 'drop-shadow(0 0 4px #2EE6D6)' }} />
     </svg>
   </>
 )
 
-export const StakingIcon = () => (
+/* ---------- IMMORTALIZE / SPAWNER ICON ---------- */
+export const ImmortalizeIcon = () => (
   <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Stacked blocks with animated build effect */}
-      <rect 
-        x="12" 
-        y="28" 
-        width="24" 
-        height="12" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2"
-        style={{ 
-          animation: 'iconFloat 3s ease-in-out infinite',
-          filter: 'drop-shadow(0 2px 4px rgba(69, 199, 184, 0.3))'
-        }}
-      />
-      <rect 
-        x="16" 
-        y="18" 
-        width="16" 
-        height="12" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2"
-        style={{ 
-          animation: 'iconFloat 3s ease-in-out infinite 0.2s',
-          filter: 'drop-shadow(0 2px 4px rgba(69, 199, 184, 0.3))'
-        }}
-      />
-      <rect 
-        x="20" 
-        y="8" 
-        width="8" 
-        height="12" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2"
-        style={{ 
-          animation: 'iconFloat 3s ease-in-out infinite 0.4s',
-          filter: 'drop-shadow(0 2px 4px rgba(69, 199, 184, 0.3))'
-        }}
-      />
-      
-      {/* Center glow dots */}
-      <circle 
-        cx="24" 
-        cy="34" 
-        r="1.5" 
-        fill="currentColor"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite' }}
-      />
-      <circle 
-        cx="24" 
-        cy="24" 
-        r="1.5" 
-        fill="currentColor"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite 0.3s' }}
-      />
-      <circle 
-        cx="24" 
-        cy="14" 
-        r="1.5" 
-        fill="currentColor"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite 0.6s' }}
-      />
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* Outer rotating dashed ring */}
+      <circle cx="26" cy="26" r="24" stroke="#45C7B8" strokeWidth="0.8" strokeDasharray="4 6" opacity="0.4"
+        style={{ animation: 'ip-rotate 20s linear infinite', transformOrigin: '26px 26px' }} />
+      {/* Expanding pulse ring */}
+      <circle cx="26" cy="26" r="20" stroke="#2EE6D6" strokeWidth="1" opacity="0.3"
+        style={{ animation: 'ip-expand 3s ease-out infinite', transformOrigin: '26px 26px' }} />
+      {/* Head with glow */}
+      <circle cx="26" cy="17" r="7" stroke="#45C7B8" strokeWidth="2.5"
+        style={{ animation: 'ip-glow 2.5s ease-in-out infinite' }} />
+      {/* Inner head fill pulsing */}
+      <circle cx="26" cy="17" r="4" fill="#45C7B8" opacity="0.25"
+        style={{ animation: 'ip-pulse 2s ease-in-out infinite' }} />
+      {/* Eyes */}
+      <circle cx="23.5" cy="16" r="1.2" fill="#2EE6D6"
+        style={{ animation: 'ip-flicker 4s ease-in-out infinite' }} />
+      <circle cx="28.5" cy="16" r="1.2" fill="#2EE6D6"
+        style={{ animation: 'ip-flicker 4s ease-in-out infinite 0.3s' }} />
+      {/* Body path */}
+      <path d="M13 42C13 34.8 18.9 29 26 29C33.1 29 39 34.8 39 42" stroke="#45C7B8" strokeWidth="2.5" strokeLinecap="round"
+        style={{ animation: 'ip-glow 2.5s ease-in-out infinite 0.5s' }} />
+      {/* Orbiting particles */}
+      <circle r="2.5" fill="#2EE6D6"
+        style={{ animation: 'ip-orbit 4s linear infinite', transformOrigin: '26px 26px', filter: 'drop-shadow(0 0 5px #2EE6D6)' }} />
+      <circle r="1.5" fill="#7DE2D1" opacity="0.7"
+        style={{ animation: 'ip-orbit2 5.5s linear infinite', transformOrigin: '26px 26px', filter: 'drop-shadow(0 0 3px #7DE2D1)' }} />
     </svg>
   </>
 )
 
-export const LockerIcon = () => (
-  <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Lock body */}
-      <rect 
-        x="14" 
-        y="22" 
-        width="20" 
-        height="18" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2.5"
-        style={{ filter: 'drop-shadow(0 4px 8px rgba(69, 199, 184, 0.3))' }}
-      />
-      
-      {/* Lock shackle with glow */}
-      <path 
-        d="M18 22V16C18 12.6863 20.6863 10 24 10C27.3137 10 30 12.6863 30 16V22" 
-        stroke="currentColor" 
-        strokeWidth="2.5"
-        style={{ 
-          filter: 'drop-shadow(0 0 6px currentColor)',
-          animation: 'iconGlow 3s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Keyhole with rotating inner circle */}
-      <circle 
-        cx="24" 
-        cy="31" 
-        r="3" 
-        stroke="currentColor" 
-        strokeWidth="2"
-      />
-      <path 
-        d="M24 34V36" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round"
-      />
-      
-      {/* Security dots */}
-      <circle 
-        cx="19" 
-        cy="27" 
-        r="1" 
-        fill="currentColor"
-        opacity="0.5"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite' }}
-      />
-      <circle 
-        cx="29" 
-        cy="27" 
-        r="1" 
-        fill="currentColor"
-        opacity="0.5"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite 0.3s' }}
-      />
-      
-      {/* Rotating shield outline */}
-      <path 
-        d="M24 6L28 8L28 14C28 17 26 19 24 20C22 19 20 17 20 14L20 8L24 6Z" 
-        stroke="currentColor" 
-        strokeWidth="0.5" 
-        opacity="0.3"
-        style={{ 
-          animation: 'iconRotate 20s linear infinite',
-          transformOrigin: '24px 13px'
-        }}
-      />
-    </svg>
-  </>
-)
-
-export const PerpsIcon = () => (
-  <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Chart bars */}
-      <path 
-        d="M8 40V28L16 20L24 32L32 16L40 24V40" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinejoin="round"
-        style={{ 
-          filter: 'drop-shadow(0 0 6px currentColor)',
-          animation: 'iconGlow 2s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Data points with pulse */}
-      <circle cx="8" cy="28" r="2.5" fill="currentColor" style={{ animation: 'scale 2s ease-in-out infinite' }} />
-      <circle cx="16" cy="20" r="2.5" fill="currentColor" style={{ animation: 'scale 2s ease-in-out infinite 0.2s' }} />
-      <circle cx="24" cy="32" r="2.5" fill="currentColor" style={{ animation: 'scale 2s ease-in-out infinite 0.4s' }} />
-      <circle cx="32" cy="16" r="2.5" fill="currentColor" style={{ animation: 'scale 2s ease-in-out infinite 0.6s' }} />
-      <circle cx="40" cy="24" r="2.5" fill="currentColor" style={{ animation: 'scale 2s ease-in-out infinite 0.8s' }} />
-      
-      {/* Trend arrow */}
-      <path 
-        d="M32 12L40 12L40 20" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        opacity="0.6"
-        style={{ animation: 'iconPulse 2s ease-in-out infinite' }}
-      />
-      
-      {/* Grid lines */}
-      <line x1="8" y1="12" x2="40" y2="12" stroke="currentColor" strokeWidth="0.5" opacity="0.2" strokeDasharray="2 2" />
-      <line x1="8" y1="24" x2="40" y2="24" stroke="currentColor" strokeWidth="0.5" opacity="0.2" strokeDasharray="2 2" />
-    </svg>
-  </>
-)
-
-export const FunlanIcon = () => (
-  <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Network nodes */}
-      <circle 
-        cx="24" 
-        cy="24" 
-        r="4" 
-        stroke="currentColor" 
-        strokeWidth="2.5"
-        style={{ 
-          filter: 'drop-shadow(0 0 8px currentColor)',
-          animation: 'iconPulse 2s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Orbiting connection nodes */}
-      <g style={{ animation: 'iconRotate 8s linear infinite', transformOrigin: '24px 24px' }}>
-        <circle cx="24" cy="10" r="3" fill="currentColor" opacity="0.8" />
-        <line x1="24" y1="13" x2="24" y2="20" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-      </g>
-      
-      <g style={{ animation: 'iconRotate 8s linear infinite 2s', transformOrigin: '24px 24px' }}>
-        <circle cx="38" cy="24" r="3" fill="currentColor" opacity="0.8" />
-        <line x1="35" y1="24" x2="28" y2="24" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-      </g>
-      
-      <g style={{ animation: 'iconRotate 8s linear infinite 4s', transformOrigin: '24px 24px' }}>
-        <circle cx="24" cy="38" r="3" fill="currentColor" opacity="0.8" />
-        <line x1="24" y1="35" x2="24" y2="28" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-      </g>
-      
-      <g style={{ animation: 'iconRotate 8s linear infinite 6s', transformOrigin: '24px 24px' }}>
-        <circle cx="10" cy="24" r="3" fill="currentColor" opacity="0.8" />
-        <line x1="13" y1="24" x2="20" y2="24" stroke="currentColor" strokeWidth="1.5" opacity="0.4" />
-      </g>
-      
-      {/* Outer ring */}
-      <circle 
-        cx="24" 
-        cy="24" 
-        r="20" 
-        stroke="currentColor" 
-        strokeWidth="1" 
-        opacity="0.3"
-        strokeDasharray="4 4"
-        style={{ 
-          animation: 'iconRotate 15s linear infinite reverse',
-          transformOrigin: '24px 24px'
-        }}
-      />
-    </svg>
-  </>
-)
-
+/* ---------- COMPUTE / GPU ICON ---------- */
 export const GPUSessionsIcon = () => (
   <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* GPU chip outline */}
-      <rect 
-        x="12" 
-        y="12" 
-        width="24" 
-        height="24" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2.5"
-        style={{ filter: 'drop-shadow(0 4px 8px rgba(69, 199, 184, 0.3))' }}
-      />
-      
-      {/* Processing cores with pulse */}
-      <rect x="16" y="16" width="6" height="6" rx="1" fill="currentColor" opacity="0.7" style={{ animation: 'iconPulse 1.5s ease-in-out infinite' }} />
-      <rect x="26" y="16" width="6" height="6" rx="1" fill="currentColor" opacity="0.7" style={{ animation: 'iconPulse 1.5s ease-in-out infinite 0.2s' }} />
-      <rect x="16" y="26" width="6" height="6" rx="1" fill="currentColor" opacity="0.7" style={{ animation: 'iconPulse 1.5s ease-in-out infinite 0.4s' }} />
-      <rect x="26" y="26" width="6" height="6" rx="1" fill="currentColor" opacity="0.7" style={{ animation: 'iconPulse 1.5s ease-in-out infinite 0.6s' }} />
-      
-      {/* Connection pins */}
-      <line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="8" y1="24" x2="12" y2="24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="8" y1="32" x2="12" y2="32" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      
-      <line x1="36" y1="16" x2="40" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="36" y1="24" x2="40" y2="24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="36" y1="32" x2="40" y2="32" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      
-      {/* Data flow animation */}
-      <circle 
-        cx="10" 
-        cy="24" 
-        r="1.5" 
-        fill="currentColor"
-        style={{ 
-          animation: 'iconPulse 1s ease-in-out infinite',
-          filter: 'drop-shadow(0 0 4px currentColor)'
-        }}
-      />
-      <circle 
-        cx="38" 
-        cy="24" 
-        r="1.5" 
-        fill="currentColor"
-        style={{ 
-          animation: 'iconPulse 1s ease-in-out infinite 0.5s',
-          filter: 'drop-shadow(0 0 4px currentColor)'
-        }}
-      />
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* Chip body */}
+      <rect x="13" y="13" width="26" height="26" rx="3" stroke="#45C7B8" strokeWidth="2.5"
+        style={{ animation: 'ip-glow 3s ease-in-out infinite' }} />
+      {/* 4 processing cores with staggered pulse */}
+      <rect x="17" y="17" width="8" height="8" rx="1.5" fill="#45C7B8" opacity="0.8"
+        style={{ animation: 'ip-pulse 1.2s ease-in-out infinite' }} />
+      <rect x="27" y="17" width="8" height="8" rx="1.5" fill="#2EE6D6" opacity="0.9"
+        style={{ animation: 'ip-pulse 1.2s ease-in-out infinite 0.3s' }} />
+      <rect x="17" y="27" width="8" height="8" rx="1.5" fill="#2EE6D6" opacity="0.9"
+        style={{ animation: 'ip-pulse 1.2s ease-in-out infinite 0.6s' }} />
+      <rect x="27" y="27" width="8" height="8" rx="1.5" fill="#45C7B8" opacity="0.8"
+        style={{ animation: 'ip-pulse 1.2s ease-in-out infinite 0.9s' }} />
+      {/* Pins left */}
+      {[17, 22, 27, 32].map((y, i) => (
+        <line key={`l${y}`} x1="6" y1={y} x2="13" y2={y} stroke="#7DE2D1" strokeWidth="2" strokeLinecap="round"
+          style={{ animation: `ip-pulse2 1.5s ease-in-out infinite ${i * 0.15}s` }} />
+      ))}
+      {/* Pins right */}
+      {[17, 22, 27, 32].map((y, i) => (
+        <line key={`r${y}`} x1="39" y1={y} x2="46" y2={y} stroke="#7DE2D1" strokeWidth="2" strokeLinecap="round"
+          style={{ animation: `ip-pulse2 1.5s ease-in-out infinite ${i * 0.15 + 0.75}s` }} />
+      ))}
+      {/* Pins top */}
+      {[19, 26, 33].map((x, i) => (
+        <line key={`t${x}`} x1={x} y1="6" x2={x} y2="13" stroke="#7DE2D1" strokeWidth="2" strokeLinecap="round"
+          style={{ animation: `ip-pulse2 1.5s ease-in-out infinite ${i * 0.2}s` }} />
+      ))}
+      {/* Pins bottom */}
+      {[19, 26, 33].map((x, i) => (
+        <line key={`b${x}`} x1={x} y1="39" x2={x} y2="46" stroke="#7DE2D1" strokeWidth="2" strokeLinecap="round"
+          style={{ animation: `ip-pulse2 1.5s ease-in-out infinite ${i * 0.2 + 0.75}s` }} />
+      ))}
+      {/* Moving data node */}
+      <circle cx="4" cy="26" r="2" fill="#2EE6D6"
+        style={{ animation: 'ip-data 2s ease-in-out infinite', filter: 'drop-shadow(0 0 4px #2EE6D6)' }} />
     </svg>
   </>
 )
 
+/* ---------- DASHBOARD ICON (unique - analytics grid + live graph line) ---------- */
 export const DashboardIcon = () => (
   <>
-    <style>{iconStyles}</style>
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Grid layout */}
-      <rect 
-        x="8" 
-        y="8" 
-        width="14" 
-        height="14" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2"
-        style={{ animation: 'iconFloat 3s ease-in-out infinite' }}
-      />
-      <rect 
-        x="26" 
-        y="8" 
-        width="14" 
-        height="14" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2"
-        style={{ animation: 'iconFloat 3s ease-in-out infinite 0.3s' }}
-      />
-      <rect 
-        x="8" 
-        y="26" 
-        width="14" 
-        height="14" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2"
-        style={{ animation: 'iconFloat 3s ease-in-out infinite 0.6s' }}
-      />
-      <rect 
-        x="26" 
-        y="26" 
-        width="14" 
-        height="14" 
-        rx="2" 
-        stroke="currentColor" 
-        strokeWidth="2"
-        style={{ animation: 'iconFloat 3s ease-in-out infinite 0.9s' }}
-      />
-      
-      {/* Activity indicators */}
-      <circle cx="15" cy="15" r="2" fill="currentColor" style={{ animation: 'iconPulse 2s ease-in-out infinite' }} />
-      <circle cx="33" cy="15" r="2" fill="currentColor" style={{ animation: 'iconPulse 2s ease-in-out infinite 0.3s' }} />
-      <circle cx="15" cy="33" r="2" fill="currentColor" style={{ animation: 'iconPulse 2s ease-in-out infinite 0.6s' }} />
-      <circle cx="33" cy="33" r="2" fill="currentColor" style={{ animation: 'iconPulse 2s ease-in-out infinite 0.9s' }} />
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* Outer panel border */}
+      <rect x="4" y="4" width="44" height="44" rx="4" stroke="#45C7B8" strokeWidth="1" opacity="0.3"
+        style={{ animation: 'ip-pulse2 4s ease-in-out infinite' }} />
+      {/* Header bar */}
+      <rect x="4" y="4" width="44" height="9" rx="4" fill="#45C7B8" opacity="0.15" />
+      <circle cx="10" cy="8.5" r="1.5" fill="#2EE6D6" style={{ animation: 'ip-pulse 2s ease-in-out infinite' }} />
+      <circle cx="16" cy="8.5" r="1.5" fill="#7DE2D1" style={{ animation: 'ip-pulse 2s ease-in-out infinite 0.3s' }} />
+      {/* Live graph area */}
+      <rect x="8" y="16" width="22" height="14" rx="2" stroke="#45C7B8" strokeWidth="1.5" opacity="0.5" />
+      <polyline points="10,26 14,22 18,24 22,19 26,21 28,18" stroke="#2EE6D6" strokeWidth="2"
+        strokeLinecap="round" strokeLinejoin="round" fill="none"
+        strokeDasharray="60" strokeDashoffset="60"
+        style={{ animation: 'ip-draw 2s ease forwards, ip-glow 2s ease-in-out 2s infinite' }} />
+      {/* Stat bars right */}
+      <rect x="33" y="16" width="14" height="4" rx="1" fill="#45C7B8" opacity="0.7"
+        style={{ animation: 'ip-pulse2 1.5s ease-in-out infinite' }} />
+      <rect x="33" y="22" width="9" height="4" rx="1" fill="#7DE2D1" opacity="0.5"
+        style={{ animation: 'ip-pulse2 1.5s ease-in-out infinite 0.3s' }} />
+      <rect x="33" y="28" width="12" height="4" rx="1" fill="#2EE6D6" opacity="0.6"
+        style={{ animation: 'ip-pulse2 1.5s ease-in-out infinite 0.6s' }} />
+      {/* Bottom mini cards */}
+      <rect x="8" y="33" width="12" height="11" rx="2" stroke="#45C7B8" strokeWidth="1.5" opacity="0.6"
+        style={{ animation: 'ip-float 3s ease-in-out infinite' }} />
+      <rect x="22" y="33" width="12" height="11" rx="2" stroke="#45C7B8" strokeWidth="1.5" opacity="0.6"
+        style={{ animation: 'ip-float 3s ease-in-out infinite 0.5s' }} />
+      <rect x="36" y="33" width="11" height="11" rx="2" stroke="#45C7B8" strokeWidth="1.5" opacity="0.6"
+        style={{ animation: 'ip-float 3s ease-in-out infinite 1s' }} />
+      {/* Card dots */}
+      <circle cx="14" cy="38.5" r="2" fill="#2EE6D6" style={{ animation: 'ip-pulse 2s ease-in-out infinite' }} />
+      <circle cx="28" cy="38.5" r="2" fill="#45C7B8" style={{ animation: 'ip-pulse 2s ease-in-out infinite 0.4s' }} />
+      <circle cx="41.5" cy="38.5" r="2" fill="#7DE2D1" style={{ animation: 'ip-pulse 2s ease-in-out infinite 0.8s' }} />
+    </svg>
+  </>
+)
+
+/* ---------- LOCKER / M-SIG ICON ---------- */
+export const LockerIcon = () => (
+  <>
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* Shield outer */}
+      <path d="M26 4 L44 12 L44 30 C44 40 36 47 26 50 C16 47 8 40 8 30 L8 12 Z" stroke="#45C7B8" strokeWidth="2"
+        style={{ animation: 'ip-glow 3s ease-in-out infinite' }} fill="#45C7B8" fillOpacity="0.06" />
+      {/* Shield inner line */}
+      <path d="M26 9 L39 15.5 L39 29.5 C39 37 33 43 26 45.5 C19 43 13 37 13 29.5 L13 15.5 Z"
+        stroke="#7DE2D1" strokeWidth="1" opacity="0.4" strokeDasharray="3 3"
+        style={{ animation: 'ip-rotate-r 25s linear infinite', transformOrigin: '26px 27px' }} />
+      {/* Lock body */}
+      <rect x="19" y="25" width="14" height="12" rx="2" fill="#45C7B8" opacity="0.8"
+        style={{ animation: 'ip-pulse2 2s ease-in-out infinite' }} />
+      {/* Lock shackle */}
+      <path d="M21 25 L21 20 C21 17.2 23.2 15 26 15 C28.8 15 31 17.2 31 20 L31 25"
+        stroke="#2EE6D6" strokeWidth="2.5" strokeLinecap="round"
+        style={{ animation: 'ip-glow 2s ease-in-out infinite' }} />
+      {/* Keyhole */}
+      <circle cx="26" cy="31" r="2.5" fill="#E9F7F4" opacity="0.9" />
+      <rect x="25" y="32.5" width="2" height="3" rx="0.5" fill="#E9F7F4" opacity="0.9" />
+      {/* Orbiting security dots */}
+      <circle r="2" fill="#2EE6D6" opacity="0.8"
+        style={{ animation: 'ip-orbit 5s linear infinite', transformOrigin: '26px 27px', filter: 'drop-shadow(0 0 4px #2EE6D6)' }} />
+      <circle r="1.5" fill="#7DE2D1" opacity="0.6"
+        style={{ animation: 'ip-orbit2 7s linear infinite', transformOrigin: '26px 27px' }} />
+    </svg>
+  </>
+)
+
+/* ---------- SOUL ICON ---------- */
+export const SoulIcon = () => (
+  <>
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* Halo ring */}
+      <ellipse cx="26" cy="11" rx="10" ry="3" stroke="#2EE6D6" strokeWidth="1.5" opacity="0.6"
+        style={{ animation: 'ip-pulse2 2.5s ease-in-out infinite', filter: 'drop-shadow(0 0 6px #2EE6D6)' }} />
+      {/* Ghost body */}
+      <path d="M26 10 C18 10 12 16 12 24 V40 L16 36 L20 40 L24 36 L28 40 L32 36 L36 40 L40 36 V24 C40 16 34 10 26 10 Z"
+        stroke="#45C7B8" strokeWidth="2.5" strokeLinejoin="round" fill="#45C7B8" fillOpacity="0.1"
+        style={{ animation: 'ip-float 3.5s ease-in-out infinite', filter: 'drop-shadow(0 4px 10px rgba(69,199,184,0.3))' }} />
+      {/* Eyes with flicker */}
+      <circle cx="21" cy="24" r="2.5" fill="#2EE6D6"
+        style={{ animation: 'ip-flicker 5s ease-in-out infinite' }} />
+      <circle cx="31" cy="24" r="2.5" fill="#2EE6D6"
+        style={{ animation: 'ip-flicker 5s ease-in-out infinite 0.3s' }} />
+      {/* Eye highlights */}
+      <circle cx="22" cy="23" r="0.8" fill="white" opacity="0.8" />
+      <circle cx="32" cy="23" r="0.8" fill="white" opacity="0.8" />
+      {/* Smile */}
+      <path d="M21 30 Q26 34 31 30" stroke="#7DE2D1" strokeWidth="2" strokeLinecap="round" fill="none" />
+      {/* Sparkles */}
+      {[{ x: 42, y: 14, d: 0 }, { x: 8, y: 18, d: 0.6 }, { x: 44, y: 32, d: 1.2 }].map(({ x, y, d }, i) => (
+        <g key={i} style={{ animation: `ip-pulse 2s ease-in-out infinite ${d}s` }}>
+          <line x1={x} y1={y - 4} x2={x} y2={y + 4} stroke="#2EE6D6" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1={x - 4} y1={y} x2={x + 4} y2={y} stroke="#2EE6D6" strokeWidth="1.5" strokeLinecap="round" />
+        </g>
+      ))}
+    </svg>
+  </>
+)
+
+/* ---------- FUNLAN ICON ---------- */
+export const FunlanIcon = () => (
+  <>
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      {/* Center hub */}
+      <circle cx="26" cy="26" r="5" fill="#45C7B8" opacity="0.9"
+        style={{ animation: 'ip-glow 2s ease-in-out infinite', filter: 'drop-shadow(0 0 8px #2EE6D6)' }} />
+      {/* Inner pulse ring */}
+      <circle cx="26" cy="26" r="8" stroke="#2EE6D6" strokeWidth="1" opacity="0.4"
+        style={{ animation: 'ip-expand 2s ease-out infinite', transformOrigin: '26px 26px' }} />
+      {/* Spokes + node clusters */}
+      {[
+        { angle: 0,   nx: 26, ny: 7  },
+        { angle: 60,  nx: 41, ny: 15 },
+        { angle: 120, nx: 41, ny: 37 },
+        { angle: 180, nx: 26, ny: 45 },
+        { angle: 240, nx: 11, ny: 37 },
+        { angle: 300, nx: 11, ny: 15 },
+      ].map(({ nx, ny, angle }, i) => (
+        <g key={i}>
+          <line x1="26" y1="26" x2={nx} y2={ny} stroke="#7DE2D1" strokeWidth="1.2" opacity="0.4"
+            strokeDasharray="3 2"
+            style={{ animation: `ip-pulse2 2s ease-in-out infinite ${i * 0.3}s` }} />
+          <circle cx={nx} cy={ny} r="3.5" fill="#45C7B8" opacity="0.8"
+            style={{ animation: `ip-pulse 2.5s ease-in-out infinite ${i * 0.4}s`, filter: 'drop-shadow(0 0 4px #45C7B8)' }} />
+        </g>
+      ))}
+      {/* Outer ring */}
+      <circle cx="26" cy="26" r="23" stroke="#45C7B8" strokeWidth="0.7" strokeDasharray="4 6" opacity="0.25"
+        style={{ animation: 'ip-rotate 30s linear infinite', transformOrigin: '26px 26px' }} />
+      {/* Orbiting packet */}
+      <circle r="2" fill="#2EE6D6"
+        style={{ animation: 'ip-orbit 4s linear infinite', transformOrigin: '26px 26px', filter: 'drop-shadow(0 0 5px #2EE6D6)' }} />
+    </svg>
+  </>
+)
+
+/* ---------- STAKING ICON ---------- */
+export const StakingIcon = () => (
+  <>
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="12" y="30" width="28" height="13" rx="2" stroke="#45C7B8" strokeWidth="2" fill="#45C7B8" fillOpacity="0.1"
+        style={{ animation: 'ip-float 3s ease-in-out infinite', filter: 'drop-shadow(0 2px 6px rgba(69,199,184,0.3))' }} />
+      <rect x="17" y="19" width="18" height="13" rx="2" stroke="#45C7B8" strokeWidth="2" fill="#45C7B8" fillOpacity="0.15"
+        style={{ animation: 'ip-float 3s ease-in-out infinite 0.3s', filter: 'drop-shadow(0 2px 6px rgba(69,199,184,0.3))' }} />
+      <rect x="21" y="8" width="10" height="13" rx="2" stroke="#2EE6D6" strokeWidth="2" fill="#2EE6D6" fillOpacity="0.2"
+        style={{ animation: 'ip-float 3s ease-in-out infinite 0.6s', filter: 'drop-shadow(0 2px 6px rgba(46,230,214,0.4))' }} />
+      <circle cx="26" cy="36.5" r="2" fill="#2EE6D6" style={{ animation: 'ip-pulse 1.5s ease-in-out infinite' }} />
+      <circle cx="26" cy="25.5" r="2" fill="#2EE6D6" style={{ animation: 'ip-pulse 1.5s ease-in-out infinite 0.3s' }} />
+      <circle cx="26" cy="14.5" r="2" fill="#2EE6D6" style={{ animation: 'ip-pulse 1.5s ease-in-out infinite 0.6s' }} />
+    </svg>
+  </>
+)
+
+/* ---------- PERPS ICON ---------- */
+export const PerpsIcon = () => (
+  <>
+    <style>{css}</style>
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <path d="M6 42 L14 28 L22 34 L30 18 L38 24 L46 10" stroke="#45C7B8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+        fill="none" strokeDasharray="100" strokeDashoffset="100"
+        style={{ animation: 'ip-draw 2.5s ease forwards, ip-glow 2.5s ease-in-out 2.5s infinite' }} />
+      {[{x:6,y:42},{x:14,y:28},{x:22,y:34},{x:30,y:18},{x:38,y:24},{x:46,y:10}].map(({x,y},i)=>(
+        <circle key={i} cx={x} cy={y} r="3" fill="#2EE6D6"
+          style={{ animation: `ip-pulse 2s ease-in-out infinite ${i*0.2}s`, filter: 'drop-shadow(0 0 5px #2EE6D6)' }} />
+      ))}
+      <path d="M36 6 L46 6 L46 16" stroke="#2EE6D6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.7"
+        style={{ animation: 'ip-pulse2 1.5s ease-in-out infinite' }} />
+      <line x1="6" y1="14" x2="46" y2="14" stroke="#45C7B8" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.25" />
+      <line x1="6" y1="28" x2="46" y2="28" stroke="#45C7B8" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.25" />
     </svg>
   </>
 )

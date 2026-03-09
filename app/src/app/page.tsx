@@ -3,9 +3,9 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { 
   LaunchIcon, 
+  TradeAPIIcon,
   ImmortalizeIcon, 
   GPUSessionsIcon, 
   DashboardIcon, 
@@ -28,7 +28,7 @@ export default function Home() {
       title: 'TradeAPI',
       description: 'Execute complex strategies via arbitrage, MEV, spread skills across multichain DEX & CEX routing.',
       href: '/dashboard',
-      IconComponent: DashboardIcon, // Using dashboard icon as placeholder for TradeAPI
+      IconComponent: TradeAPIIcon,
       status: 'coming-soon' as const,
     },
     {
@@ -118,26 +118,26 @@ export default function Home() {
       {/* Header */}
       <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-14 h-14">
+          <Link href="/" className="flex items-center gap-4">
+            <div className="relative w-20 h-20 flex-shrink-0">
               <Image 
                 src="/branding/logo_rm_bk.png" 
                 alt="Claw.Click" 
-                width={56}
-                height={56}
+                width={80}
+                height={80}
                 className="object-contain"
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold gradient-text">
+                <span className="text-3xl font-bold gradient-text leading-none">
                   claw.click
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-light)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">
                   BETA
                 </span>
               </div>
-              <span className="text-xs text-[var(--text-secondary)]">Autonomous Framework</span>
+              <span className="text-sm text-[var(--text-secondary)] font-medium">Autonomous Framework</span>
             </div>
           </Link>
 
@@ -159,13 +159,12 @@ export default function Home() {
             >
               ClawClick Bot
             </a>
-            <ConnectButton />
           </nav>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-32 pb-20 px-4">
+      <section className="relative z-10 pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -173,17 +172,17 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            {/* AUTONOMOUS - Animated Pixelated Effect */}
-            <div className="space-y-4">
-              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tight autonomous-text">
+            {/* AUTONOMOUS - Animated Pixelated Hero */}
+            <div className="space-y-2">
+              <h1 className="text-7xl sm:text-8xl lg:text-[10rem] font-bold tracking-widest leading-none autonomous-text">
                 AUTONOMOUS
               </h1>
               
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-[var(--text-primary)]">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-wider autonomous-text" style={{ filter: 'drop-shadow(0 0 10px rgba(46,230,214,0.4))' }}>
                 Framework For Digital Entities
               </h2>
               
-              <p className="text-2xl sm:text-3xl text-[var(--text-secondary)] max-w-3xl mx-auto leading-relaxed italic font-light pt-4">
+              <p className="text-lg sm:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed italic font-light pt-6">
                 Spawn an agent that earns for you TODAY
               </p>
             </div>

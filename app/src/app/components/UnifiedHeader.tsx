@@ -10,24 +10,24 @@ export default function UnifiedHeader() {
 
   return (
     <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <div className="relative w-14 h-14">
+        <Link href="/" className="flex items-center gap-4">
+          <div className="relative w-20 h-20 flex-shrink-0">
             <Image 
               src="/branding/logo_rm_bk.png" 
               alt="Claw.Click" 
-              width={56}
-              height={56}
+              width={80}
+              height={80}
               className="object-contain"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold gradient-text">claw.click</span>
+              <span className="text-3xl font-bold gradient-text leading-none">claw.click</span>
               <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-light)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">BETA</span>
             </div>
-            <span className="text-xs text-[var(--text-secondary)]">Autonomous Framework</span>
+            <span className="text-sm text-[var(--text-secondary)] font-medium">Autonomous Framework</span>
           </div>
         </Link>
 
