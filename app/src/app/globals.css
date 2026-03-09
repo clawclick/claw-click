@@ -583,19 +583,19 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   animation: electricPulse 1s ease-in-out infinite;
 }
 
-/* Framework For Digital Entities - same family as AUTONOMOUS but smaller, strict teal palette */
+/* Framework For Digital Entities - readable dark-to-mid teal, no blue */
 .framework-text {
   font-family: 'Space Mono', 'Courier New', monospace;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  /* Strict teal/mint — NO blue bleed, warm teal only */
+  /* Dark teal to mid teal — stays readable, no light/blue bleed */
   background: linear-gradient(
     135deg,
-    #1FAFA3 0%,
-    #45C7B8 40%,
-    #1FAFA3 70%,
-    #45C7B8 100%
+    #0F6B63 0%,
+    #1FAFA3 35%,
+    #45C7B8 65%,
+    #1FAFA3 100%
   );
   background-size: 250% 100%;
   -webkit-background-clip: text;
@@ -603,7 +603,7 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   background-clip: text;
   position: relative;
   animation: pixelShimmer 6s ease-in-out infinite 1s;
-  filter: drop-shadow(0 0 12px rgba(31, 175, 163, 0.55));
+  filter: drop-shadow(0 0 10px rgba(31, 175, 163, 0.5));
 }
 
 .framework-text::before {
@@ -655,14 +655,20 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
 }
 
 .inverse-electric-button {
-  background: transparent;
-  color: var(--mint-dark);
+  background: transparent !important;
   font-weight: 600;
   position: relative;
   border: 2px solid transparent;
-  background-clip: padding-box;
-  animation: inverseElectricPulse 2s ease-in-out infinite;
-  transition: all 0.3s ease;
+  background-clip: padding-box !important;
+  animation: inverseElectricPulse 2.5s ease-in-out infinite;
+  transition: transform 0.2s ease;
+  /* Gradient text */
+  background-image: linear-gradient(90deg, #0F6B63, #1FAFA3, #45C7B8, #1FAFA3, #0F6B63) !important;
+  background-size: 200% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: borderShimmer 3s linear infinite, inverseElectricPulse 2.5s ease-in-out infinite;
 }
 
 .inverse-electric-button::before {
@@ -671,21 +677,77 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   inset: -2px;
   background: linear-gradient(
     90deg,
-    var(--mint-dark),
-    var(--mint-mid),
-    var(--mint-light),
-    var(--mint-mid),
-    var(--mint-dark)
+    #0F6B63,
+    #1FAFA3,
+    #45C7B8,
+    #7DE2D1,
+    #45C7B8,
+    #1FAFA3,
+    #0F6B63
   );
-  background-size: 200% 100%;
+  background-size: 300% 100%;
   border-radius: inherit;
   z-index: -1;
   animation: borderShimmer 3s linear infinite;
 }
 
+.inverse-electric-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border-radius: inherit;
+  z-index: -1;
+}
+
 .inverse-electric-button:hover {
-  background: rgba(31, 175, 163, 0.08);
   transform: translateY(-2px);
-  color: var(--mint-mid);
+}
+
+/* Dark Green Glass Agent Cards */
+@keyframes cardShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.agent-card {
+  background: rgba(8, 40, 36, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(69, 199, 184, 0.3);
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.agent-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(69, 199, 184, 0.06),
+    transparent
+  );
+  animation: cardShimmer 6s ease-in-out infinite;
+}
+
+.agent-card:hover {
+  border-color: rgba(46, 230, 214, 0.55);
+  background: rgba(8, 40, 36, 0.92);
+  transform: translateY(-4px);
+  box-shadow: 0 0 30px rgba(46, 230, 214, 0.2), 0 8px 40px rgba(8, 40, 36, 0.4);
+}
+
+/* Logo image - override internal PNG padding by scaling up */
+.logo-expanded {
+  transform: scale(1.35);
+  transform-origin: left center;
 }
 

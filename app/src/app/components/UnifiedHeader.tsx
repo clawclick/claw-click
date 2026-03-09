@@ -31,13 +31,13 @@ export default function UnifiedHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-4">
-          <div className="relative w-20 h-20 flex-shrink-0">
+          <div className="relative w-20 h-20 flex-shrink-0 overflow-visible">
             <Image 
               src="/branding/logo_rm_bk.png" 
               alt="Claw.Click" 
               width={80}
               height={80}
-              className="object-contain"
+              className="object-contain logo-expanded"
             />
           </div>
           <div className="flex flex-col gap-0.5">

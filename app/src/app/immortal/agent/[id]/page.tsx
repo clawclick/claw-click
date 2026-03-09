@@ -315,7 +315,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
       <main className="min-h-screen relative bg-[#000000] w-full overflow-x-hidden">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#E8523D] border-t-transparent mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[var(--mint-mid)] border-t-transparent mx-auto mb-4"></div>
             <p className="text-[rgba(255, 255, 255, 0.5)]">Loading agent data from blockchain...</p>
           </div>
         </div>
@@ -327,7 +327,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
   if (error || !agent) {
     return (
       <main className="min-h-screen relative bg-[#000000] w-full overflow-x-hidden text-white">
-        <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
+        <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[var(--mint-mid)]/10">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
               <div className="relative w-10 h-10">
@@ -341,10 +341,10 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+                  <span className="text-xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                     claw.click
                   </span>
-                  <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded uppercase tracking-wide">
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-mid)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">
                     BETA
                   </span>
                 </div>
@@ -360,7 +360,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
             <h1 className="text-3xl font-bold mb-4">Agent Not Found</h1>
             <p className="text-[rgba(255, 255, 255, 0.5)] mb-8">{error || 'This agent does not exist on-chain'}</p>
             <Link href="/">
-              <button className="px-8 py-4 bg-[#E8523D] text-black font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all">
+              <button className="px-8 py-4 bg-[var(--mint-mid)] text-black font-semibold rounded-lg hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all">
                 Back to Homepage
               </button>
             </Link>
@@ -390,7 +390,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
       </div>
 
       {/* Header */}
-      <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
+      <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[var(--mint-mid)]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="relative w-10 h-10">
@@ -404,10 +404,10 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+                <span className="text-xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                   claw.click
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded uppercase tracking-wide">
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-mid)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">
                   BETA
                 </span>
               </div>
@@ -423,7 +423,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
       <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Agent Header */}
-          <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl backdrop-blur-sm p-4 sm:p-8 mb-6">
+          <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl backdrop-blur-sm p-4 sm:p-8 mb-6">
             <div className="flex flex-col md:flex-row items-start justify-between gap-4 mb-6">
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl sm:text-4xl font-black text-white mb-2 break-words">
@@ -445,7 +445,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                     </span>
                   )}
                   {(agent.immortalized || memoryCount > 0) ? (
-                    <span className="text-xs px-2 py-1 rounded border border-[#E8523D]/30 bg-[#E8523D]/10 text-[#E8523D] font-semibold">
+                    <span className="text-xs px-2 py-1 rounded border border-[var(--mint-mid)]/30 bg-[var(--mint-mid)]/10 text-[var(--mint-mid)] font-semibold">
                       🔥 IMMORTAL
                     </span>
                   ) : (
@@ -456,7 +456,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 </div>
               </div>
               <div className="text-left md:text-right w-full md:w-auto">
-                <div className="text-2xl sm:text-3xl font-black text-[#E8523D] mb-1">
+                <div className="text-2xl sm:text-3xl font-black text-[var(--mint-mid)] mb-1">
                   {stats?.earnings.toFixed(4) || '0.0000'} ETH
                 </div>
                 <div className="text-xs sm:text-sm text-[rgba(255, 255, 255, 0.5)]">
@@ -492,7 +492,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
               </div>
               <div className="text-center p-2 sm:p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg">
                 <div className="text-sm sm:text-xl md:text-2xl font-bold text-white mb-1">
-                  <span className="text-[#E8523D]">🔥</span>
+                  <span className="text-[var(--mint-mid)]">🔥</span>
                 </div>
                 <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">IMMORTAL</div>
               </div>
@@ -500,20 +500,20 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
           </div>
 
           {/* Trading Links */}
-          <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl backdrop-blur-sm p-6 mb-6">
+          <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl backdrop-blur-sm p-6 mb-6">
             <h3 className="text-lg font-bold text-white mb-4">📊 Charts & Scanners</h3>
             <div className="grid md:grid-cols-3 gap-4 mb-6">
               <a
                 href={`https://dexscreener.com/base/${agent.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 hover:border-[#E8523D]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
+                className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 hover:border-[var(--mint-mid)]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
               >
                 <div>
                   <div className="text-white font-semibold mb-1">DEXScreener</div>
                   <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Price & liquidity charts</div>
                 </div>
-                <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[#E8523D] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[var(--mint-mid)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>
@@ -522,13 +522,13 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 href={`https://www.defined.fi/base/${agent.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 hover:border-[#E8523D]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
+                className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 hover:border-[var(--mint-mid)]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
               >
                 <div>
                   <div className="text-white font-semibold mb-1">Defined</div>
                   <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Advanced analytics</div>
                 </div>
-                <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[#E8523D] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[var(--mint-mid)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>
@@ -537,13 +537,13 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 href={`https://www.geckoterminal.com/base/pools/${agent.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 hover:border-[#E8523D]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
+                className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 hover:border-[var(--mint-mid)]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
               >
                 <div>
                   <div className="text-white font-semibold mb-1">GeckoTerminal</div>
                   <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Real-time trading</div>
                 </div>
-                <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[#E8523D] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[var(--mint-mid)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>
@@ -570,7 +570,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
           </div>
 
           {/* Tabs */}
-          <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl backdrop-blur-sm p-2 mb-6 overflow-x-auto">
+          <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl backdrop-blur-sm p-2 mb-6 overflow-x-auto">
             <div className="flex gap-2 min-w-max sm:min-w-0">
               {(['overview', 'memory', 'sessions', 'token'] as const).map((tab) => (
                 <button
@@ -578,7 +578,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   onClick={() => setActiveTab(tab)}
                   className={`flex-1 min-w-[90px] py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                     activeTab === tab
-                      ? 'bg-[#E8523D] text-black shadow-[0_0_20px_rgba(30,230,183,0.5)]'
+                      ? 'bg-[var(--mint-mid)] text-black shadow-[0_0_20px_rgba(30,230,183,0.5)]'
                       : 'text-[rgba(255, 255, 255, 0.5)] hover:text-white hover:bg-[rgba(0, 0, 0, 0.5)]'
                   }`}
                 >
@@ -593,14 +593,14 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
             key={activeTab}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl backdrop-blur-sm p-8"
+            className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl backdrop-blur-sm p-8"
           >
             {activeTab === 'overview' && (
               <div className="space-y-4">
                 {/* Top Row: FUNLAN + Birth Certificate */}
                 <div className="grid md:grid-cols-2 gap-4">
                   {/* FUNLAN Identity */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[#E8523D]/20">
+                  <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-lg">🦞</span>
                       <h3 className="text-sm font-bold text-white">FUNLAN Identity</h3>
@@ -623,7 +623,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                             .map(([cat, count]) => (
                               <div key={cat} className="flex justify-between">
                                 <span className="text-[rgba(255, 255, 255, 0.5)] truncate">{cat}</span>
-                                <span className="text-[#E8523D] font-mono ml-1">{count as number}/25</span>
+                                <span className="text-[var(--mint-mid)] font-mono ml-1">{count as number}/25</span>
                               </div>
                             ))}
                         </div>
@@ -672,7 +672,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                           </div>
                           <div>
                             <p className="text-[rgba(255, 255, 255, 0.5)] text-[10px] mb-0.5">Status</p>
-                            <span className={`font-semibold text-[10px] ${(birthCert.immortalized || memoryCount > 0) ? 'text-[#E8523D]' : 'text-[rgba(255, 255, 255, 0.5)]'}`}>
+                            <span className={`font-semibold text-[10px] ${(birthCert.immortalized || memoryCount > 0) ? 'text-[var(--mint-mid)]' : 'text-[rgba(255, 255, 255, 0.5)]'}`}>
                               {(birthCert.immortalized || memoryCount > 0) ? 'IMMORTAL' : 'NOT IMMORTALIZED'}
                             </span>
                           </div>
@@ -687,7 +687,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                             <a 
                               href={`${explorerBase}/address/${addresses.birthCertificate}`}
                               target="_blank"
-                              className="text-[#E8523D] hover:underline font-mono text-[10px]"
+                              className="text-[var(--mint-mid)] hover:underline font-mono text-[10px]"
                             >
                               {addresses.birthCertificate.slice(0, 10)}...
                             </a>
@@ -697,7 +697,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                             <a 
                               href={`${explorerBase}/address/${birthCert.creator}`}
                               target="_blank"
-                              className="text-[#E8523D] hover:underline font-mono text-[10px]"
+                              className="text-[var(--mint-mid)] hover:underline font-mono text-[10px]"
                             >
                               {birthCert.creator.slice(0, 10)}...
                             </a>
@@ -725,24 +725,24 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* Addresses Row */}
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[#E8523D]/20">
+                  <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1">Agent Wallet</p>
                     <p className="text-white font-mono text-xs break-all mb-1">{agent.wallet}</p>
                     <a 
                       href={`${explorerBase}/address/${agent.wallet}`}
                       target="_blank"
-                      className="text-[#E8523D] hover:underline text-[10px]"
+                      className="text-[var(--mint-mid)] hover:underline text-[10px]"
                     >
                       View on {explorerName} →
                     </a>
                   </div>
-                  <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[#E8523D]/20">
+                  <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1">Token Contract</p>
                     <p className="text-white font-mono text-xs break-all mb-1">{agent.token}</p>
                     <a 
                       href={`${explorerBase}/token/${agent.token}`}
                       target="_blank"
-                      className="text-[#E8523D] hover:underline text-[10px]"
+                      className="text-[var(--mint-mid)] hover:underline text-[10px]"
                     >
                       View on {explorerName} →
                     </a>
@@ -750,7 +750,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 </div>
 
                 {/* NFTid Linkage */}
-                <div className="bg-gradient-to-br from-[#E8523D]/10 to-[#FF8C4A]/10 border border-[#E8523D]/30 rounded-xl p-6">
+                <div className="bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 border border-[var(--mint-mid)]/30 rounded-xl p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-2xl">🦞</span>
                     <div>
@@ -761,13 +761,13 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                   {loadingNFTid ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#E8523D]/30 border-t-[#E8523D] mx-auto mb-3"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--mint-mid)]/30 border-t-[var(--mint-mid)] mx-auto mb-3"></div>
                       <p className="text-xs text-white/50">Checking registry...</p>
                     </div>
                   ) : linkedNFTid && linkedNFTidTraits ? (
                     <div className="space-y-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-24 h-24 rounded-lg overflow-hidden border border-[#E8523D]/30 flex-shrink-0 bg-black">
+                        <div className="w-24 h-24 rounded-lg overflow-hidden border border-[var(--mint-mid)]/30 flex-shrink-0 bg-black">
                           <NFTidCompositor traits={linkedNFTidTraits} size={96} />
                         </div>
                         <div className="flex-1">
@@ -786,7 +786,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                       <div className="flex gap-3">
                         <Link
                           href={`/soul/${linkedNFTid}`}
-                          className="flex-1 px-4 py-2 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-sm text-center text-white font-semibold hover:shadow-lg hover:shadow-[#E8523D]/40 transition-all"
+                          className="flex-1 px-4 py-2 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-sm text-center text-white font-semibold hover:shadow-lg hover:shadow-[var(--mint-mid)]/40 transition-all"
                         >
                           View NFTid Details →
                         </Link>
@@ -816,7 +816,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                         </p>
                         <Link
                           href="/soul"
-                          className="inline-block px-4 py-2 bg-black/50 border border-white/10 hover:border-[#E8523D]/50 rounded-lg text-sm text-white transition-all"
+                          className="inline-block px-4 py-2 bg-black/50 border border-white/10 hover:border-[var(--mint-mid)]/50 rounded-lg text-sm text-white transition-all"
                         >
                           Mint NFTid →
                         </Link>
@@ -825,23 +825,23 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 </div>
 
                 {/* Properties Row */}
-                <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[#E8523D]/20">
+                <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
                   <h4 className="text-sm font-bold text-white mb-3">⚡ Immortal Properties</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Non-transferrable NFT</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">V4 hook protection</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">On-chain identity</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Fee revenue sharing</span>
                     </div>
                   </div>
@@ -854,21 +854,21 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4">Memory Files ({memoryCount})</h3>
                   {memoriesLoading ? (
-                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#E8523D] border-t-transparent mx-auto mb-3"></div>
+                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--mint-mid)] border-t-transparent mx-auto mb-3"></div>
                       <p className="text-[rgba(255, 255, 255, 0.5)]">Loading memories from chain...</p>
                     </div>
                   ) : memories.length === 0 ? (
-                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
+                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                       <p className="text-[rgba(255, 255, 255, 0.5)]">No memory files uploaded yet</p>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)]/70 mt-2">Use <code className="text-[#E8523D]">clawsfun memory upload</code> to store memories on-chain</p>
+                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)]/70 mt-2">Use <code className="text-[var(--mint-mid)]">clawsfun memory upload</code> to store memories on-chain</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {memories.map((mem, idx) => (
-                        <div key={idx} className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 p-4">
+                        <div key={idx} className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-[#E8523D] font-mono">#{memoryCount - idx}</span>
+                            <span className="text-xs text-[var(--mint-mid)] font-mono">#{memoryCount - idx}</span>
                             <span className="text-xs text-[rgba(255, 255, 255, 0.5)]">
                               {new Date(Number(mem.timestamp) * 1000).toLocaleString()}
                             </span>
@@ -889,11 +889,11 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4">Verify Signature</h3>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-3">
                       All memory files are cryptographically signed by agent wallet.
                     </p>
-                    <button className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg px-4 py-2 text-sm">
+                    <button className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg px-4 py-2 text-sm">
                       Verify All Files
                     </button>
                   </div>
@@ -906,16 +906,16 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-white">Compute Sessions</h3>
                   <Link href={`/session/new?agent=${agent.wallet}&nft=${agent.nftId || ''}&name=${encodeURIComponent(agent.name)}&address=${agent.wallet}`}>
-                    <button className="bg-[#E8523D] text-black px-4 py-2 text-sm rounded-lg font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all">
+                    <button className="bg-[var(--mint-mid)] text-black px-4 py-2 text-sm rounded-lg font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all">
                       Start New Session
                     </button>
                   </Link>
                 </div>
 
-                <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
+                <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                   {sessionsLoading && sessions.length === 0 ? (
                     <div className="py-4">
-                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#E8523D] border-t-transparent mx-auto mb-3"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--mint-mid)] border-t-transparent mx-auto mb-3"></div>
                       <p className="text-[rgba(255, 255, 255, 0.5)] text-sm">Loading sessions...</p>
                     </div>
                   ) : sessions.length === 0 ? (
@@ -950,7 +950,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                           <Link key={s.id} href={`/session/${s.id}`}>
                             <div className={`p-4 rounded-lg border transition-all cursor-pointer ${
                               isLive
-                                ? 'bg-[rgba(0, 0, 0, 0.7)] border-[#E8523D]/30 hover:border-[#E8523D]/60 hover:shadow-[0_0_15px_rgba(30,230,183,0.1)]'
+                                ? 'bg-[rgba(0, 0, 0, 0.7)] border-[var(--mint-mid)]/30 hover:border-[var(--mint-mid)]/60 hover:shadow-[0_0_15px_rgba(30,230,183,0.1)]'
                                 : 'bg-[rgba(0, 0, 0, 0.5)] border-[rgba(255, 255, 255, 0.5)]/10 hover:border-[rgba(255, 255, 255, 0.5)]/30'
                             }`}>
                               <div className="flex items-center justify-between mb-2">
@@ -986,12 +986,12 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
             {activeTab === 'token' && (
               <div className="space-y-6">
                 {/* Token Status Banner */}
-                <div className="p-4 rounded-xl border bg-[#E8523D]/10 border-[#E8523D]/40">
+                <div className="p-4 rounded-xl border bg-[var(--mint-mid)]/10 border-[var(--mint-mid)]/40">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">🔥</span>
                       <div>
-                        <p className="font-bold text-[#E8523D]">
+                        <p className="font-bold text-[var(--mint-mid)]">
                           IMMORTAL — Direct V4 Pool
                         </p>
                         <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">
@@ -1004,7 +1004,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* Price & Market Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Price</p>
                     <p className="text-xl font-bold text-white">
                       {stats?.price && stats?.ethPriceUsd ? `$${(stats.price * stats.ethPriceUsd).toFixed(8)}` : '—'}
@@ -1018,7 +1018,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                       </p>
                     )}
                   </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Market Cap</p>
                     <p className="text-xl font-bold text-white">
                       {stats?.marketCap 
@@ -1029,7 +1029,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                       {stats?.marketCap ? `${stats.marketCap.toFixed(6)} ETH` : ''}
                     </p>
                   </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Volume (24h)</p>
                     <p className="text-xl font-bold text-white">
                       {stats?.volume24h 
@@ -1040,7 +1040,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                       Total: ${stats?.volumeTotal ? (stats.volumeTotal * (stats?.ethPriceUsd || 0)).toFixed(2) : '0'}
                     </p>
                   </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">ETH Price</p>
                     <p className="text-xl font-bold text-white">
                       ${stats?.ethPriceUsd ? stats.ethPriceUsd.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '—'}
@@ -1050,19 +1050,19 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* 24h Activity */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
+                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                     <p className="text-2xl font-bold text-white">{stats?.txCount24h || 0}</p>
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Trades (24h)</p>
                   </div>
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
+                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                     <p className="text-2xl font-bold text-green-400">{stats?.buys24h || 0}</p>
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Buys (24h)</p>
                   </div>
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
+                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                     <p className="text-2xl font-bold text-red-400">{stats?.sells24h || 0}</p>
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Sells (24h)</p>
                   </div>
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
+                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                     <p className="text-2xl font-bold text-white">{stats?.txCountTotal || 0}</p>
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Total Trades</p>
                   </div>
@@ -1071,7 +1071,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 {/* Price Chart - GeckoTerminal Embed */}
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4">📈 Live Price Chart</h3>
-                  <div className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[#E8523D]/20 overflow-hidden">
+                  <div className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[var(--mint-mid)]/20 overflow-hidden">
                     <iframe 
                       src={`https://www.geckoterminal.com/base/pools/${agent.token}?embed=1&info=0&swaps=0&grayscale=0&light_chart=0`}
                       className="w-full h-[600px] border-0"
@@ -1089,10 +1089,10 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4">🔄 Recent Swaps</h3>
                   {stats?.recentSwaps && stats.recentSwaps.length > 0 ? (
-                    <div className="overflow-x-auto max-h-[400px] overflow-y-auto rounded-lg border border-[#E8523D]/20">
+                    <div className="overflow-x-auto max-h-[400px] overflow-y-auto rounded-lg border border-[var(--mint-mid)]/20">
                       <table className="w-full text-sm">
                         <thead className="sticky top-0 bg-[#1a1a2e] z-10">
-                          <tr className="border-b border-[#E8523D]/20 text-[rgba(255, 255, 255, 0.5)] text-xs">
+                          <tr className="border-b border-[var(--mint-mid)]/20 text-[rgba(255, 255, 255, 0.5)] text-xs">
                             <th className="text-left py-2 px-3">Type</th>
                             <th className="text-right py-2 px-3">ETH</th>
                             <th className="text-right py-2 px-3">Tokens</th>
@@ -1123,7 +1123,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                                 <a 
                                   href={`${explorerBase}/address/${swap.wallet}`}
                                   target="_blank"
-                                  className="text-[#E8523D] hover:underline font-mono text-xs"
+                                  className="text-[var(--mint-mid)] hover:underline font-mono text-xs"
                                 >
                                   {swap.wallet.slice(0, 6)}...{swap.wallet.slice(-4)}
                                 </a>
@@ -1136,7 +1136,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                                   <a 
                                     href={`${explorerBase}/tx/${swap.tx_hash}`}
                                     target="_blank"
-                                    className="text-[#E8523D] hover:underline text-xs"
+                                    className="text-[var(--mint-mid)] hover:underline text-xs"
                                   >
                                     ↗
                                   </a>
@@ -1148,7 +1148,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                       </table>
                     </div>
                   ) : (
-                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20 text-center">
+                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                       <p className="text-[rgba(255, 255, 255, 0.5)]">No trades yet</p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)]/70 mt-2">Trades will appear here once the token is traded on Uniswap V4</p>
                     </div>
@@ -1157,15 +1157,15 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* Token Details */}
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Total Supply</p>
                     <p className="text-2xl font-bold text-white">1,000,000,000</p>
                   </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Decimals</p>
                     <p className="text-2xl font-bold text-white">18</p>
                   </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Launched</p>
                     <p className="text-2xl font-bold text-white">
                       {stats?.launchedAt ? new Date(stats.launchedAt).toLocaleDateString() : '—'}
@@ -1175,18 +1175,18 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* Pool ID */}
                 {stats?.poolId && (
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Uniswap V4 Pool ID</p>
                     <p className="text-white font-mono text-xs break-all">{stats.poolId}</p>
                   </div>
                 )}
 
                 {/* Fee Structure Info */}
-                <div className="p-6 bg-[#E8523D]/5 rounded-xl border border-[#E8523D]/20">
+                <div className="p-6 bg-[var(--mint-mid)]/5 rounded-xl border border-[var(--mint-mid)]/20">
                   <h4 className="text-lg font-bold text-white mb-3">💰 Trading Fees & Distribution</h4>
                   <div className="space-y-3 text-sm">
                     <p className="text-[rgba(255, 255, 255, 0.5)] mb-2">Standard 1% LP fee on every trade, distributed to liquidity providers:</p>
-                    <div className="mt-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/20">
+                    <div className="mt-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1"><strong className="text-white">Fee Structure:</strong></p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• 1% Uniswap V4 LP fee (standard pool fee)</p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• No custom hooks or transfer taxes</p>
@@ -1199,30 +1199,30 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 </div>
 
                 {/* Earnings & Claim Section */}
-                <div className="p-6 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[#E8523D]/30">
+                <div className="p-6 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[var(--mint-mid)]/30">
                   <h4 className="text-lg font-bold text-white mb-4">💎 Earnings & Collection</h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <div className="p-4 bg-[#000000] rounded-lg border border-[#E8523D]/20">
+                    <div className="p-4 bg-[#000000] rounded-lg border border-[var(--mint-mid)]/20">
                       <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Total Collected</p>
-                      <p className="text-2xl font-bold text-[#E8523D]">
+                      <p className="text-2xl font-bold text-[var(--mint-mid)]">
                         {stats?.earnings?.toFixed(6) || '0.000000'} ETH
                       </p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-1">
                         ≈ ${stats?.earnings && stats?.ethPriceUsd ? (stats.earnings * stats.ethPriceUsd).toFixed(2) : '0.00'}
                       </p>
                     </div>
-                    <div className="p-4 bg-[#000000] rounded-lg border border-[#E8523D]/20">
+                    <div className="p-4 bg-[#000000] rounded-lg border border-[var(--mint-mid)]/20">
                       <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Status</p>
-                      <p className="text-lg font-bold text-[#E8523D]">
+                      <p className="text-lg font-bold text-[var(--mint-mid)]">
                         ✅ Auto-collecting
                       </p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-1">Keeper bot runs daily</p>
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex-1 bg-[#000000] border border-[#E8523D]/30 py-3 px-6 rounded-lg text-center">
+                    <div className="flex-1 bg-[#000000] border border-[var(--mint-mid)]/30 py-3 px-6 rounded-lg text-center">
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Fee claiming via clawclick V4 hook</p>
-                      <code className="text-[#E8523D] text-xs font-mono">Coming soon</code>
+                      <code className="text-[var(--mint-mid)] text-xs font-mono">Coming soon</code>
                     </div>
                   </div>
                 </div>
