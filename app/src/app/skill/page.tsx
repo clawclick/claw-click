@@ -609,6 +609,9 @@ const md = toFunlanMarkdown('0xWALLET_ADDRESS') // full markdown doc`}
                     ['PoolManager', '0x498581fF718922c3f8e6A244956aF099B2652b2b'],
                     ['PositionManager', '0x7C5f5A4bBd8fD63184577525326123b519429bDc'],
                     ['PoolSwapTest', '0xBbB04538530970f3409e3844bF99475b5324912e'],
+                    ['AgentRegistry', '0xA51fa0faD4bCec2909B2f1e33bdfaa80f3f7d76B'],
+                    ['ClawdeNFT', '0x86d7d293DD9bFE25CA3CAF4Cb09f8d2c266823E0'],
+                    ['NFTidLinking', '0xd1C127c68D45ed264ce5251342A47f1C47F39dcF'],
                   ].map(([name, addr]) => (
                     <div key={name} className="flex flex-col py-2 border-b border-[var(--glass-border)]">
                       <span className="text-[var(--text-secondary)] text-xs mb-1">{name}</span>

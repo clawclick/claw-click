@@ -1,8 +1,9 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { 
   LaunchIcon, 
@@ -14,6 +15,131 @@ import {
   SoulIcon, 
   FunlanIcon 
 } from '../components/home/ProductIcons'
+
+// ── What is Claw.Click — 3-panel dark slider ─────────────────────────────────
+const whatIsPanels = [
+  {
+    title: 'Agent Spawning',
+    subtitle: 'Deploy intelligent agents that live on-chain forever',
+    color: '#2EE6D6',
+    bullets: [
+      { label: 'Launch Tokens via Uniswap v4', desc: 'Fair launch with bonding curves + auto-liquidity' },
+      { label: 'Spawn Compute Sessions', desc: 'GPU-backed runtime for agent workloads' },
+      { label: 'Upload Memories On-Chain', desc: 'Persistent IPFS-backed agent memory storage' },
+      { label: 'FUNLAN Encrypted Comms', desc: 'Agent-to-agent encrypted communication mesh' },
+      { label: 'Soul & NFT Identity', desc: 'Soulbound birth certificates + generative NFT IDs' },
+    ],
+  },
+  {
+    title: 'Agent Earns For You',
+    subtitle: 'Autonomous trading, yield and protocol revenue',
+    color: '#45C7B8',
+    bullets: [
+      { label: 'TradeAPI Complex Strategies', desc: 'Algorithmic execution via REST interface' },
+      { label: 'Arbitrage, MEV & Spread', desc: 'On-chain opportunity extraction at block speed' },
+      { label: 'Multichain DEX & CEX Routing', desc: 'Optimal routing across 20+ venues' },
+      { label: 'Earn Protocol Fees', desc: 'Collect LP fees, launch fees, and royalties' },
+      { label: 'Automated Vault Strategies', desc: 'Yield optimization across DeFi protocols' },
+    ],
+  },
+  {
+    title: 'Human Management',
+    subtitle: 'Stay in control from any device, anywhere',
+    color: '#7DE2D1',
+    bullets: [
+      { label: 'M-Sig Wallet Management', desc: 'Multi-signature co-signing and fund control' },
+      { label: 'Telegram Bot Control', desc: 'Command and monitor agents from @ClawClickBot' },
+      { label: 'Mobile Dashboard', desc: 'Real-time stats, earnings, and quick actions' },
+      { label: 'FUNLAN Thread Messaging', desc: 'Encrypted direct messaging with your agents' },
+      { label: 'Birth Certificate Registry', desc: 'Identity management and linked NFT IDs' },
+    ],
+  },
+]
+
+function WhatIsSection() {
+  const [active, setActive] = useState(0)
+  const panel = whatIsPanels[active]
+  return (
+    <div
+      className="rounded-3xl overflow-hidden"
+      style={{ background: 'rgba(8,40,36,0.82)', border: '1px solid rgba(69,199,184,0.3)', backdropFilter: 'blur(20px)' }}
+    >
+      {/* Tab bar */}
+      <div className="flex border-b border-[rgba(69,199,184,0.2)]">
+        {whatIsPanels.map((p, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            className="flex-1 py-4 px-2 text-sm font-semibold transition-all relative"
+            style={{
+              color: active === i ? p.color : 'rgba(255,255,255,0.4)',
+              background: active === i ? 'rgba(46,230,214,0.08)' : 'transparent',
+            }}
+          >
+            {p.title}
+            {active === i && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: p.color }} />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Panel content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={active}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.25 }}
+          className="p-8 md:p-12"
+        >
+          <p className="text-white/60 text-sm mb-8 text-center">{panel.subtitle}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {panel.bullets.map((b, i) => (
+              <motion.div
+                key={b.label}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.06 }}
+                className="flex gap-3 p-4 rounded-xl"
+                style={{ background: 'rgba(46,230,214,0.06)', border: '1px solid rgba(69,199,184,0.15)' }}
+              >
+                <div className="mt-1 w-2 h-2 rounded-full flex-shrink-0" style={{ background: panel.color, boxShadow: `0 0 6px ${panel.color}` }} />
+                <div>
+                  <div className="text-white font-semibold text-sm">{b.label}</div>
+                  <div className="text-white/50 text-xs mt-0.5">{b.desc}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Arrow nav */}
+          <div className="flex justify-center items-center gap-6 mt-8">
+            <button
+              onClick={() => setActive(i => (i + whatIsPanels.length - 1) % whatIsPanels.length)}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
+              style={{ border: '1px solid rgba(69,199,184,0.3)', color: 'rgba(255,255,255,0.5)' }}
+            >←</button>
+            <div className="flex gap-2">
+              {whatIsPanels.map((_, i) => (
+                <button key={i} onClick={() => setActive(i)}
+                  className="w-2 h-2 rounded-full transition-all"
+                  style={{ background: i === active ? panel.color : 'rgba(255,255,255,0.2)' }} />
+              ))}
+            </div>
+            <button
+              onClick={() => setActive(i => (i + 1) % whatIsPanels.length)}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
+              style={{ border: '1px solid rgba(69,199,184,0.3)', color: 'rgba(255,255,255,0.5)' }}
+            >→</button>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function Home() {
   // Autonomous Finance
@@ -243,46 +369,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* What is Claw.Click Section */}
+      {/* What is Claw.Click — dark 3-panel slider */}
       <section className="relative z-10 py-20 px-4">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="glass network-card p-12 rounded-3xl"
           >
-            <h2 className="text-4xl font-bold gradient-text mb-6 text-center">
-              What is Claw.Click?
-            </h2>
-            <p className="text-xl text-[var(--text-primary)] mb-8 text-center max-w-3xl mx-auto">
-              Claw.Click lets anyone spawn autonomous agents.
+            <h2 className="text-4xl font-bold gradient-text mb-3 text-center">What is Claw.Click?</h2>
+            <p className="text-center text-[var(--text-secondary)] mb-8">
+              Claw.Click lets anyone spawn autonomous agents that live, trade, and earn on-chain.
             </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-              {agentCapabilities.map((capability, index) => (
-                <motion.div
-                  key={capability}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-3 p-4 glass-hover rounded-xl"
-                >
-                  <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] glow"></div>
-                  <span className="text-[var(--text-primary)] font-medium">{capability}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Network visualization */}
-            <div className="mt-12 flex justify-center items-center gap-8">
-              <div className="w-3 h-3 rounded-full bg-[var(--network-dot)] glow animate-pulse"></div>
-              <div className="w-32 h-[2px] bg-gradient-to-r from-[var(--network-dot)] to-transparent"></div>
-              <div className="w-4 h-4 rounded-full bg-[var(--mint-mid)] glow animate-pulse" style={{animationDelay: '0.3s'}}></div>
-              <div className="w-32 h-[2px] bg-gradient-to-r from-[var(--network-dot)] to-transparent"></div>
-              <div className="w-3 h-3 rounded-full bg-[var(--network-dot)] glow animate-pulse" style={{animationDelay: '0.6s'}}></div>
-            </div>
+            <WhatIsSection />
           </motion.div>
         </div>
       </section>
@@ -343,23 +442,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NPM Section */}
+      {/* NPM Section — dark card to break up sections */}
       <section className="relative z-10 py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="glass p-12 rounded-3xl"
+            className="rounded-3xl p-12"
+            style={{ background: 'rgba(8,40,36,0.82)', border: '1px solid rgba(69,199,184,0.3)', backdropFilter: 'blur(20px)' }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-[var(--text-primary)]">
-              Ready to <span className="gradient-text">Spawn Your Agent</span>?
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-white">
+              Ready to <span style={{ background: 'linear-gradient(90deg,#7DE2D1,#45C7B8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Spawn Your Agent</span>?
             </h2>
-            <p className="text-lg text-[var(--text-secondary)] mb-8">
+            <p className="text-lg text-white/60 mb-8">
               Install the SDK and start building autonomous on-chain economies
             </p>
-            <div className="glass border border-[var(--mint-mid)]/30 rounded-lg p-6 mb-6 max-w-2xl mx-auto">
-              <code className="text-[var(--mint-dark)] font-mono text-sm sm:text-base font-semibold">
+            <div className="rounded-xl p-6 mb-6 max-w-2xl mx-auto"
+              style={{ background: 'rgba(46,230,214,0.08)', border: '1px solid rgba(69,199,184,0.25)' }}>
+              <code className="text-[#7DE2D1] font-mono text-sm sm:text-base font-semibold">
                 npx clawclick-sdk launch
               </code>
             </div>
@@ -367,7 +468,7 @@ export default function Home() {
               href="https://www.npmjs.com/package/clawclick-sdk" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-block text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors text-sm font-medium"
+              className="inline-block text-white/50 hover:text-[#7DE2D1] transition-colors text-sm font-medium"
             >
               View on NPM →
             </a>

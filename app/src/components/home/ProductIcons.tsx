@@ -20,57 +20,108 @@ const css = `
 
 const launchCss = css + `
 @keyframes rocketFloat {
-  0%, 100% { transform: translateY(0px) rotate(-45deg); }
-  50% { transform: translateY(-5px) rotate(-45deg); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
 }
-@keyframes flamePulse {
-  0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
-  50% { transform: scaleY(1.4) scaleX(0.8); opacity: 0.6; }
+@keyframes flameCore {
+  0%, 100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+  33% { transform: scaleY(1.7) scaleX(0.65); opacity: 0.75; }
+  66% { transform: scaleY(1.3) scaleX(0.85); opacity: 0.9; }
+}
+@keyframes flameMid {
+  0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.75; }
+  40% { transform: scaleY(1.5) scaleX(0.7); opacity: 0.55; }
+}
+@keyframes flameOuter {
+  0%, 100% { transform: scaleY(0.9) scaleX(1); opacity: 0.5; }
+  50% { transform: scaleY(1.4) scaleX(0.8); opacity: 0.3; }
+}
+@keyframes exhaust {
+  0% { transform: translateY(0px); opacity: 0.6; }
+  100% { transform: translateY(14px); opacity: 0; }
+}
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.4); }
 }
 `
 
-/* ---------- LAUNCH ICON - ANIMATED ROCKET ---------- */
+/* ---------- LAUNCH ICON - SLEEK UPRIGHT ROCKET WITH FLAMES ---------- */
 export const LaunchIcon = () => (
   <>
     <style>{launchCss}</style>
     <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-      {/* Launch arc background */}
-      <path d="M8 44 Q18 18 44 8" stroke="#45C7B8" strokeWidth="0.8" strokeDasharray="3 4" opacity="0.3"
-        style={{ animation: 'ip-pulse2 3s ease-in-out infinite' }} />
 
-      {/* Rocket group - flying at 45° */}
-      <g style={{ animation: 'rocketFloat 2s ease-in-out infinite', transformOrigin: '28px 24px' }}>
-        {/* Rocket body */}
-        <path d="M28 12 C28 12 38 16 38 28 L32 34 L22 24 Z" fill="#45C7B8" opacity="0.95"
+      {/* Background stars */}
+      <circle cx="8" cy="8" r="1" fill="#7DE2D1"
+        style={{ animation: 'starTwinkle 1.8s ease-in-out infinite' }} />
+      <circle cx="44" cy="12" r="0.8" fill="#45C7B8"
+        style={{ animation: 'starTwinkle 2.2s ease-in-out infinite 0.4s' }} />
+      <circle cx="44" cy="36" r="0.7" fill="#2EE6D6"
+        style={{ animation: 'starTwinkle 1.6s ease-in-out infinite 0.8s' }} />
+      <circle cx="8" cy="38" r="0.9" fill="#7DE2D1"
+        style={{ animation: 'starTwinkle 2.5s ease-in-out infinite 1.1s' }} />
+
+      {/* Rocket group - floating upright */}
+      <g style={{ animation: 'rocketFloat 2.4s ease-in-out infinite', transformOrigin: '26px 28px' }}>
+
+        {/* Exhaust glow ring */}
+        <ellipse cx="26" cy="40" rx="5" ry="2" fill="#2EE6D6" opacity="0.18"
+          style={{ animation: 'ip-pulse 1.2s ease-in-out infinite' }} />
+
+        {/* LEFT FIN */}
+        <path d="M20 36 L15 46 L21 41 Z" fill="#1FAFA3" opacity="0.95" />
+        {/* RIGHT FIN */}
+        <path d="M32 36 L37 46 L31 41 Z" fill="#1FAFA3" opacity="0.95" />
+
+        {/* NOZZLE BELL */}
+        <path d="M22 40 L23 44 L29 44 L30 40 Z" fill="#0F6B63" />
+
+        {/* ROCKET BODY */}
+        <rect x="20" y="20" width="12" height="22" rx="3" fill="#45C7B8"
+          style={{ filter: 'drop-shadow(0 0 8px #2EE6D6)' }} />
+
+        {/* Body detail stripe */}
+        <rect x="20" y="28" width="12" height="2" fill="#1FAFA3" opacity="0.5" />
+
+        {/* NOSE CONE */}
+        <path d="M26 4 L20 20 L32 20 Z" fill="#7DE2D1"
           style={{ filter: 'drop-shadow(0 0 6px #2EE6D6)' }} />
-        {/* Nose cone */}
-        <path d="M38 12 C42 8 46 8 46 8 C46 8 46 12 42 16 Z" fill="#7DE2D1" opacity="0.9" />
-        {/* Left fin */}
-        <path d="M22 24 L16 32 L24 30 Z" fill="#7DE2D1" opacity="0.8" />
-        {/* Bottom fin */}
-        <path d="M32 34 L38 40 L34 32 Z" fill="#7DE2D1" opacity="0.8" />
-        {/* Window porthole */}
-        <circle cx="33" cy="23" r="3.5" stroke="#E9F7F4" strokeWidth="1.5" fill="#2EE6D6" fillOpacity="0.4" />
-        <circle cx="33" cy="23" r="1.2" fill="#E9F7F4" opacity="0.8" />
-        {/* Flame at back */}
-        <g style={{ animation: 'flamePulse 0.4s ease-in-out infinite', transformOrigin: '21px 29px' }}>
-          <path d="M22 24 L14 32 L20 28 L12 36 L19 31 L16 38" stroke="#2EE6D6" strokeWidth="2.5"
-            strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <path d="M22 26 L15 34 L21 30" stroke="#7DE2D1" strokeWidth="1.5"
-            strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.7" />
-        </g>
+        {/* Nose highlight */}
+        <path d="M26 6 L22 18 L26 18 Z" fill="#E9F7F4" opacity="0.35" />
+
+        {/* PORTHOLE WINDOW */}
+        <circle cx="26" cy="25" r="4.5" fill="#083A36" stroke="#7DE2D1" strokeWidth="1.5" />
+        <circle cx="26" cy="25" r="2.5" fill="#2EE6D6" opacity="0.4" />
+        <circle cx="24.5" cy="23.5" r="1" fill="#E9F7F4" opacity="0.7" />
+
+        {/* Rivet dots */}
+        <circle cx="21.5" cy="33" r="0.8" fill="#7DE2D1" opacity="0.6" />
+        <circle cx="30.5" cy="33" r="0.8" fill="#7DE2D1" opacity="0.6" />
       </g>
 
-      {/* Exhaust trail particles */}
-      {[{x:18,y:38,d:0},{x:14,y:42,d:0.2},{x:10,y:44,d:0.4},{x:7,y:46,d:0.6}].map(({x,y,d},i)=>(
-        <circle key={i} cx={x} cy={y} r={2.5-i*0.4} fill="#2EE6D6" opacity={0.7-i*0.15}
-          style={{ animation: `ip-pulse 0.6s ease-in-out infinite ${d}s`, filter: 'drop-shadow(0 0 3px #2EE6D6)' }} />
-      ))}
+      {/* FLAMES — independent of rocket float, origin at nozzle */}
+      <g style={{ transformOrigin: '26px 44px' }}>
+        {/* Outer halo flame */}
+        <path d="M22 44 Q20 50 26 54 Q32 50 30 44"
+          fill="#45C7B8" opacity="0.35"
+          style={{ animation: 'flameOuter 0.35s ease-in-out infinite 0.05s', transformOrigin: '26px 44px' }} />
+        {/* Mid flame */}
+        <path d="M23 44 Q21 50 26 52 Q31 50 29 44"
+          fill="#2EE6D6" opacity="0.65"
+          style={{ animation: 'flameMid 0.28s ease-in-out infinite', transformOrigin: '26px 44px' }} />
+        {/* Core flame — tall, bright */}
+        <path d="M24 44 Q23 50 26 53 Q29 50 28 44"
+          fill="#E9F7F4" opacity="0.9"
+          style={{ animation: 'flameCore 0.22s ease-in-out infinite', transformOrigin: '26px 44px' }} />
+      </g>
 
-      {/* Stars / space dots */}
-      <circle cx="10" cy="10" r="1" fill="#45C7B8" opacity="0.5" style={{ animation: 'ip-pulse2 2s ease-in-out infinite' }} />
-      <circle cx="18" cy="6" r="0.8" fill="#2EE6D6" opacity="0.4" style={{ animation: 'ip-pulse2 2s ease-in-out infinite 0.5s' }} />
-      <circle cx="6" cy="20" r="0.8" fill="#7DE2D1" opacity="0.4" style={{ animation: 'ip-pulse2 2s ease-in-out infinite 1s' }} />
+      {/* Exhaust particles drifting down */}
+      {([0, 0.15, 0.3, 0.45] as const).map((d, i) => (
+        <circle key={i} cx={26 + (i % 2 === 0 ? -2 + i : 2 - i)} cy={48 + i * 2}
+          r={1.8 - i * 0.3} fill="#2EE6D6" opacity={0.5 - i * 0.1}
+          style={{ animation: `exhaust 0.8s ease-in infinite ${d}s` }} />
+      ))}
     </svg>
   </>
 )

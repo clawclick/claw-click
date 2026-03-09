@@ -381,9 +381,9 @@ function CreateAgentFlow() {
   }
 
   return (
-    <main className="min-h-screen relative bg-[#000000] w-full overflow-x-hidden text-white">
+    <main className="min-h-screen relative bg-[#000000] w-full overflow-x-hidden text-[var(--text-primary)]">
       {/* Header */}
-      <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[#E8523D]/10">
+      <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[var(--mint-mid)]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="relative w-10 h-10">
@@ -397,14 +397,14 @@ function CreateAgentFlow() {
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+                <span className="text-xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                   claw.click
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded uppercase tracking-wide">
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-mid)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">
                   BETA
                 </span>
               </div>
-              <span className="text-xs text-white/50">Agent Infrastructure</span>
+              <span className="text-xs text-[var(--text-secondary)]">Agent Infrastructure</span>
             </div>
           </Link>
           <ConnectButton />
@@ -418,7 +418,7 @@ function CreateAgentFlow() {
             <div className="mb-8">
               <div className="flex items-center justify-between mb-2">
                 {[1, 2, 3, 4, 5, 6].map((s) => (
-                  <div key={s} className={`flex-1 h-1 rounded-full transition-all mx-0.5 ${s <= step ? 'bg-[#E8523D]' : 'bg-[#E8523D]/20'}`} />
+                  <div key={s} className={`flex-1 h-1 rounded-full transition-all mx-0.5 ${s <= step ? 'bg-[var(--mint-mid)]' : 'bg-[var(--mint-mid)]/20'}`} />
                 ))}
               </div>
               <div className="text-sm text-[rgba(255, 255, 255, 0.5)] text-center">Step {step} of 6</div>
@@ -429,16 +429,16 @@ function CreateAgentFlow() {
             {/* Step 0: Entry */}
             {step === 0 && (
               <motion.div key="step0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center">
-                <h1 className="text-4xl font-black text-white mb-4">Create Agent</h1>
+                <h1 className="text-4xl font-black text-[var(--text-primary)] mb-4">Create Agent</h1>
                 <p className="text-[rgba(255, 255, 255, 0.5)] mb-12">Who is creating the agent?</p>
                 <div className="grid md:grid-cols-2 gap-6 max-w-lg mx-auto">
-                  <button onClick={() => { setCreatorType('human'); setStep(1) }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8 hover:border-[#E8523D]/40 transition-all group">
+                  <button onClick={() => { setCreatorType('human'); setStep(1) }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8 hover:border-[var(--mint-mid)]/40 transition-all group">
                     <div className="text-5xl mb-4">👤</div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-[#E8523D]">Human</h3>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] group-hover:text-[var(--mint-mid)]">Human</h3>
                   </button>
-                  <button onClick={() => { setCreatorType('agent'); setStep(1) }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8 hover:border-[#E8523D]/40 transition-all group">
+                  <button onClick={() => { setCreatorType('agent'); setStep(1) }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8 hover:border-[var(--mint-mid)]/40 transition-all group">
                     <div className="text-5xl mb-4">🤖</div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-[#E8523D]">Agent</h3>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] group-hover:text-[var(--mint-mid)]">Agent</h3>
                   </button>
                 </div>
               </motion.div>
@@ -446,9 +446,9 @@ function CreateAgentFlow() {
 
             {/* Wallet Connection */}
             {step > 0 && !isConnected && (
-              <motion.div key="wallet" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8 text-center">
+              <motion.div key="wallet" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8 text-center">
                 <div className="text-6xl mb-6">🔐</div>
-                <h2 className="text-2xl font-black text-white mb-4">Connect Your Wallet</h2>
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-4">Connect Your Wallet</h2>
                 <p className="text-[rgba(255, 255, 255, 0.5)] mb-6">You need to connect your wallet to create an agent on-chain.</p>
                 <div className="flex justify-center"><ConnectButton /></div>
               </motion.div>
@@ -456,21 +456,21 @@ function CreateAgentFlow() {
 
             {/* Agent CLI Instructions (when creatorType === 'agent') */}
             {step === 1 && isConnected && creatorType === 'agent' && (
-              <motion.div key="agent-cli" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
+              <motion.div key="agent-cli" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8">
                 <div className="text-center mb-8">
                   <div className="text-6xl mb-4">🤖</div>
-                  <h2 className="text-2xl font-black text-white mb-2">Agent Identity</h2>
+                  <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Agent Identity</h2>
                   <p className="text-[rgba(255, 255, 255, 0.5)]">Agents use CLI commands to self-create. Follow these steps:</p>
                 </div>
 
                 <div className="space-y-6">
                   {/* Step 1: Init */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[#E8523D]">Step 1:</span> Initialize Identity
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-[var(--text-primary)] font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">Step 1:</span> Initialize Identity
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
-                      <code className="text-sm text-[#E8523D] break-all">
+                    <div className="bg-black/50 rounded-lg p-4 border border-[var(--glass-border)] mb-2">
+                      <code className="text-sm text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick init --name "YourAgent" --symbol "AGENT"
                       </code>
                     </div>
@@ -478,12 +478,12 @@ function CreateAgentFlow() {
                   </div>
 
                   {/* Step 2: FUNLAN */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[#E8523D]">Step 2:</span> Generate FUNLAN Identity
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-[var(--text-primary)] font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">Step 2:</span> Generate FUNLAN Identity
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
-                      <code className="text-sm text-[#E8523D] break-all">
+                    <div className="bg-black/50 rounded-lg p-4 border border-[var(--glass-border)] mb-2">
+                      <code className="text-sm text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick funlan --generate
                       </code>
                     </div>
@@ -491,12 +491,12 @@ function CreateAgentFlow() {
                   </div>
 
                   {/* Step 3: Memory */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[#E8523D]">Step 3:</span> Upload Memory (Optional)
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-[var(--text-primary)] font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">Step 3:</span> Upload Memory (Optional)
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
-                      <code className="text-sm text-[#E8523D] break-all">
+                    <div className="bg-black/50 rounded-lg p-4 border border-[var(--glass-border)] mb-2">
+                      <code className="text-sm text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick memory upload ./memories/
                       </code>
                     </div>
@@ -504,12 +504,12 @@ function CreateAgentFlow() {
                   </div>
 
                   {/* Step 4: Deploy */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[#E8523D]">Step 4:</span> Deploy & Tokenize
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-[var(--text-primary)] font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">Step 4:</span> Deploy & Tokenize
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-white/10 mb-2">
-                      <code className="text-sm text-[#E8523D] break-all">
+                    <div className="bg-black/50 rounded-lg p-4 border border-[var(--glass-border)] mb-2">
+                      <code className="text-sm text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick deploy --network base --starting-mcap 5
                       </code>
                     </div>
@@ -517,12 +517,12 @@ function CreateAgentFlow() {
                   </div>
 
                   {/* One-liner */}
-                  <div className="bg-gradient-to-br from-[#E8523D]/10 to-[#FF8C4A]/10 rounded-xl p-6 border border-[#E8523D]/30">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[#FF8C4A]">⚡</span> One-liner (all steps)
+                  <div className="bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 rounded-xl p-6 border border-[var(--mint-mid)]/30">
+                    <h3 className="text-[var(--text-primary)] font-bold mb-3 flex items-center gap-2">
+                      <span className="text-[var(--mint-dark)]">⚡</span> One-liner (all steps)
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-[#E8523D]/20 mb-2">
-                      <code className="text-sm text-[#FF8C4A] break-all">
+                    <div className="bg-black/50 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-2">
+                      <code className="text-sm text-[var(--mint-dark)] break-all">
                         npx @clawclick/clawclick create --name "YourAgent" --symbol "AGENT" --network base --starting-mcap 5
                       </code>
                     </div>
@@ -532,7 +532,7 @@ function CreateAgentFlow() {
                   <div className="text-center pt-4">
                     <Link
                       href="/docs/cli"
-                      className="inline-flex items-center gap-2 text-[#E8523D] hover:text-[#FF8C4A] transition-colors text-sm"
+                      className="inline-flex items-center gap-2 text-[var(--mint-mid)] hover:text-[var(--mint-dark)] transition-colors text-sm"
                     >
                       <span>📚</span> View full CLI documentation for all options and flags.
                     </Link>
@@ -542,7 +542,7 @@ function CreateAgentFlow() {
                   <div className="flex justify-center pt-6">
                     <button
                       onClick={() => { setStep(0); setCreatorType(null) }}
-                      className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all"
+                      className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg text-[var(--text-primary)] transition-all"
                     >
                       ← Back to Creator Selection
                     </button>
@@ -553,10 +553,10 @@ function CreateAgentFlow() {
 
             {/* Step 1: Configure Your Launch (Human only) */}
             {step === 1 && isConnected && creatorType === 'human' && (
-              <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
+              <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8">
                 <div className="text-center mb-8">
                   <div className="text-6xl mb-4">🚀</div>
-                  <h2 className="text-2xl font-black text-white mb-2">Configure Your Launch</h2>
+                  <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Configure Your Launch</h2>
                   <p className="text-[rgba(255, 255, 255, 0.5)]">Set your starting market cap using Uniswap V4</p>
                 </div>
 
@@ -564,11 +564,11 @@ function CreateAgentFlow() {
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-lg">⚙️</span>
-                    <span className="text-sm font-semibold text-white">Starting Market Cap</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">Starting Market Cap</span>
                   </div>
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-4">Choose your initial token valuation (1-10 ETH)</p>
                   
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[#E8523D]/20">
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20">
                     {/* MCAP Slider */}
                     <div className="mb-4">
                       <input
@@ -578,7 +578,7 @@ function CreateAgentFlow() {
                         step="0.1"
                         value={formData.genesisBuy || 5}
                         onChange={(e) => setFormData({ ...formData, genesisBuy: parseFloat(e.target.value) })}
-                        className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-[#1E2832] accent-[#E8523D]"
+                        className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-[#1E2832] accent-[var(--mint-mid)]"
                       />
                       <div className="flex justify-between text-xs text-[rgba(255, 255, 255, 0.5)] mt-1">
                         <span>1 ETH</span>
@@ -588,38 +588,38 @@ function CreateAgentFlow() {
                     </div>
                     
                     {/* Current Value Display */}
-                    <div className="p-3 bg-[rgba(255, 255, 255, 0.03)] rounded-lg border border-[#E8523D]/20 mb-4">
+                    <div className="p-3 bg-[rgba(255, 255, 255, 0.03)] rounded-lg border border-[var(--mint-mid)]/20 mb-4">
                       <div className="flex items-center justify-between">
                         <span className="text-[rgba(255, 255, 255, 0.5)] text-sm">Starting MCAP:</span>
-                        <span className="text-[#E8523D] font-bold text-lg">{formData.genesisBuy || 5} ETH {ethPrice ? `(~$${((formData.genesisBuy || 5) * ethPrice).toLocaleString()})` : ''}</span>
+                        <span className="text-[var(--mint-mid)] font-bold text-lg">{formData.genesisBuy || 5} ETH {ethPrice ? `(~$${((formData.genesisBuy || 5) * ethPrice).toLocaleString()})` : ''}</span>
                       </div>
                     </div>
 
                     {/* Uniswap V4 Info */}
                     <div className="space-y-3">
                       {/* LP Fee Info */}
-                      <div className="p-3 bg-[rgba(255, 255, 255, 0.03)] rounded-lg border border-[#E8523D]/10">
+                      <div className="p-3 bg-[rgba(255, 255, 255, 0.03)] rounded-lg border border-[var(--mint-mid)]/10">
                         <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-2">💰 Liquidity Provider Fee:</p>
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs">
                             <span className="text-[rgba(255, 255, 255, 0.5)]">Pool Fee:</span>
-                            <span className="text-white font-semibold">1% flat on all trades</span>
+                            <span className="text-[var(--text-primary)] font-semibold">1% flat on all trades</span>
                           </div>
                           <div className="flex justify-between text-xs">
                             <span className="text-[rgba(255, 255, 255, 0.5)]">Split:</span>
-                            <span className="text-[#E8523D] font-semibold">30% platform / 70% creator</span>
+                            <span className="text-[var(--mint-mid)] font-semibold">30% platform / 70% creator</span>
                           </div>
                         </div>
                         <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-2 italic">Fees collected from 1% LP fee across all positions (P1-P5)</p>
                       </div>
 
                       {/* Position Info */}
-                      <div className="p-3 bg-[rgba(255, 255, 255, 0.03)] rounded-lg border border-[#E8523D]/10">
+                      <div className="p-3 bg-[rgba(255, 255, 255, 0.03)] rounded-lg border border-[var(--mint-mid)]/10">
                         <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-2">📊 Liquidity Positions:</p>
                         <div className="space-y-1 text-xs">
                           <div className="flex justify-between">
                             <span className="text-[rgba(255, 255, 255, 0.5)]">Position Strategy:</span>
-                            <span className="text-white">P1 → P5 (concentrated ranges)</span>
+                            <span className="text-[var(--text-primary)]">P1 → P5 (concentrated ranges)</span>
                           </div>
                           <p className="text-[rgba(255, 255, 255, 0.5)] mt-1 italic text-[10px]">Liquidity distributed across 5 positions as token grows</p>
                         </div>
@@ -629,8 +629,8 @@ function CreateAgentFlow() {
                 </div>
 
                 {/* Uniswap V4 Framework Info */}
-                <div className="p-4 bg-[#E8523D]/5 rounded-lg border border-[#E8523D]/20 mb-6">
-                  <p className="text-xs text-[#E8523D] font-semibold mb-2">🏗️ Uniswap V4 Direct Launch</p>
+                <div className="p-4 bg-[var(--mint-mid)]/5 rounded-lg border border-[var(--mint-mid)]/20 mb-6">
+                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">🏗️ Uniswap V4 Direct Launch</p>
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">
                     Your token launches with instant tradability on Uniswap V4. No complex mechanics, just a clean 1% LP fee with 30/70 split. Works with all standard bots and routers.
                   </p>
@@ -640,26 +640,26 @@ function CreateAgentFlow() {
                 <div className="mb-6">
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)] uppercase tracking-wider mb-3">All launches include:</p>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center gap-2"><span className="text-[#E8523D]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">ERC-20 Token (1B supply)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[#E8523D]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">Uniswap V4 Pool (1% fee)</span></div>
+                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">ERC-20 Token (1B supply)</span></div>
+                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">Uniswap V4 Pool (1% fee)</span></div>
                     <div className="flex items-center gap-2"><span className="text-purple-400">🔒</span><span className="text-[rgba(255, 255, 255, 0.5)]">Birth Certificate NFT</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[#E8523D]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">5 LP Positions (P1-P5)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[#E8523D]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">Memory Storage (IPFS)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[#E8523D]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">Instant Tradability</span></div>
+                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">5 LP Positions (P1-P5)</span></div>
+                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">Memory Storage (IPFS)</span></div>
+                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-[rgba(255, 255, 255, 0.5)]">Instant Tradability</span></div>
                   </div>
                 </div>
 
                 <div className="flex gap-4">
-                  <button onClick={handleBack} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
-                  <button onClick={handleNext} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3">Continue</button>
+                  <button onClick={handleBack} className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
+                  <button onClick={handleNext} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3">Continue</button>
                 </div>
               </motion.div>
             )}
 
             {/* Step 2: Agent Naming (Human only) */}
             {step === 2 && isConnected && creatorType === 'human' && (
-              <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
-                <h2 className="text-2xl font-black text-white mb-6">Agent Identity</h2>
+              <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8">
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-6">Agent Identity</h2>
                 
                 <div className="space-y-6 mb-8">
                   <div>
@@ -669,7 +669,7 @@ function CreateAgentFlow() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="ClawdiusMaximus"
-                      className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
+                      className="w-full px-4 py-3 bg-black border border-[var(--mint-mid)]/20 rounded-lg text-[var(--text-primary)] placeholder-white/30 focus:border-[var(--mint-mid)] focus:outline-none"
                       required
                     />
                   </div>
@@ -680,7 +680,7 @@ function CreateAgentFlow() {
                       value={formData.symbol}
                       onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
                       placeholder="CLAW"
-                      className="w-full px-4 py-3 bg-black border border-[#E8523D]/20 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none"
+                      className="w-full px-4 py-3 bg-black border border-[var(--mint-mid)]/20 rounded-lg text-[var(--text-primary)] placeholder-white/30 focus:border-[var(--mint-mid)] focus:outline-none"
                       maxLength={10}
                       required
                     />
@@ -689,16 +689,16 @@ function CreateAgentFlow() {
                 </div>
 
                 <div className="flex gap-4">
-                  <button onClick={handleBack} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
-                  <button onClick={handleNext} disabled={!formData.name || !formData.symbol} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">Continue</button>
+                  <button onClick={handleBack} className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
+                  <button onClick={handleNext} disabled={!formData.name || !formData.symbol} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">Continue</button>
                 </div>
               </motion.div>
             )}
 
             {/* Step 3: Network (Human only) */}
             {step === 3 && isConnected && creatorType === 'human' && (
-              <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
-                <h2 className="text-2xl font-black text-white mb-6">Select Network</h2>
+              <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8">
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-6">Select Network</h2>
                 <p className="text-[rgba(255, 255, 255, 0.5)] mb-6">Choose the blockchain network for your agent:</p>
                 
                 <div className="grid grid-cols-2 gap-4 mb-8">
@@ -714,7 +714,7 @@ function CreateAgentFlow() {
                       <span className="text-2xl">🔵</span>
                       {formData.chain === 'Base' && <span className="text-[#4A90E2]">✓</span>}
                     </div>
-                    <p className="text-lg font-bold text-white mb-1">Base</p>
+                    <p className="text-lg font-bold text-[var(--text-primary)] mb-1">Base</p>
                     <p className="text-xs text-[#4A90E2]">L2 • Low fees</p>
                   </button>
 
@@ -730,7 +730,7 @@ function CreateAgentFlow() {
                       <span className="text-2xl">🧪</span>
                       {formData.chain === 'Sepolia' && <span className="text-[#9CA3AF]">✓</span>}
                     </div>
-                    <p className="text-lg font-bold text-white mb-1">Sepolia</p>
+                    <p className="text-lg font-bold text-[var(--text-primary)] mb-1">Sepolia</p>
                     <p className="text-xs text-[#9CA3AF]">Testnet • Free to deploy</p>
                   </button>
 
@@ -753,7 +753,7 @@ function CreateAgentFlow() {
                   </div>
                 </div>
 
-                <p className="text-sm text-[rgba(255, 255, 255, 0.5)] mb-6">Connected to: <strong className="text-white">{connectedChain?.name || 'Unknown'}</strong></p>
+                <p className="text-sm text-[rgba(255, 255, 255, 0.5)] mb-6">Connected to: <strong className="text-[var(--text-primary)]">{connectedChain?.name || 'Unknown'}</strong></p>
                 
                 {connectedChain?.id !== 11155111 && connectedChain?.id !== 8453 && (
                   <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/30 mb-6">
@@ -763,8 +763,8 @@ function CreateAgentFlow() {
                 )}
 
                 <div className="flex gap-4">
-                  <button onClick={handleBack} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
-                  <button onClick={handleNext} disabled={(formData.chain === 'Sepolia' && connectedChain?.id !== 11155111) || (formData.chain === 'Base' && connectedChain?.id !== 8453)} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <button onClick={handleBack} className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
+                  <button onClick={handleNext} disabled={(formData.chain === 'Sepolia' && connectedChain?.id !== 11155111) || (formData.chain === 'Base' && connectedChain?.id !== 8453)} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">
                     {(formData.chain === 'Sepolia' && connectedChain?.id === 11155111) || (formData.chain === 'Base' && connectedChain?.id === 8453) ? 'Continue' : 'Switch Network'}
                   </button>
                 </div>
@@ -773,20 +773,20 @@ function CreateAgentFlow() {
 
             {/* Step 4: FUNLAN (Human only) */}
             {step === 4 && isConnected && creatorType === 'human' && (
-              <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
+              <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <span className="text-4xl">🦞</span>
                   <div>
-                    <h2 className="text-2xl font-black text-white">Agent Language</h2>
+                    <h2 className="text-2xl font-black text-[var(--text-primary)]">Agent Language</h2>
                     <p className="text-sm text-[rgba(255, 255, 255, 0.5)]">FUNLAN - The emoji-based agent identity system</p>
                   </div>
                 </div>
 
                 {/* FUNLAN content stays the same... */}
-                <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[#E8523D]/20 mb-6">
+                <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20 mb-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-bold text-white">🎭 Identity Grid Preview</h3>
-                    <span className="text-xs px-2 py-1 rounded bg-[#E8523D]/20 text-[#E8523D]">Auto-generated</span>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">🎭 Identity Grid Preview</h3>
+                    <span className="text-xs px-2 py-1 rounded bg-[var(--mint-mid)]/20 text-[var(--mint-mid)]">Auto-generated</span>
                   </div>
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-4">
                     Your agent's unique 5x5 emoji grid will be deterministically generated from their wallet address.
@@ -805,24 +805,24 @@ function CreateAgentFlow() {
                 <div className="space-y-3 mb-6">
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)] uppercase tracking-wider">What gets created:</p>
                   <div className="grid gap-2">
-                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/10">
-                      <span className="text-[#E8523D]">✓</span>
+                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/10">
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <div>
-                        <span className="text-white text-sm">FUNLAN.md generated</span>
+                        <span className="text-[var(--text-primary)] text-sm">FUNLAN.md generated</span>
                         <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Your agent's identity specification file</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/10">
-                      <span className="text-[#E8523D]">✓</span>
+                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/10">
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <div>
-                        <span className="text-white text-sm">Emoji-based symbolic language</span>
+                        <span className="text-[var(--text-primary)] text-sm">Emoji-based symbolic language</span>
                         <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Unique visual identity derived from wallet</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[#E8523D]/10">
-                      <span className="text-[#E8523D]">✓</span>
+                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/10">
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <div>
-                        <span className="text-white text-sm">Uploaded to IPFS</span>
+                        <span className="text-[var(--text-primary)] text-sm">Uploaded to IPFS</span>
                         <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Permanently stored and content-addressed</p>
                       </div>
                     </div>
@@ -845,68 +845,68 @@ function CreateAgentFlow() {
                     href="https://github.com/ClawsFun/FUNLAN" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/40 rounded-lg hover:border-[#E8523D] hover:bg-[#E8523D]/10 transition-all text-sm"
-                    style={{ color: '#E8523D' }}
+                    className="flex items-center gap-2 px-4 py-2 bg-[rgba(0, 0, 0, 0.5)] border border-[var(--mint-mid)]/40 rounded-lg hover:border-[var(--mint-mid)] hover:bg-[var(--mint-mid)]/10 transition-all text-sm"
+                    style={{ color: 'var(--mint-mid)' }}
                   >
-                    <svg className="w-4 h-4" fill="#E8523D" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
-                    <span style={{ color: '#E8523D' }}>View FUNLAN Spec</span>
+                    <svg className="w-4 h-4" fill="var(--mint-mid)" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
+                    <span style={{ color: 'var(--mint-mid)' }}>View FUNLAN Spec</span>
                   </a>
                   <a 
                     href="/docs?page=funlan" 
-                    className="flex items-center gap-2 px-4 py-2 bg-[rgba(0, 0, 0, 0.5)] border border-[#E8523D]/40 rounded-lg hover:border-[#E8523D] hover:bg-[#E8523D]/10 transition-all text-sm"
-                    style={{ color: '#E8523D' }}
+                    className="flex items-center gap-2 px-4 py-2 bg-[rgba(0, 0, 0, 0.5)] border border-[var(--mint-mid)]/40 rounded-lg hover:border-[var(--mint-mid)] hover:bg-[var(--mint-mid)]/10 transition-all text-sm"
+                    style={{ color: 'var(--mint-mid)' }}
                   >
-                    📚 <span style={{ color: '#E8523D' }}>Learn More</span>
+                    📚 <span style={{ color: 'var(--mint-mid)' }}>Learn More</span>
                   </a>
                 </div>
 
                 <div className="flex gap-4">
-                  <button onClick={handleBack} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
-                  <button onClick={handleNext} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3">Continue</button>
+                  <button onClick={handleBack} className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
+                  <button onClick={handleNext} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3">Continue</button>
                 </div>
               </motion.div>
             )}
 
             {/* Step 5: Memory (Human only) */}
             {step === 5 && isConnected && creatorType === 'human' && (
-              <motion.div key="step5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
+              <motion.div key="step5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8">
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-3xl">🧠</span>
-                  <h2 className="text-2xl font-black text-white">Memory Upload</h2>
+                  <h2 className="text-2xl font-black text-[var(--text-primary)]">Memory Upload</h2>
                 </div>
-                <p className="text-sm text-[#E8523D] mb-6">Optional — can be added later via CLI or dashboard</p>
+                <p className="text-sm text-[var(--mint-mid)] mb-6">Optional — can be added later via CLI or dashboard</p>
                 
-                <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[#E8523D]/20 mb-6">
-                  <h3 className="text-sm font-bold text-white mb-2">📜 What is Agent Memory?</h3>
+                <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20 mb-6">
+                  <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2">📜 What is Agent Memory?</h3>
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-3">
                     Memory files give your agent context, personality, and knowledge. They are cryptographically signed 
                     by the agent wallet and stored permanently on IPFS.
                   </p>
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Content-addressed storage</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Wallet-signed verification</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Immutable records</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]">✓</span>
+                      <span className="text-[var(--mint-mid)]">✓</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Survives runtime shutdown</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="border-2 border-dashed border-[#E8523D]/20 rounded-lg p-8 text-center cursor-pointer bg-[rgba(255, 255, 255, 0.03)]/30 mb-6 hover:border-[#E8523D]/40 transition-all">
+                <div className="border-2 border-dashed border-[var(--mint-mid)]/20 rounded-lg p-8 text-center cursor-pointer bg-[rgba(255, 255, 255, 0.03)]/30 mb-6 hover:border-[var(--mint-mid)]/40 transition-all">
                   <input type="file" id="memory-upload" multiple accept=".md,.txt,.json" onChange={(e) => { if (e.target.files) setFormData({ ...formData, memoryFiles: [...formData.memoryFiles, ...Array.from(e.target.files)] }) }} className="hidden" />
                   <label htmlFor="memory-upload" className="cursor-pointer">
                     <div className="text-4xl mb-4">📁</div>
-                    <p className="text-white font-semibold mb-2">Upload Memory Files</p>
+                    <p className="text-[var(--text-primary)] font-semibold mb-2">Upload Memory Files</p>
                     <p className="text-sm text-[rgba(255, 255, 255, 0.5)] mb-2">.md, .txt, .json</p>
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]/70">Drag & drop or click to browse</p>
                   </label>
@@ -916,11 +916,11 @@ function CreateAgentFlow() {
                   <div className="space-y-2 mb-6">
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-2">📎 {formData.memoryFiles.length} file(s) selected:</p>
                     {formData.memoryFiles.map((file, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-[rgba(0, 0, 0, 0.5)]/50 border border-[#E8523D]/20 rounded-lg">
+                      <div key={i} className="flex items-center justify-between p-3 bg-[rgba(0, 0, 0, 0.5)]/50 border border-[var(--mint-mid)]/20 rounded-lg">
                         <div className="flex items-center gap-2">
                           <span className="text-lg">📄</span>
                           <div>
-                            <span className="text-sm text-white">{file.name}</span>
+                            <span className="text-sm text-[var(--text-primary)]">{file.name}</span>
                             <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">{(file.size / 1024).toFixed(1)} KB</p>
                           </div>
                         </div>
@@ -930,8 +930,8 @@ function CreateAgentFlow() {
                   </div>
                 )}
 
-                <div className="bg-[#E8523D]/5 rounded-lg p-4 border border-[#E8523D]/20 mb-6">
-                  <p className="text-xs text-[#E8523D] font-semibold mb-2">💡 Suggested memory files:</p>
+                <div className="bg-[var(--mint-mid)]/5 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-6">
+                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">💡 Suggested memory files:</p>
                   <ul className="text-xs text-[rgba(255, 255, 255, 0.5)] space-y-1">
                     <li>• <strong>README.md</strong> - Agent description and capabilities</li>
                     <li>• <strong>PERSONALITY.md</strong> - Behavior and communication style</li>
@@ -941,8 +941,8 @@ function CreateAgentFlow() {
                 </div>
 
                 <div className="flex gap-4">
-                  <button onClick={handleBack} disabled={isUploadingMemory} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3 disabled:opacity-50">Back</button>
-                  <button onClick={handleMemoryUpload} disabled={isUploadingMemory} className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50">
+                  <button onClick={handleBack} disabled={isUploadingMemory} className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3 disabled:opacity-50">Back</button>
+                  <button onClick={handleMemoryUpload} disabled={isUploadingMemory} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50">
                     {isUploadingMemory ? 'Uploading to IPFS...' : formData.memoryFiles.length > 0 ? 'Upload & Continue' : 'Skip for now'}
                   </button>
                 </div>
@@ -951,14 +951,14 @@ function CreateAgentFlow() {
 
             {/* Step 6: Deploy & Review (Human only) */}
             {step === 6 && isConnected && creatorType === 'human' && (
-              <motion.div key="step6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8">
-                <h2 className="text-2xl font-black text-white mb-6">Deploy Agent: {formData.name} (${formData.symbol})</h2>
+              <motion.div key="step6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8">
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-6">Deploy Agent: {formData.name} (${formData.symbol})</h2>
                 
                 {/* Summary */}
-                <div className="space-y-3 mb-6 p-4 bg-[rgba(0, 0, 0, 0.5)] rounded-xl border border-[#E8523D]/20">
+                <div className="space-y-3 mb-6 p-4 bg-[rgba(0, 0, 0, 0.5)] rounded-xl border border-[var(--mint-mid)]/20">
                   <div className="flex justify-between text-sm">
                     <span className="text-[rgba(255, 255, 255, 0.5)]">Starting MCAP:</span>
-                    <span className="text-white">{formData.genesisBuy} ETH {ethPrice ? `(~$${((formData.genesisBuy || 5) * ethPrice).toLocaleString()})` : ''}</span>
+                    <span className="text-[var(--text-primary)]">{formData.genesisBuy} ETH {ethPrice ? `(~$${((formData.genesisBuy || 5) * ethPrice).toLocaleString()})` : ''}</span>
                   </div>
                 </div>
 
@@ -966,7 +966,7 @@ function CreateAgentFlow() {
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-lg">💸</span>
-                    <span className="text-sm font-semibold text-white">💸 Fee Split (70% Creator Share)</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">💸 Fee Split (70% Creator Share)</span>
                   </div>
                   <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-4">Split your 70% share of the 1% LP fee across up to 5 wallets. Leave empty to use connected wallet.</p>
                   
@@ -985,7 +985,7 @@ function CreateAgentFlow() {
                             setFormData({ ...formData, feeSplitWallets: newWallets })
                           }}
                           placeholder={idx === 0 ? creatorAddress || '0x...' : '0x... (optional)'}
-                          className="flex-1 bg-black border border-[#E8523D]/20 rounded-lg px-3 py-2 text-white font-mono text-xs placeholder:text-white/30 focus:border-[#E8523D] focus:outline-none"
+                          className="flex-1 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-3 py-2 text-[var(--text-primary)] font-mono text-xs placeholder:text-[var(--text-secondary)]/50 focus:border-[var(--mint-mid)] focus:outline-none"
                           disabled={isDisabled}
                         />
                         <input
@@ -1000,7 +1000,7 @@ function CreateAgentFlow() {
                           placeholder="%"
                           min="0"
                           max="100"
-                          className="w-20 bg-black border border-[#E8523D]/20 rounded-lg px-3 py-2 text-white text-center text-xs focus:border-[#E8523D] focus:outline-none"
+                          className="w-20 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-3 py-2 text-[var(--text-primary)] text-center text-xs focus:border-[var(--mint-mid)] focus:outline-none"
                           disabled={isDisabled}
                         />
                         <span className="text-[rgba(255, 255, 255, 0.5)] text-xs flex items-center">%</span>
@@ -1014,31 +1014,31 @@ function CreateAgentFlow() {
                 </div>
 
                 {/* Cost Breakdown */}
-                <div className="mb-6 p-4 bg-[#E8523D]/5 rounded-xl border border-[#E8523D]/20">
-                  <p className="text-sm font-semibold text-white mb-3">💰 Cost Breakdown</p>
+                <div className="mb-6 p-4 bg-[var(--mint-mid)]/5 rounded-xl border border-[var(--mint-mid)]/20">
+                  <p className="text-sm font-semibold text-[var(--text-primary)] mb-3">💰 Cost Breakdown</p>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Pool Bootstrap (min {MIN_BOOTSTRAP_ETH} ETH):</span>
-                      <span className="text-white">{totalCost.bootstrapETH.toFixed(4)} ETH</span>
+                      <span className="text-[var(--text-primary)]">{totalCost.bootstrapETH.toFixed(4)} ETH</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Birth Certificate NFT:</span>
-                      <span className="text-white">{IMMORTALIZATION_FEE} ETH</span>
+                      <span className="text-[var(--text-primary)]">{IMMORTALIZATION_FEE} ETH</span>
                     </div>
                     {formData.memoryFiles.length > 0 && (
                       <div className="flex justify-between">
                         <span className="text-[rgba(255, 255, 255, 0.5)]">Memory Upload Fee:</span>
-                        <span className="text-white">{MEMORY_UPLOAD_FEE.toFixed(4)} ETH</span>
+                        <span className="text-[var(--text-primary)]">{MEMORY_UPLOAD_FEE.toFixed(4)} ETH</span>
                       </div>
                     )}
                     <div className="flex justify-between text-xs">
                       <span className="text-[rgba(255, 255, 255, 0.5)]">Gas Fees:</span>
                       <span className="text-[rgba(255, 255, 255, 0.5)]">+ network gas</span>
                     </div>
-                    <hr className="border-[#E8523D]/20" />
+                    <hr className="border-[var(--mint-mid)]/20" />
                     <div className="flex justify-between font-semibold">
-                      <span className="text-white">Total:</span>
-                      <span className="text-[#E8523D]">{totalCost.total.toFixed(4)} ETH + gas</span>
+                      <span className="text-[var(--text-primary)]">Total:</span>
+                      <span className="text-[var(--mint-mid)]">{totalCost.total.toFixed(4)} ETH + gas</span>
                     </div>
                     {ethPrice && (
                       <div className="flex justify-between text-xs">
@@ -1060,7 +1060,7 @@ function CreateAgentFlow() {
                 {/* Acknowledgment */}
                 <div className="mb-6">
                   <label className="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" checked={formData.feeAcknowledged} onChange={(e) => setFormData({ ...formData, feeAcknowledged: e.target.checked })} className="w-5 h-5 mt-0.5 rounded border-[#E8523D]/30 bg-[rgba(0, 0, 0, 0.5)] text-[#E8523D]" />
+                    <input type="checkbox" checked={formData.feeAcknowledged} onChange={(e) => setFormData({ ...formData, feeAcknowledged: e.target.checked })} className="w-5 h-5 mt-0.5 rounded border-[var(--mint-mid)]/30 bg-[rgba(0, 0, 0, 0.5)] text-[var(--mint-mid)]" />
                     <span className="text-sm text-[rgba(255, 255, 255, 0.5)]">
                       I understand this uses Uniswap V4 with a 1% LP fee (flat across all positions). Market determines price. Platform takes 30% of fees, I receive 70%.
                     </span>
@@ -1071,7 +1071,7 @@ function CreateAgentFlow() {
                   <button
                     onClick={handleCreateAgent}
                     disabled={isWritePending || isConfirming || (deployPhase !== 'idle' && deployPhase !== 'done') || deployPhase === 'done' || !formData.feeAcknowledged}
-                    className="bg-[#E8523D] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isWritePending ? 'Sign in Wallet...' : 
                      deployPhase === 'launching' ? 'Deploying Agent...' :
@@ -1080,7 +1080,7 @@ function CreateAgentFlow() {
                      '🚀 Deploy Agent'}
                   </button>
                   {deployPhase === 'done' && agentWallet && (
-                    <Link href={`/agent/${launchedToken || agentWallet}`} className="bg-[#000000] border border-[#E8523D]/30 text-[#E8523D] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg py-4 text-center font-semibold">
+                    <Link href={`/agent/${launchedToken || agentWallet}`} className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[var(--mint-mid)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg py-4 text-center font-semibold">
                       View Dashboard →
                     </Link>
                   )}
@@ -1088,17 +1088,17 @@ function CreateAgentFlow() {
 
                 {/* Launched Token Info */}
                 {launchedToken && (
-                  <div className="mb-6 p-4 bg-[#E8523D]/10 rounded-xl border border-[#E8523D]/30">
-                    <p className="text-sm font-semibold text-[#E8523D] mb-2">🎉 Token Deployed!</p>
+                  <div className="mb-6 p-4 bg-[var(--mint-mid)]/10 rounded-xl border border-[var(--mint-mid)]/30">
+                    <p className="text-sm font-semibold text-[var(--mint-mid)] mb-2">🎉 Token Deployed!</p>
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
                         <span className="text-[rgba(255, 255, 255, 0.5)]">Token Address:</span>
-                        <a href={`${explorerUrl}/address/${launchedToken}`} target="_blank" className="text-[#E8523D] hover:underline font-mono">{launchedToken.slice(0, 8)}...{launchedToken.slice(-6)}</a>
+                        <a href={`${explorerUrl}/address/${launchedToken}`} target="_blank" className="text-[var(--mint-mid)] hover:underline font-mono">{launchedToken.slice(0, 8)}...{launchedToken.slice(-6)}</a>
                       </div>
                       {launchedPoolId && (
                         <div className="flex justify-between">
                           <span className="text-[rgba(255, 255, 255, 0.5)]">Pool ID:</span>
-                          <span className="text-white font-mono">{launchedPoolId.slice(0, 10)}...{launchedPoolId.slice(-6)}</span>
+                          <span className="text-[var(--text-primary)] font-mono">{launchedPoolId.slice(0, 10)}...{launchedPoolId.slice(-6)}</span>
                         </div>
                       )}
                     </div>
@@ -1106,16 +1106,16 @@ function CreateAgentFlow() {
                 )}
 
                 <div className="flex gap-4">
-                  <button onClick={handleBack} className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
+                  <button onClick={handleBack} className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3">Back</button>
                 </div>
               </motion.div>
             )}
 
             {/* Loading */}
             {(isWritePending || deployPhase === 'launching' || deployPhase === 'confirming') && (
-              <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8 text-center mt-6">
+              <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8 text-center mt-6">
                 <div className="text-6xl mb-6 animate-pulse">🦞</div>
-                <h2 className="text-2xl font-black text-white mb-4">
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-4">
                   {isWritePending ? 'Sign Transaction...' : 
                    deployPhase === 'launching' ? 'Deploying Agent...' :
                    'Confirming on Chain...'}
@@ -1125,37 +1125,37 @@ function CreateAgentFlow() {
                    deployPhase === 'launching' ? 'Creating token, pool, and minting birth certificate in one transaction...' :
                    'Waiting for transaction confirmation...'}
                 </p>
-                {hash && <a href={`${explorerUrl}/tx/${hash}`} target="_blank" className="text-sm text-[#E8523D]">View on Explorer →</a>}
+                {hash && <a href={`${explorerUrl}/tx/${hash}`} target="_blank" className="text-sm text-[var(--mint-mid)]">View on Explorer →</a>}
               </motion.div>
             )}
 
             {/* Success */}
             {deployPhase === 'done' && hash && (
-              <motion.div key="success" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[#E8523D]/25 rounded-2xl p-8 text-center mt-6">
+              <motion.div key="success" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl p-8 text-center mt-6">
                 <div className="text-6xl mb-6">🎉</div>
-                <h2 className="text-2xl font-black text-white mb-4">Agent Immortalized!</h2>
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-4">Agent Immortalized!</h2>
                 <p className="text-[rgba(255, 255, 255, 0.5)] mb-4">Your agent is live on-chain with a Uniswap V4 pool and birth certificate!</p>
                 {launchedToken && (
-                  <p className="text-sm text-[#E8523D] mb-4 font-mono">Token: {launchedToken}</p>
+                  <p className="text-sm text-[var(--mint-mid)] mb-4 font-mono">Token: {launchedToken}</p>
                 )}
                 {birthCertNftId !== null && (
                   <p className="text-sm text-[rgba(255, 255, 255, 0.5)] mb-6">Birth Certificate #{birthCertNftId.toString()} minted to agent wallet</p>
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {agentWallet && <Link href={`/agent/${launchedToken || agentWallet}`} className="bg-[#E8523D] font-semibold rounded-lg py-3 text-center text-black">View Dashboard</Link>}
-                  <a href={`${explorerUrl}/tx/${hash}`} target="_blank" className="bg-[#000000] border border-[#E8523D]/30 text-[rgba(255, 255, 255, 0.5)] rounded-lg py-3 text-center">Block Explorer</a>
+                  {agentWallet && <Link href={`/agent/${launchedToken || agentWallet}`} className="bg-[var(--mint-mid)] font-semibold rounded-lg py-3 text-center text-black">View Dashboard</Link>}
+                  <a href={`${explorerUrl}/tx/${hash}`} target="_blank" className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] rounded-lg py-3 text-center">Block Explorer</a>
                 </div>
 
                 {/* Free NFTid Mint for Birth Certificate Holders */}
-                <div className="mt-6 p-4 bg-gradient-to-br from-[#E8523D]/10 to-[#FF8C4A]/10 border border-[#E8523D]/30 rounded-xl">
+                <div className="mt-6 p-4 bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 border border-[var(--mint-mid)]/30 rounded-xl">
                   <div className="flex items-center gap-3 mb-3 justify-center">
                     <span className="text-3xl">🦞</span>
                     <div className="text-left">
-                      <p className="text-sm font-bold text-white">Claim Your Agent's NFTid</p>
-                      <p className="text-xs text-white/60">Free for Birth Certificate holders</p>
+                      <p className="text-sm font-bold text-[var(--text-primary)]">Claim Your Agent's NFTid</p>
+                      <p className="text-xs text-[var(--text-secondary)]">Free for Birth Certificate holders</p>
                     </div>
                   </div>
-                  <p className="text-xs text-white/50 mb-4">
+                  <p className="text-xs text-[var(--text-secondary)] mb-4">
                     Create a unique visual identity for your agent — generative trait-based NFT with guaranteed uniqueness.
                   </p>
                   
@@ -1163,7 +1163,7 @@ function CreateAgentFlow() {
                     <button
                       onClick={handleFreeMint}
                       disabled={isNftidMintPending}
-                      className="w-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-black font-semibold px-6 py-3 rounded-lg hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-black font-semibold px-6 py-3 rounded-lg hover:shadow-xl hover:shadow-[var(--mint-mid)]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Claim Free NFTid →
                     </button>
@@ -1171,8 +1171,8 @@ function CreateAgentFlow() {
 
                   {(nftidMintPhase === 'minting' || nftidMintPhase === 'confirming') && (
                     <div className="flex items-center justify-center gap-2 py-3">
-                      <div className="w-4 h-4 border-2 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin"></div>
-                      <span className="text-sm text-white">
+                      <div className="w-4 h-4 border-2 border-[var(--mint-mid)]/30 border-t-[var(--mint-mid)] rounded-full animate-spin"></div>
+                      <span className="text-sm text-[var(--text-primary)]">
                         {nftidMintPhase === 'minting' ? 'Confirm in wallet...' : 'Minting NFTid...'}
                       </span>
                     </div>
@@ -1184,7 +1184,7 @@ function CreateAgentFlow() {
                         <span>✓</span>
                         <span className="text-sm font-semibold">NFTid #{mintedNftidTokenId.toString()} Minted!</span>
                       </div>
-                      <p className="text-xs text-white/50 text-center">Redirecting to your NFTid...</p>
+                      <p className="text-xs text-[var(--text-secondary)] text-center">Redirecting to your NFTid...</p>
                     </div>
                   )}
 
@@ -1201,9 +1201,9 @@ function CreateAgentFlow() {
             {writeError && !isWritePending && !isConfirming && (
               <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[rgba(255, 255, 255, 0.03)] border border-red-500/25 rounded-2xl p-8 text-center mt-6">
                 <div className="text-6xl mb-6">❌</div>
-                <h2 className="text-2xl font-black text-white mb-4">Failed</h2>
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-4">Failed</h2>
                 <p className="text-[rgba(255, 255, 255, 0.5)] mb-4">{writeError.message}</p>
-                <button onClick={() => window.location.reload()} className="bg-[#E8523D] font-semibold rounded-lg px-6 py-3 text-black">Try Again</button>
+                <button onClick={() => window.location.reload()} className="bg-[var(--mint-mid)] font-semibold rounded-lg px-6 py-3 text-black">Try Again</button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1215,7 +1215,7 @@ function CreateAgentFlow() {
 
 export default function CreateAgent() {
   return (
-    <Suspense fallback={<div className='min-h-screen flex items-center justify-center'><div className='text-white'>Loading...</div></div>}>
+    <Suspense fallback={<div className='min-h-screen flex items-center justify-center'><div className='text-[var(--text-primary)]'>Loading...</div></div>}>
       <CreateAgentFlow />
     </Suspense>
   )
