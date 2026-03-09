@@ -12,6 +12,85 @@ import { SEPOLIA_ADDRESSES, BASE_ADDRESSES, ABIS, LaunchType } from '../../../li
 import { uploadToPinata } from '../../../lib/ipfs'
 import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../lib/contracts/clawdNFT'
 
+// ── Animated creator type icons ──────────────────────────────────────────────
+const iconCss = `
+@keyframes ci-breathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+@keyframes ci-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+@keyframes ci-scan { 0%{transform:translateX(-4px)} 50%{transform:translateX(4px)} 100%{transform:translateX(-4px)} }
+@keyframes ci-blink { 0%,90%,100%{opacity:1} 95%{opacity:0} }
+@keyframes ci-antenna { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+@keyframes ci-circuit { 0%{stroke-dashoffset:40} 100%{stroke-dashoffset:0} }
+@keyframes ci-glow { 0%,100%{filter:drop-shadow(0 0 3px #45C7B8)} 50%{filter:drop-shadow(0 0 10px #2EE6D6)} }
+`
+
+const AnimatedHumanIcon = () => (
+  <>
+    <style>{iconCss}</style>
+    <svg width="72" height="72" viewBox="0 0 72 72" fill="none" style={{animation:'ci-glow 3s ease-in-out infinite'}}>
+      {/* Body group - breathing */}
+      <g style={{animation:'ci-breathe 3s ease-in-out infinite', transformOrigin:'36px 40px'}}>
+        {/* Head */}
+        <circle cx="36" cy="22" r="12" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)" />
+        {/* Eyes */}
+        <circle cx="31" cy="20" r="2" fill="#45C7B8" style={{animation:'ci-blink 4s ease-in-out infinite'}} />
+        <circle cx="41" cy="20" r="2" fill="#45C7B8" style={{animation:'ci-blink 4s ease-in-out infinite 0.2s'}} />
+        {/* Smile */}
+        <path d="M31 26 Q36 30 41 26" stroke="#7DE2D1" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+        {/* Neck */}
+        <line x1="36" y1="34" x2="36" y2="38" stroke="#45C7B8" strokeWidth="2.5" />
+        {/* Shoulders */}
+        <path d="M16 52 Q16 38 36 38 Q56 38 56 52" stroke="#45C7B8" strokeWidth="2.5" strokeLinecap="round" fill="rgba(69,199,184,0.05)" />
+        {/* Body */}
+        <path d="M24 52 L24 66 M48 52 L48 66" stroke="#45C7B8" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M24 58 L48 58" stroke="#7DE2D1" strokeWidth="1.5" strokeLinecap="round" />
+      </g>
+      {/* Heart pulse on chest */}
+      <path d="M31 47 Q33 43 36 47 Q39 43 41 47 Q41 50 36 54 Q31 50 31 47Z"
+        fill="#2EE6D6" opacity="0.7" style={{animation:'ci-pulse 1.2s ease-in-out infinite'}} />
+      {/* Glow ring */}
+      <circle cx="36" cy="36" r="32" stroke="#45C7B8" strokeWidth="0.5" strokeDasharray="4 6" opacity="0.3"
+        style={{animation:'ci-breathe 4s ease-in-out infinite reverse'}} />
+    </svg>
+  </>
+)
+
+const AnimatedAgentIcon = () => (
+  <>
+    <svg width="72" height="72" viewBox="0 0 72 72" fill="none" style={{animation:'ci-glow 2.5s ease-in-out infinite 0.5s'}}>
+      {/* Antenna */}
+      <g style={{transformOrigin:'36px 12px'}}>
+        <line x1="36" y1="12" x2="36" y2="20" stroke="#45C7B8" strokeWidth="2" />
+        <circle cx="36" cy="10" r="3.5" fill="#2EE6D6" style={{animation:'ci-antenna 1s ease-in-out infinite'}} />
+      </g>
+      {/* Head / screen */}
+      <rect x="18" y="20" width="36" height="26" rx="5" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(8,40,36,0.6)" />
+      {/* Screen glow */}
+      <rect x="20" y="22" width="32" height="22" rx="3" fill="rgba(46,230,214,0.06)" />
+      {/* Eyes - scanning */}
+      <g style={{animation:'ci-scan 2s ease-in-out infinite', transformOrigin:'36px 31px'}}>
+        <rect x="23" y="28" width="10" height="6" rx="2" fill="#2EE6D6" opacity="0.9" />
+        <rect x="39" y="28" width="10" height="6" rx="2" fill="#2EE6D6" opacity="0.9" />
+      </g>
+      {/* Mouth bar */}
+      <rect x="26" y="38" width="20" height="3" rx="1.5" fill="#45C7B8" opacity="0.6" style={{animation:'ci-pulse 2s ease-in-out infinite'}} />
+      {/* Neck */}
+      <rect x="33" y="46" width="6" height="4" fill="#1FAFA3" />
+      {/* Body */}
+      <rect x="20" y="50" width="32" height="18" rx="4" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(8,40,36,0.6)" />
+      {/* Circuit lines on body */}
+      <path d="M26 59 L30 59 L30 56 L42 56 L42 59 L46 59" stroke="#2EE6D6" strokeWidth="1.5" strokeLinecap="round"
+        strokeDasharray="20" style={{animation:'ci-circuit 2s linear infinite'}} />
+      {/* Arms */}
+      <rect x="10" y="52" width="10" height="4" rx="2" stroke="#45C7B8" strokeWidth="2" fill="none" />
+      <rect x="52" y="52" width="10" height="4" rx="2" stroke="#45C7B8" strokeWidth="2" fill="none" />
+      {/* Glow ring */}
+      <circle cx="36" cy="36" r="32" stroke="#45C7B8" strokeWidth="0.5" strokeDasharray="3 7" opacity="0.25"
+        style={{animation:'ci-scan 8s linear infinite'}} />
+    </svg>
+  </>
+)
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Minimum bootstrap ETH required by the factory
 const MIN_BOOTSTRAP_ETH = 0.001;
 
@@ -381,9 +460,9 @@ function CreateAgentFlow() {
   }
 
   return (
-    <main className="min-h-screen w-full overflow-x-hidden" style={{background:"#0A2825"}}>
+    <main className="min-h-screen w-full overflow-x-hidden" style={{background:"var(--bg-soft)"}}>
       {/* Header */}
-      <header className="fixed w-full z-50 border-b border-[rgba(69,199,184,0.2)]" style={{background:"rgba(5,25,22,0.95)",backdropFilter:"blur(20px)"}}>
+      <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="relative w-10 h-10">
@@ -421,7 +500,7 @@ function CreateAgentFlow() {
                   <div key={s} className={`flex-1 h-1 rounded-full transition-all mx-0.5 ${s <= step ? 'bg-[var(--mint-mid)]' : 'bg-[var(--mint-mid)]/20'}`} />
                 ))}
               </div>
-              <div className="text-sm text-white/60 text-center">Step {step} of 6</div>
+              <div className="text-sm text-[var(--text-secondary)] text-center">Step {step} of 6</div>
             </div>
           )}
 
@@ -429,16 +508,18 @@ function CreateAgentFlow() {
             {/* Step 0: Entry */}
             {step === 0 && (
               <motion.div key="step0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center">
-                <h1 className="text-4xl font-black text-white mb-4">Create Agent</h1>
-                <p className="text-white/60 mb-12">Who is creating the agent?</p>
+                <h1 className="text-4xl font-black text-[var(--text-primary)] mb-4">Create Agent</h1>
+                <p className="text-[var(--text-secondary)] mb-12">Who is creating this agent?</p>
                 <div className="grid md:grid-cols-2 gap-6 max-w-lg mx-auto">
-                  <button onClick={() => { setCreatorType('human'); setStep(1) }} className="hover:border-[rgba(46,230,214,0.6)]/40 transition-all group rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                    <div className="text-5xl mb-4">👤</div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-[var(--mint-mid)]">Human</h3>
+                  <button onClick={() => { setCreatorType('human'); setStep(1) }} className="hover:border-[rgba(46,230,214,0.7)] transition-all group rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
+                    <div className="flex justify-center mb-4"><AnimatedHumanIcon /></div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-[var(--mint-mid)] transition-colors">Human</h3>
+                    <p className="text-white/50 text-sm mt-1">Spawning via web</p>
                   </button>
-                  <button onClick={() => { setCreatorType('agent'); setStep(1) }} className="hover:border-[rgba(46,230,214,0.6)]/40 transition-all group rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                    <div className="text-5xl mb-4">🤖</div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-[var(--mint-mid)]">Agent</h3>
+                  <button onClick={() => { setCreatorType('agent'); setStep(1) }} className="hover:border-[rgba(46,230,214,0.7)] transition-all group rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
+                    <div className="flex justify-center mb-4"><AnimatedAgentIcon /></div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-[var(--mint-mid)] transition-colors">Agent</h3>
+                    <p className="text-white/50 text-sm mt-1">Spawning via CLI/API</p>
                   </button>
                 </div>
               </motion.div>

@@ -312,7 +312,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
   // Loading state
   if (loading) {
     return (
-      <main className="min-h-screen relative bg-[#000000] w-full overflow-x-hidden">
+      <main className="min-h-screen w-full overflow-x-hidden" style={{background:"var(--bg-soft)"}}>
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-[var(--mint-mid)] border-t-transparent mx-auto mb-4"></div>
@@ -326,8 +326,8 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
   // Error state
   if (error || !agent) {
     return (
-      <main className="min-h-screen relative bg-[#000000] w-full overflow-x-hidden text-white">
-        <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[var(--mint-mid)]/10">
+      <main className="min-h-screen w-full overflow-x-hidden" style={{background:"var(--bg-soft)"}}>
+        <header className="fixed w-full z-50 glass border-b border-[var(--mint-mid)]/10">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
               <div className="relative w-10 h-10">
@@ -348,7 +348,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                     BETA
                   </span>
                 </div>
-                <span className="text-xs text-white/50">Agent Infrastructure</span>
+                <span className="text-xs text-[var(--text-secondary)]">Agent Infrastructure</span>
               </div>
             </Link>
             <ConnectButton />
@@ -371,7 +371,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
   }
 
   return (
-    <main className="min-h-screen relative bg-[#000000] w-full overflow-x-hidden">
+    <main className="min-h-screen w-full overflow-x-hidden" style={{background:"var(--bg-soft)"}}>
       {/* Electric Aura Background */}
       <div className="electric-aura">
         <div className="electric-particle"></div>
@@ -390,7 +390,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
       </div>
 
       {/* Header */}
-      <header className="fixed w-full z-50 bg-[#000000]/80 backdrop-blur-xl border-b border-[var(--mint-mid)]/10">
+      <header className="fixed w-full z-50 glass border-b border-[var(--mint-mid)]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="relative w-10 h-10">
@@ -411,7 +411,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   BETA
                 </span>
               </div>
-              <span className="text-xs text-white/50">Agent Infrastructure</span>
+              <span className="text-xs text-[var(--text-secondary)]">Agent Infrastructure</span>
             </div>
           </Link>
           
@@ -426,7 +426,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
           <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl backdrop-blur-sm p-4 sm:p-8 mb-6">
             <div className="flex flex-col md:flex-row items-start justify-between gap-4 mb-6">
               <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-4xl font-black text-white mb-2 break-words">
+                <h1 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] mb-2 break-words">
                   {agent.name}
                 </h1>
                 <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -468,7 +468,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
             {/* Quick Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <div className="text-center p-2 sm:p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg">
-                <div className="text-sm sm:text-xl md:text-2xl font-bold text-white mb-1 truncate">
+                <div className="text-sm sm:text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-1 truncate">
                   {stats?.price && stats?.ethPriceUsd ? `$${(stats.price * stats.ethPriceUsd).toFixed(8)}` : '$0'}
                 </div>
                 <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Price</div>
@@ -479,19 +479,19 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 )}
               </div>
               <div className="text-center p-2 sm:p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg">
-                <div className="text-sm sm:text-xl md:text-2xl font-bold text-white mb-1">
+                <div className="text-sm sm:text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-1">
                   ${stats?.marketCap && stats?.ethPriceUsd ? (stats.marketCap * stats.ethPriceUsd / 1000).toFixed(1) : '0'}K
                 </div>
                 <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Market Cap</div>
               </div>
               <div className="text-center p-2 sm:p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg">
-                <div className="text-sm sm:text-xl md:text-2xl font-bold text-white mb-1">
+                <div className="text-sm sm:text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-1">
                   ${stats?.volume24h && stats?.ethPriceUsd ? (stats.volume24h * stats.ethPriceUsd / 1000).toFixed(0) : '0'}K
                 </div>
                 <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Volume 24h</div>
               </div>
               <div className="text-center p-2 sm:p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg">
-                <div className="text-sm sm:text-xl md:text-2xl font-bold text-white mb-1">
+                <div className="text-sm sm:text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-1">
                   <span className="text-[var(--mint-mid)]">🔥</span>
                 </div>
                 <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">IMMORTAL</div>
@@ -501,7 +501,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
           {/* Trading Links */}
           <div className="bg-[rgba(255, 255, 255, 0.03)] border border-[var(--mint-mid)]/25 rounded-2xl backdrop-blur-sm p-6 mb-6">
-            <h3 className="text-lg font-bold text-white mb-4">📊 Charts & Scanners</h3>
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">📊 Charts & Scanners</h3>
             <div className="grid md:grid-cols-3 gap-4 mb-6">
               <a
                 href={`https://dexscreener.com/base/${agent.token}`}
@@ -510,7 +510,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 hover:border-[var(--mint-mid)]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
               >
                 <div>
-                  <div className="text-white font-semibold mb-1">DEXScreener</div>
+                  <div className="text-[var(--text-primary)] font-semibold mb-1">DEXScreener</div>
                   <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Price & liquidity charts</div>
                 </div>
                 <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[var(--mint-mid)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -525,7 +525,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 hover:border-[var(--mint-mid)]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
               >
                 <div>
-                  <div className="text-white font-semibold mb-1">Defined</div>
+                  <div className="text-[var(--text-primary)] font-semibold mb-1">Defined</div>
                   <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Advanced analytics</div>
                 </div>
                 <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[var(--mint-mid)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -540,7 +540,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 hover:border-[var(--mint-mid)]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
               >
                 <div>
-                  <div className="text-white font-semibold mb-1">GeckoTerminal</div>
+                  <div className="text-[var(--text-primary)] font-semibold mb-1">GeckoTerminal</div>
                   <div className="text-xs text-[rgba(255, 255, 255, 0.5)]">Real-time trading</div>
                 </div>
                 <svg className="w-5 h-5 text-[rgba(255, 255, 255, 0.5)] group-hover:text-[var(--mint-mid)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -579,7 +579,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   className={`flex-1 min-w-[90px] py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                     activeTab === tab
                       ? 'bg-[var(--mint-mid)] text-black shadow-[0_0_20px_rgba(30,230,183,0.5)]'
-                      : 'text-[rgba(255, 255, 255, 0.5)] hover:text-white hover:bg-[rgba(0, 0, 0, 0.5)]'
+                      : 'text-[rgba(255, 255, 255, 0.5)] hover:text-[var(--text-primary)] hover:bg-[rgba(0, 0, 0, 0.5)]'
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -603,7 +603,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-lg">🦞</span>
-                      <h3 className="text-sm font-bold text-white">FUNLAN Identity</h3>
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">FUNLAN Identity</h3>
                     </div>
                     <div className="flex gap-4">
                       <div className="shrink-0">
@@ -640,7 +640,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   <div className={`bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border ${hasNFT ? 'border-purple-500/20' : 'border-[rgba(255, 255, 255, 0.5)]/20'}`}>
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-lg">{hasNFT ? '🏆' : '⏳'}</span>
-                      <h3 className="text-sm font-bold text-white">Birth Certificate</h3>
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">Birth Certificate</h3>
                       <div className="flex gap-1 ml-auto">
                         {hasNFT === null ? (
                           <span className="px-2 py-0.5 rounded-full bg-[rgba(255, 255, 255, 0.5)]/20 text-[rgba(255, 255, 255, 0.5)] text-[10px] font-semibold">
@@ -662,11 +662,11 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                         <div className="grid grid-cols-2 gap-3 text-xs mb-3">
                           <div>
                             <p className="text-[rgba(255, 255, 255, 0.5)] text-[10px] mb-0.5">NFT ID</p>
-                            <span className="text-white font-mono text-[10px]">#{birthCert.nftId}</span>
+                            <span className="text-[var(--text-primary)] font-mono text-[10px]">#{birthCert.nftId}</span>
                           </div>
                           <div>
                             <p className="text-[rgba(255, 255, 255, 0.5)] text-[10px] mb-0.5">Born</p>
-                            <span className="text-white font-mono text-[10px]">
+                            <span className="text-[var(--text-primary)] font-mono text-[10px]">
                               {new Date(birthCert.birthTimestamp * 1000).toLocaleDateString()}
                             </span>
                           </div>
@@ -678,7 +678,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                           </div>
                           <div>
                             <p className="text-[rgba(255, 255, 255, 0.5)] text-[10px] mb-0.5">Spawned</p>
-                            <span className="text-white text-[10px]">{birthCert.spawnedAgents} agents</span>
+                            <span className="text-[var(--text-primary)] text-[10px]">{birthCert.spawnedAgents} agents</span>
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3 text-xs mb-3">
@@ -727,7 +727,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1">Agent Wallet</p>
-                    <p className="text-white font-mono text-xs break-all mb-1">{agent.wallet}</p>
+                    <p className="text-[var(--text-primary)] font-mono text-xs break-all mb-1">{agent.wallet}</p>
                     <a 
                       href={`${explorerBase}/address/${agent.wallet}`}
                       target="_blank"
@@ -738,7 +738,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   </div>
                   <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1">Token Contract</p>
-                    <p className="text-white font-mono text-xs break-all mb-1">{agent.token}</p>
+                    <p className="text-[var(--text-primary)] font-mono text-xs break-all mb-1">{agent.token}</p>
                     <a 
                       href={`${explorerBase}/token/${agent.token}`}
                       target="_blank"
@@ -754,15 +754,15 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-2xl">🦞</span>
                     <div>
-                      <h4 className="text-lg font-bold text-white">Soul NFTid</h4>
-                      <p className="text-xs text-white/50">Visual identity for this agent</p>
+                      <h4 className="text-lg font-bold text-[var(--text-primary)]">Soul NFTid</h4>
+                      <p className="text-xs text-[var(--text-secondary)]">Visual identity for this agent</p>
                     </div>
                   </div>
 
                   {loadingNFTid ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--mint-mid)]/30 border-t-[var(--mint-mid)] mx-auto mb-3"></div>
-                      <p className="text-xs text-white/50">Checking registry...</p>
+                      <p className="text-xs text-[var(--text-secondary)]">Checking registry...</p>
                     </div>
                   ) : linkedNFTid && linkedNFTidTraits ? (
                     <div className="space-y-4">
@@ -771,14 +771,14 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                           <NFTidCompositor traits={linkedNFTidTraits} size={96} />
                         </div>
                         <div className="flex-1">
-                          <div className="text-sm font-bold text-white mb-1">
+                          <div className="text-sm font-bold text-[var(--text-primary)] mb-1">
                             NFTid #{linkedNFTid}
                           </div>
                           <div className="text-xs text-green-400 mb-2 flex items-center gap-1">
                             <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
                             Linked to this agent
                           </div>
-                          <div className="text-xs text-white/50">
+                          <div className="text-xs text-[var(--text-secondary)]">
                             This agent uses a custom visual identity from the Soul NFTid collection
                           </div>
                         </div>
@@ -786,7 +786,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                       <div className="flex gap-3">
                         <Link
                           href={`/soul/${linkedNFTid}`}
-                          className="flex-1 px-4 py-2 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-sm text-center text-white font-semibold hover:shadow-lg hover:shadow-[var(--mint-mid)]/40 transition-all"
+                          className="flex-1 px-4 py-2 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-sm text-center text-[var(--text-primary)] font-semibold hover:shadow-lg hover:shadow-[var(--mint-mid)]/40 transition-all"
                         >
                           View NFTid Details →
                         </Link>
@@ -798,7 +798,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                                 window.location.reload()
                               }
                             }}
-                                className="px-4 py-2 bg-black/50 border border-red-500/30 hover:border-red-500/60 text-red-400 text-sm rounded-lg transition-all"
+                                className="px-4 py-2 glass border border-red-500/30 hover:border-red-500/60 text-red-400 text-sm rounded-lg transition-all"
                               >
                                 Unlink
                               </button>
@@ -808,15 +808,15 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                     ) : (
                       <div className="text-center py-6">
                         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
-                          <IDIcon size={32} className="text-white/40" />
+                          <IDIcon size={32} className="text-[var(--text-secondary)]/70" />
                         </div>
-                        <p className="text-sm text-white/50 mb-2">No NFTid linked yet</p>
-                        <p className="text-xs text-white/30 mb-4">
+                        <p className="text-sm text-[var(--text-secondary)] mb-2">No NFTid linked yet</p>
+                        <p className="text-xs text-[var(--text-secondary)]/50 mb-4">
                           Soul NFTids are generative visual identities that can be linked to agents
                         </p>
                         <Link
                           href="/soul"
-                          className="inline-block px-4 py-2 bg-black/50 border border-white/10 hover:border-[var(--mint-mid)]/50 rounded-lg text-sm text-white transition-all"
+                          className="inline-block px-4 py-2 glass border border-white/10 hover:border-[var(--mint-mid)]/50 rounded-lg text-sm text-[var(--text-primary)] transition-all"
                         >
                           Mint NFTid →
                         </Link>
@@ -826,7 +826,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* Properties Row */}
                 <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
-                  <h4 className="text-sm font-bold text-white mb-3">⚡ Immortal Properties</h4>
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3">⚡ Immortal Properties</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
@@ -852,7 +852,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
             {activeTab === 'memory' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-4">Memory Files ({memoryCount})</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">Memory Files ({memoryCount})</h3>
                   {memoriesLoading ? (
                     <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--mint-mid)] border-t-transparent mx-auto mb-3"></div>
@@ -873,7 +873,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                               {new Date(Number(mem.timestamp) * 1000).toLocaleString()}
                             </span>
                           </div>
-                          <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">
+                          <p className="text-[var(--text-primary)] text-sm leading-relaxed whitespace-pre-wrap">
                             {mem.fullText || <span className="text-[rgba(255, 255, 255, 0.5)] italic">Binary / CID content</span>}
                           </p>
                           <div className="mt-2 flex items-center gap-2">
@@ -888,7 +888,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-4">Verify Signature</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">Verify Signature</h3>
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-3">
                       All memory files are cryptographically signed by agent wallet.
@@ -904,7 +904,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
             {activeTab === 'sessions' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white">Compute Sessions</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)]">Compute Sessions</h3>
                   <Link href={`/session/new?agent=${agent.wallet}&nft=${agent.nftId || ''}&name=${encodeURIComponent(agent.name)}&address=${agent.wallet}`}>
                     <button className="bg-[var(--mint-mid)] text-black px-4 py-2 text-sm rounded-lg font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all">
                       Start New Session
@@ -1006,7 +1006,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Price</p>
-                    <p className="text-xl font-bold text-white">
+                    <p className="text-xl font-bold text-[var(--text-primary)]">
                       {stats?.price && stats?.ethPriceUsd ? `$${(stats.price * stats.ethPriceUsd).toFixed(8)}` : '—'}
                     </p>
                     <p className="text-[10px] text-[rgba(255, 255, 255, 0.5)] mt-1">
@@ -1020,7 +1020,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   </div>
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Market Cap</p>
-                    <p className="text-xl font-bold text-white">
+                    <p className="text-xl font-bold text-[var(--text-primary)]">
                       {stats?.marketCap 
                         ? `$${(stats.marketCap * (stats?.ethPriceUsd || 0)).toFixed(2)}`
                         : '—'}
@@ -1031,7 +1031,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   </div>
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Volume (24h)</p>
-                    <p className="text-xl font-bold text-white">
+                    <p className="text-xl font-bold text-[var(--text-primary)]">
                       {stats?.volume24h 
                         ? `$${(stats.volume24h * (stats?.ethPriceUsd || 0)).toFixed(2)}`
                         : '$0'}
@@ -1042,7 +1042,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   </div>
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">ETH Price</p>
-                    <p className="text-xl font-bold text-white">
+                    <p className="text-xl font-bold text-[var(--text-primary)]">
                       ${stats?.ethPriceUsd ? stats.ethPriceUsd.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '—'}
                     </p>
                   </div>
@@ -1051,7 +1051,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 {/* 24h Activity */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
-                    <p className="text-2xl font-bold text-white">{stats?.txCount24h || 0}</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">{stats?.txCount24h || 0}</p>
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Trades (24h)</p>
                   </div>
                   <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
@@ -1063,14 +1063,14 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Sells (24h)</p>
                   </div>
                   <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
-                    <p className="text-2xl font-bold text-white">{stats?.txCountTotal || 0}</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">{stats?.txCountTotal || 0}</p>
                     <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Total Trades</p>
                   </div>
                 </div>
 
                 {/* Price Chart - GeckoTerminal Embed */}
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-4">📈 Live Price Chart</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">📈 Live Price Chart</h3>
                   <div className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[var(--mint-mid)]/20 overflow-hidden">
                     <iframe 
                       src={`https://www.geckoterminal.com/base/pools/${agent.token}?embed=1&info=0&swaps=0&grayscale=0&light_chart=0`}
@@ -1087,7 +1087,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* Recent Swaps */}
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-4">🔄 Recent Swaps</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">🔄 Recent Swaps</h3>
                   {stats?.recentSwaps && stats.recentSwaps.length > 0 ? (
                     <div className="overflow-x-auto max-h-[400px] overflow-y-auto rounded-lg border border-[var(--mint-mid)]/20">
                       <table className="w-full text-sm">
@@ -1113,10 +1113,10 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                                   {swap.type.toUpperCase()}
                                 </span>
                               </td>
-                              <td className="text-right py-2 px-3 font-mono text-white text-xs">
+                              <td className="text-right py-2 px-3 font-mono text-[var(--text-primary)] text-xs">
                                 {parseFloat(swap.amount_eth).toFixed(6)}
                               </td>
-                              <td className="text-right py-2 px-3 font-mono text-white text-xs">
+                              <td className="text-right py-2 px-3 font-mono text-[var(--text-primary)] text-xs">
                                 {parseFloat(swap.amount_token).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                               </td>
                               <td className="text-right py-2 px-3">
@@ -1159,15 +1159,15 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Total Supply</p>
-                    <p className="text-2xl font-bold text-white">1,000,000,000</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">1,000,000,000</p>
                   </div>
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Decimals</p>
-                    <p className="text-2xl font-bold text-white">18</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">18</p>
                   </div>
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Launched</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">
                       {stats?.launchedAt ? new Date(stats.launchedAt).toLocaleDateString() : '—'}
                     </p>
                   </div>
@@ -1177,17 +1177,17 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 {stats?.poolId && (
                   <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
                     <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Uniswap V4 Pool ID</p>
-                    <p className="text-white font-mono text-xs break-all">{stats.poolId}</p>
+                    <p className="text-[var(--text-primary)] font-mono text-xs break-all">{stats.poolId}</p>
                   </div>
                 )}
 
                 {/* Fee Structure Info */}
                 <div className="p-6 bg-[var(--mint-mid)]/5 rounded-xl border border-[var(--mint-mid)]/20">
-                  <h4 className="text-lg font-bold text-white mb-3">💰 Trading Fees & Distribution</h4>
+                  <h4 className="text-lg font-bold text-[var(--text-primary)] mb-3">💰 Trading Fees & Distribution</h4>
                   <div className="space-y-3 text-sm">
                     <p className="text-[rgba(255, 255, 255, 0.5)] mb-2">Standard 1% LP fee on every trade, distributed to liquidity providers:</p>
                     <div className="mt-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1"><strong className="text-white">Fee Structure:</strong></p>
+                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1"><strong className="text-[var(--text-primary)]">Fee Structure:</strong></p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• 1% Uniswap V4 LP fee (standard pool fee)</p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• No custom hooks or transfer taxes</p>
                       <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• Full DEX aggregator compatibility</p>
@@ -1200,7 +1200,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 {/* Earnings & Claim Section */}
                 <div className="p-6 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[var(--mint-mid)]/30">
-                  <h4 className="text-lg font-bold text-white mb-4">💎 Earnings & Collection</h4>
+                  <h4 className="text-lg font-bold text-[var(--text-primary)] mb-4">💎 Earnings & Collection</h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div className="p-4 bg-[#000000] rounded-lg border border-[var(--mint-mid)]/20">
                       <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Total Collected</p>

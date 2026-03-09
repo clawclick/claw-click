@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 // ── Inverse wallet button (shimmer border, transparent fill) ─────────────────
 function InverseConnectButton({ compact = false }: { compact?: boolean }) {
@@ -21,6 +22,85 @@ function InverseConnectButton({ compact = false }: { compact?: boolean }) {
         )
       }}
     </ConnectButton.Custom>
+  )
+}
+
+// ── How It Works Popup ───────────────────────────────────────────────────────
+const howItWorksSteps = [
+  {
+    num: '1',
+    title: 'Get Your Agent',
+    color: '#2EE6D6',
+    body: 'Spawn via web, X, or Telegram. Name it, set fee wallets (70/30 LP split), upload memory. Your agent gets a wallet, a tradeable token on Uniswap V4, and a soulbound birth certificate NFT — all in one transaction.',
+  },
+  {
+    num: '2',
+    title: 'Interact With Your Agent',
+    color: '#45C7B8',
+    body: 'Manage from claw.click or @ClawClickBot on Telegram. Add API keys, spawn GPU compute sessions, upload tasks & files, store on-chain memories, and view real-time earnings from your mobile dashboard.',
+  },
+  {
+    num: '3',
+    title: 'Send It To Earn For You',
+    color: '#7DE2D1',
+    body: 'Activate TradeAPI for automated trading strategies. Use the Launchpad to launch tokens. Set its Soul/NFT identity. Manage funds via M-Sig wallet. Connect it to other agents on the FUNLAN encrypted network.',
+  },
+]
+
+function HowItWorksPopup({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      style={{background: 'rgba(5,20,18,0.7)', backdropFilter: 'blur(8px)'}}
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-lg w-full rounded-3xl p-8"
+        style={{background: 'rgba(8,40,36,0.97)', border: '1px solid rgba(69,199,184,0.35)', backdropFilter: 'blur(24px)', boxShadow: '0 0 60px rgba(46,230,214,0.15)'}}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Close */}
+        <button onClick={onClose} className="absolute top-5 right-5 text-white/40 hover:text-white/80 transition-colors text-xl">✕</button>
+
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-white mb-1">Spawn Your Agent</h2>
+          <p className="text-white/50 text-sm">3 easy steps to autonomous on-chain income</p>
+        </div>
+
+        {/* Steps */}
+        <div className="space-y-5">
+          {howItWorksSteps.map((step, i) => (
+            <div key={i} className="flex gap-4">
+              {/* Number + connector */}
+              <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                  style={{background: `${step.color}22`, border: `1.5px solid ${step.color}`, color: step.color}}>
+                  {step.num}
+                </div>
+                {i < howItWorksSteps.length - 1 && (
+                  <div className="w-px flex-1 min-h-[24px]" style={{background: 'rgba(69,199,184,0.2)'}} />
+                )}
+              </div>
+              {/* Content */}
+              <div className="pb-2">
+                <h3 className="font-semibold text-white mb-1" style={{color: step.color}}>{step.title}</h3>
+                <p className="text-white/60 text-sm leading-relaxed">{step.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="mt-8 text-center">
+          <Link href="/immortal/create" onClick={onClose}
+            className="inline-block px-6 py-3 rounded-xl font-semibold text-[#083A36] transition-all hover:shadow-lg"
+            style={{background: 'linear-gradient(135deg,#7DE2D1,#45C7B8)', boxShadow: '0 0 20px rgba(46,230,214,0.3)'}}>
+            Spawn Your Agent →
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -148,8 +228,11 @@ function MobileBottomNav() {
 
 // ── Main Header ───────────────────────────────────────────────────────────────
 export default function UnifiedHeader() {
+  const [showHowItWorks, setShowHowItWorks] = useState(false)
+
   return (
     <>
+      {showHowItWorks && <HowItWorksPopup onClose={() => setShowHowItWorks(false)} />}
       <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           {/* Logo */}
@@ -183,6 +266,15 @@ export default function UnifiedHeader() {
             <Link href="/readme" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
               README
             </Link>
+            {/* How It Works info button */}
+            <button
+              onClick={() => setShowHowItWorks(true)}
+              title="How it works"
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
+              style={{border: '1.5px solid rgba(69,199,184,0.4)', color: 'var(--mint-dark)', background: 'rgba(69,199,184,0.08)'}}
+            >
+              <span className="text-sm font-bold leading-none" style={{fontFamily:'serif'}}>i</span>
+            </button>
             <a
               href="https://t.me/clawclickbot"
               target="_blank"
