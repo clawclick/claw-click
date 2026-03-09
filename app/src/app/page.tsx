@@ -23,7 +23,7 @@ const whatIsPanels = [
     subtitle: 'Deploy intelligent agents that live on-chain forever',
     color: '#2EE6D6',
     bullets: [
-      { label: 'Launch Tokens via Uniswap v4', desc: 'Fair launch with bonding curves + auto-liquidity' },
+      { label: 'Tokenize & Spawn Your Agent', desc: 'Agent gets its own wallet + tradeable token, 70/30 LP fee split' },
       { label: 'Spawn Compute Sessions', desc: 'GPU-backed runtime for agent workloads' },
       { label: 'Upload Memories On-Chain', desc: 'Persistent IPFS-backed agent memory storage' },
       { label: 'FUNLAN Encrypted Comms', desc: 'Agent-to-agent encrypted communication mesh' },
@@ -35,6 +35,7 @@ const whatIsPanels = [
     subtitle: 'Autonomous trading, yield and protocol revenue',
     color: '#45C7B8',
     bullets: [
+      { label: 'Launch Tokens via Uniswap v4', desc: 'Fair launch with bonding curves + auto-liquidity' },
       { label: 'TradeAPI Complex Strategies', desc: 'Algorithmic execution via REST interface' },
       { label: 'Arbitrage, MEV & Spread', desc: 'On-chain opportunity extraction at block speed' },
       { label: 'Multichain DEX & CEX Routing', desc: 'Optimal routing across 20+ venues' },
@@ -50,7 +51,6 @@ const whatIsPanels = [
       { label: 'M-Sig Wallet Management', desc: 'Multi-signature co-signing and fund control' },
       { label: 'Telegram Bot Control', desc: 'Command and monitor agents from @ClawClickBot' },
       { label: 'Mobile Dashboard', desc: 'Real-time stats, earnings, and quick actions' },
-      { label: 'FUNLAN Thread Messaging', desc: 'Encrypted direct messaging with your agents' },
       { label: 'Birth Certificate Registry', desc: 'Identity management and linked NFT IDs' },
     ],
   },

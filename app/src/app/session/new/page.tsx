@@ -234,9 +234,9 @@ function NewSessionWizard() {
   }
 
   return (
-    <main className="min-h-screen relative bg-black w-full overflow-x-hidden text-white">
+    <main className="min-h-screen relative w-full overflow-x-hidden">
       {/* Header */}
-      <header className="fixed w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
+      <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="relative w-8 h-8">
@@ -249,8 +249,8 @@ function NewSessionWizard() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold text-white">claw.click</span>
-              <span className="px-2 py-0.5 text-[9px] font-medium bg-white/5 text-white/40 border border-white/10 rounded">ALPHA</span>
+              <span className="text-lg font-semibold text-[var(--text-primary)]">claw.click</span>
+              <span className="px-2 py-0.5 text-[9px] font-medium bg-white/5 text-[var(--text-secondary)]/70 border border-[var(--glass-border)] rounded">BETA</span>
             </div>
           </Link>
           <ConnectButton />
@@ -263,13 +263,13 @@ function NewSessionWizard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[rgba(255,255,255,0.03)] border border-[#E8523D]/25 rounded-2xl backdrop-blur-sm p-8"
+            className="rounded-2xl p-8"
           >
-            <h1 className="text-3xl font-black text-white mb-2">Start New Session</h1>
-            <p className="text-white/50 mb-2">
-              Launch a GPU-powered compute session for <span className="text-[#E8523D] font-semibold">{agentName}</span>
+            <h1 className="text-3xl font-black text-[var(--text-primary)] mb-2">Start New Session</h1>
+            <p className="text-[var(--text-secondary)] mb-2">
+              Launch a GPU-powered compute session for <span className="text-[var(--mint-mid)] font-semibold">{agentName}</span>
             </p>
-            <p className="text-xs text-white/30 mb-8">
+            <p className="text-xs text-[var(--text-secondary)]/50 mb-8">
               This will provision a Vast.ai GPU instance and deploy the agent with its on-chain memories from IPFS.
             </p>
 
@@ -283,10 +283,10 @@ function NewSessionWizard() {
             {/* Creating State */}
             {step === 'creating' && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 border-4 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin mx-auto mb-6"></div>
-                <h3 className="text-xl font-bold text-white mb-2">Provisioning Session</h3>
-                <p className="text-white/50">{creationStatus}</p>
-                <p className="text-xs text-white/30 mt-4">This may take 1-5 minutes...</p>
+                <div className="w-16 h-16 border-4 border-[var(--mint-mid)]/30 border-t-[var(--mint-mid)] rounded-full animate-spin mx-auto mb-6"></div>
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Provisioning Session</h3>
+                <p className="text-[var(--text-secondary)]">{creationStatus}</p>
+                <p className="text-xs text-[var(--text-secondary)]/50 mt-4">This may take 1-5 minutes...</p>
               </div>
             )}
 
@@ -294,8 +294,8 @@ function NewSessionWizard() {
             {step === 'done' && (
               <div className="text-center py-12">
                 <div className="text-5xl mb-4">✅</div>
-                <h3 className="text-xl font-bold text-[#E8523D] mb-2">Session Created!</h3>
-                <p className="text-white/50">Redirecting to your session...</p>
+                <h3 className="text-xl font-bold text-[var(--mint-mid)] mb-2">Session Created!</h3>
+                <p className="text-[var(--text-secondary)]">Redirecting to your session...</p>
               </div>
             )}
 
@@ -304,7 +304,7 @@ function NewSessionWizard() {
               <div className="space-y-8">
                 {/* GPU Selection */}
                 <div>
-                  <label className="block text-sm font-bold text-white mb-3">GPU Type</label>
+                  <label className="block text-sm font-bold text-[var(--text-primary)] mb-3">GPU Type</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {GPU_OPTIONS.map((gpu) => (
                       <button
@@ -312,28 +312,28 @@ function NewSessionWizard() {
                         onClick={() => setGpuType(gpu.id)}
                         className={`p-3 rounded-lg border text-left transition-all ${
                           gpuType === gpu.id
-                            ? 'border-[#E8523D] bg-[#E8523D]/15 ring-1 ring-[#E8523D]/40 shadow-[0_0_12px_rgba(232,82,61,0.15)]'
-                            : 'border-white/10 bg-white/[0.02] hover:border-white/20'
+                            ? 'border-[var(--mint-mid)] bg-[var(--mint-mid)]/15 ring-1 ring-[var(--mint-mid)]/40 shadow-[0_0_12px_rgba(232,82,61,0.15)]'
+                            : 'border-[var(--glass-border)] bg-white/[0.02] hover:border-[var(--glass-border)]'
                         }`}
                       >
-                        <div className={`text-sm font-bold ${gpuType === gpu.id ? 'text-[#E8523D]' : 'text-white'}`}>{gpu.label}</div>
-                        <div className="text-xs text-white/50">{gpu.desc}</div>
-                        <div className="text-xs text-[#E8523D] mt-1">from ${gpu.minPrice.toFixed(2)}/hr</div>
+                        <div className={`text-sm font-bold ${gpuType === gpu.id ? 'text-[var(--mint-mid)]' : 'text-[var(--text-primary)]'}`}>{gpu.label}</div>
+                        <div className="text-xs text-[var(--text-secondary)]">{gpu.desc}</div>
+                        <div className="text-xs text-[var(--mint-mid)] mt-1">from ${gpu.minPrice.toFixed(2)}/hr</div>
                       </button>
                     ))}
                   </div>
 
                   {/* Number of GPUs */}
                   <div className="mt-3 flex items-center gap-3">
-                    <span className="text-sm text-white/50">GPUs:</span>
+                    <span className="text-sm text-[var(--text-secondary)]">GPUs:</span>
                     {[1, 2, 4].map(n => (
                       <button
                         key={n}
                         onClick={() => setNumGpus(n)}
                         className={`px-3 py-1 rounded text-sm ${
                           numGpus === n
-                            ? 'bg-[#E8523D] text-white font-bold'
-                            : 'bg-white/[0.03] text-white/50 border border-white/10'
+                            ? 'bg-[var(--mint-mid)] text-[var(--text-primary)] font-bold'
+                            : 'agent-card text-[var(--text-secondary)] border border-[var(--glass-border)]'
                         }`}
                       >
                         {n}x
@@ -344,7 +344,7 @@ function NewSessionWizard() {
 
                 {/* Location Selection */}
                 <div>
-                  <label className="block text-sm font-bold text-white mb-3">Location</label>
+                  <label className="block text-sm font-bold text-[var(--text-primary)] mb-3">Location</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
                       { id: 'any', label: '🌐 Any', desc: 'Cheapest worldwide' },
@@ -361,12 +361,12 @@ function NewSessionWizard() {
                         onClick={() => setLocation(loc.id)}
                         className={`p-2 rounded-lg border text-center transition-all ${
                           location === loc.id
-                            ? 'border-[#E8523D] bg-[#E8523D]/15 ring-1 ring-[#E8523D]/40 shadow-[0_0_12px_rgba(232,82,61,0.15)]'
-                            : 'border-white/10 bg-white/[0.02] hover:border-white/20'
+                            ? 'border-[var(--mint-mid)] bg-[var(--mint-mid)]/15 ring-1 ring-[var(--mint-mid)]/40 shadow-[0_0_12px_rgba(232,82,61,0.15)]'
+                            : 'border-[var(--glass-border)] bg-white/[0.02] hover:border-[var(--glass-border)]'
                         }`}
                       >
-                        <div className={`text-sm font-bold ${location === loc.id ? 'text-[#E8523D]' : 'text-white'}`}>{loc.label}</div>
-                        <div className="text-[10px] text-white/50">{loc.desc}</div>
+                        <div className={`text-sm font-bold ${location === loc.id ? 'text-[var(--mint-mid)]' : 'text-[var(--text-primary)]'}`}>{loc.label}</div>
+                        <div className="text-[10px] text-[var(--text-secondary)]">{loc.desc}</div>
                       </button>
                     ))}
                   </div>
@@ -375,28 +375,28 @@ function NewSessionWizard() {
                 {/* Minimum Resources */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <label className="block text-sm font-bold text-white">Minimum Resources</label>
-                    <span className="text-[10px] text-white/30 bg-white/[0.03] px-2 py-0.5 rounded">
+                    <label className="block text-sm font-bold text-[var(--text-primary)]">Minimum Resources</label>
+                    <span className="text-[10px] text-[var(--text-secondary)]/50 agent-card px-2 py-0.5 rounded">
                       Higher values = fewer machines
                     </span>
                   </div>
-                  <p className="text-xs text-white/30 mb-4">
+                  <p className="text-xs text-[var(--text-secondary)]/50 mb-4">
                     Defaults auto-adjust based on GPU type.
                   </p>
 
                   {/* CPU */}
                   <div className="mb-5">
-                    <label className="block text-xs text-white/50 mb-2">
-                      Min CPU Cores: <span className="text-white font-semibold">{cpu} cores</span>
+                    <label className="block text-xs text-[var(--text-secondary)] mb-2">
+                      Min CPU Cores: <span className="text-[var(--text-primary)] font-semibold">{cpu} cores</span>
                     </label>
                     <input
                       type="range"
                       min="2" max="32" step="2"
                       value={cpu}
                       onChange={(e) => setCpu(parseInt(e.target.value))}
-                      className="w-full h-2 bg-white/[0.05] rounded-lg appearance-none cursor-pointer accent-[#E8523D]"
+                      className="w-full h-2 glass rounded-lg appearance-none cursor-pointer accent-[var(--mint-mid)]"
                     />
-                    <div className="flex justify-between text-[10px] text-white/30 mt-1">
+                    <div className="flex justify-between text-[10px] text-[var(--text-secondary)]/50 mt-1">
                       <span>2 cores</span>
                       <span>32 cores</span>
                     </div>
@@ -404,17 +404,17 @@ function NewSessionWizard() {
 
                   {/* RAM */}
                   <div className="mb-5">
-                    <label className="block text-xs text-white/50 mb-2">
-                      Min RAM: <span className="text-white font-semibold">{memory} GB</span>
+                    <label className="block text-xs text-[var(--text-secondary)] mb-2">
+                      Min RAM: <span className="text-[var(--text-primary)] font-semibold">{memory} GB</span>
                     </label>
                     <input
                       type="range"
                       min="4" max="256" step="4"
                       value={memory}
                       onChange={(e) => setMemory(parseInt(e.target.value))}
-                      className="w-full h-2 bg-white/[0.05] rounded-lg appearance-none cursor-pointer accent-[#E8523D]"
+                      className="w-full h-2 glass rounded-lg appearance-none cursor-pointer accent-[var(--mint-mid)]"
                     />
-                    <div className="flex justify-between text-[10px] text-white/30 mt-1">
+                    <div className="flex justify-between text-[10px] text-[var(--text-secondary)]/50 mt-1">
                       <span>4 GB</span>
                       <span>256 GB</span>
                     </div>
@@ -422,17 +422,17 @@ function NewSessionWizard() {
 
                   {/* Disk */}
                   <div>
-                    <label className="block text-xs text-white/50 mb-2">
-                      Min Disk: <span className="text-white font-semibold">{diskGb} GB</span>
+                    <label className="block text-xs text-[var(--text-secondary)] mb-2">
+                      Min Disk: <span className="text-[var(--text-primary)] font-semibold">{diskGb} GB</span>
                     </label>
                     <input
                       type="range"
                       min="10" max="200" step="10"
                       value={diskGb}
                       onChange={(e) => setDiskGb(parseInt(e.target.value))}
-                      className="w-full h-2 bg-white/[0.05] rounded-lg appearance-none cursor-pointer accent-[#E8523D]"
+                      className="w-full h-2 glass rounded-lg appearance-none cursor-pointer accent-[var(--mint-mid)]"
                     />
-                    <div className="flex justify-between text-[10px] text-white/30 mt-1">
+                    <div className="flex justify-between text-[10px] text-[var(--text-secondary)]/50 mt-1">
                       <span>10 GB</span>
                       <span>200 GB</span>
                     </div>
@@ -441,7 +441,7 @@ function NewSessionWizard() {
 
                 {/* Duration */}
                 <div>
-                  <label className="block text-sm font-bold text-white mb-3">
+                  <label className="block text-sm font-bold text-[var(--text-primary)] mb-3">
                     Duration: {duration} hours ({(duration / 24).toFixed(1)} days)
                   </label>
                   <input
@@ -449,9 +449,9 @@ function NewSessionWizard() {
                     min="1" max="720"
                     value={duration}
                     onChange={(e) => setDuration(parseInt(e.target.value))}
-                    className="w-full h-2 bg-white/[0.05] rounded-lg appearance-none cursor-pointer accent-[#E8523D]"
+                    className="w-full h-2 glass rounded-lg appearance-none cursor-pointer accent-[var(--mint-mid)]"
                   />
-                  <div className="flex justify-between text-xs text-white/50 mt-2">
+                  <div className="flex justify-between text-xs text-[var(--text-secondary)] mt-2">
                     <span>1 hour</span>
                     <span>30 days</span>
                   </div>
@@ -461,35 +461,35 @@ function NewSessionWizard() {
                 <div>
                   <button
                     onClick={() => setShowApiKeys(!showApiKeys)}
-                    className="flex items-center gap-2 text-sm font-bold text-white hover:text-[#E8523D] transition-colors"
+                    className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)] hover:text-[var(--mint-mid)] transition-colors"
                   >
                     <span>{showApiKeys ? '▼' : '▶'}</span>
                     LLM API Keys (Optional)
                   </button>
-                  <p className="text-xs text-white/50 mt-1 mb-3">
+                  <p className="text-xs text-[var(--text-secondary)] mt-1 mb-3">
                     Provide API keys for the agent to use GPT-4, Claude, etc. Keys are encrypted and only available inside the session.
                   </p>
 
                   {showApiKeys && (
-                    <div className="space-y-3 p-4 rounded-lg bg-white/[0.02] border border-white/10">
+                    <div className="space-y-3 p-4 rounded-lg bg-white/[0.02] border border-[var(--glass-border)]">
                       <div>
-                        <label className="block text-xs text-white/50 mb-1">OpenAI API Key</label>
+                        <label className="block text-xs text-[var(--text-secondary)] mb-1">OpenAI API Key</label>
                         <input
                           type="password"
                           value={openaiKey}
                           onChange={(e) => setOpenaiKey(e.target.value)}
                           placeholder="sk-..."
-                          className="w-full px-3 py-2 bg-black border border-white/10 rounded text-white text-sm placeholder-white/20 focus:border-[#E8523D] focus:outline-none"
+                          className="w-full px-3 py-2 bg-black border border-[var(--glass-border)] rounded text-[var(--text-primary)] text-sm placeholder-white/20 focus:border-[var(--mint-mid)] focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-white/50 mb-1">Anthropic API Key</label>
+                        <label className="block text-xs text-[var(--text-secondary)] mb-1">Anthropic API Key</label>
                         <input
                           type="password"
                           value={anthropicKey}
                           onChange={(e) => setAnthropicKey(e.target.value)}
                           placeholder="sk-ant-..."
-                          className="w-full px-3 py-2 bg-black border border-white/10 rounded text-white text-sm placeholder-white/20 focus:border-[#E8523D] focus:outline-none"
+                          className="w-full px-3 py-2 bg-black border border-[var(--glass-border)] rounded text-[var(--text-primary)] text-sm placeholder-white/20 focus:border-[var(--mint-mid)] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -497,17 +497,17 @@ function NewSessionWizard() {
                 </div>
 
                 {/* Cost Summary */}
-                <div className="p-6 bg-white/[0.02] rounded-xl border border-white/10">
+                <div className="p-6 bg-white/[0.02] rounded-xl border border-[var(--glass-border)]">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-white">Cost Summary</h3>
+                    <h3 className="text-lg font-bold text-[var(--text-primary)]">Cost Summary</h3>
                     {pricingLoading && (
-                      <span className="text-xs text-white/50 flex items-center gap-1">
-                        <span className="w-2 h-2 bg-[#E8523D] rounded-full animate-pulse"></span>
+                      <span className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                        <span className="w-2 h-2 bg-[var(--mint-mid)] rounded-full animate-pulse"></span>
                         Fetching live prices...
                       </span>
                     )}
                     {!pricingLoading && !pricingFallback && realHourlyPrice !== null && (
-                      <span className="text-xs text-[#E8523D]">✓ Live Vast.ai pricing</span>
+                      <span className="text-xs text-[var(--mint-mid)]">✓ Live Vast.ai pricing</span>
                     )}
                     {!pricingLoading && numOffers === 0 && !pricingFallback && realHourlyPrice === null && (
                       <span className="text-xs text-red-400">No machines available</span>
@@ -518,32 +518,32 @@ function NewSessionWizard() {
                   </div>
                   <div className="space-y-2 text-sm mb-4">
                     <div className="flex justify-between">
-                      <span className="text-white/50">GPU ({realGpuName || selectedGpu.label} x{numGpus})</span>
-                      <span className="text-white">${hourlyPrice.toFixed(3)}/hr</span>
+                      <span className="text-[var(--text-secondary)]">GPU ({realGpuName || selectedGpu.label} x{numGpus})</span>
+                      <span className="text-[var(--text-primary)]">${hourlyPrice.toFixed(3)}/hr</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-white/50">Duration</span>
-                      <span className="text-white">{duration} hours ({(duration / 24).toFixed(1)} days)</span>
+                      <span className="text-[var(--text-secondary)]">Duration</span>
+                      <span className="text-[var(--text-primary)]">{duration} hours ({(duration / 24).toFixed(1)} days)</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-white/50">Disk</span>
-                      <span className="text-white">{diskGb} GB</span>
+                      <span className="text-[var(--text-secondary)]">Disk</span>
+                      <span className="text-[var(--text-primary)]">{diskGb} GB</span>
                     </div>
                     {numOffers > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-white/50">Available machines</span>
-                        <span className="text-white">{numOffers}</span>
+                        <span className="text-[var(--text-secondary)]">Available machines</span>
+                        <span className="text-[var(--text-primary)]">{numOffers}</span>
                       </div>
                     )}
-                    <div className="border-t border-white/10 pt-2 mt-2 flex justify-between font-bold">
-                      <span className="text-white">Total</span>
+                    <div className="border-t border-[var(--glass-border)] pt-2 mt-2 flex justify-between font-bold">
+                      <span className="text-[var(--text-primary)]">Total</span>
                       <div className="text-right">
-                        <div className="text-[#E8523D]">${totalPrice.toFixed(2)} USD</div>
-                        <div className="text-xs text-white/50 font-normal">≈ {totalEth} ETH</div>
+                        <div className="text-[var(--mint-mid)]">${totalPrice.toFixed(2)} USD</div>
+                        <div className="text-xs text-[var(--text-secondary)] font-normal">≈ {totalEth} ETH</div>
                       </div>
                     </div>
                   </div>
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-[var(--text-secondary)]/70">
                     {realHourlyPrice !== null && !pricingFallback
                       ? 'Prices fetched live from Vast.ai GPU marketplace. Includes 10% platform fee.'
                       : 'Estimated pricing. Actual cost determined by Vast.ai availability.'}
@@ -551,9 +551,9 @@ function NewSessionWizard() {
                 </div>
 
                 {/* What gets loaded */}
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-                  <h4 className="text-sm font-bold text-white mb-2">What gets loaded onto the GPU:</h4>
-                  <ul className="text-xs text-white/50 space-y-1">
+                <div className="p-4 rounded-xl bg-white/[0.02] border border-[var(--glass-border)]">
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-2">What gets loaded onto the GPU:</h4>
+                  <ul className="text-xs text-[var(--text-secondary)] space-y-1">
                     <li>• Agent identity from on-chain birth certificate</li>
                     <li>• Memories pulled from MemoryStorage contract</li>
                     <li>• Latest memory archive fetched from IPFS</li>
@@ -565,7 +565,7 @@ function NewSessionWizard() {
                 {/* Action Buttons */}
                 <div className="flex gap-4">
                   <Link href={`/immortal/agent/${agentId}`} className="flex-1">
-                    <button className="w-full py-3 rounded-lg bg-black border border-white/10 text-white/50 hover:bg-white/[0.03] transition-all">
+                    <button className="w-full py-3 rounded-lg bg-black border border-[var(--glass-border)] text-[var(--text-secondary)] hover:agent-card transition-all">
                       Cancel
                     </button>
                   </Link>
@@ -574,8 +574,8 @@ function NewSessionWizard() {
                     disabled={creating || !isConnected}
                     className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
                       creating || !isConnected
-                        ? 'bg-[#E8523D]/30 text-white/50 cursor-not-allowed'
-                        : 'bg-[#E8523D] text-white hover:shadow-[0_0_20px_rgba(232,82,61,0.5)]'
+                        ? 'bg-[var(--mint-mid)]/30 text-[var(--text-secondary)] cursor-not-allowed'
+                        : 'bg-[var(--mint-mid)] text-[var(--text-primary)] hover:shadow-[0_0_20px_rgba(232,82,61,0.5)]'
                     }`}
                   >
                     {!isConnected ? 'Connect Wallet' : creating ? 'Creating...' : 'Start Session'}

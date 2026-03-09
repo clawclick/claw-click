@@ -633,10 +633,10 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="min-h-screen relative flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/50">Loading session...</p>
+          <div className="w-12 h-12 border-4 border-[var(--mint-mid)]/30 border-t-[var(--mint-mid)] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/70">Loading session...</p>
         </div>
       </main>
     )
@@ -644,11 +644,11 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
 
   if (!isConnected || !address) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="min-h-screen relative flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="text-5xl mb-4">🔒</div>
           <h2 className="text-2xl font-bold mb-3">Connect Wallet</h2>
-          <p className="text-white/50 mb-6">
+          <p className="text-white/70 mb-6">
             Connect your wallet to access this session. Only the wallet that created the session can view and control it.
           </p>
           <ConnectButton />
@@ -658,14 +658,14 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
   }
 
   return (
-    <main className="h-screen bg-black text-white flex flex-col overflow-hidden">
+    <main className="h-screen flex flex-col overflow-hidden" style={{background:"#0A2825"}}>
       {/* Terminate Confirmation */}
       {showTerminate && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[rgba(255,255,255,0.03)] border border-red-500/30 rounded-2xl p-8 max-w-md text-center">
+        <div className="fixed inset-0 glass z-50 flex items-center justify-center p-4">
+          <div className="agent-card border border-red-500/30 rounded-2xl p-8 max-w-md text-center">
             <div className="text-5xl mb-4">⚠️</div>
             <h2 className="text-2xl font-bold text-white mb-3">Terminate Session?</h2>
-            <p className="text-white/50 mb-6">
+            <p className="text-white/70 mb-6">
               This will destroy the GPU instance and stop the agent. Any unsaved data on the instance will be lost.
             </p>
             <div className="flex gap-3 justify-center">
@@ -678,7 +678,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
               </button>
               <button
                 onClick={() => setShowTerminate(false)}
-                className="px-6 py-3 bg-white/[0.03] border border-white/10 text-white font-semibold rounded-xl hover:border-white/30 transition-colors"
+                className="px-6 py-3 agent-card border border-[var(--glass-border)] text-white font-semibold rounded-xl hover:border-white/30 transition-colors"
               >
                 Cancel
               </button>
@@ -696,7 +696,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
       />
 
       {/* Header */}
-      <header className="bg-black/80 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+      <header className="glass backdrop-blur-xl border-b border-[var(--glass-border)] px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
         <div className="flex items-center gap-3 sm:gap-4">
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
             <div className="relative w-8 h-8">
@@ -710,7 +710,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
             </div>
             <span className="hidden sm:inline text-lg font-semibold text-white">claw.click</span>
           </Link>
-          <div className="text-sm text-white/50">
+          <div className="text-sm text-white/70">
             {session?.agent.name || `Session #${params.id}`}
           </div>
           <div className="flex items-center gap-2">
@@ -720,7 +720,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
             </span>
           </div>
           {session && isActive && (
-            <span className="hidden sm:inline text-xs text-white/50 bg-white/[0.03] px-2 py-1 rounded">
+            <span className="hidden sm:inline text-xs text-white/70 agent-card px-2 py-1 rounded">
               {formatTimeRemaining(session.timeRemaining)} left
             </span>
           )}
@@ -728,7 +728,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
 
         <div className="flex items-center gap-2 sm:gap-4">
           {session?.instance?.costPerHour && (
-            <span className="hidden md:inline text-xs text-white/50">
+            <span className="hidden md:inline text-xs text-white/70">
               ${session.instance.costPerHour.toFixed(2)}/hr
             </span>
           )}
@@ -740,30 +740,30 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
       {session && !isReady && isActive && (
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center max-w-md">
-            <div className="w-16 h-16 border-4 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin mx-auto mb-6"></div>
+            <div className="w-16 h-16 border-4 border-[var(--mint-mid)]/30 border-t-[var(--mint-mid)] rounded-full animate-spin mx-auto mb-6"></div>
             <h2 className="text-2xl font-bold text-white mb-3">
               {session.status === 'provisioning' ? 'Starting GPU Instance' : 'Loading Agent Memories'}
             </h2>
-            <p className="text-white/50 mb-4">
+            <p className="text-white/70 mb-4">
               {session.status === 'provisioning'
                 ? 'A Vast.ai GPU instance is being provisioned. This typically takes 1-5 minutes.'
                 : 'The agent is being bootstrapped with its on-chain memories and IPFS data. Please dont close this page while your openclaw agent is being set up, it may take several minutes depending on the amount of data.'}
             </p>
-            <div className="space-y-2 text-sm text-left bg-white/[0.03] rounded-lg p-4 border border-white/10">
+            <div className="space-y-2 text-sm text-left agent-card rounded-lg p-4 border border-[var(--glass-border)]">
               <div className="flex justify-between">
-                <span className="text-white/50">Agent</span>
+                <span className="text-white/70">Agent</span>
                 <span className="text-white">{session.agent.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-white/50">GPU</span>
+                <span className="text-white/70">GPU</span>
                 <span className="text-white">{session.gpuType || 'N/A'} x{session.numGpus}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-white/50">Memory CID</span>
+                <span className="text-white/70">Memory CID</span>
                 <span className="text-white font-mono text-xs truncate ml-4 max-w-[200px]">{session.agent.memoryCID || 'None'}</span>
               </div>
             </div>
-            <p className="text-xs text-white/30 mt-4">
+            <p className="text-xs text-white/50 mt-4">
               This page will automatically update when the agent is ready.
             </p>
           </div>
@@ -774,15 +774,15 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
       {(isReady || !isActive) && (
         <div className="flex-1 flex overflow-hidden flex-col sm:flex-row">
           {/* Left Sidebar - Files */}
-          <div className="w-full sm:w-72 bg-[rgba(255,255,255,0.01)] border-r border-white/5 flex flex-col max-h-48 sm:max-h-none relative overflow-hidden">
+          <div className="w-full sm:w-72 bg-[rgba(255,255,255,0.01)] border-r border-[var(--glass-border)] flex flex-col max-h-48 sm:max-h-none relative overflow-hidden">
             {/* Top accent */}
-            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#E8523D]/30 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--mint-mid)]/30 to-transparent" />
 
             {/* Header */}
             <div className="p-4 pb-3">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-5 h-5 rounded-md bg-[#E8523D]/10 border border-[#E8523D]/20 flex items-center justify-center">
-                  <svg className="w-3 h-3 text-[#E8523D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="w-5 h-5 rounded-md bg-[var(--mint-mid)]/10 border border-[var(--mint-mid)]/20 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-[var(--mint-mid)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                   </svg>
                 </div>
@@ -790,11 +790,11 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
               </div>
 
               {/* Breadcrumb */}
-              <div className="flex items-center gap-1 text-[11px] mb-3 flex-wrap font-mono bg-white/[0.02] rounded-lg px-3 py-2 border border-white/5">
-                <span className="text-[#E8523D]/60 select-none">$</span>
+              <div className="flex items-center gap-1 text-[11px] mb-3 flex-wrap font-mono bg-white/[0.02] rounded-lg px-3 py-2 border border-[var(--glass-border)]">
+                <span className="text-[var(--mint-mid)]/60 select-none">$</span>
                 <button
                   onClick={() => { setCurrentPath(''); fetchFiles(''); }}
-                  className="text-white/50 hover:text-[#E8523D] transition-colors duration-200"
+                  className="text-white/70 hover:text-[var(--mint-mid)] transition-colors duration-200"
                 >
                   .openclaw
                 </button>
@@ -802,17 +802,17 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                   const partial = arr.slice(0, i + 1).join('/')
                   return (
                     <React.Fragment key={i}>
-                      <span className="text-[#E8523D]/30">/</span>
+                      <span className="text-[var(--mint-mid)]/30">/</span>
                       <button
                         onClick={() => { setCurrentPath(partial); fetchFiles(partial); }}
-                        className="text-white/50 hover:text-[#E8523D] transition-colors duration-200 truncate max-w-[80px]"
+                        className="text-white/70 hover:text-[var(--mint-mid)] transition-colors duration-200 truncate max-w-[80px]"
                       >
                         {seg}
                       </button>
                     </React.Fragment>
                   )
                 })}
-                <span className="text-[#E8523D] animate-pulse ml-0.5">▎</span>
+                <span className="text-[var(--mint-mid)] animate-pulse ml-0.5">▎</span>
               </div>
 
               {/* Upload button */}
@@ -821,8 +821,8 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                 disabled={!isActive || uploading}
                 className={`group/upload w-full py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-300 ${
                   isActive && !uploading
-                    ? 'bg-[#E8523D]/5 border border-[#E8523D]/20 text-[#E8523D] hover:border-[#E8523D]/40 hover:shadow-[0_0_20px_rgba(232,82,61,0.1)] hover:bg-[#E8523D]/10'
-                    : 'bg-white/[0.02] border border-white/5 text-white/20 cursor-not-allowed'
+                    ? 'bg-[var(--mint-mid)]/5 border border-[var(--mint-mid)]/20 text-[var(--mint-mid)] hover:border-[var(--mint-mid)]/40 hover:shadow-[0_0_20px_rgba(232,82,61,0.1)] hover:bg-[var(--mint-mid)]/10'
+                    : 'bg-white/[0.02] border border-[var(--glass-border)] text-white/20 cursor-not-allowed'
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
@@ -855,20 +855,20 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
               {parentPath !== null && (
                 <button
                   onClick={navigateUp}
-                  className="flex items-center gap-2.5 w-full py-2 px-3 rounded-lg hover:bg-[#E8523D]/5 border border-transparent hover:border-[#E8523D]/10 text-left transition-all duration-200 group/nav"
+                  className="flex items-center gap-2.5 w-full py-2 px-3 rounded-lg hover:bg-[var(--mint-mid)]/5 border border-transparent hover:border-[var(--mint-mid)]/10 text-left transition-all duration-200 group/nav"
                 >
-                  <div className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center group-hover/nav:bg-[#E8523D]/10 transition-colors duration-200">
-                    <svg className="w-3 h-3 text-white/50 group-hover/nav:text-[#E8523D] transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <div className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center group-hover/nav:bg-[var(--mint-mid)]/10 transition-colors duration-200">
+                    <svg className="w-3 h-3 text-white/70 group-hover/nav:text-[var(--mint-mid)] transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                     </svg>
                   </div>
-                  <span className="text-xs text-white/50 group-hover/nav:text-white transition-colors duration-200 font-mono">..</span>
+                  <span className="text-xs text-white/70 group-hover/nav:text-white transition-colors duration-200 font-mono">..</span>
                 </button>
               )}
 
               {files.length === 0 && parentPath === null ? (
                 <div className="flex flex-col items-center justify-center py-8 px-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#E8523D]/5 border border-[#E8523D]/10 flex items-center justify-center mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--mint-mid)]/5 border border-[var(--mint-mid)]/10 flex items-center justify-center mb-3">
                     <svg className="w-5 h-5 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                     </svg>
@@ -886,30 +886,30 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                     .map((file, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2.5 py-2 px-3 rounded-lg border border-transparent hover:bg-[#E8523D]/5 hover:border-[#E8523D]/10 group transition-all duration-200"
+                      className="flex items-center gap-2.5 py-2 px-3 rounded-lg border border-transparent hover:bg-[var(--mint-mid)]/5 hover:border-[var(--mint-mid)]/10 group transition-all duration-200"
                     >
                       {file.type === 'folder' ? (
                         <button
                           onClick={() => navigateToDir(file.name)}
                           className="flex items-center gap-2.5 flex-1 min-w-0 text-left"
                         >
-                          <div className="w-5 h-5 rounded-md bg-[#E8523D]/10 border border-[#E8523D]/15 flex items-center justify-center shrink-0 group-hover:bg-[#E8523D]/20 group-hover:border-[#E8523D]/30 transition-all duration-200">
-                            <svg className="w-3 h-3 text-[#E8523D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <div className="w-5 h-5 rounded-md bg-[var(--mint-mid)]/10 border border-[var(--mint-mid)]/15 flex items-center justify-center shrink-0 group-hover:bg-[var(--mint-mid)]/20 group-hover:border-[var(--mint-mid)]/30 transition-all duration-200">
+                            <svg className="w-3 h-3 text-[var(--mint-mid)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
                           </div>
-                          <span className="text-xs text-[#E8523D] group-hover:text-white truncate transition-colors duration-200">
+                          <span className="text-xs text-[var(--mint-mid)] group-hover:text-white truncate transition-colors duration-200">
                             {file.name}
                           </span>
                         </button>
                       ) : (
                         <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                          <div className="w-5 h-5 rounded-md bg-white/5 border border-white/5 flex items-center justify-center shrink-0 group-hover:bg-white/10 transition-all duration-200">
-                            <svg className="w-3 h-3 text-white/30 group-hover:text-white/50 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <div className="w-5 h-5 rounded-md agent-card flex items-center justify-center shrink-0 group-hover:bg-white/10 transition-all duration-200">
+                            <svg className="w-3 h-3 text-white/50 group-hover:text-white/70 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                           </div>
-                          <span className="text-xs text-white/50 group-hover:text-white truncate flex-1 transition-colors duration-200">
+                          <span className="text-xs text-white/70 group-hover:text-white truncate flex-1 transition-colors duration-200">
                             {file.name}
                           </span>
                           <span className="text-[10px] text-white/20 shrink-0 font-mono">{formatSize(file.size)}</span>
@@ -921,10 +921,10 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                         {file.type !== 'folder' && (
                           <button
                             onClick={(e) => { e.stopPropagation(); handleDownloadFile(file.name) }}
-                            className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-[#E8523D]/10 transition-all duration-200"
+                            className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-[var(--mint-mid)]/10 transition-all duration-200"
                             title="Download"
                           >
-                            <svg className="w-3 h-3 text-[#E8523D]/50 hover:text-[#E8523D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <svg className="w-3 h-3 text-[var(--mint-mid)]/50 hover:text-[var(--mint-mid)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                           </button>
@@ -949,25 +949,25 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
 
             {/* Agent info at bottom */}
             {session && (
-              <div className="p-3 mx-2 mb-2 rounded-xl bg-white/[0.02] border border-white/5">
+              <div className="p-3 mx-2 mb-2 rounded-xl bg-white/[0.02] border border-[var(--glass-border)]">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-[#E8523D] shadow-[0_0_6px_rgba(232,82,61,0.5)]" />
-                  <h4 className="text-[10px] font-bold text-white/30 tracking-widest uppercase">Agent</h4>
+                  <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] shadow-[0_0_6px_rgba(232,82,61,0.5)]" />
+                  <h4 className="text-[10px] font-bold text-white/50 tracking-widest uppercase">Agent</h4>
                 </div>
-                <div className="text-[11px] text-white/30 space-y-1.5 font-mono">
+                <div className="text-[11px] text-white/50 space-y-1.5 font-mono">
                   <div className="flex items-center gap-2 truncate">
-                    <span className="text-[#E8523D]/40">⬡</span>
+                    <span className="text-[var(--mint-mid)]/40">⬡</span>
                     <span className="truncate">{session.agent.wallet?.slice(0, 8)}...{session.agent.wallet?.slice(-6)}</span>
                   </div>
                   {session.health?.gpu_name && (
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]/40">◈</span>
+                      <span className="text-[var(--mint-mid)]/40">◈</span>
                       <span>{session.health.gpu_name}</span>
                     </div>
                   )}
                   {session.health && (
                     <div className="flex items-center gap-2">
-                      <span className="text-[#E8523D]/40">◷</span>
+                      <span className="text-[var(--mint-mid)]/40">◷</span>
                       <span>{Math.floor((session.health.uptime || 0) / 60)}m uptime</span>
                     </div>
                   )}
@@ -984,14 +984,14 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                 <div key={i} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-2xl px-4 py-3 rounded-lg ${
                     msg.type === 'system'
-                      ? 'bg-[#E8523D]/10 text-[#E8523D] text-sm font-mono'
+                      ? 'bg-[var(--mint-mid)]/10 text-[var(--mint-mid)] text-sm font-mono'
                       : msg.type === 'error'
                       ? 'bg-red-500/10 text-red-400 text-sm font-mono border border-red-500/20'
                       : msg.type === 'user'
-                      ? 'bg-[#E8523D] text-white'
+                      ? 'bg-[var(--mint-mid)] text-white'
                       : msg.type === 'tool'
                       ? 'bg-yellow-900/20 text-yellow-300/80 text-xs font-mono border border-yellow-500/20'
-                      : 'bg-white/[0.03] text-white border border-white/10'
+                      : 'agent-card text-white border border-[var(--glass-border)]'
                   }`}>
                     {msg.type === 'tool' ? (
                       <div className="flex items-center gap-2">
@@ -1002,7 +1002,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                       <div className="whitespace-pre-wrap">
                         {msg.content}
                         {msg.isStreaming && (
-                          <span className="inline-block w-2 h-4 bg-[#E8523D] ml-0.5 animate-pulse" />
+                          <span className="inline-block w-2 h-4 bg-[var(--mint-mid)] ml-0.5 animate-pulse" />
                         )}
                       </div>
                     )}
@@ -1011,11 +1011,11 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
               ))}
               {sending && !messages.some(m => m.isStreaming) && (
                 <div className="flex justify-start">
-                  <div className="bg-white/[0.03] text-white/50 border border-white/10 px-4 py-3 rounded-lg">
+                  <div className="agent-card text-white/70 border border-[var(--glass-border)] px-4 py-3 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#E8523D] rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-[#E8523D] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-[#E8523D] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                      <div className="w-2 h-2 bg-[var(--mint-mid)] rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-[var(--mint-mid)] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-[var(--mint-mid)] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                       <span className="ml-2 text-sm">Connecting...</span>
                     </div>
                   </div>
@@ -1025,7 +1025,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
             </div>
 
             {/* Input */}
-            <div className="border-t border-white/5 p-4">
+            <div className="border-t border-[var(--glass-border)] p-4">
               <div className="flex gap-3">
                 <input
                   ref={inputRef}
@@ -1035,7 +1035,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                   placeholder={isReady ? 'Type a message to the agent...' : 'Agent is not ready yet...'}
                   disabled={!isReady || sending}
-                  className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/10 rounded-lg text-white placeholder-white/30 focus:border-[#E8523D] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-3 agent-card border border-[var(--glass-border)] rounded-lg text-white placeholder-white/30 focus:border-[var(--mint-mid)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 {sending ? (
                   <button
@@ -1050,15 +1050,15 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                     disabled={!isReady || !input.trim()}
                     className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                       isReady && input.trim()
-                        ? 'bg-[#E8523D] text-white hover:shadow-[0_0_20px_rgba(232,82,61,0.5)]'
-                        : 'bg-[#E8523D]/30 text-white/50 cursor-not-allowed'
+                        ? 'bg-[var(--mint-mid)] text-white hover:shadow-[0_0_20px_rgba(232,82,61,0.5)]'
+                        : 'bg-[var(--mint-mid)]/30 text-white/70 cursor-not-allowed'
                     }`}
                   >
                     Send
                   </button>
                 )}
               </div>
-              <div className="mt-2 flex items-center justify-between text-xs text-white/50">
+              <div className="mt-2 flex items-center justify-between text-xs text-white/70">
                 <span>
                   {sending ? 'Agent is generating...' : isReady ? 'Connected to agent' : `Status: ${statusText}`}
                 </span>
@@ -1073,7 +1073,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                   <button
                     onClick={handleNewSession}
                     disabled={creatingNewSession || sending}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 bg-[#E8523D]/5 border border-[#E8523D]/15 text-[#E8523D]/80 hover:bg-[#E8523D]/10 hover:border-[#E8523D]/30 hover:text-[#E8523D] disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 bg-[var(--mint-mid)]/5 border border-[var(--mint-mid)]/15 text-[var(--mint-mid)]/80 hover:bg-[var(--mint-mid)]/10 hover:border-[var(--mint-mid)]/30 hover:text-[var(--mint-mid)] disabled:opacity-40 disabled:cursor-not-allowed"
                     title="Clear chat and start fresh"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1125,69 +1125,69 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
           </div>
 
           {/* Right Sidebar - Session Info & API Keys */}
-          <div className="hidden lg:flex w-80 bg-white/[0.01] border-l border-white/5 flex-col">
+          <div className="hidden lg:flex w-80 bg-white/[0.01] border-l border-[var(--glass-border)] flex-col">
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {session && (
                 <>
                   {/* Session Info */}
-                  <div className="rounded-lg bg-white/[0.03] border border-white/10 overflow-hidden">
+                  <div className="rounded-lg agent-card border border-[var(--glass-border)] overflow-hidden">
                     <button onClick={() => toggleSection('status')} className="w-full flex items-center justify-between p-3 hover:bg-white/[0.02] transition-colors">
                       <span className="text-sm font-bold text-white">SESSION INFO</span>
-                      <span className={`text-white/50 text-[10px] transition-transform ${openSections.status ? 'rotate-180' : ''}`}>▼</span>
+                      <span className={`text-white/70 text-[10px] transition-transform ${openSections.status ? 'rotate-180' : ''}`}>▼</span>
                     </button>
                     {openSections.status && (
                       <div className="px-3 pb-3 space-y-3 text-xs">
                         {/* Status */}
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-white/50">Status</span>
+                            <span className="text-white/70">Status</span>
                             <span className={`font-bold ${isReady ? 'text-green-400' : 'text-yellow-400'}`}>{statusText}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-white/50">GPU</span>
+                            <span className="text-white/70">GPU</span>
                             <span className="text-white">{session.gpuType || 'N/A'} x{session.numGpus}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-white/50">CPU / RAM</span>
+                            <span className="text-white/70">CPU / RAM</span>
                             <span className="text-white">{session.cpuCores} cores / {session.memoryGb} GB</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-white/50">Cost</span>
+                            <span className="text-white/70">Cost</span>
                             <span className="text-white">${session.instance?.costPerHour?.toFixed(2) || '?'}/hr</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-white/50">Time Left</span>
+                            <span className="text-white/70">Time Left</span>
                             <span className="text-white">{formatTimeRemaining(session.timeRemaining)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-white/50">Storage</span>
+                            <span className="text-white/70">Storage</span>
                             <span className="text-white">{formatSize(session.storageUsed || 0)} / 500 MB</span>
                           </div>
                         </div>
                         {/* Agent Identity */}
-                        <div className="border-t border-white/5 pt-3 space-y-2">
-                          <span className="text-[10px] text-white/30 uppercase tracking-wider">Agent Identity</span>
+                        <div className="border-t border-[var(--glass-border)] pt-3 space-y-2">
+                          <span className="text-[10px] text-white/50 uppercase tracking-wider">Agent Identity</span>
                           <div className="flex justify-between">
-                            <span className="text-white/50">Name</span>
+                            <span className="text-white/70">Name</span>
                             <span className="text-white">{session.agent.name}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-white/50">Wallet</span>
+                            <span className="text-white/70">Wallet</span>
                             <span className="text-white font-mono">{session.agent.wallet?.slice(0, 6)}...{session.agent.wallet?.slice(-4)}</span>
                           </div>
                           {session.agent.memoryCID && (
                             <div>
-                              <span className="text-white/50">Memory CID</span>
+                              <span className="text-white/70">Memory CID</span>
                               <div className="text-white font-mono truncate mt-1">{session.agent.memoryCID}</div>
                             </div>
                           )}
                         </div>
                         {/* GPU Health */}
                         {session.health && (
-                          <div className="border-t border-white/5 pt-3 space-y-2">
-                            <span className="text-[10px] text-white/30 uppercase tracking-wider">GPU Health</span>
+                          <div className="border-t border-[var(--glass-border)] pt-3 space-y-2">
+                            <span className="text-[10px] text-white/50 uppercase tracking-wider">GPU Health</span>
                             <div className="flex justify-between">
-                              <span className="text-white/50">GPU</span>
+                              <span className="text-white/70">GPU</span>
                               <span className={session.health.gpu_available ? 'text-green-400' : 'text-red-400'}>
                                 {session.health.gpu_available ? session.health.gpu_name || 'Available' : 'Not detected'}
                               </span>
@@ -1195,11 +1195,11 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                             {session.health.gpu_available && (
                               <>
                                 <div className="flex justify-between">
-                                  <span className="text-white/50">Utilization</span>
+                                  <span className="text-white/70">Utilization</span>
                                   <span className="text-white">{session.health.gpu_utilization ?? session.health.gpuUsed ?? 0}%</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-white/50">VRAM</span>
+                                  <span className="text-white/70">VRAM</span>
                                   <span className="text-white">
                                     {session.health.gpu_memory_used ?? 0} / {session.health.gpu_memory_total ?? 0} MiB
                                   </span>
@@ -1207,21 +1207,21 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                                 {/* VRAM bar */}
                                 <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                                   <div
-                                    className="h-full rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] transition-all duration-500"
+                                    className="h-full rounded-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] transition-all duration-500"
                                     style={{ width: `${session.health.gpu_memory_total ? Math.round((session.health.gpu_memory_used || 0) / session.health.gpu_memory_total * 100) : 0}%` }}
                                   />
                                 </div>
                               </>
                             )}
                             <div className="flex justify-between">
-                              <span className="text-white/50">Gateway</span>
+                              <span className="text-white/70">Gateway</span>
                               <span className={session.health.gateway_pid ? 'text-green-400' : 'text-red-400'}>
                                 {session.health.gateway_pid ? 'Running' : 'Stopped'}
                                 {session.health.gateway_pid ? ` (PID ${session.health.gateway_pid})` : ''}
                               </span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-white/50">Uptime</span>
+                              <span className="text-white/70">Uptime</span>
                               <span className="text-white">
                                 {session.health.uptime >= 3600
                                   ? `${Math.floor(session.health.uptime / 3600)}h ${Math.floor((session.health.uptime % 3600) / 60)}m`
@@ -1230,21 +1230,21 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                               </span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-white/50">Active Connections</span>
+                              <span className="text-white/70">Active Connections</span>
                               <span className="text-white">{session.health.conversations_active || 0}</span>
                             </div>
                           </div>
                         )}
                         {/* Connection */}
                         {session.instance?.publicIp && (
-                          <div className="border-t border-white/5 pt-3 space-y-2">
-                            <span className="text-[10px] text-white/30 uppercase tracking-wider">Connection</span>
+                          <div className="border-t border-[var(--glass-border)] pt-3 space-y-2">
+                            <span className="text-[10px] text-white/50 uppercase tracking-wider">Connection</span>
                             <div>
-                              <span className="text-white/50">Instance ID</span>
+                              <span className="text-white/70">Instance ID</span>
                               <div className="text-white font-mono">{session.instance.id}</div>
                             </div>
                             <div>
-                              <span className="text-white/50">SSH</span>
+                              <span className="text-white/70">SSH</span>
                               <div className="text-white font-mono text-[10px] break-all">
                                 ssh -p {session.instance.sshPort} root@{session.instance.sshHost}
                               </div>
@@ -1256,7 +1256,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                   </div>
 
                   {/* API Integrations */}
-                  <div className="pt-2 border-t border-white/5">
+                  <div className="pt-2 border-t border-[var(--glass-border)]">
                     <h4 className="text-sm font-bold text-white mb-3 px-1">API INTEGRATIONS</h4>
                     <div className="space-y-2">
                       {[
@@ -1269,7 +1269,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                         const saved = apiKeys.find((k) => k.key_name === api.key)
                         const isEditing = newKeyName === api.key
                         return (
-                          <div key={api.key} className="rounded-lg bg-white/[0.03] border border-white/10 overflow-hidden hover:border-[#E8523D]/30 transition-all">
+                          <div key={api.key} className="rounded-lg agent-card border border-[var(--glass-border)] overflow-hidden hover:border-[var(--mint-mid)]/30 transition-all">
                             <button
                               onClick={() => {
                                 if (isEditing) { setNewKeyName(''); setNewKeyValue(''); }
@@ -1279,7 +1279,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                             >
                               <div className="text-left">
                                 <div className="text-xs font-bold text-white">{api.name}</div>
-                                <div className="text-[10px] text-white/50">{api.desc}</div>
+                                <div className="text-[10px] text-white/70">{api.desc}</div>
                               </div>
                               {saved ? (
                                 <div className="flex items-center gap-1.5">
@@ -1301,14 +1301,14 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                                   value={newKeyValue}
                                   onChange={(e) => setNewKeyValue(e.target.value)}
                                   placeholder={`Paste ${api.name} key...`}
-                                  className="flex-1 bg-black border border-white/10 rounded px-2 py-1.5 text-xs text-white placeholder-white/20 focus:border-[#E8523D]/50 focus:outline-none"
+                                  className="flex-1 bg-black border border-[var(--glass-border)] rounded px-2 py-1.5 text-xs text-white placeholder-white/20 focus:border-[var(--mint-mid)]/50 focus:outline-none"
                                   onKeyDown={(e) => e.key === 'Enter' && handleSaveKey()}
                                   autoFocus
                                 />
                                 <button
                                   onClick={handleSaveKey}
                                   disabled={!newKeyValue.trim() || savingKey}
-                                  className="px-3 py-1.5 rounded text-xs font-semibold bg-[#E8523D]/10 border border-[#E8523D]/30 text-[#E8523D] hover:bg-[#E8523D]/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                                  className="px-3 py-1.5 rounded text-xs font-semibold bg-[var(--mint-mid)]/10 border border-[var(--mint-mid)]/30 text-[var(--mint-mid)] hover:bg-[var(--mint-mid)]/20 disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
                                   {savingKey ? '...' : 'Save'}
                                 </button>
