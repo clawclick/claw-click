@@ -21,6 +21,18 @@ const nextConfig = {
         destination: '/immortal/agent/:address',
         permanent: true,
       },
+      {
+        source: '/session/:path*',
+        has: [{ type: 'host', value: 'claw.click' }],
+        destination: 'https://app.claw.click/session/:path*',
+        permanent: true,
+      },
+      {
+        source: '/session/:path*',
+        has: [{ type: 'host', value: 'www.claw.click' }],
+        destination: 'https://app.claw.click/session/:path*',
+        permanent: true,
+      },
     ];
   },
   webpack: (config) => {
