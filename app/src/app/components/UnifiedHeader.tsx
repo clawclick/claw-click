@@ -305,16 +305,15 @@ export default function UnifiedHeader() {
             <button
               onClick={() => setShowHowItWorks(true)}
               title="How it works"
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{border: '1.5px solid rgba(69,199,184,0.4)', color: 'var(--mint-dark)', background: 'rgba(69,199,184,0.08)'}}
+              className="flex items-center gap-1.5 text-sm font-bold text-[var(--mint-dark)] hover:text-[var(--mint-mid)] transition-colors"
             >
-              <span className="text-sm font-bold leading-none" style={{fontFamily:'serif'}}>i</span>
+              <span style={{fontFamily:'serif',fontSize:'1rem'}}>ⓘ</span> How It Works
             </button>
             <a
               href="https://t.me/clawclickbot"
               target="_blank"
               rel="noopener noreferrer"
-              className="electric-button px-4 py-2 rounded-lg font-semibold text-sm"
+              className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors"
             >
               ClawClick Bot
             </a>

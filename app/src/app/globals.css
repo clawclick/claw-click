@@ -661,15 +661,10 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   position: relative;
   border: 2px solid transparent;
   background-clip: padding-box !important;
-  animation: inverseElectricPulse 2.5s ease-in-out infinite;
-  transition: transform 0.2s ease;
-  /* Gradient text */
-  background-image: linear-gradient(90deg, #0F6B63, #1FAFA3, #45C7B8, #1FAFA3, #0F6B63) !important;
-  background-size: 200% 100% !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
+  color: white !important;
+  -webkit-text-fill-color: white !important;
   animation: borderShimmer 3s linear infinite, inverseElectricPulse 2.5s ease-in-out infinite;
+  transition: transform 0.2s ease;
 }
 
 .inverse-electric-button::before {
@@ -702,6 +697,54 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
 }
 
 .inverse-electric-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Spawn Agent Button — glassy with shimmer border */
+.spawn-agent-btn {
+  position: relative;
+  background: rgba(8, 40, 36, 0.55);
+  backdrop-filter: blur(12px);
+  color: white;
+  font-weight: 700;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.spawn-agent-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    90deg,
+    #45C7B8,
+    #7DE2D1,
+    #2EE6D6,
+    #7DE2D1,
+    #45C7B8,
+    #1FAFA3,
+    #45C7B8
+  );
+  background-size: 300% 100%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: borderShimmer 2.5s linear infinite;
+}
+
+.spawn-agent-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 40, 36, 0.55);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  z-index: -1;
+}
+
+.spawn-agent-btn:hover {
+  background: rgba(8, 40, 36, 0.75);
   transform: translateY(-2px);
 }
 

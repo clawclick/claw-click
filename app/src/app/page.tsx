@@ -359,13 +359,12 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="space-y-4"
           >
-            {/* AUTONOMOUS - Actual animated SVG + text below */}
+            {/* Hero logo + tagline */}
             <div className="flex flex-col items-center" style={{gap:0}}>
-              {/* The real animated SVG from branding */}
               <div className="flex justify-center w-full">
                 <Image
-                  src="/branding/autonomous_animated.svg"
-                  alt="AUTONOMOUS"
+                  src="/branding/claw_logo_animated.svg"
+                  alt="Claw.Click"
                   width={1000}
                   height={200}
                   className="w-[130%] sm:w-full max-w-5xl h-auto"
@@ -373,52 +372,33 @@ export default function Home() {
                   priority
                 />
               </div>
-              
               <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-[0.3em] framework-text mx-auto uppercase" style={{marginTop:0}}>
                 Framework For Digital Entities
               </h2>
-              
-              <p className="text-lg sm:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed italic font-light pt-4">
+              <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-2xl mx-auto italic font-light mt-2" style={{fontStyle:'italic',letterSpacing:'0.04em'}}>
                 Spawn an agent that earns for you TODAY
               </p>
             </div>
 
-            {/* Single CTA */}
-            <div className="flex flex-col items-center justify-center gap-4 pt-8">
+            {/* CTAs */}
+            <div className="flex flex-col items-center justify-center gap-3 pt-6">
               <Link href="/spawner">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="btn-primary text-xl px-12 py-5"
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  className="spawn-agent-btn text-lg px-10 py-4 flex items-center gap-3"
                 >
+                  <Image src="/branding/lobster_icon_exact_size-rem_bk.png" alt="" width={28} height={28} className="object-contain" />
                   Spawn Agent
                 </motion.button>
               </Link>
               <button
                 onClick={() => setShowHowItWorks(true)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--mint-mid)]/40 text-[var(--mint-dark)] text-sm font-semibold hover:bg-[var(--mint-light)]/20 transition-all"
+                className="flex items-center gap-2 text-[var(--mint-dark)] text-sm font-bold hover:text-[var(--mint-mid)] transition-all"
               >
                 <span className="text-base">ⓘ</span> How It Works
               </button>
             </div>
-
-            {/* Pixel Lobster Mascot */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="pt-8 flex justify-center"
-            >
-              <div className="relative w-24 h-24 spawn-pulse">
-                <Image 
-                  src="/branding/lobster_icon_exact_size-rem_bk.png" 
-                  alt="Spawn" 
-                  width={96}
-                  height={96}
-                  className="object-contain"
-                />
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </section>
