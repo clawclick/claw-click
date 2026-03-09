@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { 
   LaunchIcon, 
   TradeAPIIcon,
@@ -159,6 +160,7 @@ export default function Home() {
             >
               ClawClick Bot
             </a>
+            <ConnectButton />
           </nav>
         </div>
       </header>
@@ -172,17 +174,25 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            {/* AUTONOMOUS - Animated Pixelated Hero */}
-            <div className="space-y-2">
-              <h1 className="text-7xl sm:text-8xl lg:text-[10rem] font-bold tracking-widest leading-none autonomous-text">
-                AUTONOMOUS
-              </h1>
+            {/* AUTONOMOUS - Actual animated SVG + text below */}
+            <div className="space-y-4">
+              {/* The real animated SVG from branding */}
+              <div className="flex justify-center">
+                <Image
+                  src="/branding/autonomous_animated.svg"
+                  alt="AUTONOMOUS"
+                  width={900}
+                  height={120}
+                  className="w-full max-w-4xl h-auto"
+                  priority
+                />
+              </div>
               
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-wider autonomous-text" style={{ filter: 'drop-shadow(0 0 10px rgba(46,230,214,0.4))' }}>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-wider autonomous-text">
                 Framework For Digital Entities
               </h2>
               
-              <p className="text-lg sm:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed italic font-light pt-6">
+              <p className="text-lg sm:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed italic font-light pt-4">
                 Spawn an agent that earns for you TODAY
               </p>
             </div>
