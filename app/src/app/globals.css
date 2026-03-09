@@ -700,6 +700,20 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   transform: translateY(-2px);
 }
 
+/* Lobster heartbeat pulse */
+@keyframes lobsterHeartbeat {
+  0%   { transform: scale(1); }
+  14%  { transform: scale(1.12); }
+  28%  { transform: scale(1); }
+  42%  { transform: scale(1.08); }
+  56%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+.lobster-heartbeat {
+  animation: lobsterHeartbeat 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
 /* Spawn Agent Button — glassy with shimmer border */
 .spawn-agent-btn {
   position: relative;

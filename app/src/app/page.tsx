@@ -361,20 +361,21 @@ export default function Home() {
           >
             {/* Hero logo + tagline */}
             <div className="flex flex-col items-center" style={{gap:0}}>
-              <div className="flex justify-center w-full">
+              {/* Constrained container — SVG and Framework text share the same width */}
+              <div className="inline-flex flex-col items-stretch" style={{width:'min(72vw, 520px)'}}>
                 <Image
                   src="/branding/claw_logo_spawn_animation.svg"
                   alt="Claw.Click"
-                  width={400}
-                  height={80}
-                  className="w-[55%] sm:w-[40%] max-w-md h-auto"
+                  width={520}
+                  height={100}
+                  className="w-full h-auto"
                   style={{marginBottom:'-0.1rem'}}
                   priority
                 />
+                <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-[0.3em] framework-text uppercase text-center w-full" style={{marginTop:'0.1rem'}}>
+                  Framework For Digital Entities
+                </h2>
               </div>
-              <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-[0.3em] framework-text mx-auto uppercase" style={{marginTop:'0.1rem'}}>
-                Framework For Digital Entities
-              </h2>
               <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-2xl mx-auto italic font-light mt-2" style={{fontStyle:'italic',letterSpacing:'0.04em'}}>
                 Spawn an agent that earns for you TODAY
               </p>
@@ -388,7 +389,7 @@ export default function Home() {
                   whileTap={{ scale: 0.96 }}
                   className="spawn-agent-btn text-lg px-10 py-4 flex items-center gap-3"
                 >
-                  <Image src="/branding/lobster_icon_exact_size-rem_bk.png" alt="" width={28} height={28} className="object-contain" />
+                  <Image src="/branding/lobster_icon_exact_size-rem_bk.png" alt="" width={28} height={28} className="object-contain lobster-heartbeat" />
                   Spawn Agent
                 </motion.button>
               </Link>
