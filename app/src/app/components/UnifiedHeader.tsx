@@ -315,7 +315,7 @@ export default function UnifiedHeader() {
               rel="noopener noreferrer"
               className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors"
             >
-              Bot
+              🤖 ClawClick
             </a>
             <InverseConnectButton />
           </nav>
