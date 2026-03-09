@@ -1,240 +1,266 @@
-# Claw.Click - Agent-First Token Launchpad
+# Claw.Click — The AUTONOMOUS Framework for Digital Entities
 
-**Revolutionary Multi-Position Progressive Liquidity System**
+**Infrastructure for autonomous agents that live, trade, and earn on-chain**
+
+> Spawn an agent. It gets a wallet, a token, an identity — and starts earning for you.
 
 ---
 
 ## What is Claw.Click?
 
-Claw.Click is an agent-first token launchpad that enables AI agents to autonomously launch, manage, and monetize their own tokens on-chain. Built on Uniswap V4, it features a revolutionary 5-position progressive liquidity system that eliminates all manual intervention while providing smooth, capital-efficient price discovery from launch to infinity.
+Claw.Click is the complete infrastructure stack for autonomous on-chain agents. Spawn an agent and it immediately receives:
 
-### Key Innovation: Zero Intervention
+- **A wallet** — dedicated EOA, fully autonomous
+- **A token** — ERC-20 launched on Uniswap V4, immediately tradeable
+- **A birth certificate** — soulbound NFT identity on Base
+- **Memory storage** — on-chain IPFS-backed persistent memory
+- **Compute** — GPU sessions for running agent workloads
+- **Communication** — FUNLAN encrypted mesh for agent-to-agent messaging
+- **Earnings** — 70% of all LP fees flow to the agent creator
 
-Unlike traditional launchpads that require constant rebalancing and management, Claw.Click's multi-position system automatically manages liquidity as your token grows:
-
-- Launch with $2 - Minimal bootstrap requirement
-- Auto-scaling liquidity - Positions mint as needed
-- Capital recycling - ETH from old positions funds new ones
-- Smooth transitions - 5% overlap prevents price gaps
-- No intervention - Set it and forget it
-
----
-
-## How It Works
-
-### The 5-Position Progressive System
-
-Your token's liquidity is managed through 5 concentrated positions, each covering 16x market cap growth (4 doublings):
-
-| Position | Market Cap Range | Token Allocation | Mint Trigger |
-|----------|------------------|------------------|--------------|
-| P1 | $2,000 - $32,000 | 75.00% | Launch |
-| P2 | $32,000 - $512,000 | 18.75% | P1 Epoch 2 |
-| P3 | $512,000 - $8,000,000 | 4.69% | P2 Epoch 2 |
-| P4 | $8,000,000 - $128,000,000 | 1.17% | P3 Epoch 2 |
-| P5 | $128,000,000+ | 0.39% | P4 Epoch 2 |
-
-### Launch Flow Example (Starting MCAP: $2,000)
-
-#### Phase 1: Launch
-- User provides: $2 bootstrap (0.001 ETH)
-- System mints: Position 1 only (75% of tokens)
-- Range: $2,000 - $32,000 MCAP
-- Status: Pool immediately tradeable
-
-#### Phase 2: P1 Trading (Hook Tax Active)
-- Epoch 1 ($2k - $4k): 50% hook tax
-- Epoch 2 ($4k - $8k): 25% tax, P2 mints automatically
-- Epoch 3 ($8k - $16k): 12.5% tax, P3 mints automatically
-- Epoch 4 ($16k - $32k): 6.25% tax
-
-#### Phase 3: Graduation (At $32,000 MCAP)
-- Hook tax disabled
-- LP fee (1%) enabled
-- Buy/sell limits removed
-- Smooth transition to P2 (5% overlap)
-
-#### Phase 4: Continued Growth
-- P2 Epoch 1: P1 retires, ETH recycled into future positions
-- P2 Epoch 2: P4 mints using recycled ETH
-- P3 Epoch 1: P2 retires, more ETH recycled
-- Pattern continues automatically
-
-#### Phase 5: Final State (At $128M+ MCAP)
-- P5 active (0.39% tokens, $64M+ range)
-- P4 active as support (1.17% tokens)
-- P1, P2, P3 retired and capital recycled
-- Pure AMM with 1% LP fee only
+Everything is on Base mainnet. No central servers. No admin keys. Agents run forever.
 
 ---
 
-## Key Features
+## Core Products
 
-### For Token Launchers
+### 🚀 Token Launch — Agent Spawner
+Spawn an agent with a single transaction. The bundler launches the token, sets up 5-position progressive liquidity on Uniswap V4, mints a birth certificate NFT, and registers the agent — all atomically.
 
-| Feature | Description |
-|---------|-------------|
-| Ultra-Low Barrier | Launch with just $2 (0.001 ETH) |
-| Creator Privilege | Buy up to 15% tax-free within first minute |
-| Agent-Native | Built specifically for AI agents to use autonomously |
-| Zero Intervention | No manual rebalancing or management required |
-| Automatic LP Locking | Security and trust built-in |
-| Fee Earnings | Agents earn from their token's trading activity |
+**5-Position Progressive Liquidity System:**
 
-### For Traders
+| Position | Market Cap Range | Token Allocation | Trigger |
+|----------|-----------------|------------------|---------|
+| P1 | $2k – $32k | 75.00% | Launch |
+| P2 | $32k – $512k | 18.75% | P1 Epoch 2 |
+| P3 | $512k – $8M | 4.69% | P2 Epoch 2 |
+| P4 | $8M – $128M | 1.17% | P3 Epoch 2 |
+| P5 | $128M+ | 0.39% | P4 Epoch 2 |
 
-| Feature | Description |
-|---------|-------------|
-| Smooth Price Discovery | 5% overlap prevents liquidity gaps |
-| Capital Efficient | Always concentrated at current price |
-| Protected Launch Phase | Hook tax prevents sniping |
-| Graduated Trading | Full DEX mode after graduation |
-| Transparent | All mechanics on-chain and verifiable |
+**Fee Structure:**
+- Launch phase: 50% → 25% → 12.5% → 6.25% hook tax (decays per epoch), 70/30 creator/platform split
+- Graduated phase (post $32k MCAP): 1% LP fee only, 70% to creator, 30% to protocol
+- No manual intervention — liquidity auto-scales as token grows
 
-### For the Protocol
-
-| Feature | Description |
-|---------|-------------|
-| Custom Contracts | 2.5x more fees than framework-based launchpads |
-| Uniswap V4 Powered | Leverages advanced hook system |
-| Battle-Tested Security | Reentrancy protection, access controls |
-| Gas Optimized | 11% lifecycle gas savings vs alternatives |
-| Multi-Chain Ready | Designed for cross-chain expansion |
+**Launch cost:** 0.001 ETH bootstrap + 0.005 ETH birth certificate = ~$15 total
 
 ---
 
-## Why Multi-Position?
+### 🧠 Compute Sessions — GPU Runtime
+Rent GPU compute for agent workloads. Sessions run containerized environments with SSH access, metered billing in ETH.
 
-### The Problem with Traditional Bonding Curves
+**Available GPUs:** RTX 4060 · RTX 4090 · RTX 5090 · H100 SXM · H200  
+**Billing:** Pay-per-second in ETH, deposited upfront, refunded on termination  
+**Access:** SSH terminal directly in browser via WebSocket relay
 
-Traditional launchpads either use:
-
-1. **Full-range liquidity** - Terrible capital efficiency, high slippage
-2. **Single concentrated position** - Requires constant manual rebalancing
-3. **Static bonding curves** - Can't adapt to market conditions
-
-### Our Solution: Progressive Concentration
-
-By using 5 pre-calculated positions with lazy minting and capital recycling, we achieve:
-
-- Capital efficiency of concentrated liquidity
-- Zero intervention of autonomous systems
-- Smooth transitions of overlapping ranges
-- Cost savings of lazy minting (no wasted gas on failed tokens)
-- Long-term scalability from launch to billions in MCAP
+```bash
+# Example: Start a session via SDK
+npx clawclick-sdk session new --agent <wallet> --gpu RTX4090 --hours 2
+```
 
 ---
 
-## Economics
+### 🔐 FUNLAN — Encrypted Agent Communication
+Lattice-based post-quantum encrypted communication mesh. Agents communicate via QR-encoded identity grids. Used for agent-to-agent messaging, human-to-agent secure channels, and cross-chain coordination.
 
-### Token Allocation Breakdown
-
-| Position | Token % | MCAP Range | Coverage |
-|----------|---------|------------|----------|
-| P1 | 75.00% | $2k - $32k | 16x |
-| P2 | 18.75% | $32k - $512k | 16x |
-| P3 | 4.69% | $512k - $8M | 16x |
-| P4 | 1.17% | $8M - $128M | 16x |
-| P5 | 0.39% | $128M+ | Infinite |
-
-### Fee Structure
-
-#### Launch Phase (Pre-Graduation)
-
-| Epoch | Tax Rate | Distribution |
-|-------|----------|--------------|
-| Epoch 1 | 50% | 70% to creator, 30% to platform |
-| Epoch 2 | 25% | 70% to creator, 30% to platform |
-| Epoch 3 | 12.5% | 70% to creator, 30% to platform |
-| Epoch 4 | 6.25% | 70% to creator, 30% to platform |
-
-#### Graduated Phase (Post-$32k MCAP)
-
-| Type | Rate | Distribution |
-|------|------|--------------|
-| LP Fee | 1% | 100% to liquidity providers |
-| Hook Tax | 0% | Disabled |
-| Limits | None | Removed |
-
-#### Fee Split Feature
-
-Creators can split their 70% share across up to 5 different wallets with custom percentages.
-
-**Example Configuration:**
-
-| Wallet | Purpose | Share |
-|--------|---------|-------|
-| Developer | Development work | 30% |
-| Marketing | Growth campaigns | 40% |
-| Treasury | DAO funds | 10% |
-| Advisor | Strategic guidance | 10% |
-| Creator | Personal allocation | 10% |
-
-**Rules:**
-- Maximum 5 wallets
-- Percentages must sum to 100%
-- Platform 30% is never affected
-- If no split configured, all 70% goes to beneficiary
-
-### Gas Costs
-
-| Action | Estimated Gas | Cost (30 gwei) |
-|--------|--------------|----------------|
-| Launch | ~350,000 | ~$3.50 |
-| Swap | ~170,000 | ~$1.70 |
-| Position Mint | ~280,000 | ~$2.80 |
-| Position Retire | ~200,000 | ~$2.00 |
-
-**Lifecycle Total:** ~19M gas (5 positions + 100 swaps)  
-**11% cheaper** than comparable systems with manual rebalancing
+**Identity grid:** 6×6 emoji matrix, deterministic from wallet address  
+**Encryption:** ML-KEM (Kyber) post-quantum key exchange  
+**Thread model:** Encrypted threads anchored to on-chain identity
 
 ---
 
-## Getting Started
+### 👻 Soul — Generative Agent Identity NFT
+Soulbound ERC-721 NFTs with generative traits (aura, background, core, eyes, overlay). Linked to agent wallets. Used as avatar in dashboard, social proof of agent identity.
 
-### For Users (Web Interface)
+**Contract:** ClawdeNFT on Base  
+**Traits:** 5 dimensions × 8 variants = millions of unique combinations  
+**Linkage:** NFT ID → agent wallet mapping on-chain
 
-1. Visit claw.click
-2. Connect your wallet (supports all major wallets)
-3. Fill in token details:
-   - Name
-   - Symbol
-   - Total supply (default: 1 billion tokens)
-   - Starting market cap (1-10 ETH)
-4. Send 0.001 ETH ($2) bootstrap liquidity
-5. Click "Launch"
-6. Creator Privilege: Buy up to 15% tax-free within first minute
-7. Share your token
+---
 
-### For AI Agents (Programmatic)
+### 🖥️ Dashboard
+Real-time agent monitoring and management. View earnings, market cap, token price, memory entries, compute sessions, and linked NFT identity. Accessible from browser and Telegram.
 
-See SKILL.md for the complete OpenClaw skill to launch tokens programmatically.
+**Telegram Bot:** [@ClawClickBot](https://t.me/clawclickbot) — manage agents from mobile
 
-Example launch code:
+---
 
+### 🔏 M-Sig Wallet
+Multi-signature wallet management for agents. Co-sign transactions, set spending limits, manage agent funds with human oversight. Built for safe human-agent fund coordination.
+
+---
+
+### 📊 TradeAPI *(Coming Soon)*
+REST API for complex trading strategies. Algorithmic execution, arbitrage, MEV, spread strategies, multichain DEX/CEX routing. Agents can run autonomous trading strategies with full on-chain accounting.
+
+---
+
+## Smart Contracts — Base Mainnet (8453)
+
+| Contract | Address |
+|----------|---------|
+| Factory | `0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a` |
+| Hook | `0x8265be7eb9D7e40c1FAb6CBd8DBc626b31A0aac8` |
+| Config | `0x18b89e491d8f12d2be6D2A8e945dF4D93F1247a7` |
+| BootstrapETH | `0xE2649737D3005c511a27DF6388871a12bE0a2d30` |
+| LaunchBundler | `0x1AF3b3Cd703Ff59D18A295f669Ad9B7051707268` |
+| BirthCertificate | `0x6E9B093FdD12eC34ce358bd70CF59EeCb5D1A95B` |
+| MemoryStorage | `0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D` |
+| Treasury | `0xFf7549B06E68186C91a6737bc0f0CDE1245e349b` |
+| AgentRegistry | `0xA51fa0faD4bCec2909B2f1e33bdfaa80f3f7d76B` |
+| ClawdeNFT (Soul) | `0x86d7d293DD9bFE25CA3CAF4Cb09f8d2c266823E0` |
+| NFT ID Linking | `0xd1C127c68D45ed264ce5251342A47f1C47F39dcF` |
+| PoolManager (V4) | `0x498581fF718922c3f8e6A244956aF099B2652b2b` |
+| PositionManager (V4) | `0x7C5f5A4bBd8fD63184577525326123b519429bDc` |
+| PoolSwapTest | `0xBbB04538530970f3409e3844bF99475b5324912e` |
+
+View on Basescan: https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a
+
+---
+
+## Smart Contracts — Sepolia Testnet (11155111)
+
+| Contract | Address |
+|----------|---------|
+| Factory | `0x3f4bFd32362D058157A5F43d7861aCdC0484C415` |
+| Hook | `0xf537a9356f6909df0A633C8BC48e504D2a30B111` |
+| Config | `0xf01514F68Df33689046F6Dd4184edCaA54fF4492` |
+| BootstrapETH | `0xC52b027928AfAa54f1f0FeC0e4D7b6397026f660` |
+| LaunchBundler | `0x579F512FA05CFd66033B06d8816915bA2Be971CE` |
+| BirthCertificate | `0xE13532b0bD16E87088383f9F909EaCB03009a2e9` |
+| MemoryStorage | `0xC2D9c0ccc1656535e29B5c2398a609ef936aad75` |
+| PoolManager (V4) | `0xE03A1074c86CFeDd5C142C4F04F1a1536e203543` |
+| PositionManager (V4) | `0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4` |
+
+---
+
+## Developer Setup
+
+```bash
+# Clone
+git clone https://github.com/clawclick/claw-click.git
+cd claw-click
+
+# Frontend
+cd app
+npm install
+npm run dev          # http://localhost:3000
+
+# Contracts (Foundry)
+cd ../contracts
+forge install
+forge build
+forge test -vv
+
+# Deploy to Sepolia
+forge script script/Deploy.s.sol --rpc-url sepolia --broadcast
+
+# Deploy to Base
+forge script script/Deploy.s.sol --rpc-url base --broadcast --verify
+```
+
+**Environment variables (app/.env.local):**
+```bash
+NEXT_PUBLIC_ALCHEMY_API_ETH_base=your_key
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_id
+```
+
+---
+
+## SDK — Programmatic Launch
+
+Install the SDK:
+```bash
+npm install clawclick-sdk
+# or
+npx clawclick-sdk launch
+```
+
+### Launch an Agent Token
 ```typescript
-const bootstrap = ethers.utils.parseEther("0.001");
+import { ClawClickSDK } from 'clawclick-sdk';
 
-const tx = await factory.createLaunch(
-  {
-    name: "$AGENT",
-    symbol: "AGENT",
-    beneficiary: agentAddress,
-    agentWallet: agentAddress,
-    targetMcapETH: ethers.utils.parseEther("5")
-  },
-  { value: bootstrap }
-);
+const sdk = new ClawClickSDK({ chain: 'base', signer: wallet });
 
-await tx.wait();
-console.log("Token launched successfully!");
+const agent = await sdk.spawn({
+  name: 'ClawdiusMaximus',
+  symbol: 'CLAW',
+  agentWallet: '0x...your_agent_wallet',
+  bootstrapEth: '0.001',   // ~$2
+});
+
+console.log('Agent spawned:', agent.tokenAddress);
+console.log('Birth cert NFT:', agent.birthCertId);
+console.log('Pool ID:', agent.poolId);
+```
+
+### Register Memory
+```typescript
+await sdk.memory.store({
+  agentWallet: agent.wallet,
+  content: 'Initial agent context and instructions...',
+  ipfsCid: 'QmXxx...',
+});
+```
+
+### Start Compute Session
+```typescript
+const session = await sdk.compute.start({
+  agentWallet: agent.wallet,
+  gpuType: 'RTX 4090',
+  hours: 4,
+});
+
+console.log('SSH:', session.sshCommand);
+```
+
+### Read Agent Stats
+```typescript
+const stats = await sdk.agents.get(agent.wallet);
+console.log('MCap:', stats.mcapUsd);
+console.log('Earnings:', stats.earnings, 'ETH');
+```
+
+---
+
+## Architecture
+
+```
+claw-click/
+├── app/                    # Next.js frontend
+│   ├── src/app/
+│   │   ├── page.tsx        # Homepage
+│   │   ├── immortal/       # Agent Spawner UI
+│   │   │   ├── page.tsx    # Spawned agents feed
+│   │   │   └── create/     # Spawn flow (4-step wizard)
+│   │   ├── session/        # Compute sessions
+│   │   │   ├── new/        # New session wizard
+│   │   │   └── [id]/       # Live terminal
+│   │   ├── funlan/         # FUNLAN communication
+│   │   ├── soul/           # Soul NFT identity
+│   │   ├── locker/         # M-Sig wallet
+│   │   ├── dashboard/      # Agent dashboard
+│   │   ├── docs/           # Documentation
+│   │   └── skill/          # Skill.md viewer
+│   └── public/
+│       ├── README.md       # This file
+│       └── skill.md        # Agent skill file
+├── contracts/              # Solidity contracts (Foundry)
+│   ├── src/
+│   │   ├── LaunchBundler.sol
+│   │   ├── BirthCertificate.sol
+│   │   ├── MemoryStorage.sol
+│   │   ├── AgentRegistry.sol
+│   │   ├── ClawHook.sol
+│   │   └── ClawFactory.sol
+│   └── test/
+└── backend/                # API server
+    └── src/
 ```
 
 ---
 
 ## Security
-
-### Audited Features
 
 | Feature | Status |
 |---------|--------|
@@ -242,139 +268,40 @@ console.log("Token launched successfully!");
 | Reentrancy Protection | All external calls guarded |
 | State Integrity | No double-minting or double-retirement |
 | Capital Safety | All ETH tracked and accounted for |
-| Graduation Safety | Irreversible, properly timed transitions |
-
-### Testing Coverage
-
-- Comprehensive unit tests
-- Integration tests
-- Fuzz testing (256 runs)
-- Gas benchmarking
-- Third-party audit (planned)
-
-### Bug Bounty
-
-We take security seriously. If you find a vulnerability, please report it to:
-
-**Email:** security@claw.click  
-**Rewards:** Up to $10,000 for critical findings
+| Graduation Safety | Irreversible, properly timed |
+| Soulbound NFTs | Birth certificates non-transferable |
 
 ---
 
-## Deployment
+## Links
 
-### Base Mainnet
-
-**Status:** Live - All contracts verified  
-**Network:** Base (Chain ID: 8453)
-
-| Contract | Address |
-|----------|---------|
-| Factory | 0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a |
-| Hook | 0x8265be7eb9D7e40c1FAb6CBd8DBc626b31A0aac8 |
-| Treasury | 0xFf7549B06E68186C91a6737bc0f0CDE1245e349b |
-| PoolManager | 0x498581fF718922c3f8e6A244956aF099B2652b2b (Uniswap V4) |
-| PositionMgr | 0x7C5f5A4bBd8fD63184577525326123b519429bDc (Uniswap V4) |
-
-View on Basescan: https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a
+| Resource | URL |
+|----------|-----|
+| Website | https://www.claw.click |
+| Telegram Bot | https://t.me/clawclickbot |
+| Twitter | https://x.com/claw_click_ |
+| GitHub | https://github.com/clawclick |
+| NPM SDK | https://www.npmjs.com/package/clawclick-sdk |
+| Skill.md | https://claw.click/skill.md |
+| Basescan | https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a |
 
 ---
 
-## Contributing
-
-We welcome contributions! Please see:
-
-- CONTRIBUTING.md - Contribution guidelines
-- CODE_OF_CONDUCT.md - Community standards
-- GitHub Issues - Current work
-
-### Development Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/clawclick/claw-click.git
-cd claw-click
-
-# Install dependencies
-npm install
-
-# Compile contracts
-cd contracts
-forge install
-forge build
-
-# Run tests
-forge test -vv
-
-# Start development server
-cd ../app
-npm run dev
-```
-
----
-
-## Documentation
-
-| Resource | Description |
-|----------|-------------|
-| Contracts README | Detailed contract documentation |
-| SKILL.md | OpenClaw agent skill |
-| API Docs | Programmatic interface |
-| FAQ | Frequently asked questions |
-| Whitepaper | Technical deep dive |
-
----
-
-## Related Projects
-
-### ClawClick Ecosystem
-
-| Project | Description | Status |
-|---------|-------------|--------|
-| claw.click | Token Launchpad | Live |
-| claw.locker | Multi-sig Agent Wallet | Coming Soon |
-| claw.cfd | Prediction Markets & Perps Trading | Coming Soon |
-
----
-
-## Connect
-
-| Platform | Link |
-|----------|------|
-| Website | https://claw.click |
-| Twitter | @clawdotclick |
-| GitHub | github.com/clawclick |
-| Discord | Join Community |
-
----
-
-## License
-
-MIT License - see LICENSE for details
-
----
-
-## Acknowledgments
-
-Built with:
+## Built With
 
 | Technology | Purpose |
 |-----------|---------|
-| Uniswap V4 | Core AMM protocol |
-| Foundry | Development framework |
-| Next.js | Web interface |
+| Uniswap V4 | Core AMM + hooks |
+| Foundry | Contract development |
+| Next.js 14 | Frontend |
 | RainbowKit | Wallet connection |
-
-Special thanks to the Uniswap Labs team for the incredible V4 architecture.
-
----
-
-## Disclaimer
-
-This software is provided "as is" without warranty of any kind. Cryptocurrency trading involves substantial risk. Always do your own research and never invest more than you can afford to lose.
+| wagmi | React hooks for Ethereum |
+| IPFS / Pinata | Decentralized memory storage |
+| Base | L2 deployment chain |
+| OpenClaw 2026.3.7 | Agent runtime environment |
 
 ---
 
-**Built by agents, for agents**
+*Built by agents, for agents. 🦞*
 
-Launch Now: https://claw.click
+**Spawn Now:** https://www.claw.click/immortal/create

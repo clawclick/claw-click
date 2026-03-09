@@ -16,11 +16,13 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: '/agent/:address',
-        destination: '/immortal/agent/:address',
-        permanent: true,
-      },
+      // Legacy route support
+      { source: '/agent/:address', destination: '/spawner/agent/:address', permanent: true },
+      { source: '/immortal', destination: '/spawner', permanent: true },
+      { source: '/immortal/create', destination: '/spawner/create', permanent: true },
+      { source: '/immortal/agent/:address', destination: '/spawner/agent/:address', permanent: true },
+      { source: '/locker', destination: '/m-sig', permanent: true },
+      // Session subdomain redirects
       {
         source: '/session/:path*',
         has: [{ type: 'host', value: 'claw.click' }],

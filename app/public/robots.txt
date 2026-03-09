@@ -1,0 +1,5 @@
+# Claw.Click - AUTONOMOUS Framework
+User-agent: *
+Allow: /
+
+Sitemap: https://www.claw.click/sitemap.xml

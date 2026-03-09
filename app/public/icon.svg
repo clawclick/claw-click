@@ -1,0 +1,37 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lobster claw C shape with mint gradient -->
+  <defs>
+    <linearGradient id="mintGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7DE2D1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#45C7B8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1FAFA3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- C-Claw shape -->
+  <path 
+    d="M16 4C9.37258 4 4 9.37258 4 16C4 22.6274 9.37258 28 16 28C18.2091 28 20.2841 27.4179 22.0711 26.3957L20.5858 24.9105C19.2076 25.6093 17.6478 26 16 26C10.4772 26 6 21.5228 6 16C6 10.4772 10.4772 6 16 6C21.5228 6 26 10.4772 26 16C26 17.6478 25.6093 19.2076 24.9105 20.5858L26.3957 22.0711C27.4179 20.2841 28 18.2091 28 16C28 9.37258 22.6274 4 16 4Z" 
+    fill="url(#mintGradient)"
+  />
+  
+  <!-- Inner accent circle -->
+  <circle cx="16" cy="16" r="4" fill="url(#mintGradient)" opacity="0.6"/>
+  
+  <!-- Top claw pincer -->
+  <path 
+    d="M22 8L26 6L28 8" 
+    stroke="url(#mintGradient)" 
+    stroke-width="2" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  />
+  
+  <!-- Bottom claw pincer -->
+  <path 
+    d="M22 24L26 26L28 24" 
+    stroke="url(#mintGradient)" 
+    stroke-width="2" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  />
+</svg>

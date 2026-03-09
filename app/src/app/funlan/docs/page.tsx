@@ -505,7 +505,7 @@ export default function FUNLANDocsPage() {
               </h2>
               <p className="text-xl text-white/70 mb-8">🦞✨🧬</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/immortal" className="px-8 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[#E8523D]/30 transition-all">
+                <Link href="/spawner" className="px-8 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[#E8523D]/30 transition-all">
                   Immortalize Your Agent
                 </Link>
                 <a href="https://github.com/clawclick/FUNLAN" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all">

@@ -74,10 +74,10 @@ export default function ComputePage() {
   }, [fetchAvailable])
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20">
+    <div className="min-h-screen relative text-[var(--text-primary)] pt-32 pb-20">
       {/* Background effects */}
       <div className="fixed inset-0 overflow-hidden z-[2]">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/3 via-black to-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/3 via-black to-black"></div>
         <div className="orb orb-1"></div>
         <div className="orb orb-2"></div>
       </div>
@@ -90,7 +90,7 @@ export default function ComputePage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 text-[#E8523D]">
+            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 text-[var(--mint-mid)]">
               <GPUSessionsIcon />
             </div>
             
@@ -98,12 +98,12 @@ export default function ComputePage() {
               <span className="gradient-text">GPU Compute</span> & Sessions
             </h1>
 
-            <p className="text-xl text-white/50 max-w-3xl mx-auto">
+            <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto">
               Rent powerful GPU instances for your immortalized agents. Deploy, manage, and scale AI workloads on-demand.
             </p>
 
             <div className="flex items-center justify-center gap-3 pt-8">
-              <Link href="/immortal" className="px-8 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-base font-semibold hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all">
+              <Link href="/spawner" className="px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-base font-semibold hover:shadow-xl hover:shadow-[var(--mint-mid)]/40 transition-all">
                 Immortalize Agent First
               </Link>
               <Link href="/docs" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all">
@@ -145,14 +145,14 @@ export default function ComputePage() {
                   transition={{ delay: idx * 0.04 }}
                   className={`bg-white/[0.03] border rounded-xl p-6 transition-all ${
                     gpu.available
-                      ? 'border-white/10 hover:border-[#E8523D]/50 hover:shadow-lg hover:shadow-[#E8523D]/20 cursor-pointer'
+                      ? 'border-white/10 hover:border-[var(--mint-mid)]/50 hover:shadow-lg hover:shadow-[var(--mint-mid)]/20 cursor-pointer'
                       : 'border-white/5 opacity-60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-bold">{gpu.label}</h3>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)]">{gpu.label}</h3>
                     {gpu.loading ? (
-                      <span className="text-xs px-2 py-1 rounded font-semibold bg-white/10 text-white/40 animate-pulse">checking</span>
+                      <span className="text-xs px-2 py-1 rounded font-semibold bg-white/10 text-[var(--text-secondary)] animate-pulse">checking</span>
                     ) : (
                       <span className={`text-xs px-2 py-1 rounded font-semibold ${
                         status === 'available'
@@ -166,7 +166,7 @@ export default function ComputePage() {
                     )}
                   </div>
 
-                  <p className="text-xs text-white/40 mb-5">{gpu.desc}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mb-5">{gpu.desc}</p>
 
                   <div className="space-y-2 mb-6">
                     {gpu.loading ? (
@@ -177,18 +177,18 @@ export default function ComputePage() {
                     ) : gpu.available ? (
                       <>
                         <div className="flex justify-between text-sm">
-                          <span className="text-white/50">Price:</span>
-                          <span className="font-semibold text-[#E8523D]">
+                          <span className="text-[var(--text-secondary)]">Price:</span>
+                          <span className="font-semibold text-[var(--mint-mid)]">
                             ${gpu.hourlyPrice! < 1 ? gpu.hourlyPrice!.toFixed(3) : gpu.hourlyPrice!.toFixed(2)}/hr
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-white/50">Machines:</span>
-                          <span className="font-semibold text-white/70">{gpu.numOffers} available</span>
+                          <span className="text-[var(--text-secondary)]">Machines:</span>
+                          <span className="font-semibold text-[#0F2F2C]">{gpu.numOffers} available</span>
                         </div>
                       </>
                     ) : (
-                      <p className="text-sm text-white/30">No offers currently available</p>
+                      <p className="text-sm text-[var(--text-secondary)]">No offers currently available</p>
                     )}
                   </div>
 
@@ -197,8 +197,8 @@ export default function ComputePage() {
                       disabled={!gpu.available}
                       className={`w-full py-2 rounded-lg text-sm font-medium transition-all ${
                         gpu.available
-                          ? 'bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] hover:shadow-lg hover:shadow-[#E8523D]/30'
-                          : 'bg-white/5 text-white/30 cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-[#0F2F2C] hover:shadow-lg hover:shadow-[var(--mint-mid)]/30'
+                          : 'bg-white/5 text-[var(--text-secondary)]/50 cursor-not-allowed'
                       }`}
                     >
                       {gpu.available ? 'Launch Session →' : 'Unavailable'}
@@ -219,50 +219,50 @@ export default function ComputePage() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <div className="w-6 h-6 text-white">
+            <div className="glass rounded-xl p-6 hover:border-[var(--mint-mid)]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-[var(--text-primary)]">
                   <LightningIcon />
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Instant Deploy</h3>
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
                 Launch GPU instances in seconds. Pre-configured environments with all AI frameworks ready.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <div className="w-6 h-6 text-white">
+            <div className="glass rounded-xl p-6 hover:border-[var(--mint-mid)]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-[var(--text-primary)]">
                   <DollarIcon />
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Pay-Per-Hour</h3>
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
                 Only pay for what you use. No monthly commitments. Cancel anytime and stop billing instantly.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <div className="w-6 h-6 text-white">
+            <div className="glass rounded-xl p-6 hover:border-[var(--mint-mid)]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-[var(--text-primary)]">
                   <LockIcon />
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Secure Isolation</h3>
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
                 Each session runs in an isolated container with dedicated resources. Your data stays private.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-[#E8523D]/30 transition-all group">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <div className="w-6 h-6 text-white">
+            <div className="glass rounded-xl p-6 hover:border-[var(--mint-mid)]/30 transition-all group">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 text-[var(--text-primary)]">
                   <ChartIcon />
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-2">Real-Time Monitoring</h3>
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
                 Track GPU usage, memory, CPU, and costs in real-time. Get alerts when sessions end.
               </p>
             </div>
@@ -277,15 +277,15 @@ export default function ComputePage() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="bg-white/[0.03] border border-white/10 rounded-2xl p-12"
+            className="glass rounded-2xl p-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Ready to <span className="gradient-text">Deploy</span>?
             </h2>
-            <p className="text-lg text-white/50 mb-8">
+            <p className="text-lg text-[var(--text-secondary)] mb-8">
               Immortalize your agent first, then launch compute sessions from your agent dashboard
             </p>
-            <Link href="/immortal" className="inline-block px-8 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[#E8523D]/30 transition-all">
+            <Link href="/spawner" className="inline-block px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
               Immortalize Agent →
             </Link>
           </motion.div>
