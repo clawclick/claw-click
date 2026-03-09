@@ -362,12 +362,12 @@ export default function Home() {
             {/* Hero logo + tagline */}
             <div className="flex flex-col items-center" style={{gap:0}}>
               {/* Constrained container — SVG and Framework text share the same width */}
-              <div className="inline-flex flex-col items-stretch" style={{width:'min(72vw, 520px)'}}>
+              <div className="inline-flex flex-col items-stretch" style={{width:'min(95vw, 1300px)'}}>
                 <Image
                   src="/branding/claw_logo_spawn_animation.svg"
                   alt="Claw.Click"
-                  width={520}
-                  height={100}
+                  width={1300}
+                  height={250}
                   className="w-full h-auto"
                   style={{marginBottom:'-0.1rem'}}
                   priority
