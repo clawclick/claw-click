@@ -18,23 +18,21 @@ const css = `
 @keyframes ip-expand { 0%,100% { transform:scale(1); opacity:0.4; } 50% { transform:scale(1.5); opacity:0; } }
 `
 
+const launchCss = css + `
+@keyframes rocketFloat {
+  0%, 100% { transform: translateY(0px) rotate(-45deg); }
+  50% { transform: translateY(-5px) rotate(-45deg); }
+}
+@keyframes flamePulse {
+  0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
+  50% { transform: scaleY(1.4) scaleX(0.8); opacity: 0.6; }
+}
+`
+
 /* ---------- LAUNCH ICON - ANIMATED ROCKET ---------- */
 export const LaunchIcon = () => (
   <>
-    <style>{css}
-    @keyframes rocketFloat {
-      0%, 100% { transform: translateY(0px) rotate(-45deg); }
-      50% { transform: translateY(-5px) rotate(-45deg); }
-    }
-    @keyframes flamePulse {
-      0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
-      50% { transform: scaleY(1.4) scaleX(0.8); opacity: 0.6; }
-    }
-    @keyframes trailFade {
-      0% { opacity: 0.8; transform: scaleX(1); }
-      100% { opacity: 0; transform: scaleX(0.2); }
-    }
-    </style>
+    <style>{launchCss}</style>
     <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
       {/* Launch arc background */}
       <path d="M8 44 Q18 18 44 8" stroke="#45C7B8" strokeWidth="0.8" strokeDasharray="3 4" opacity="0.3"
