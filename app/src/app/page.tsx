@@ -357,23 +357,24 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-8"
+            className="space-y-4"
           >
             {/* AUTONOMOUS - Actual animated SVG + text below */}
-            <div className="space-y-4">
+            <div className="flex flex-col items-center" style={{gap:0}}>
               {/* The real animated SVG from branding */}
-              <div className="flex justify-center">
+              <div className="flex justify-center w-full">
                 <Image
                   src="/branding/autonomous_animated.svg"
                   alt="AUTONOMOUS"
                   width={1000}
                   height={200}
-                  className="w-full max-w-5xl h-auto"
+                  className="w-[130%] sm:w-full max-w-5xl h-auto"
+                  style={{marginBottom:'-0.25rem'}}
                   priority
                 />
               </div>
               
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-widest framework-text mx-auto">
+              <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-[0.3em] framework-text mx-auto uppercase" style={{marginTop:0}}>
                 Framework For Digital Entities
               </h2>
               
