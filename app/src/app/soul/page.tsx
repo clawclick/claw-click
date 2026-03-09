@@ -182,7 +182,7 @@ export default function SoulPage() {
   }, [address, balance, publicClient, totalSupply])
 
   return (
-    <div className="min-h-screen relative text-white pt-32 pb-20 relative overflow-hidden">
+    <div className="min-h-screen relative text-[var(--text-primary)] pt-32 pb-20 relative overflow-hidden">
       {/* Animated background */}
       <div className="fixed inset-0 z-[1]">
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/5 via-black to-[var(--mint-dark)]/5"></div>
@@ -210,14 +210,14 @@ export default function SoulPage() {
               </div>
             </motion.div>
             
-            <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto leading-relaxed">
               Generative on-chain identity for autonomous agents. Each NFTid is unique — composed from 5 trait layers with guaranteed no duplicates.
             </p>
 
             <Link
               href={`https://basescan.org/address/${CLAWD_NFT_ADDRESS.base}`}
               target="_blank"
-              className="inline-block mt-6 text-white/40 hover:text-[var(--mint-mid)] text-sm transition-colors"
+              className="inline-block mt-6 text-[var(--text-secondary)]/70 hover:text-[var(--mint-mid)] text-sm transition-colors"
             >
               View Contract →
             </Link>
@@ -229,7 +229,7 @@ export default function SoulPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
+              className="group relative overflow-hidden bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/0 to-[var(--mint-mid)]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
@@ -244,7 +244,7 @@ export default function SoulPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
+              className="group relative overflow-hidden bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/0 to-[var(--mint-mid)]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
@@ -259,7 +259,7 @@ export default function SoulPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
+              className="group relative overflow-hidden bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/0 to-[var(--mint-mid)]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
@@ -280,7 +280,7 @@ export default function SoulPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white/[0.02] border border-white/10 rounded-2xl p-8"
+                className="bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-white/60 text-transparent bg-clip-text">
                   How It Works
@@ -307,7 +307,7 @@ export default function SoulPage() {
                     <div key={i} className="flex items-start gap-4 group">
                       <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] mt-2 group-hover:scale-150 transition-transform"></div>
                       <div>
-                        <div className="font-semibold text-white mb-1">{item.title}</div>
+                        <div className="font-semibold text-[var(--text-primary)] mb-1">{item.title}</div>
                         <div className="text-sm text-[var(--text-secondary)]">{item.desc}</div>
                       </div>
                     </div>
@@ -320,7 +320,7 @@ export default function SoulPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-white/[0.02] border border-white/10 rounded-2xl p-6"
+                className="bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-6"
               >
                 <h3 className="text-lg font-bold mb-4">Pricing Tiers</h3>
                 <div className="space-y-3">
@@ -337,8 +337,8 @@ export default function SoulPage() {
                           : 'relative/30 border border-white/5'
                       }`}
                     >
-                      <span className="text-sm font-mono text-white/70">#{tier.range}</span>
-                      <span className="text-sm font-bold text-white">
+                      <span className="text-sm font-mono text-[var(--text-secondary)]">#{tier.range}</span>
+                      <span className="text-sm font-bold text-[var(--text-primary)]">
                         {tier.price} <span className="text-[var(--text-secondary)]">({tier.usd})</span>
                       </span>
                     </div>
@@ -366,7 +366,7 @@ export default function SoulPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="bg-white/[0.02] border border-white/10 rounded-2xl p-12 text-center"
+                  className="bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-12 text-center"
                 >
                   <h3 className="text-2xl font-bold mb-4">Connect to Mint</h3>
                   <p className="text-[var(--text-secondary)] mb-8">
@@ -440,7 +440,7 @@ export default function SoulPage() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: isEligibleForFreeMint ? 0.5 : 0.4 }}
-                    className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all"
+                    className="bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-8 hover:border-[var(--glass-border)] transition-all"
                   >
                     <div className="flex items-center gap-3 mb-6">
                       <LobsterIcon size={32} className="text-[var(--mint-mid)]" />
@@ -453,7 +453,7 @@ export default function SoulPage() {
                     <button
                       onClick={handleMint}
                       disabled={isMintPending || isMintConfirming || wrongNetwork || Number(totalSupply || 0) >= 10000}
-                      className="w-full px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[var(--mint-mid)]/50 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full px-6 py-4 bg-white/5 hover:bg-white/10 border border-[var(--glass-border)] hover:border-[var(--mint-mid)]/50 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
                     >
                       {Number(totalSupply || 0) >= 10000
                         ? 'Sold Out'
@@ -496,15 +496,15 @@ export default function SoulPage() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 }}
-                    className="bg-white/[0.02] border border-white/10 rounded-2xl p-6"
+                    className="bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-6"
                   >
-                    <h3 className="text-sm font-bold mb-4 text-center text-white/70">
+                    <h3 className="text-sm font-bold mb-4 text-center text-[var(--text-secondary)]">
                       Preview: Traits Cycling Every Second
                     </h3>
                     <div className="flex justify-center">
                       <AnimatedNFTShowcase size={280} />
                     </div>
-                    <p className="text-xs text-white/40 text-center mt-4">
+                    <p className="text-xs text-[var(--text-secondary)]/70 text-center mt-4">
                       Each mint is completely unique
                     </p>
                   </motion.div>
@@ -531,10 +531,10 @@ export default function SoulPage() {
                   <p className="text-[var(--text-secondary)] text-sm">Loading your NFTids...</p>
                 </div>
               ) : ownedNFTs.length === 0 ? (
-                <div className="text-center py-12 bg-white/[0.02] border border-white/10 rounded-2xl">
+                <div className="text-center py-12 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl">
                   <div className="text-6xl mb-4">🦞</div>
                   <p className="text-[var(--text-secondary)] mb-4">You don't own any NFTids yet</p>
-                  <p className="text-sm text-white/30">
+                  <p className="text-sm text-[var(--text-secondary)]/50">
                     {isEligibleForFreeMint
                       ? 'You\'re eligible for a free mint! Scroll up to claim it.'
                       : `Mint your first NFTid for ${priceInEth} ETH`}
@@ -553,14 +553,14 @@ export default function SoulPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         whileHover={{ scale: 1.03 }}
                       >
-                        <Link href={`/soul/${nft.tokenId}`} className="block bg-white/[0.02] border border-white/10 hover:border-[var(--mint-mid)]/50 rounded-2xl p-4 transition-all cursor-pointer group"
+                        <Link href={`/soul/${nft.tokenId}`} className="block bg-white/[0.02] border border-[var(--glass-border)] hover:border-[var(--mint-mid)]/50 rounded-2xl p-4 transition-all cursor-pointer group"
                         >
                           {/* NFT Image */}
                           <div className="mb-3 rounded-lg overflow-hidden aspect-square w-full relative">
                             <NFTidCompositor traits={nft.traits} size={300} />
                             {/* Rarity Badge */}
                             <div className="absolute top-2 right-2">
-                              <div className={`px-2 py-1 rounded-lg bg-gradient-to-r ${rarityInfo.color} text-white text-xs font-bold shadow-lg`}>
+                              <div className={`px-2 py-1 rounded-lg bg-gradient-to-r ${rarityInfo.color} text-[var(--text-primary)] text-xs font-bold shadow-lg`}>
                                 {rarityInfo.tier}
                               </div>
                             </div>
@@ -569,7 +569,7 @@ export default function SoulPage() {
                           {/* Info */}
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-bold text-white group-hover:text-[var(--mint-mid)] transition-colors">
+                              <span className="text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--mint-mid)] transition-colors">
                                 NFTid #{nft.tokenId}
                               </span>
                               <span className="text-xs px-2 py-1 rounded bg-[var(--mint-mid)]/10 text-[var(--mint-mid)] font-semibold">
@@ -578,8 +578,8 @@ export default function SoulPage() {
                             </div>
                             
                             <div className="flex items-center justify-between text-xs">
-                              <span className="text-white/40">Rarity Score</span>
-                              <span className="text-white font-mono">{rarityScore}</span>
+                              <span className="text-[var(--text-secondary)]/70">Rarity Score</span>
+                              <span className="text-[var(--text-primary)] font-mono">{rarityScore}</span>
                             </div>
                             
                             {nft.linkedAgent && (
