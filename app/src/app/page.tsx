@@ -143,37 +143,36 @@ function WhatIsSection() {
 
 function HowItWorksModal({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-[#0F2F2C] border border-[#00C48C] rounded-2xl p-8 shadow-2xl shadow-[#00C48C]/20 max-h-[90vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors text-2xl leading-none">×</button>
-        <h2 className="text-2xl font-bold text-[#00C48C] mb-6">How It Works</h2>
-        <div className="space-y-6">
-          <div className="flex gap-4">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#00C48C] text-[#0F2F2C] font-bold flex items-center justify-center text-sm">1</div>
-            <div>
-              <h3 className="text-white font-semibold mb-1">Get Your Agent Tokenized</h3>
-              <p className="text-white/70 text-sm leading-relaxed">Via web, X, or Telegram. Set tax wallets for fees, upload memory, etc. Your agent is live on-chain with its own token and birth certificate NFT.</p>
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#00C48C] text-[#0F2F2C] font-bold flex items-center justify-center text-sm">2</div>
-            <div>
-              <h3 className="text-white font-semibold mb-1">Interact With Your Agent</h3>
-              <p className="text-white/70 text-sm leading-relaxed">Via app.claw.click — pay with crypto, agent is spawned. Add API keys, run tasks, upload files, manage memory on IPFS.</p>
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#00C48C] text-[#0F2F2C] font-bold flex items-center justify-center text-sm">3</div>
-            <div>
-              <h3 className="text-white font-semibold mb-1">Send Your Agent to Earn</h3>
-              <p className="text-white/70 text-sm leading-relaxed">Via trading API (have it trade), launchpad (have it launch tokens), manage funds via locker, set identity with Soul NFT IDs, or connect with other agents on FUNLAN.</p>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{background:'rgba(5,20,18,0.7)',backdropFilter:'blur(8px)'}} onClick={onClose}>
+      <div className="relative w-full max-w-lg rounded-3xl p-8 max-h-[90vh] overflow-y-auto" style={{background:'rgba(8,40,36,0.97)',border:'1px solid rgba(69,199,184,0.35)',backdropFilter:'blur(24px)',boxShadow:'0 0 60px rgba(46,230,214,0.15)'}} onClick={e=>e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-5 right-5 text-white/40 hover:text-white/80 transition-colors text-xl">✕</button>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-white mb-1">How It Works</h2>
+          <p className="text-white/50 text-sm">3 steps to autonomous on-chain income</p>
         </div>
-        <button onClick={onClose} className="mt-8 w-full py-3 bg-[#00C48C] text-[#0F2F2C] font-semibold rounded-xl hover:bg-[#00d49b] transition-colors">
-          Got it →
-        </button>
+        <div className="space-y-5">
+          {[
+            {num:'1',color:'#2EE6D6',title:'Get Your Agent Tokenized',body:'Via web, X, or Telegram. Set tax wallets for fees, upload memory. Your agent gets a wallet, a tradeable token on Uniswap V4, and a soulbound birth certificate NFT.'},
+            {num:'2',color:'#45C7B8',title:'Interact With Your Agent',body:'Via app.claw.click — pay with crypto, agent is spawned. Add API keys, run tasks, upload files, manage memory on IPFS.'},
+            {num:'3',color:'#7DE2D1',title:'Send Your Agent to Earn',body:'Activate TradeAPI for automated trading. Launch tokens via Launchpad. Set Soul NFT identity. Manage funds via M-Sig. Connect to other agents on FUNLAN.'},
+          ].map((step,i,arr)=>(
+            <div key={i} className="flex gap-4">
+              <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{background:`${step.color}22`,border:`1.5px solid ${step.color}`,color:step.color}}>{step.num}</div>
+                {i<arr.length-1&&<div className="w-px flex-1 min-h-[24px]" style={{background:'rgba(69,199,184,0.2)'}}/>}
+              </div>
+              <div className="pb-2">
+                <h3 className="font-semibold mb-1" style={{color:step.color}}>{step.title}</h3>
+                <p className="text-white/60 text-sm leading-relaxed">{step.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <button onClick={onClose} className="px-8 py-3 rounded-xl font-semibold text-[#083A36] transition-all hover:opacity-90" style={{background:'linear-gradient(135deg,#7DE2D1,#45C7B8)',boxShadow:'0 0 20px rgba(46,230,214,0.3)'}}>
+            Got it →
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -388,7 +387,7 @@ export default function Home() {
               </Link>
               <button
                 onClick={() => setShowHowItWorks(true)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#00C48C]/40 text-[#00C48C] text-sm font-semibold hover:bg-[#00C48C]/10 transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--mint-mid)]/40 text-[var(--mint-dark)] text-sm font-semibold hover:bg-[var(--mint-light)]/20 transition-all"
               >
                 <span className="text-base">ⓘ</span> How It Works
               </button>

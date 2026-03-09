@@ -272,10 +272,10 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
-            style={{background:'#0F2F2C', border:'1px solid #00C48C'}}
+            style={{background:'rgba(8,40,36,0.97)',border:'1px solid rgba(69,199,184,0.35)'}}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-[#00C48C]/30">
+            <div className="flex items-center justify-between p-4 border-b border-[var(--mint-mid)]/30">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-[#0F2F2C]" style={{background:'#00C48C'}}>
                   {token.symbol.charAt(0)}
@@ -294,9 +294,9 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
 
             {/* DIRECT token info + Dexscreener link */}
             <div className="p-6 space-y-4">
-              <div className="rounded-xl p-4 space-y-3 border border-[#00C48C]/20" style={{background:'rgba(0,196,140,0.05)'}}>
+              <div className="rounded-xl p-4 space-y-3 border border-[var(--mint-mid)]/20" style={{background:'rgba(69,199,184,0.05)'}}>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="px-2 py-0.5 rounded-full bg-[#00C48C]/20 text-[#00C48C] text-xs font-bold border border-[#00C48C]/30">
+                  <span className="px-2 py-0.5 rounded-full bg-[var(--mint-mid)]/20 text-[var(--mint-mid)] text-xs font-bold border border-[var(--mint-mid)]/30">
                     DIRECT
                   </span>
                   <span className="text-[#E8F5E9]/70">Hookless Uniswap V4 Pool</span>
@@ -321,7 +321,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold hover:opacity-90 transition-opacity"
-                style={{background:'#00C48C', color:'#0F2F2C'}}
+                style={{background:'var(--mint-mid)',color:'#083A36'}}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" strokeLinecap="round" strokeLinejoin="round" />
@@ -335,7 +335,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                 href={`https://app.uniswap.org/swap?chain=base&outputCurrency=${token.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all border border-[#00C48C]/40 text-[#E8F5E9] hover:border-[#00C48C] hover:bg-[#00C48C]/10"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all border border-[var(--mint-mid)]/40 text-[#E8F5E9] hover:border-[var(--mint-mid)] hover:bg-[var(--mint-mid)]/10"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" strokeLinecap="round" strokeLinejoin="round" />
@@ -347,7 +347,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
             </div>
 
             <div className="px-4 pb-4">
-              <div className="rounded-lg px-3 py-2 text-[10px] text-[#E8F5E9]/40 text-center border border-[#00C48C]/10">
+              <div className="rounded-lg px-3 py-2 text-[10px] text-[#E8F5E9]/40 text-center border border-[var(--mint-mid)]/10">
                 DIRECT tokens use standard Uniswap V4 pools with 1% LP fee
               </div>
             </div>
@@ -375,10 +375,10 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
-          style={{background:'#0F2F2C', border:'1px solid #00C48C'}}
+          style={{background:'rgba(8,40,36,0.97)',border:'1px solid rgba(69,199,184,0.35)'}}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-[#00C48C]/30">
+          <div className="flex items-center justify-between p-4 border-b border-[var(--mint-mid)]/30">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-[#0F2F2C]" style={{background:'#00C48C'}}>
                 {token.symbol.charAt(0)}
@@ -439,7 +439,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                 onChange={(e) => setInputAmount(e.target.value)}
                 placeholder={isBuy ? '0.0 ETH' : `0 ${token.symbol}`}
                 className="w-full rounded-xl px-4 py-3.5 text-white text-lg font-mono focus:outline-none transition-colors"
-                style={{background:'rgba(0,0,0,0.3)', border:'1px solid rgba(0,196,140,0.3)'}}
+                style={{background:'rgba(0,0,0,0.3)', border:'1px solid rgba(69,199,184,0.3)'}}
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#9AA4B2] font-semibold">
                 {isBuy ? 'ETH' : token.symbol}
@@ -452,8 +452,8 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                 <button
                   key={val}
                   onClick={() => handleQuickAmount(val)}
-                  className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-[#E8F5E9]/70 hover:text-white hover:border-[#00C48C]/50 transition-all"
-                  style={{background:'rgba(0,0,0,0.3)', border:'1px solid rgba(0,196,140,0.2)'}}
+                  className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-[#E8F5E9]/70 hover:text-white hover:border-[var(--mint-mid)]/50 transition-all"
+                  style={{background:'rgba(0,0,0,0.3)', border:'1px solid rgba(69,199,184,0.2)'}}
                 >
                   {val}
                 </button>
@@ -462,7 +462,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
 
             {/* Arrow Divider */}
             <div className="flex items-center justify-center">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background:'rgba(0,196,140,0.1)', border:'1px solid rgba(0,196,140,0.3)'}}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background:'rgba(69,199,184,0.1)', border:'1px solid rgba(69,199,184,0.3)'}}>
                 <svg className="w-4 h-4 text-[#9AA4B2]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M12 5v14M5 12l7 7 7-7" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -470,7 +470,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
             </div>
 
             {/* Output Estimate */}
-            <div className="rounded-xl px-4 py-3.5" style={{background:'rgba(0,0,0,0.3)', border:'1px solid rgba(0,196,140,0.2)'}}>
+            <div className="rounded-xl px-4 py-3.5" style={{background:'rgba(0,0,0,0.3)', border:'1px solid rgba(69,199,184,0.2)'}}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-xs text-[#9AA4B2] mb-1">You receive (estimate)</div>
@@ -519,7 +519,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                   <span>Slippage</span>
                   <button
                     onClick={() => setShowSettings(!showSettings)}
-                    className="font-mono text-[#00C48C] hover:underline"
+                    className="font-mono text-[var(--mint-mid)] hover:underline"
                   >
                     {slippage}%
                   </button>
@@ -540,10 +540,10 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                     onClick={() => { setSlippage(s); setShowSettings(false) }}
                     className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
                       slippage === s
-                        ? 'border-[#00C48C]/50 text-[#00C48C]'
-                        : 'text-[#E8F5E9]/60 hover:border-[#00C48C]/30'
+                        ? 'border-[var(--mint-mid)]/50 text-[var(--mint-mid)]'
+                        : 'text-[#E8F5E9]/60 hover:border-[var(--mint-mid)]/30'
                     }`}
-                    style={slippage === s ? {background:'rgba(0,196,140,0.15)', borderColor:'rgba(0,196,140,0.5)'} : {background:'rgba(0,0,0,0.3)', borderColor:'rgba(0,196,140,0.15)'}}
+                    style={slippage === s ? {background:'rgba(69,199,184,0.15)', borderColor:'rgba(69,199,184,0.5)'} : {background:'rgba(0,0,0,0.3)', borderColor:'rgba(69,199,184,0.15)'}}
                   >
                     {s}%
                   </button>
@@ -614,7 +614,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                   href={`${ETHERSCAN_URL}/tx/${txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-[#00C48C] hover:underline"
+                  className="text-xs text-[var(--mint-mid)] hover:underline"
                 >
                   View on BaseScan ↗
                 </a>
@@ -624,7 +624,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
 
           {/* Footer Info */}
           <div className="px-4 pb-4">
-            <div className="rounded-lg px-3 py-2 text-[10px] text-[#E8F5E9]/30 text-center border border-[#00C48C]/10">
+            <div className="rounded-lg px-3 py-2 text-[10px] text-[#E8F5E9]/30 text-center border border-[var(--mint-mid)]/10">
               Trades via Uniswap V4 on Base • Powered by Claw.click Hooks
             </div>
           </div>

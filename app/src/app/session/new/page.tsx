@@ -239,13 +239,13 @@ function NewSessionWizard() {
       <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-8 h-8">
+            <div className="relative w-14 h-14 overflow-visible">
               <Image
                 src="/branding/logo_rm_bk.png"
                 alt="Claw.Click"
-                width={32}
-                height={32}
-                className="object-contain"
+                width={56}
+                height={56}
+                className="object-contain logo-expanded"
               />
             </div>
             <div className="flex items-center gap-2">

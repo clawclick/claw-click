@@ -1,9 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState, Suspense, useEffect, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi'
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, usePublicClient, useChains } from 'wagmi'
 import { parseEther, Hex, decodeEventLog } from 'viem'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -96,6 +96,20 @@ const MIN_BOOTSTRAP_ETH = 0.001;
 
 // Birth certificate immortalization fee (0.005 ETH)
 const IMMORTALIZATION_FEE = 0.005;
+
+// ── Chain icon helper ─────────────────────────────────────────────────────────
+function ChainImg({ chainId, size = 28 }: { chainId: number; size?: number }) {
+  const chains = useChains()
+  const chain = chains.find(c => c.id === chainId) as any
+  const iconUrl = typeof chain?.iconUrl === 'string' ? chain.iconUrl : null
+  const bg = chain?.iconBackground ?? 'transparent'
+  if (!iconUrl) return null
+  return (
+    <div style={{width:size,height:size,borderRadius:'50%',background:bg,overflow:'hidden',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <img src={iconUrl} width={size} height={size} style={{objectFit:'contain'}} alt={chain?.name}/>
+    </div>
+  )
+}
 
 function CreateAgentFlow() {
   const searchParams = useSearchParams()
@@ -600,7 +614,7 @@ function CreateAgentFlow() {
                   {/* One-liner */}
                   <div className="bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 rounded-xl p-6 border border-[var(--mint-mid)]/30">
                     <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[var(--mint-dark)]">⚡</span> One-liner (all steps)
+                      <span className="text-[var(--mint-dark)]"></span> One-liner (all steps)
                     </h3>
                     <div className="bg-black/50 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-2">
                       <code className="text-sm text-[var(--mint-dark)] break-all">
@@ -615,7 +629,7 @@ function CreateAgentFlow() {
                       href="/docs/cli"
                       className="inline-flex items-center gap-2 text-[var(--mint-mid)] hover:text-[var(--mint-dark)] transition-colors text-sm"
                     >
-                      <span>📚</span> View full CLI documentation for all options and flags.
+                      <span></span> View full CLI documentation for all options and flags.
                     </Link>
                   </div>
 
@@ -791,7 +805,7 @@ function CreateAgentFlow() {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#0052FF"/><path d="M14 5C9.02944 5 5 9.02944 5 14C5 18.9706 9.02944 23 14 23C18.9706 23 23 18.9706 23 14C23 9.02944 18.9706 5 14 5ZM14 8.5C16.9706 8.5 19.4 10.6 19.9 13.5H8.1C8.6 10.6 11.0294 8.5 14 8.5ZM8.1 14.5H19.9C19.4 17.4 16.9706 19.5 14 19.5C11.0294 19.5 8.6 17.4 8.1 14.5Z" fill="white"/></svg>
+                      <ChainImg chainId={8453} />
                       {formData.chain === 'Base' && <span className="text-[#4A90E2]">✓</span>}
                     </div>
                     <p className="text-lg font-bold text-white mb-1">Base</p>
@@ -807,7 +821,7 @@ function CreateAgentFlow() {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#627EEA"/><path d="M14 4L13.875 8.4375V18.5625L14 18.6875L20 15.0625L14 4Z" fill="white" fillOpacity="0.6"/><path d="M14 4L8 15.0625L14 18.6875V11.8125V4Z" fill="white"/><path d="M14 19.8125L13.9375 19.9375V24.125L14 24.3125L20 16.25L14 19.8125Z" fill="white" fillOpacity="0.6"/><path d="M14 24.3125V19.8125L8 16.25L14 24.3125Z" fill="white"/><path d="M14 18.6875L20 15.0625L14 11.8125V18.6875Z" fill="white" fillOpacity="0.2"/><path d="M8 15.0625L14 18.6875V11.8125L8 15.0625Z" fill="white" fillOpacity="0.6"/></svg>
+                      <ChainImg chainId={11155111} />
                       {formData.chain === 'Sepolia' && <span className="text-[#9CA3AF]">✓</span>}
                     </div>
                     <p className="text-lg font-bold text-white mb-1">Sepolia</p>
@@ -816,7 +830,7 @@ function CreateAgentFlow() {
 
                   <div className="p-4 rounded-xl border-2 border-[#8B7FD4]/20 bg-[rgba(0, 0, 0, 0.5)]/30 opacity-50 cursor-not-allowed">
                     <div className="flex items-center justify-between mb-2">
-                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#627EEA"/><path d="M14 4L13.875 8.4375V18.5625L14 18.6875L20 15.0625L14 4Z" fill="white" fillOpacity="0.6"/><path d="M14 4L8 15.0625L14 18.6875V11.8125V4Z" fill="white"/><path d="M14 19.8125L13.9375 19.9375V24.125L14 24.3125L20 16.25L14 19.8125Z" fill="white" fillOpacity="0.6"/><path d="M14 24.3125V19.8125L8 16.25L14 24.3125Z" fill="white"/><path d="M14 18.6875L20 15.0625L14 11.8125V18.6875Z" fill="white" fillOpacity="0.2"/><path d="M8 15.0625L14 18.6875V11.8125L8 15.0625Z" fill="white" fillOpacity="0.6"/></svg>
+                      <ChainImg chainId={1} />
                       <span className="text-xs px-2 py-0.5 rounded bg-[#8B7FD4]/20 text-[#8B7FD4]">Soon</span>
                     </div>
                     <p className="text-lg font-bold text-[#8B7FD4]/60 mb-1">Ethereum</p>
@@ -825,7 +839,7 @@ function CreateAgentFlow() {
 
                   <div className="p-4 rounded-xl border-2 border-[#F0B90B]/20 bg-[rgba(0, 0, 0, 0.5)]/30 opacity-50 cursor-not-allowed">
                     <div className="flex items-center justify-between mb-2">
-                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#F0B90B"/><path d="M14 5L16.5 11H21.5L17.5 14.5L19 20L14 17L9 20L10.5 14.5L6.5 11H11.5L14 5Z" fill="white"/></svg>
+                      <ChainImg chainId={56} />
                       <span className="text-xs px-2 py-0.5 rounded bg-[#F0B90B]/20 text-[#F0B90B]">Soon</span>
                     </div>
                     <p className="text-lg font-bold text-[#F0B90B]/60 mb-1">BSC</p>
@@ -873,7 +887,7 @@ function CreateAgentFlow() {
                     This identity is permanent and verifiable on-chain.
                   </p>
                   <div className="grid grid-cols-5 gap-1 max-w-[160px] mx-auto mb-4">
-                    {['🔥','💎','🦞','⚡','🌊','🎯','💀','🚀','🌙','✨','🔮','🎲','🌈','💫','🎪','🦋','🌸','⭐','🔱','🎭','💝','🌺','🎨','🔥','💎'].map((emoji, i) => (
+                    {['🔥','💎','🦞','','🌊','🎯','💀','🚀','🌙','✨','🔮','🎲','🌈','💫','🎪','🦋','🌸','⭐','🔱','🎭','💝','🌺','🎨','🔥','💎'].map((emoji, i) => (
                       <div key={i} className="w-6 h-6  rounded flex items-center justify-center text-sm">
                         {emoji}
                       </div>

@@ -699,13 +699,13 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
       <header className="glass backdrop-blur-xl border-b border-[var(--glass-border)] px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
         <div className="flex items-center gap-3 sm:gap-4">
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
-            <div className="relative w-8 h-8">
+            <div className="relative w-14 h-14 overflow-visible">
               <Image
                 src="/branding/logo_rm_bk.png"
                 alt="Claw.Click"
-                width={32}
-                height={32}
-                className="object-contain"
+                width={56}
+                height={56}
+                className="object-contain logo-expanded"
               />
             </div>
             <span className="hidden sm:inline text-lg font-semibold text-white">claw.click</span>
