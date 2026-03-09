@@ -628,33 +628,78 @@ export default function DocsPage() {
             )}
 
             {activeSection === 'contracts' && (
-              <section className="bg-white/[0.02] border border-white/10 rounded-xl p-8 space-y-6">
-                <h2 className="text-3xl font-bold text-[var(--text-primary)]">Smart Contracts</h2>
-                <p className="text-[var(--text-primary)]/70 leading-relaxed">
-                  All contracts are verified on Basescan and built with security-first principles.
-                </p>
-                
+              <section className="glass rounded-xl p-8 space-y-8">
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-[var(--text-primary)]">Deployed Contracts</h3>
+                  <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">Smart Contracts</h2>
+                  <p className="text-[var(--text-secondary)] leading-relaxed">
+                    All contracts deployed on Base Mainnet (8453) and Sepolia Testnet (11155111). Verified on Basescan.
+                  </p>
+                </div>
+
+                {/* Base Mainnet */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 text-[var(--text-primary)] flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[var(--mint-mid)] animate-pulse inline-block"></span>
+                    Base Mainnet (8453)
+                  </h3>
                   <div className="space-y-2 text-sm font-mono">
-                    <div className="flex justify-between items-center p-3 bg-white/[0.02] border border-white/10 rounded-lg">
-                      <span className="text-[var(--text-primary)]/70">Factory</span>
-                      <code className="text-[var(--mint-dark)]">0xF597...6b4a</code>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-white/[0.02] border border-white/10 rounded-lg">
-                      <span className="text-[var(--text-primary)]/70">Hook</span>
-                      <code className="text-[var(--mint-dark)]">0x8265...aac8</code>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-white/[0.02] border border-white/10 rounded-lg">
-                      <span className="text-[var(--text-primary)]/70">Treasury</span>
-                      <code className="text-[var(--mint-dark)]">0xFf75...49b</code>
-                    </div>
+                    {[
+                      ['Factory', '0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a'],
+                      ['Hook', '0x8265be7eb9D7e40c1FAb6CBd8DBc626b31A0aac8'],
+                      ['Config', '0x18b89e491d8f12d2be6D2A8e945dF4D93F1247a7'],
+                      ['BootstrapETH', '0xE2649737D3005c511a27DF6388871a12bE0a2d30'],
+                      ['LaunchBundler', '0x1AF3b3Cd703Ff59D18A295f669Ad9B7051707268'],
+                      ['BirthCertificate', '0x6E9B093FdD12eC34ce358bd70CF59EeCb5D1A95B'],
+                      ['MemoryStorage', '0x81ae37d31C488094bf292ebEb15C6eCfcD9Fad7D'],
+                      ['Treasury', '0xFf7549B06E68186C91a6737bc0f0CDE1245e349b'],
+                      ['AgentRegistry', '0xA51fa0faD4bCec2909B2f1e33bdfaa80f3f7d76B'],
+                      ['ClawdeNFT (Soul)', '0x86d7d293DD9bFE25CA3CAF4Cb09f8d2c266823E0'],
+                      ['NFT ID Linking', '0xd1C127c68D45ed264ce5251342A47f1C47F39dcF'],
+                      ['PoolManager (V4)', '0x498581fF718922c3f8e6A244956aF099B2652b2b'],
+                      ['PositionManager (V4)', '0x7C5f5A4bBd8fD63184577525326123b519429bDc'],
+                      ['PoolSwapTest', '0xBbB04538530970f3409e3844bF99475b5324912e'],
+                    ].map(([name, addr]) => (
+                      <div key={name} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 glass-hover rounded-lg border border-[var(--glass-border)] gap-1">
+                        <span className="text-[var(--text-secondary)] text-xs font-sans">{name}</span>
+                        <a href={`https://basescan.org/address/${addr}`} target="_blank" rel="noopener noreferrer"
+                          className="text-[var(--mint-dark)] hover:text-[var(--mint-mid)] transition-colors text-xs sm:text-sm">
+                          {addr}
+                        </a>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <a href="https://github.com/clawclick/claw-click" target="_blank" rel="noopener noreferrer" className="inline-block text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
-                  View on GitHub →
-                </a>
+                {/* Sepolia Testnet */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 text-[var(--text-primary)] flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
+                    Sepolia Testnet (11155111)
+                  </h3>
+                  <div className="space-y-2 text-sm font-mono">
+                    {[
+                      ['Factory', '0x3f4bFd32362D058157A5F43d7861aCdC0484C415'],
+                      ['Hook', '0xf537a9356f6909df0A633C8BC48e504D2a30B111'],
+                      ['Config', '0xf01514F68Df33689046F6Dd4184edCaA54fF4492'],
+                      ['BootstrapETH', '0xC52b027928AfAa54f1f0FeC0e4D7b6397026f660'],
+                      ['LaunchBundler', '0x579F512FA05CFd66033B06d8816915bA2Be971CE'],
+                      ['BirthCertificate', '0xE13532b0bD16E87088383f9F909EaCB03009a2e9'],
+                      ['MemoryStorage', '0xC2D9c0ccc1656535e29B5c2398a609ef936aad75'],
+                      ['PoolManager (V4)', '0xE03A1074c86CFeDd5C142C4F04F1a1536e203543'],
+                      ['PositionManager (V4)', '0x429ba70129df741B2Ca2a85BC3A2a3328e5c09b4'],
+                    ].map(([name, addr]) => (
+                      <div key={name} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 glass-hover rounded-lg border border-[var(--glass-border)] gap-1">
+                        <span className="text-[var(--text-secondary)] text-xs font-sans">{name}</span>
+                        <code className="text-[var(--mint-dark)] text-xs sm:text-sm">{addr}</code>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-4 flex-wrap pt-2">
+                  <a href="https://basescan.org/address/0xF5979D0fEEd05CEcb94cf62B76FE7E9aB40c6b4a" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[var(--mint-mid)] transition-colors text-sm font-medium">View on Basescan →</a>
+                  <a href="https://github.com/clawclick/claw-click" target="_blank" rel="noopener noreferrer" className="text-[var(--mint-dark)] hover:text-[var(--mint-mid)] transition-colors text-sm font-medium">GitHub →</a>
+                </div>
               </section>
             )}
 
