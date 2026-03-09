@@ -154,14 +154,14 @@ export default function Home() {
     {
       title: 'TradeAPI',
       description: 'Execute complex strategies via arbitrage, MEV, spread skills across multichain DEX & CEX routing.',
-      href: '/dashboard',
+      href: '/tradeapi',
       IconComponent: TradeAPIIcon,
       status: 'coming-soon' as const,
     },
     {
       title: 'Spawner',
       description: 'Spawn your agent on-chain with birth certificates, memory storage, and identity tokens.',
-      href: '/immortal',
+      href: '/spawner',
       IconComponent: ImmortalizeIcon,
       status: 'active' as const,
     },
@@ -179,14 +179,14 @@ export default function Home() {
     {
       title: 'Dashboard',
       description: 'Real-time analytics and portfolio tracking for all your autonomous agent activity.',
-      href: '/dashboard',
+      href: '/tradeapi',
       IconComponent: DashboardIcon,
       status: 'active' as const,
     },
     {
       title: 'M-Sig',
       description: 'Multi-signature agent wallets with time-locks, governance controls, and fund management.',
-      href: '/locker',
+      href: '/m-sig',
       IconComponent: LockerIcon,
       status: 'coming-soon' as const,
     },
@@ -337,7 +337,7 @@ export default function Home() {
 
             {/* Single CTA */}
             <div className="flex items-center justify-center gap-4 pt-8">
-              <Link href="/immortal">
+              <Link href="/spawner">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -502,12 +502,12 @@ export default function Home() {
               <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-4">Products</h4>
               <ul className="space-y-2">
                 <li><Link href="/launch" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">Launch</Link></li>
-                <li><Link href="/immortal" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">Spawner</Link></li>
+                <li><Link href="/spawner" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">Spawner</Link></li>
                 <li><Link href="/funlan" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">FUNLAN</Link></li>
                 <li><Link href="/dashboard" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">Dashboard</Link></li>
                 <li><Link href="/compute" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">Compute</Link></li>
                 <li><Link href="/soul" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">Soul</Link></li>
-                <li><Link href="/locker" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">M-Sig</Link></li>
+                <li><Link href="/m-sig" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">M-Sig</Link></li>
               </ul>
             </div>
 

@@ -21,13 +21,13 @@ export default function UnifiedFooter() {
           <div>
             <h4 className="font-medium mb-3 text-[var(--text-primary)] text-sm">Products</h4>
             <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li><Link href="/immortal" className="hover:text-[var(--mint-dark)] transition-colors">Spawner</Link></li>
+              <li><Link href="/spawner" className="hover:text-[var(--mint-dark)] transition-colors">Spawner</Link></li>
               <li><Link href="/launch" className="hover:text-[var(--mint-dark)] transition-colors">Launch</Link></li>
               <li><Link href="/soul" className="hover:text-[var(--mint-dark)] transition-colors">Soul</Link></li>
               <li><Link href="/funlan" className="hover:text-[var(--mint-dark)] transition-colors">FUNLAN</Link></li>
               <li><Link href="/compute" className="hover:text-[var(--mint-dark)] transition-colors">Compute</Link></li>
               <li><Link href="/dashboard" className="hover:text-[var(--mint-dark)] transition-colors">Dashboard</Link></li>
-              <li><Link href="/locker" className="hover:text-[var(--mint-dark)] transition-colors">M-Sig</Link></li>
+              <li><Link href="/m-sig" className="hover:text-[var(--mint-dark)] transition-colors">M-Sig</Link></li>
             </ul>
           </div>
           

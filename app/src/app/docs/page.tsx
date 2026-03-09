@@ -129,7 +129,7 @@ export default function DocsPage() {
                         <Link href="/launch" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
                           Launch Token →
                         </Link>
-                        <Link href="/immortal" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
+                        <Link href="/spawner" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
                           Spawn Agent →
                         </Link>
                         <Link href="/funlan" className="text-[var(--mint-dark)] hover:text-[var(--mint-dark)] transition-colors">
@@ -278,7 +278,7 @@ export default function DocsPage() {
                   </ol>
                 </div>
 
-                <Link href="/immortal" className="inline-block px-6 py-3 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] rounded-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
+                <Link href="/spawner" className="inline-block px-6 py-3 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] rounded-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
                   Spawn Agent →
                 </Link>
               </section>

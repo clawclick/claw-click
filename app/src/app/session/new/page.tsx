@@ -564,7 +564,7 @@ function NewSessionWizard() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
-                  <Link href={`/immortal/agent/${agentId}`} className="flex-1">
+                  <Link href={`/spawner/agent/${agentId}`} className="flex-1">
                     <button className="w-full py-3 rounded-lg bg-black border border-[var(--glass-border)] text-[var(--text-secondary)] hover:agent-card transition-all">
                       Cancel
                     </button>

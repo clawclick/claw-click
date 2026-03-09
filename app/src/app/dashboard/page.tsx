@@ -173,7 +173,7 @@ export default function DashboardPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Link href={`/immortal/agent/${agent.wallet}`} className="block glass glass-hover p-6 cursor-pointer group"
+                  <Link href={`/spawner/agent/${agent.wallet}`} className="block glass glass-hover p-6 cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">

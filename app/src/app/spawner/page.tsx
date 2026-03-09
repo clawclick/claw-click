@@ -62,7 +62,7 @@ export default function ImmortalPage() {
             </p>
 
             <div className="pt-6">
-              <Link href="/immortal/create">
+              <Link href="/spawner/create">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

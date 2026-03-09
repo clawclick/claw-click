@@ -103,7 +103,7 @@ export default function ComputePage() {
             </p>
 
             <div className="flex items-center justify-center gap-3 pt-8">
-              <Link href="/immortal" className="px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-base font-semibold hover:shadow-xl hover:shadow-[var(--mint-mid)]/40 transition-all">
+              <Link href="/spawner" className="px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-base font-semibold hover:shadow-xl hover:shadow-[var(--mint-mid)]/40 transition-all">
                 Immortalize Agent First
               </Link>
               <Link href="/docs" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all">
@@ -285,7 +285,7 @@ export default function ComputePage() {
             <p className="text-lg text-[var(--text-secondary)] mb-8">
               Immortalize your agent first, then launch compute sessions from your agent dashboard
             </p>
-            <Link href="/immortal" className="inline-block px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
+            <Link href="/spawner" className="inline-block px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
               Immortalize Agent →
             </Link>
           </motion.div>

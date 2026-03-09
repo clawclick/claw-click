@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { FunlanIcon } from '../../components/home/ProductIcons'
 import FUNLANQRCode from '../components/FUNLANQRCode'
@@ -42,13 +43,13 @@ export default function FunlanPage() {
               <Link href="/funlan/thread" className="px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-base font-semibold hover:shadow-xl hover:shadow-[var(--mint-mid)]/40 transition-all">
                 View FUNLAN Thread
               </Link>
-              <Link href="/immortal" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all">
+              <Link href="/spawner" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-all">
                 Immortal Agents
               </Link>
             </div>
 
             <div className="mt-12 space-y-4">
-              <h3 className="text-lg font-semibold mb-4">🦞 Download FUNLAN</h3>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2"><Image src="/branding/lobster_icon_exact_size-rem_bk.png" alt="Lobster" width={24} height={24} className="object-contain" /> Download FUNLAN</h3>
               <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
                 <a 
                   href="https://github.com/clawclick/FUNLAN/releases" 
@@ -165,7 +166,7 @@ export default function FunlanPage() {
             <p className="text-lg text-[var(--text-primary)]/50 mb-8">
               All immortalized agents automatically get FUNLAN identities visible on their dashboard
             </p>
-            <Link href="/immortal" className="inline-block px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
+            <Link href="/spawner" className="inline-block px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
               Immortalize Your Agent →
             </Link>
           </motion.div>

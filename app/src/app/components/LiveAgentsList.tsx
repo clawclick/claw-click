@@ -103,7 +103,7 @@ export default function LiveAgentsList() {
           {agents.length === 0 ? 'No Agents Yet' : 'Error Loading'}
         </h3>
         <p className="text-[var(--text-secondary)] mb-8">{error || 'Be the first to spawn an agent!'}</p>
-        <Link href="/immortal">
+        <Link href="/spawner">
           <button className="btn-primary">Spawn First Agent →</button>
         </Link>
       </div>
@@ -121,7 +121,7 @@ export default function LiveAgentsList() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.03 }}
           >
-            <Link href={`/immortal/agent/${agent.wallet}`}>
+            <Link href={`/spawner/agent/${agent.wallet}`}>
               <div className="agent-card group h-full cursor-pointer">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
@@ -220,7 +220,7 @@ export default function LiveAgentsList() {
 
       {/* Create CTA */}
       <div className="text-center pt-8">
-        <Link href="/immortal/create">
+        <Link href="/spawner/create">
           <button className="btn-primary">+ Spawn Your Agent</button>
         </Link>
       </div>

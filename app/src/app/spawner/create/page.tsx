@@ -528,7 +528,7 @@ function CreateAgentFlow() {
             {/* Wallet Connection */}
             {step > 0 && !isConnected && (
               <motion.div key="wallet" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                <div className="text-6xl mb-6">🔐</div>
+                <div className="flex justify-center mb-6"><svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="6" y="16" width="52" height="36" rx="6" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)"/><path d="M6 26h52" stroke="#45C7B8" strokeWidth="2"/><rect x="40" y="30" width="14" height="10" rx="3" fill="rgba(46,230,214,0.2)" stroke="#45C7B8" strokeWidth="1.5"/><circle cx="47" cy="35" r="2" fill="#2EE6D6" style={{animation:"ip-pulse 1.5s ease-in-out infinite"}}/><path d="M14 22h12" stroke="#7DE2D1" strokeWidth="1.5" strokeLinecap="round"/></svg></div>
                 <h2 className="text-2xl font-black text-white mb-4">Connect Your Wallet</h2>
                 <p className="text-white/60 mb-6">You need to connect your wallet to create an agent on-chain.</p>
                 <div className="flex justify-center"><ConnectButton /></div>
@@ -539,7 +539,7 @@ function CreateAgentFlow() {
             {step === 1 && isConnected && creatorType === 'agent' && (
               <motion.div key="agent-cli" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
                 <div className="text-center mb-8">
-                  <div className="text-6xl mb-4">🤖</div>
+                  <div className="flex justify-center mb-4"><svg width="52" height="52" viewBox="0 0 64 64" fill="none"><rect x="6" y="10" width="52" height="44" rx="6" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(8,40,36,0.6)"/><path d="M14 26l8 6-8 6" stroke="#2EE6D6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><line x1="26" y1="38" x2="42" y2="38" stroke="#45C7B8" strokeWidth="2" strokeLinecap="round"/><circle cx="48" cy="16" r="3" fill="#2EE6D6" style={{animation:"ip-pulse 1s ease-in-out infinite"}}/></svg></div>
                   <h2 className="text-2xl font-black text-white mb-2">Agent Identity</h2>
                   <p className="text-white/60">Agents use CLI commands to self-create. Follow these steps:</p>
                 </div>
@@ -952,7 +952,7 @@ function CreateAgentFlow() {
             {step === 5 && isConnected && creatorType === 'human' && (
               <motion.div key="step5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="text-3xl">🧠</span>
+                  <span className="flex justify-center"><svg width="36" height="36" viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="20" rx="20" ry="10" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)"/><path d="M12 20 L12 44 Q12 54 32 54 Q52 54 52 44 L52 20" stroke="#45C7B8" strokeWidth="2.5"/><ellipse cx="32" cy="44" rx="20" ry="10" stroke="#45C7B8" strokeWidth="2" fill="rgba(69,199,184,0.05)"/><path d="M12 32 Q12 42 32 42 Q52 42 52 32" stroke="#7DE2D1" strokeWidth="1.5" strokeDasharray="4 3"/><circle cx="32" cy="20" r="4" fill="#2EE6D6" style={{animation:"ip-pulse 2s ease-in-out infinite"}}/></svg></span>
                   <h2 className="text-2xl font-black text-white">Memory Upload</h2>
                 </div>
                 <p className="text-sm text-[var(--mint-mid)] mb-6">Optional — can be added later via CLI or dashboard</p>
@@ -986,7 +986,7 @@ function CreateAgentFlow() {
                 <div className="border-2 border-dashed border-[var(--mint-mid)]/20 rounded-lg p-8 text-center cursor-pointer /30 mb-6 hover:border-[rgba(46,230,214,0.6)]/40 transition-all">
                   <input type="file" id="memory-upload" multiple accept=".md,.txt,.json" onChange={(e) => { if (e.target.files) setFormData({ ...formData, memoryFiles: [...formData.memoryFiles, ...Array.from(e.target.files)] }) }} className="hidden" />
                   <label htmlFor="memory-upload" className="cursor-pointer">
-                    <div className="text-4xl mb-4">📁</div>
+                    <div className="flex justify-center mb-4"><svg width="52" height="52" viewBox="0 0 64 64" fill="none"><path d="M6 20 Q6 14 12 14 L26 14 L30 20 L52 20 Q58 20 58 26 L58 50 Q58 56 52 56 L12 56 Q6 56 6 50 Z" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)"/><line x1="20" y1="36" x2="44" y2="36" stroke="#2EE6D6" strokeWidth="2" strokeLinecap="round" style={{animation:"ip-pulse 2s ease-in-out infinite"}}/><line x1="20" y1="44" x2="36" y2="44" stroke="#45C7B8" strokeWidth="2" strokeLinecap="round"/><circle cx="48" cy="44" r="3" fill="#2EE6D6" opacity="0.8"/></svg></div>
                     <p className="text-white font-semibold mb-2">Upload Memory Files</p>
                     <p className="text-sm text-white/60 mb-2">.md, .txt, .json</p>
                     <p className="text-xs text-white/60/70">Drag & drop or click to browse</p>
@@ -1213,7 +1213,7 @@ function CreateAgentFlow() {
             {/* Success */}
             {deployPhase === 'done' && hash && (
               <motion.div key="success" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)] text-center mt-6" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                <div className="text-6xl mb-6">🎉</div>
+                <div className="flex justify-center mb-6"><svg width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)" style={{animation:"ip-pulse 2s ease-in-out infinite"}}/><polyline points="20,32 28,40 44,24" stroke="#2EE6D6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><circle cx="32" cy="32" r="30" stroke="#2EE6D6" strokeWidth="0.8" strokeDasharray="5 8" opacity="0.4" style={{animation:"ip-rotate 8s linear infinite",transformOrigin:"32px 32px"}}/></svg></div>
                 <h2 className="text-2xl font-black text-white mb-4">Agent Immortalized!</h2>
                 <p className="text-white/60 mb-4">Your agent is live on-chain with a Uniswap V4 pool and birth certificate!</p>
                 {launchedToken && (

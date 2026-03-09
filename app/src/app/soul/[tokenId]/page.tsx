@@ -313,7 +313,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
                           <p className="font-mono text-xs text-white/70 break-all">{linkedToken as string}</p>
                         </div>
                         <Link
-                          href={`/immortal/agent/${linkedToken}`}
+                          href={`/spawner/agent/${linkedToken}`}
                           className="block w-full px-4 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-center text-white font-semibold hover:shadow-lg hover:shadow-[#E8523D]/40 transition-all"
                         >
                           View Agent Page →
@@ -324,7 +324,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
                         <p className="text-xs text-white/50 mb-2">Token Address</p>
                         <p className="font-mono text-sm text-white break-all mb-3">{linkedToken as string}</p>
                         <Link
-                          href={`/immortal/agent/${linkedToken}`}
+                          href={`/spawner/agent/${linkedToken}`}
                           className="block w-full px-4 py-3 bg-black/50 border border-white/10 hover:border-[#E8523D]/50 rounded-lg text-center text-white transition-all"
                         >
                           View Agent Page →

@@ -93,7 +93,7 @@ function HowItWorksPopup({ onClose }: { onClose: () => void }) {
 
         {/* CTA */}
         <div className="mt-8 text-center">
-          <Link href="/immortal/create" onClick={onClose}
+          <Link href="/spawner/create" onClick={onClose}
             className="inline-block px-6 py-3 rounded-xl font-semibold text-[#083A36] transition-all hover:shadow-lg"
             style={{background: 'linear-gradient(135deg,#7DE2D1,#45C7B8)', boxShadow: '0 0 20px rgba(46,230,214,0.3)'}}>
             Spawn Your Agent →
