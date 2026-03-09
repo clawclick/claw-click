@@ -17,7 +17,7 @@ export default function ReadmePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20">
+    <div className="min-h-screen relative text-[var(--text-primary)] pt-32 pb-20">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -26,7 +26,7 @@ export default function ReadmePage() {
           className="text-center mb-16"
         >
           <h1 className="text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+            <span className="bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] text-transparent bg-clip-text">
               README
             </span>
           </h1>
@@ -42,17 +42,17 @@ export default function ReadmePage() {
               remarkPlugins={[remarkGfm]}
               components={{
                 h1: ({ children }) => (
-                  <h1 className="text-4xl font-bold mb-6 mt-8 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+                  <h1 className="text-4xl font-bold mb-6 mt-8 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                     {children}
                   </h1>
                 ),
                 h2: ({ children }) => (
-                  <h2 className="text-3xl font-bold mt-12 mb-4 text-white border-b border-white/10 pb-3">
+                  <h2 className="text-3xl font-bold mt-12 mb-4 text-[var(--text-primary)] border-b border-white/10 pb-3">
                     {children}
                   </h2>
                 ),
                 h3: ({ children }) => (
-                  <h3 className="text-2xl font-semibold mt-8 mb-3 text-white">
+                  <h3 className="text-2xl font-semibold mt-8 mb-3 text-[var(--text-primary)]">
                     {children}
                   </h3>
                 ),
@@ -73,7 +73,7 @@ export default function ReadmePage() {
                 ),
                 li: ({ children }) => (
                   <li className="flex items-start gap-2">
-                    <span className="text-[#E8523D] mt-1.5">•</span>
+                    <span className="text-[var(--mint-dark)] mt-1.5">•</span>
                     <span className="flex-1">{children}</span>
                   </li>
                 ),
@@ -105,7 +105,7 @@ export default function ReadmePage() {
                   </tr>
                 ),
                 th: ({ children }) => (
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-white border-r border-white/10 last:border-r-0">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)] border-r border-white/10 last:border-r-0">
                     {children}
                   </th>
                 ),
@@ -117,24 +117,24 @@ export default function ReadmePage() {
                 code: ({ className, children, ...props }: any) => {
                   const isInline = !className?.includes('language-')
                   return isInline ? (
-                    <code className="bg-black/50 px-2 py-1 rounded text-[#E8523D] font-mono text-sm">
+                    <code className="relative/50 px-2 py-1 rounded text-[var(--mint-dark)] font-mono text-sm">
                       {children}
                     </code>
                   ) : (
-                    <code className="block bg-black/50 border border-white/10 rounded-lg p-4 text-sm text-[#E8523D] font-mono overflow-x-auto">
+                    <code className="block relative/50 border border-white/10 rounded-lg p-4 text-sm text-[var(--mint-dark)] font-mono overflow-x-auto">
                       {children}
                     </code>
                   )
                 },
                 pre: ({ children }) => (
-                  <pre className="bg-black/50 border border-white/10 rounded-lg p-4 overflow-x-auto my-4">
+                  <pre className="relative/50 border border-white/10 rounded-lg p-4 overflow-x-auto my-4">
                     {children}
                   </pre>
                 ),
                 a: ({ href, children }) => (
                   <a
                     href={href}
-                    className="text-[#E8523D] hover:text-[#FF8C4A] transition-colors underline decoration-[#E8523D]/30 hover:decoration-[#FF8C4A]"
+                    className="text-[var(--mint-dark)] hover:text-[#FF8C4A] transition-colors underline decoration-[#E8523D]/30 hover:decoration-[#FF8C4A]"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -150,7 +150,7 @@ export default function ReadmePage() {
                   </blockquote>
                 ),
                 strong: ({ children }) => (
-                  <strong className="font-bold text-white">
+                  <strong className="font-bold text-[var(--text-primary)]">
                     {children}
                   </strong>
                 ),
@@ -167,7 +167,7 @@ export default function ReadmePage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-white font-semibold rounded-lg hover:shadow-xl hover:shadow-[#E8523D]/50 transition-all"
+              className="px-8 py-4 bg-gradient-to-r from-[var(--mint-light)] to-[var(--mint-dark)] text-[var(--text-primary)] font-semibold rounded-lg hover:shadow-xl hover:shadow-[#E8523D]/50 transition-all"
             >
               Back to Home
             </motion.button>

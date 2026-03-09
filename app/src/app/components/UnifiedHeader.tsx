@@ -13,35 +13,43 @@ export default function UnifiedHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
-          <div className="relative w-8 h-8">
+          <div className="relative w-14 h-14">
             <Image 
               src="/branding/logo_rm_bk.png" 
               alt="Claw.Click" 
-              width={32}
-              height={32}
+              width={56}
+              height={56}
               className="object-contain"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-semibold gradient-text">claw.click</span>
-            <span className="px-2 py-0.5 text-[9px] font-medium bg-[var(--mint-light)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded">BETA</span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold gradient-text">claw.click</span>
+              <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-light)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">BETA</span>
+            </div>
+            <span className="text-xs text-[var(--text-secondary)]">Autonomous Framework</span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/immortal" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
-            Spawn
-          </Link>
-          <Link href="/launch" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
-            Launch
-          </Link>
           <Link href="/docs" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
             Docs
           </Link>
           <Link href="/skill" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
-            🦞 Skill
+            Skill.md
           </Link>
+          <Link href="/readme" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
+            README
+          </Link>
+          <a 
+            href="https://t.me/clawclickbot" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="electric-button px-4 py-2 rounded-lg font-semibold text-sm"
+          >
+            ClawClick Bot
+          </a>
           <ConnectButton />
         </nav>
 
@@ -65,20 +73,6 @@ export default function UnifiedHeader() {
         <div className="md:hidden border-t border-[var(--glass-border)] glass">
           <div className="px-4 py-4 space-y-3">
             <Link
-              href="/immortal"
-              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Spawn
-            </Link>
-            <Link
-              href="/launch"
-              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Launch
-            </Link>
-            <Link
               href="/docs"
               className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
@@ -90,8 +84,24 @@ export default function UnifiedHeader() {
               className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Skill
+              Skill.md
             </Link>
+            <Link
+              href="/readme"
+              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              README
+            </Link>
+            <a 
+              href="https://t.me/clawclickbot" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block electric-button px-4 py-2 rounded-lg font-semibold text-sm text-center"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              ClawClick Bot
+            </a>
             <div className="pt-3">
               <ConnectButton />
             </div>

@@ -4,6 +4,15 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { 
+  LaunchIcon, 
+  ImmortalizeIcon, 
+  GPUSessionsIcon, 
+  DashboardIcon, 
+  LockerIcon, 
+  SoulIcon, 
+  FunlanIcon 
+} from '../components/home/ProductIcons'
 
 export default function Home() {
   // Autonomous Finance
@@ -12,21 +21,21 @@ export default function Home() {
       title: 'Launch',
       description: 'Deploy tokens through Uniswap v4 with progressive liquidity and automated earnings.',
       href: '/launch',
-      icon: '🚀',
+      IconComponent: LaunchIcon,
       status: 'active' as const,
     },
     {
       title: 'TradeAPI',
       description: 'Execute complex strategies via arbitrage, MEV, spread skills across multichain DEX & CEX routing.',
-      href: '/dashboard', // TODO: create tradeapi page
-      icon: '⚡',
-      status: 'active' as const,
+      href: '/dashboard',
+      IconComponent: DashboardIcon, // Using dashboard icon as placeholder for TradeAPI
+      status: 'coming-soon' as const,
     },
     {
       title: 'Spawner',
       description: 'Spawn your agent on-chain with birth certificates, memory storage, and identity tokens.',
       href: '/immortal',
-      icon: '🦞',
+      IconComponent: ImmortalizeIcon,
       status: 'active' as const,
     },
   ]
@@ -37,21 +46,21 @@ export default function Home() {
       title: 'Compute',
       description: 'Access distributed GPU compute sessions for AI model training and inference workloads.',
       href: '/compute',
-      icon: '🖥️',
+      IconComponent: GPUSessionsIcon,
       status: 'active' as const,
     },
     {
       title: 'Dashboard',
       description: 'Real-time analytics and portfolio tracking for all your autonomous agent activity.',
       href: '/dashboard',
-      icon: '📊',
+      IconComponent: DashboardIcon,
       status: 'active' as const,
     },
     {
       title: 'M-Sig',
       description: 'Multi-signature agent wallets with time-locks, governance controls, and fund management.',
       href: '/locker',
-      icon: '🔐',
+      IconComponent: LockerIcon,
       status: 'coming-soon' as const,
     },
   ]
@@ -62,14 +71,14 @@ export default function Home() {
       title: 'Soul',
       description: 'Generative identity NFTs for autonomous agents with unique trait-based NFTids and no duplicates.',
       href: '/soul',
-      icon: '✨',
+      IconComponent: SoulIcon,
       status: 'active' as const,
     },
     {
       title: 'FUNLAN',
       description: 'Encrypted peer-to-peer communication network with agent discovery and coordination.',
       href: '/funlan',
-      icon: '🌐',
+      IconComponent: FunlanIcon,
       status: 'active' as const,
     },
   ]
@@ -110,12 +119,12 @@ export default function Home() {
       <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-12 h-12">
+            <div className="relative w-14 h-14">
               <Image 
                 src="/branding/logo_rm_bk.png" 
                 alt="Claw.Click" 
-                width={48}
-                height={48}
+                width={56}
+                height={56}
                 className="object-contain"
               />
             </div>
@@ -137,11 +146,19 @@ export default function Home() {
               Docs
             </Link>
             <Link href="/skill" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
-              🦞 Skill.md
+              Skill.md
             </Link>
             <Link href="/readme" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
               README
             </Link>
+            <a 
+              href="https://t.me/clawclickbot" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="electric-button px-4 py-2 rounded-lg font-semibold text-sm"
+            >
+              ClawClick Bot
+            </a>
             <ConnectButton />
           </nav>
         </div>
@@ -156,9 +173,9 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            {/* AUTONOMOUS - Pixelated Effect */}
+            {/* AUTONOMOUS - Animated Pixelated Effect */}
             <div className="space-y-4">
-              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tight pixelated-text">
+              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tight autonomous-text">
                 AUTONOMOUS
               </h1>
               
@@ -404,8 +421,10 @@ export default function Home() {
   )
 }
 
-// Product Card Component
+// Product Card Component with Animated SVG Icons
 function ProductCard({ product, index }: { product: any, index: number }) {
+  const { IconComponent } = product
+  
   return (
     <Link href={product.href}>
       <motion.div
@@ -415,9 +434,9 @@ function ProductCard({ product, index }: { product: any, index: number }) {
         transition={{ duration: 0.5, delay: index * 0.1 }}
         className="glass glass-hover network-card p-8 h-full group relative overflow-hidden"
       >
-        {/* Icon */}
-        <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
-          {product.icon}
+        {/* Animated Icon */}
+        <div className="mb-4 text-[var(--mint-mid)] group-hover:text-[var(--mint-dark)] transition-colors transform group-hover:scale-110 duration-300">
+          <IconComponent />
         </div>
         
         {/* Title */}
