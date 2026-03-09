@@ -182,12 +182,12 @@ export default function SoulPage() {
   }, [address, balance, publicClient, totalSupply])
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+    <div className="min-h-screen relative text-white pt-32 pb-20 relative overflow-hidden">
       {/* Animated background */}
       <div className="fixed inset-0 z-[1]">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/5 via-black to-[#FF8C4A]/5"></div>
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#E8523D]/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-[#FF8C4A]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/5 via-black to-[var(--mint-dark)]/5"></div>
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[var(--mint-mid)]/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-[var(--mint-dark)]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
       {/* Content */}
@@ -205,7 +205,7 @@ export default function SoulPage() {
               transition={{ duration: 0.5 }}
               className="inline-block mb-6"
             >
-              <div className="text-6xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+              <div className="text-6xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                 Soul NFTid
               </div>
             </motion.div>
@@ -217,7 +217,7 @@ export default function SoulPage() {
             <Link
               href={`https://basescan.org/address/${CLAWD_NFT_ADDRESS.base}`}
               target="_blank"
-              className="inline-block mt-6 text-white/40 hover:text-[#E8523D] text-sm transition-colors"
+              className="inline-block mt-6 text-white/40 hover:text-[var(--mint-mid)] text-sm transition-colors"
             >
               View Contract →
             </Link>
@@ -229,14 +229,14 @@ export default function SoulPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[#E8523D]/50 transition-all"
+              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/0 to-[#E8523D]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/0 to-[var(--mint-mid)]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
-                <div className="text-4xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text mb-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text mb-2">
                   {totalSupply?.toString() || '0'} / 10,000
                 </div>
-                <div className="text-sm text-white/50">Minted Supply</div>
+                <div className="text-sm text-[var(--text-secondary)]">Minted Supply</div>
               </div>
             </motion.div>
 
@@ -244,14 +244,14 @@ export default function SoulPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[#E8523D]/50 transition-all"
+              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/0 to-[#E8523D]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/0 to-[var(--mint-mid)]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
-                <div className="text-4xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text mb-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text mb-2">
                   {priceInEth} ETH
                 </div>
-                <div className="text-sm text-white/50">Current Price (~${currentTier.usd})</div>
+                <div className="text-sm text-[var(--text-secondary)]">Current Price (~${currentTier.usd})</div>
               </div>
             </motion.div>
 
@@ -259,14 +259,14 @@ export default function SoulPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[#E8523D]/50 transition-all"
+              className="group relative overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-[var(--mint-mid)]/50 transition-all"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/0 to-[#E8523D]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--mint-mid)]/0 to-[var(--mint-mid)]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
-                <div className="text-4xl font-bold bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text mb-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text mb-2">
                   81,000+
                 </div>
-                <div className="text-sm text-white/50">Unique Combinations</div>
+                <div className="text-sm text-[var(--text-secondary)]">Unique Combinations</div>
               </div>
             </motion.div>
           </div>
@@ -305,10 +305,10 @@ export default function SoulPage() {
                     },
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-4 group">
-                      <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] mt-2 group-hover:scale-150 transition-transform"></div>
+                      <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] mt-2 group-hover:scale-150 transition-transform"></div>
                       <div>
                         <div className="font-semibold text-white mb-1">{item.title}</div>
-                        <div className="text-sm text-white/50">{item.desc}</div>
+                        <div className="text-sm text-[var(--text-secondary)]">{item.desc}</div>
                       </div>
                     </div>
                   ))}
@@ -333,13 +333,13 @@ export default function SoulPage() {
                       key={tier.range}
                       className={`flex items-center justify-between p-4 rounded-lg transition-all ${
                         tier.active
-                          ? 'bg-gradient-to-r from-[#E8523D]/20 to-[#FF8C4A]/20 border border-[#E8523D]/30'
-                          : 'bg-black/30 border border-white/5'
+                          ? 'bg-gradient-to-r from-[var(--mint-mid)]/20 to-[var(--mint-dark)]/20 border border-[var(--mint-mid)]/30'
+                          : 'relative/30 border border-white/5'
                       }`}
                     >
                       <span className="text-sm font-mono text-white/70">#{tier.range}</span>
                       <span className="text-sm font-bold text-white">
-                        {tier.price} <span className="text-white/50">({tier.usd})</span>
+                        {tier.price} <span className="text-[var(--text-secondary)]">({tier.usd})</span>
                       </span>
                     </div>
                   ))}
@@ -369,7 +369,7 @@ export default function SoulPage() {
                   className="bg-white/[0.02] border border-white/10 rounded-2xl p-12 text-center"
                 >
                   <h3 className="text-2xl font-bold mb-4">Connect to Mint</h3>
-                  <p className="text-white/50 mb-8">
+                  <p className="text-[var(--text-secondary)] mb-8">
                     Connect your wallet to mint your unique Soul NFTid
                   </p>
                   <ConnectButton />
@@ -382,22 +382,22 @@ export default function SoulPage() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.4 }}
-                      className="relative overflow-hidden bg-gradient-to-br from-[#E8523D]/10 to-[#FF8C4A]/10 border border-[#E8523D]/30 rounded-2xl p-8"
+                      className="relative overflow-hidden bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 border border-[var(--mint-mid)]/30 rounded-2xl p-8"
                     >
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#E8523D]/20 rounded-full blur-3xl"></div>
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--mint-mid)]/20 rounded-full blur-3xl"></div>
                       <div className="relative">
                         <div className="flex items-center gap-3 mb-6">
-                          <LobsterIcon size={32} className="text-[#E8523D]" />
+                          <LobsterIcon size={32} className="text-[var(--mint-mid)]" />
                           <div>
                             <h3 className="text-xl font-bold">Free Mint Available</h3>
-                            <p className="text-sm text-white/50">For Birth Certificate holders</p>
+                            <p className="text-sm text-[var(--text-secondary)]">For Birth Certificate holders</p>
                           </div>
                         </div>
 
                         <button
                           onClick={handleMint}
                           disabled={isMintPending || isMintConfirming || wrongNetwork || isEligibleForFreeMint === undefined}
-                          className="w-full px-6 py-4 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg font-semibold hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+                          className="w-full px-6 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg font-semibold hover:shadow-xl hover:shadow-[var(--mint-mid)]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
                         >
                           {isMintPending || isMintConfirming ? (
                             <span className="flex items-center justify-center gap-2">
@@ -425,7 +425,7 @@ export default function SoulPage() {
                             <Link
                               href={`https://basescan.org/tx/${mintHash}`}
                               target="_blank"
-                              className="text-xs text-white/50 hover:text-[#E8523D] transition-colors"
+                              className="text-xs text-[var(--text-secondary)] hover:text-[var(--mint-mid)] transition-colors"
                             >
                               View Transaction →
                             </Link>
@@ -443,17 +443,17 @@ export default function SoulPage() {
                     className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all"
                   >
                     <div className="flex items-center gap-3 mb-6">
-                      <LobsterIcon size={32} className="text-[#E8523D]" />
+                      <LobsterIcon size={32} className="text-[var(--mint-mid)]" />
                       <div>
                         <h3 className="text-xl font-bold">Mint NFTid</h3>
-                        <p className="text-sm text-white/50">{priceInEth} ETH per mint</p>
+                        <p className="text-sm text-[var(--text-secondary)]">{priceInEth} ETH per mint</p>
                       </div>
                     </div>
 
                     <button
                       onClick={handleMint}
                       disabled={isMintPending || isMintConfirming || wrongNetwork || Number(totalSupply || 0) >= 10000}
-                      className="w-full px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#E8523D]/50 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[var(--mint-mid)]/50 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
                     >
                       {Number(totalSupply || 0) >= 10000
                         ? 'Sold Out'
@@ -483,7 +483,7 @@ export default function SoulPage() {
                         <Link
                           href={`https://basescan.org/tx/${mintHash}`}
                           target="_blank"
-                          className="text-xs text-white/50 hover:text-[#E8523D] transition-colors"
+                          className="text-xs text-[var(--text-secondary)] hover:text-[var(--mint-mid)] transition-colors"
                         >
                           View Transaction →
                         </Link>
@@ -521,19 +521,19 @@ export default function SoulPage() {
               transition={{ delay: 0.6 }}
               className="mb-16"
             >
-              <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+              <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                 My NFTids
               </h2>
 
               {loadingOwnedNFTs ? (
                 <div className="text-center py-12">
-                  <div className="w-8 h-8 border-2 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-white/50 text-sm">Loading your NFTids...</p>
+                  <div className="w-8 h-8 border-2 border-[var(--mint-mid)]/30 border-t-[var(--mint-mid)] rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-[var(--text-secondary)] text-sm">Loading your NFTids...</p>
                 </div>
               ) : ownedNFTs.length === 0 ? (
                 <div className="text-center py-12 bg-white/[0.02] border border-white/10 rounded-2xl">
                   <div className="text-6xl mb-4">🦞</div>
-                  <p className="text-white/50 mb-4">You don't own any NFTids yet</p>
+                  <p className="text-[var(--text-secondary)] mb-4">You don't own any NFTids yet</p>
                   <p className="text-sm text-white/30">
                     {isEligibleForFreeMint
                       ? 'You\'re eligible for a free mint! Scroll up to claim it.'
@@ -553,7 +553,7 @@ export default function SoulPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         whileHover={{ scale: 1.03 }}
                       >
-                        <Link href={`/soul/${nft.tokenId}`} className="block bg-white/[0.02] border border-white/10 hover:border-[#E8523D]/50 rounded-2xl p-4 transition-all cursor-pointer group"
+                        <Link href={`/soul/${nft.tokenId}`} className="block bg-white/[0.02] border border-white/10 hover:border-[var(--mint-mid)]/50 rounded-2xl p-4 transition-all cursor-pointer group"
                         >
                           {/* NFT Image */}
                           <div className="mb-3 rounded-lg overflow-hidden aspect-square w-full relative">
@@ -569,10 +569,10 @@ export default function SoulPage() {
                           {/* Info */}
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-bold text-white group-hover:text-[#E8523D] transition-colors">
+                              <span className="text-sm font-bold text-white group-hover:text-[var(--mint-mid)] transition-colors">
                                 NFTid #{nft.tokenId}
                               </span>
-                              <span className="text-xs px-2 py-1 rounded bg-[#E8523D]/10 text-[#E8523D] font-semibold">
+                              <span className="text-xs px-2 py-1 rounded bg-[var(--mint-mid)]/10 text-[var(--mint-mid)] font-semibold">
                                 OWNED
                               </span>
                             </div>
@@ -583,7 +583,7 @@ export default function SoulPage() {
                             </div>
                             
                             {nft.linkedAgent && (
-                              <div className="text-xs text-white/50 bg-black/30 rounded px-2 py-1">
+                              <div className="text-xs text-[var(--text-secondary)] relative/30 rounded px-2 py-1">
                                 🔗 Linked to Agent
                               </div>
                             )}
@@ -604,15 +604,15 @@ export default function SoulPage() {
             transition={{ delay: 0.7 }}
             className="text-center"
           >
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
               Recent Mints
             </h2>
-            <p className="text-white/50 mb-4">
+            <p className="text-[var(--text-secondary)] mb-4">
               View all minted NFTids on{' '}
               <Link
                 href={`https://basescan.org/address/${CLAWD_NFT_ADDRESS.base}#events`}
                 target="_blank"
-                className="text-[#E8523D] hover:underline"
+                className="text-[var(--mint-mid)] hover:underline"
               >
                 Basescan
               </Link>

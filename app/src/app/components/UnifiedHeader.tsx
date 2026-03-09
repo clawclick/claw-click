@@ -9,7 +9,7 @@ export default function UnifiedHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="fixed w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
+    <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
@@ -23,23 +23,23 @@ export default function UnifiedHeader() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-lg font-semibold text-white">claw.click</span>
-            <span className="px-2 py-0.5 text-[9px] font-medium bg-white/5 text-white/40 border border-white/10 rounded">ALPHA</span>
+            <span className="text-lg font-semibold gradient-text">claw.click</span>
+            <span className="px-2 py-0.5 text-[9px] font-medium bg-[var(--mint-light)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded">BETA</span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/immortal" className="text-sm text-white/50 hover:text-white transition-colors">
-            Immortalize
+          <Link href="/immortal" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
+            Spawn
           </Link>
-          <Link href="/launch" className="text-sm text-white/50 hover:text-white transition-colors">
+          <Link href="/launch" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
             Launch
           </Link>
-          <Link href="/docs" className="text-sm text-white/50 hover:text-white transition-colors">
+          <Link href="/docs" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
             Docs
           </Link>
-          <Link href="/skill" className="text-sm text-white/50 hover:text-white transition-colors">
+          <Link href="/skill" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
             🦞 Skill
           </Link>
           <ConnectButton />
@@ -48,7 +48,7 @@ export default function UnifiedHeader() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 text-white/50 hover:text-white"
+          className="md:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--mint-dark)]"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {mobileMenuOpen ? (
@@ -62,32 +62,32 @@ export default function UnifiedHeader() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-white/5 bg-black/95 backdrop-blur-xl">
+        <div className="md:hidden border-t border-[var(--glass-border)] glass">
           <div className="px-4 py-4 space-y-3">
             <Link
               href="/immortal"
-              className="block text-sm text-white/50 hover:text-white transition-colors py-2"
+              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Immortalize
+              Spawn
             </Link>
             <Link
               href="/launch"
-              className="block text-sm text-white/50 hover:text-white transition-colors py-2"
+              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Launch
             </Link>
             <Link
               href="/docs"
-              className="block text-sm text-white/50 hover:text-white transition-colors py-2"
+              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Docs
             </Link>
             <Link
               href="/skill"
-              className="block text-sm text-white/50 hover:text-white transition-colors py-2"
+              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Skill
