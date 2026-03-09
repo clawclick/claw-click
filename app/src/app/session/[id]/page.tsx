@@ -1073,7 +1073,7 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                   <button
                     onClick={handleNewSession}
                     disabled={creatingNewSession || sending}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 bg-[var(--mint-mid)]/5 border border-[var(--mint-mid)]/15 text-[var(--mint-mid)]/80 hover:bg-[var(--mint-mid)]/10 hover:border-[var(--mint-mid)]/30 hover:text-[var(--mint-mid)] disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 bg-[#45C7B8]/5 border border-[#45C7B8]/20 text-[#45C7B8] hover:bg-[#45C7B8]/15 hover:border-[#45C7B8]/40 disabled:opacity-40 disabled:cursor-not-allowed"
                     title="Clear chat and start fresh"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
