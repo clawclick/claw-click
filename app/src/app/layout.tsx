@@ -45,13 +45,14 @@ export const metadata: Metadata = {
   
   icons: {
     icon: [
-      { url: '/branding/logo_rm_bk.png', type: 'image/png' },
-      { url: '/branding/lobster_icon_exact_size-rem_bk.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '64x64', type: 'image/png' },
     ],
     apple: [
-      { url: '/branding/logo_rm_bk.png' },
+      { url: '/favicon.png' },
     ],
-    shortcut: '/branding/lobster_icon_exact_size-rem_bk.png',
+    shortcut: '/favicon.png',
   },
   
   openGraph: {

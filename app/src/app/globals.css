@@ -752,3 +752,10 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   transform-origin: left center;
 }
 
+/* Mobile bottom nav safe spacing — prevent content hiding behind bottom bar */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
