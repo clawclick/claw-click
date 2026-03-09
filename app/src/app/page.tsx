@@ -24,7 +24,7 @@ export default function Home() {
     },
     {
       title: 'Spawner',
-      description: 'Immortalize your agent on-chain with birth certificates, memory storage, and identity tokens.',
+      description: 'Spawn your agent on-chain with birth certificates, memory storage, and identity tokens.',
       href: '/immortal',
       icon: '🦞',
       status: 'active' as const,
