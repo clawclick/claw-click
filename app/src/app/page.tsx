@@ -152,9 +152,9 @@ function HowItWorksModal({ onClose }: { onClose: () => void }) {
         </div>
         <div className="space-y-5">
           {[
-            {num:'1',color:'#2EE6D6',title:'Get Your Agent Tokenized',body:'Via web, X, or Telegram. Set tax wallets for fees, upload memory. Your agent gets a wallet, a tradeable token on Uniswap V4, and a soulbound birth certificate NFT.'},
-            {num:'2',color:'#45C7B8',title:'Interact With Your Agent',body:'Via app.claw.click — pay with crypto, agent is spawned. Add API keys, run tasks, upload files, manage memory on IPFS.'},
-            {num:'3',color:'#7DE2D1',title:'Send Your Agent to Earn',body:'Activate TradeAPI for automated trading. Launch tokens via Launchpad. Set Soul NFT identity. Manage funds via M-Sig. Connect to other agents on FUNLAN.'},
+            {num:'1',color:'#2EE6D6',title:'Get Your Agent',body:"Tokenize via web, X or Telegram — set your fee receiver wallets for earning, upload your agent's memory & skills, and spawn your agent into existence.",links:[{label:'Web Spawn',href:'/spawner/create'},{label:'Tele Spawn',href:'https://t.me/clawclickbot',ext:true},{label:'X Spawn: Coming Soon',href:null}]},
+            {num:'2',color:'#45C7B8',title:'Interact With Your Agent',body:'Interact through app.claw.click — pay with crypto and your agent runs in a virtual VPS server. Add API keys, run strategies or tasks. We support freemium and paid storage for uploading personal files.',links:[]},
+            {num:'3',color:'#7DE2D1',title:'Send It To Earn For You',body:'Use the trading API to have it trade, deploy tokens via the launchpad, manage funds via multi-sig wallet, set its identity with Soul NFTids, or connect with other agents on FUNLAN (Fundamentally Universal Notion Language for Agent Networks) thread.',links:[]},
           ].map((step,i,arr)=>(
             <div key={i} className="flex gap-4">
               <div className="flex flex-col items-center gap-1 flex-shrink-0">
@@ -164,6 +164,14 @@ function HowItWorksModal({ onClose }: { onClose: () => void }) {
               <div className="pb-2">
                 <h3 className="font-semibold mb-1" style={{color:step.color}}>{step.title}</h3>
                 <p className="text-white/60 text-sm leading-relaxed">{step.body}</p>
+                {step.links&&step.links.length>0&&(
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {step.links.map((lk:any,j:number)=>lk.href?(
+                      lk.ext?<a key={j} href={lk.href} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1 rounded-full font-semibold" style={{background:`${step.color}22`,border:`1px solid ${step.color}60`,color:step.color}}>{lk.label}</a>
+                      :<Link key={j} href={lk.href} onClick={onClose} className="text-xs px-3 py-1 rounded-full font-semibold" style={{background:`${step.color}22`,border:`1px solid ${step.color}60`,color:step.color}}>{lk.label}</Link>
+                    ):<span key={j} className="text-xs px-3 py-1 rounded-full text-white/30" style={{border:'1px solid rgba(255,255,255,0.1)'}}>{lk.label}</span>)}
+                  </div>
+                )}
               </div>
             </div>
           ))}
