@@ -363,16 +363,16 @@ export default function Home() {
             <div className="flex flex-col items-center" style={{gap:0}}>
               <div className="flex justify-center w-full">
                 <Image
-                  src="/branding/claw_logo_animated.svg"
+                  src="/branding/claw_logo_spawn_animation.svg"
                   alt="Claw.Click"
-                  width={1000}
-                  height={200}
-                  className="w-[130%] sm:w-full max-w-5xl h-auto"
-                  style={{marginBottom:'-0.25rem'}}
+                  width={400}
+                  height={80}
+                  className="w-[55%] sm:w-[40%] max-w-md h-auto"
+                  style={{marginBottom:'-0.1rem'}}
                   priority
                 />
               </div>
-              <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-[0.3em] framework-text mx-auto uppercase" style={{marginTop:0}}>
+              <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-[0.3em] framework-text mx-auto uppercase" style={{marginTop:'0.1rem'}}>
                 Framework For Digital Entities
               </h2>
               <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-2xl mx-auto italic font-light mt-2" style={{fontStyle:'italic',letterSpacing:'0.04em'}}>

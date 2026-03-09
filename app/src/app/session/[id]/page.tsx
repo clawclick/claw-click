@@ -645,10 +645,10 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
   if (!isConnected || !address) {
     return (
       <main className="min-h-screen relative flex items-center justify-center">
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md glass rounded-2xl p-10">
           <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold mb-3">Connect Wallet</h2>
-          <p className="text-white/70 mb-6">
+          <h2 className="text-2xl font-bold mb-3 text-[var(--text-primary)]">Connect Wallet</h2>
+          <p className="text-[var(--text-secondary)] mb-6 text-sm leading-relaxed">
             Connect your wallet to access this session. Only the wallet that created the session can view and control it.
           </p>
           <ConnectButton />
