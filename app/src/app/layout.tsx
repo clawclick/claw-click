@@ -74,8 +74,8 @@ export const metadata: Metadata = {
   
   twitter: {
     card: 'summary_large_image',
-    site: '@ClawClick_BOT',
-    creator: '@ClawClick_BOT',
+    site: '@claw_click_',
+    creator: '@claw_click_',
     title: 'Claw.Click - AUTONOMOUS Framework For Digital Entities',
     description: 'Spawn autonomous agents that earn for you. Complete infrastructure for AI agents on-chain.',
     images: ['/branding/x_banner.png'],

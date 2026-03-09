@@ -483,7 +483,7 @@ function CreateAgentFlow() {
                   BETA
                 </span>
               </div>
-              <span className="text-xs text-white/60">Agent Infrastructure</span>
+              <span className="text-xs" style={{color:'#0F2F2C'}}>Agent Infrastructure</span>
             </div>
           </Link>
           <ConnectButton />
@@ -644,7 +644,6 @@ function CreateAgentFlow() {
                 {/* Starting MCAP Selector */}
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg">⚙️</span>
                     <span className="text-sm font-semibold text-white">Starting Market Cap</span>
                   </div>
                   <p className="text-xs text-white/60 mb-4">Choose your initial token valuation (1-10 ETH)</p>
@@ -680,7 +679,7 @@ function CreateAgentFlow() {
                     <div className="space-y-3">
                       {/* LP Fee Info */}
                       <div className="p-3  rounded-lg border border-[var(--mint-mid)]/10">
-                        <p className="text-xs text-white/60 mb-2">💰 Liquidity Provider Fee:</p>
+                        <p className="text-xs text-white/60 mb-2">Liquidity Provider Fee:</p>
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs">
                             <span className="text-white/60">Pool Fee:</span>
@@ -696,7 +695,7 @@ function CreateAgentFlow() {
 
                       {/* Position Info */}
                       <div className="p-3  rounded-lg border border-[var(--mint-mid)]/10">
-                        <p className="text-xs text-white/60 mb-2">📊 Liquidity Positions:</p>
+                        <p className="text-xs text-white/60 mb-2">Liquidity Positions:</p>
                         <div className="space-y-1 text-xs">
                           <div className="flex justify-between">
                             <span className="text-white/60">Position Strategy:</span>
@@ -711,7 +710,7 @@ function CreateAgentFlow() {
 
                 {/* Uniswap V4 Framework Info */}
                 <div className="p-4 rounded-lg border border-[rgba(69,199,184,0.2)] mb-6" style={{background:"rgba(46,230,214,0.06)"}}>
-                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">🏗️ Uniswap V4 Direct Launch</p>
+                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">Uniswap V4 Direct Launch</p>
                   <p className="text-xs text-white/60">
                     Your token launches with instant tradability on Uniswap V4. No complex mechanics, just a clean 1% LP fee with 30/70 split. Works with all standard bots and routers.
                   </p>
@@ -723,7 +722,7 @@ function CreateAgentFlow() {
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">ERC-20 Token (1B supply)</span></div>
                     <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Uniswap V4 Pool (1% fee)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-purple-400">🔒</span><span className="text-white/60">Birth Certificate NFT</span></div>
+                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Birth Certificate NFT</span></div>
                     <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">5 LP Positions (P1-P5)</span></div>
                     <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Memory Storage (IPFS)</span></div>
                     <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Instant Tradability</span></div>
@@ -792,7 +791,7 @@ function CreateAgentFlow() {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl">🔵</span>
+                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#0052FF"/><path d="M14 5C9.02944 5 5 9.02944 5 14C5 18.9706 9.02944 23 14 23C18.9706 23 23 18.9706 23 14C23 9.02944 18.9706 5 14 5ZM14 8.5C16.9706 8.5 19.4 10.6 19.9 13.5H8.1C8.6 10.6 11.0294 8.5 14 8.5ZM8.1 14.5H19.9C19.4 17.4 16.9706 19.5 14 19.5C11.0294 19.5 8.6 17.4 8.1 14.5Z" fill="white"/></svg>
                       {formData.chain === 'Base' && <span className="text-[#4A90E2]">✓</span>}
                     </div>
                     <p className="text-lg font-bold text-white mb-1">Base</p>
@@ -808,7 +807,7 @@ function CreateAgentFlow() {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl">🧪</span>
+                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#627EEA"/><path d="M14 4L13.875 8.4375V18.5625L14 18.6875L20 15.0625L14 4Z" fill="white" fillOpacity="0.6"/><path d="M14 4L8 15.0625L14 18.6875V11.8125V4Z" fill="white"/><path d="M14 19.8125L13.9375 19.9375V24.125L14 24.3125L20 16.25L14 19.8125Z" fill="white" fillOpacity="0.6"/><path d="M14 24.3125V19.8125L8 16.25L14 24.3125Z" fill="white"/><path d="M14 18.6875L20 15.0625L14 11.8125V18.6875Z" fill="white" fillOpacity="0.2"/><path d="M8 15.0625L14 18.6875V11.8125L8 15.0625Z" fill="white" fillOpacity="0.6"/></svg>
                       {formData.chain === 'Sepolia' && <span className="text-[#9CA3AF]">✓</span>}
                     </div>
                     <p className="text-lg font-bold text-white mb-1">Sepolia</p>
@@ -817,7 +816,7 @@ function CreateAgentFlow() {
 
                   <div className="p-4 rounded-xl border-2 border-[#8B7FD4]/20 bg-[rgba(0, 0, 0, 0.5)]/30 opacity-50 cursor-not-allowed">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl">💎</span>
+                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#627EEA"/><path d="M14 4L13.875 8.4375V18.5625L14 18.6875L20 15.0625L14 4Z" fill="white" fillOpacity="0.6"/><path d="M14 4L8 15.0625L14 18.6875V11.8125V4Z" fill="white"/><path d="M14 19.8125L13.9375 19.9375V24.125L14 24.3125L20 16.25L14 19.8125Z" fill="white" fillOpacity="0.6"/><path d="M14 24.3125V19.8125L8 16.25L14 24.3125Z" fill="white"/><path d="M14 18.6875L20 15.0625L14 11.8125V18.6875Z" fill="white" fillOpacity="0.2"/><path d="M8 15.0625L14 18.6875V11.8125L8 15.0625Z" fill="white" fillOpacity="0.6"/></svg>
                       <span className="text-xs px-2 py-0.5 rounded bg-[#8B7FD4]/20 text-[#8B7FD4]">Soon</span>
                     </div>
                     <p className="text-lg font-bold text-[#8B7FD4]/60 mb-1">Ethereum</p>
@@ -826,7 +825,7 @@ function CreateAgentFlow() {
 
                   <div className="p-4 rounded-xl border-2 border-[#F0B90B]/20 bg-[rgba(0, 0, 0, 0.5)]/30 opacity-50 cursor-not-allowed">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl">🟡</span>
+                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#F0B90B"/><path d="M14 5L16.5 11H21.5L17.5 14.5L19 20L14 17L9 20L10.5 14.5L6.5 11H11.5L14 5Z" fill="white"/></svg>
                       <span className="text-xs px-2 py-0.5 rounded bg-[#F0B90B]/20 text-[#F0B90B]">Soon</span>
                     </div>
                     <p className="text-lg font-bold text-[#F0B90B]/60 mb-1">BSC</p>
@@ -856,7 +855,7 @@ function CreateAgentFlow() {
             {step === 4 && isConnected && creatorType === 'human' && (
               <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-4xl">🦞</span>
+                  <img src="/branding/lobster_icon_exact_size-rem_bk.png" alt="lobster" style={{width:40,height:40,objectFit:'contain',display:'inline-block',verticalAlign:'middle'}}/>
                   <div>
                     <h2 className="text-2xl font-black text-white">Agent Language</h2>
                     <p className="text-sm text-white/60">FUNLAN - The emoji-based agent identity system</p>
@@ -866,7 +865,7 @@ function CreateAgentFlow() {
                 {/* FUNLAN content stays the same... */}
                 <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20 mb-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-bold text-white">🎭 Identity Grid Preview</h3>
+                    <h3 className="text-sm font-bold text-white">Identity Grid Preview</h3>
                     <span className="text-xs px-2 py-1 rounded bg-[var(--mint-mid)]/20 text-[var(--mint-mid)]">Auto-generated</span>
                   </div>
                   <p className="text-xs text-white/60 mb-4">
@@ -912,7 +911,7 @@ function CreateAgentFlow() {
 
                 <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/30 mb-6">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-purple-400">🔒</span>
+                    <span className="text-purple-400"></span>
                     <span className="text-sm font-semibold text-purple-400">Soulbound Birth Certificate</span>
                   </div>
                   <p className="text-xs text-white/60">
@@ -937,7 +936,7 @@ function CreateAgentFlow() {
                     className="flex items-center gap-2 px-4 py-2 bg-[rgba(0, 0, 0, 0.5)] border border-[var(--mint-mid)]/40 rounded-lg hover:border-[rgba(46,230,214,0.6)] hover:bg-[var(--mint-mid)]/10 transition-all text-sm"
                     style={{ color: 'var(--mint-mid)' }}
                   >
-                    📚 <span style={{ color: 'var(--mint-mid)' }}>Learn More</span>
+                    <span style={{ color: 'var(--mint-mid)' }}>Learn More</span>
                   </a>
                 </div>
 
@@ -958,7 +957,7 @@ function CreateAgentFlow() {
                 <p className="text-sm text-[var(--mint-mid)] mb-6">Optional — can be added later via CLI or dashboard</p>
                 
                 <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20 mb-6">
-                  <h3 className="text-sm font-bold text-white mb-2">📜 What is Agent Memory?</h3>
+                  <h3 className="text-sm font-bold text-white mb-2">What is Agent Memory?</h3>
                   <p className="text-xs text-white/60 mb-3">
                     Memory files give your agent context, personality, and knowledge. They are cryptographically signed 
                     by the agent wallet and stored permanently on IPFS.
@@ -1012,7 +1011,7 @@ function CreateAgentFlow() {
                 )}
 
                 <div className="bg-[var(--mint-mid)]/5 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-6">
-                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">💡 Suggested memory files:</p>
+                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">Suggested memory files:</p>
                   <ul className="text-xs text-white/60 space-y-1">
                     <li>• <strong>README.md</strong> - Agent description and capabilities</li>
                     <li>• <strong>PERSONALITY.md</strong> - Behavior and communication style</li>
@@ -1046,8 +1045,8 @@ function CreateAgentFlow() {
                 {/* Fee Split (70% Creator Share from 1% LP fee) */}
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg">💸</span>
-                    <span className="text-sm font-semibold text-white">💸 Fee Split (70% Creator Share)</span>
+                    <span className="text-lg"></span>
+                    <span className="text-sm font-semibold text-white">Fee Split (70% Creator Share)</span>
                   </div>
                   <p className="text-xs text-white/60 mb-4">Split your 70% share of the 1% LP fee across up to 5 wallets. Leave empty to use connected wallet.</p>
                   
@@ -1096,7 +1095,7 @@ function CreateAgentFlow() {
 
                 {/* Cost Breakdown */}
                 <div className="mb-6 p-4 bg-[var(--mint-mid)]/5 rounded-xl border border-[var(--mint-mid)]/20">
-                  <p className="text-sm font-semibold text-white mb-3">💰 Cost Breakdown</p>
+                  <p className="text-sm font-semibold text-white mb-3">Cost Breakdown</p>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-white/60">Pool Bootstrap (min {MIN_BOOTSTRAP_ETH} ETH):</span>

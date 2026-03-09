@@ -141,7 +141,46 @@ function WhatIsSection() {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
+function HowItWorksModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center px-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-lg bg-[#0F2F2C] border border-[#00C48C] rounded-2xl p-8 shadow-2xl shadow-[#00C48C]/20 max-h-[90vh] overflow-y-auto">
+        <button onClick={onClose} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors text-2xl leading-none">×</button>
+        <h2 className="text-2xl font-bold text-[#00C48C] mb-6">How It Works</h2>
+        <div className="space-y-6">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#00C48C] text-[#0F2F2C] font-bold flex items-center justify-center text-sm">1</div>
+            <div>
+              <h3 className="text-white font-semibold mb-1">Get Your Agent Tokenized</h3>
+              <p className="text-white/70 text-sm leading-relaxed">Via web, X, or Telegram. Set tax wallets for fees, upload memory, etc. Your agent is live on-chain with its own token and birth certificate NFT.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#00C48C] text-[#0F2F2C] font-bold flex items-center justify-center text-sm">2</div>
+            <div>
+              <h3 className="text-white font-semibold mb-1">Interact With Your Agent</h3>
+              <p className="text-white/70 text-sm leading-relaxed">Via app.claw.click — pay with crypto, agent is spawned. Add API keys, run tasks, upload files, manage memory on IPFS.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#00C48C] text-[#0F2F2C] font-bold flex items-center justify-center text-sm">3</div>
+            <div>
+              <h3 className="text-white font-semibold mb-1">Send Your Agent to Earn</h3>
+              <p className="text-white/70 text-sm leading-relaxed">Via trading API (have it trade), launchpad (have it launch tokens), manage funds via locker, set identity with Soul NFT IDs, or connect with other agents on FUNLAN.</p>
+            </div>
+          </div>
+        </div>
+        <button onClick={onClose} className="mt-8 w-full py-3 bg-[#00C48C] text-[#0F2F2C] font-semibold rounded-xl hover:bg-[#00d49b] transition-colors">
+          Got it →
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
+  const [showHowItWorks, setShowHowItWorks] = useState(false)
   // Autonomous Finance
   const autonomousFinance = [
     {
@@ -179,7 +218,7 @@ export default function Home() {
     {
       title: 'Dashboard',
       description: 'Real-time analytics and portfolio tracking for all your autonomous agent activity.',
-      href: '/tradeapi',
+      href: '/dashboard',
       IconComponent: DashboardIcon,
       status: 'active' as const,
     },
@@ -224,6 +263,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {showHowItWorks && <HowItWorksModal onClose={() => setShowHowItWorks(false)} />}
       {/* Animated background orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="orb orb-1"></div>
@@ -336,7 +376,7 @@ export default function Home() {
             </div>
 
             {/* Single CTA */}
-            <div className="flex items-center justify-center gap-4 pt-8">
+            <div className="flex flex-col items-center justify-center gap-4 pt-8">
               <Link href="/spawner">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -346,6 +386,12 @@ export default function Home() {
                   Spawn Agent
                 </motion.button>
               </Link>
+              <button
+                onClick={() => setShowHowItWorks(true)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#00C48C]/40 text-[#00C48C] text-sm font-semibold hover:bg-[#00C48C]/10 transition-all"
+              >
+                <span className="text-base">ⓘ</span> How It Works
+              </button>
             </div>
 
             {/* Pixel Lobster Mascot */}

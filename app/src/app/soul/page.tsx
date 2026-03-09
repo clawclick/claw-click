@@ -282,7 +282,7 @@ export default function SoulPage() {
                 transition={{ delay: 0.4 }}
                 className="bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-white/60 text-transparent bg-clip-text">
+                <h2 className="text-2xl font-bold mb-6" style={{color:'#0F2F2C'}}>
                   How It Works
                 </h2>
                 <div className="space-y-6">

@@ -330,10 +330,10 @@ function NewSessionWizard() {
                       <button
                         key={n}
                         onClick={() => setNumGpus(n)}
-                        className={`px-3 py-1 rounded text-sm ${
+                        className={`px-6 py-2 rounded-full border-2 font-semibold text-sm transition-all duration-200 ${
                           numGpus === n
-                            ? 'bg-[var(--mint-mid)] text-[var(--text-primary)] font-bold'
-                            : 'agent-card text-[var(--text-secondary)] border border-[var(--glass-border)]'
+                            ? 'border-[#00C48C] bg-[#00C48C] text-white'
+                            : 'border-[#00C48C] text-[#0F2F2C] hover:bg-[#00C48C] hover:text-white'
                         }`}
                       >
                         {n}x
@@ -376,8 +376,8 @@ function NewSessionWizard() {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-sm font-bold text-[var(--text-primary)]">Minimum Resources</label>
-                    <span className="text-[10px] text-[var(--text-secondary)]/50 agent-card px-2 py-0.5 rounded">
-                      Higher values = fewer machines
+                    <span className="text-sm text-[#0F2F2C] italic opacity-75">
+                      Higher values = fewer machines.
                     </span>
                   </div>
                   <p className="text-xs text-[var(--text-secondary)]/50 mb-4">

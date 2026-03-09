@@ -161,12 +161,12 @@ export default function NFTidDetailPage({ params }: PageProps) {
   const rarityInfo = getRarityTier(rarityScore)
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-20 relative overflow-hidden">
+    <div className="min-h-screen text-white pt-32 pb-20 relative overflow-hidden" style={{background:'#0F2F2C'}}>
       {/* Animated background */}
       <div className="fixed inset-0 z-[1]">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8523D]/5 via-black to-[#FF8C4A]/5"></div>
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#E8523D]/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-[#FF8C4A]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00C48C]/5 via-[#0F2F2C] to-[#1a3f3c]/50"></div>
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#00C48C]/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-[#00C48C]/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
       {/* Content */}
@@ -175,7 +175,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
           {/* Back button */}
           <Link
             href="/soul"
-            className="inline-flex items-center gap-2 text-white/50 hover:text-[#E8523D] transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-white/50 hover:text-[#00C48C] transition-colors mb-8"
           >
             <span>←</span> Back to Soul NFTids
           </Link>
@@ -186,21 +186,21 @@ export default function NFTidDetailPage({ params }: PageProps) {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white/[0.02] border border-white/10 rounded-2xl p-8"
+              className="rounded-2xl p-8 border border-[#00C48C]/20" style={{background:'rgba(0,196,140,0.04)'}}
             >
-              <div className="w-full aspect-square rounded-lg overflow-hidden mb-6 flex items-center justify-center bg-black/30">
+              <div className="w-full aspect-square rounded-lg overflow-hidden mb-6 flex items-center justify-center" style={{background:'rgba(0,0,0,0.2)'}}>
                 {parsedTraits ? (
                   <NFTidCompositor traits={parsedTraits} size={500} className="w-full h-full" />
                 ) : (
-                  <div className="w-full h-full bg-black/50 flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-[#E8523D]/30 border-t-[#E8523D] rounded-full animate-spin"></div>
+                  <div className="w-full h-full flex items-center justify-center" style={{background:'rgba(0,0,0,0.3)'}}>
+                    <div className="w-8 h-8 border-2 border-[#00C48C]/30 border-t-[#00C48C] rounded-full animate-spin"></div>
                   </div>
                 )}
               </div>
 
               {/* Rarity Score */}
               {parsedTraits && (
-                <div className="mb-6 p-4 bg-gradient-to-br from-black/50 to-black/20 rounded-lg border border-white/10">
+                <div className="mb-6 p-4 rounded-lg border border-[#00C48C]/20" style={{background:'rgba(0,0,0,0.2)'}}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-white/50">Rarity Score</span>
                     <span className="text-2xl font-bold text-white">{rarityScore}</span>
@@ -225,7 +225,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
                           <span className="text-white/50 capitalize text-xs">{key}</span>
                           <span className="text-white text-sm">{traitName}</span>
                         </div>
-                        <span className="font-mono text-[#E8523D]">#{value}</span>
+                        <span className="font-mono text-[#00C48C]">#{value}</span>
                       </div>
                     )
                   })}
@@ -243,7 +243,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
               {/* Title */}
               <div>
                 <h1 className="text-4xl font-bold mb-2">
-                  <span className="bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] text-transparent bg-clip-text">
+                  <span className="bg-gradient-to-r from-[#00C48C] to-[#00d49b] text-transparent bg-clip-text">
                     NFTid #{tokenId}
                   </span>
                 </h1>
@@ -251,7 +251,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
               </div>
 
               {/* Owner Info */}
-              <div className="bg-white/[0.02] border border-white/10 rounded-xl p-6">
+              <div className="rounded-xl p-6 border border-[#00C48C]/20" style={{background:'rgba(0,196,140,0.04)'}}>
                 <h3 className="text-sm font-bold text-white/70 mb-3">Owner</h3>
                 <div className="flex items-center gap-3">
                   <div className="flex-1">
@@ -260,7 +260,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
                     </p>
                   </div>
                   {isOwner && (
-                    <span className="px-3 py-1 rounded-full bg-[#E8523D]/10 text-[#E8523D] text-xs font-semibold">
+                    <span className="px-3 py-1 rounded-full bg-[#00C48C]/10 text-[#00C48C] text-xs font-semibold">
                       YOU
                     </span>
                   )}
@@ -268,7 +268,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
               </div>
 
               {/* Token Linkage */}
-              <div className="bg-white/[0.02] border border-white/10 rounded-xl p-6">
+              <div className="rounded-xl p-6 border border-[#00C48C]/20" style={{background:'rgba(0,196,140,0.04)'}}>
                 <h3 className="text-sm font-bold text-white/70 mb-3">Token Linkage</h3>
                 
                 {isLinked && linkedToken && linkedToken !== '0x0000000000000000000000000000000000000000' ? (
@@ -284,13 +284,13 @@ export default function NFTidDetailPage({ params }: PageProps) {
                         <p className="text-xs text-white/50">Loading token data...</p>
                       </div>
                     ) : linkedTokenData ? (
-                      <div className="p-4 bg-black/30 rounded-lg border border-white/5 space-y-3">
+                      <div className="p-4 rounded-lg space-y-3" style={{background:'rgba(0,0,0,0.2)', border:'1px solid rgba(0,196,140,0.1)'}}>
                         <div>
                           <p className="text-xs text-white/50 mb-1">Token Name</p>
                           <p className="text-base font-bold text-white">{linkedTokenData.name}</p>
                           <p className="text-xs text-white/40">${linkedTokenData.symbol}</p>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
+                        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[#00C48C]/10">
                           <div>
                             <p className="text-xs text-white/50 mb-1">Price</p>
                             <p className="text-sm text-white">
@@ -308,24 +308,25 @@ export default function NFTidDetailPage({ params }: PageProps) {
                             </p>
                           </div>
                         </div>
-                        <div className="pt-3 border-t border-white/5">
+                        <div className="pt-3 border-t border-[#00C48C]/10">
                           <p className="text-xs text-white/50 mb-1">Token Address</p>
                           <p className="font-mono text-xs text-white/70 break-all">{linkedToken as string}</p>
                         </div>
                         <Link
                           href={`/spawner/agent/${linkedToken}`}
-                          className="block w-full px-4 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg text-center text-white font-semibold hover:shadow-lg hover:shadow-[#E8523D]/40 transition-all"
+                          className="block w-full px-4 py-3 rounded-lg text-center text-[#0F2F2C] font-semibold hover:opacity-90 transition-all"
+                          style={{background:'#00C48C'}}
                         >
                           View Agent Page →
                         </Link>
                       </div>
                     ) : (
-                      <div className="p-4 bg-black/30 rounded-lg">
+                      <div className="p-4 rounded-lg" style={{background:'rgba(0,0,0,0.2)'}}>
                         <p className="text-xs text-white/50 mb-2">Token Address</p>
                         <p className="font-mono text-sm text-white break-all mb-3">{linkedToken as string}</p>
                         <Link
                           href={`/spawner/agent/${linkedToken}`}
-                          className="block w-full px-4 py-3 bg-black/50 border border-white/10 hover:border-[#E8523D]/50 rounded-lg text-center text-white transition-all"
+                          className="block w-full px-4 py-3 rounded-lg text-center text-white transition-all border border-[#00C48C]/30 hover:border-[#00C48C] hover:bg-[#00C48C]/10"
                         >
                           View Agent Page →
                         </Link>
@@ -354,7 +355,7 @@ export default function NFTidDetailPage({ params }: PageProps) {
                         {!showLinkForm ? (
                           <button
                             onClick={() => setShowLinkForm(true)}
-                            className="w-full px-4 py-3 bg-[#E8523D]/10 hover:bg-[#E8523D]/20 border border-[#E8523D]/30 text-[#E8523D] rounded-lg transition-all"
+                            className="w-full px-4 py-3 rounded-lg transition-all border border-[#00C48C]/30 text-[#00C48C] hover:bg-[#00C48C]/10"
                           >
                             Link to Token
                           </button>
@@ -365,13 +366,15 @@ export default function NFTidDetailPage({ params }: PageProps) {
                               placeholder="Paste token address (0x...)"
                               value={tokenAddressInput}
                               onChange={(e) => setTokenAddressInput(e.target.value)}
-                              className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#E8523D]/50 font-mono"
+                              className="w-full px-4 py-3 rounded-lg text-white text-sm font-mono focus:outline-none"
+                              style={{background:'rgba(0,0,0,0.3)', border:'1px solid rgba(0,196,140,0.3)'}}
                             />
                             <div className="flex gap-2">
                               <button
                                 onClick={handleLink}
                                 disabled={isLinking || !tokenAddressInput}
-                                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#E8523D] to-[#FF8C4A] rounded-lg font-semibold hover:shadow-xl hover:shadow-[#E8523D]/40 transition-all disabled:opacity-50"
+                                className="flex-1 px-4 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 text-[#0F2F2C]"
+                                style={{background:'#00C48C'}}
                               >
                                 {isLinking ? 'Linking...' : 'Confirm Link'}
                               </button>

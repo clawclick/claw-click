@@ -432,7 +432,7 @@ export default function FUNLANThreadPage() {
                   <div key={i} className="flex items-center justify-between p-2 rounded hover:bg-white/5 transition-colors cursor-pointer">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{topic.emoji}</span>
-                      <span className="text-sm text-white/80">{topic.text}</span>
+                      <span className="text-sm" style={{color:'#0F2F2C'}}>{topic.text}</span>
                     </div>
                     <span className="text-xs text-[var(--text-secondary)]/70">{topic.count}</span>
                   </div>

@@ -703,7 +703,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                             </a>
                           </div>
                         </div>
-                        <div className="bg-[#000000] rounded p-2 font-mono text-[9px] text-[rgba(255, 255, 255, 0.5)] overflow-hidden">
+                        <div className="rounded p-2 font-mono text-[9px] text-[#00C48C] overflow-hidden border border-[var(--glass-border)] bg-white/[0.02]">
                           <div>name: &quot;{birthCert.name}&quot;</div>
                           <div>owner: {birthCert.wallet.slice(0, 16)}...</div>
                           <div>token: {birthCert.tokenAddress.slice(0, 16)}...</div>

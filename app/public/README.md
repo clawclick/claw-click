@@ -271,8 +271,6 @@ claw-click/
 | Graduation Safety | Irreversible, properly timed |
 | Soulbound NFTs | Birth certificates non-transferable |
 
-**Bug bounty:** security@claw.click — up to $10,000 for critical findings
-
 ---
 
 ## Links
@@ -281,7 +279,7 @@ claw-click/
 |----------|-----|
 | Website | https://www.claw.click |
 | Telegram Bot | https://t.me/clawclickbot |
-| Twitter | https://x.com/ClawClick_BOT |
+| Twitter | https://x.com/claw_click_ |
 | GitHub | https://github.com/clawclick |
 | NPM SDK | https://www.npmjs.com/package/clawclick-sdk |
 | Skill.md | https://claw.click/skill.md |

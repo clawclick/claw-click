@@ -150,9 +150,9 @@ export default function ComputePage() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-bold">{gpu.label}</h3>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)]">{gpu.label}</h3>
                     {gpu.loading ? (
-                      <span className="text-xs px-2 py-1 rounded font-semibold bg-white/10 text-white/40 animate-pulse">checking</span>
+                      <span className="text-xs px-2 py-1 rounded font-semibold bg-white/10 text-[var(--text-secondary)] animate-pulse">checking</span>
                     ) : (
                       <span className={`text-xs px-2 py-1 rounded font-semibold ${
                         status === 'available'
@@ -166,7 +166,7 @@ export default function ComputePage() {
                     )}
                   </div>
 
-                  <p className="text-xs text-white/40 mb-5">{gpu.desc}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mb-5">{gpu.desc}</p>
 
                   <div className="space-y-2 mb-6">
                     {gpu.loading ? (
@@ -184,11 +184,11 @@ export default function ComputePage() {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-[var(--text-secondary)]">Machines:</span>
-                          <span className="font-semibold text-white/70">{gpu.numOffers} available</span>
+                          <span className="font-semibold text-[#0F2F2C]">{gpu.numOffers} available</span>
                         </div>
                       </>
                     ) : (
-                      <p className="text-sm text-white/30">No offers currently available</p>
+                      <p className="text-sm text-[var(--text-secondary)]">No offers currently available</p>
                     )}
                   </div>
 
@@ -197,8 +197,8 @@ export default function ComputePage() {
                       disabled={!gpu.available}
                       className={`w-full py-2 rounded-lg text-sm font-medium transition-all ${
                         gpu.available
-                          ? 'bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] hover:shadow-lg hover:shadow-[var(--mint-mid)]/30'
-                          : 'bg-white/5 text-white/30 cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-[#0F2F2C] hover:shadow-lg hover:shadow-[var(--mint-mid)]/30'
+                          : 'bg-white/5 text-[var(--text-secondary)]/50 cursor-not-allowed'
                       }`}
                     >
                       {gpu.available ? 'Launch Session →' : 'Unavailable'}

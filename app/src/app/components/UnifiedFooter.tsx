@@ -47,7 +47,7 @@ export default function UnifiedFooter() {
             <h4 className="font-medium mb-3 text-[var(--text-primary)] text-sm">Community</h4>
             <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
               <li><Link href="https://github.com/clawclick" target="_blank" className="hover:text-[var(--mint-dark)] transition-colors">GitHub</Link></li>
-              <li><Link href="https://x.com/ClawClick_BOT" target="_blank" className="hover:text-[var(--mint-dark)] transition-colors">X / Twitter</Link></li>
+              <li><Link href="https://x.com/claw_click_" target="_blank" className="hover:text-[var(--mint-dark)] transition-colors">X / Twitter</Link></li>
             </ul>
           </div>
         </div>
