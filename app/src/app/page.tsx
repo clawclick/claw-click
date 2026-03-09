@@ -160,7 +160,19 @@ export default function Home() {
             >
               ClawClick Bot
             </a>
-            <ConnectButton />
+            <ConnectButton.Custom>
+              {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+                const connected = mounted && account && chain
+                return (
+                  <button
+                    onClick={connected ? openAccountModal : openConnectModal}
+                    className="inverse-electric-button px-4 py-2 rounded-lg font-semibold text-sm"
+                  >
+                    {connected ? account.displayName : 'Connect Wallet'}
+                  </button>
+                )
+              }}
+            </ConnectButton.Custom>
           </nav>
         </div>
       </header>
@@ -188,7 +200,7 @@ export default function Home() {
                 />
               </div>
               
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-wider autonomous-text">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-widest framework-text mx-auto">
                 Framework For Digital Entities
               </h2>
               

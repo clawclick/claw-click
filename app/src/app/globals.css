@@ -583,3 +583,109 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   animation: electricPulse 1s ease-in-out infinite;
 }
 
+/* Framework For Digital Entities - same family as AUTONOMOUS but smaller, strict teal palette */
+.framework-text {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  /* Strict teal/mint — NO blue bleed, warm teal only */
+  background: linear-gradient(
+    135deg,
+    #1FAFA3 0%,
+    #45C7B8 40%,
+    #1FAFA3 70%,
+    #45C7B8 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  animation: pixelShimmer 6s ease-in-out infinite 1s;
+  filter: drop-shadow(0 0 12px rgba(31, 175, 163, 0.55));
+}
+
+.framework-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(31, 175, 163, 0.12) 2px,
+    rgba(31, 175, 163, 0.12) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: overlay;
+}
+
+.framework-text::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #1FAFA3, transparent);
+  animation: scanline 4s linear infinite 0.5s;
+  opacity: 0.5;
+  z-index: 3;
+}
+
+/* Inverse Electric Button - transparent fill, teal border + text */
+@keyframes inverseElectricPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 5px rgba(31, 175, 163, 0.4),
+      0 0 12px rgba(69, 199, 184, 0.2),
+      inset 0 0 8px rgba(31, 175, 163, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(31, 175, 163, 0.7),
+      0 0 22px rgba(69, 199, 184, 0.35),
+      inset 0 0 14px rgba(31, 175, 163, 0.1);
+  }
+}
+
+.inverse-electric-button {
+  background: transparent;
+  color: var(--mint-dark);
+  font-weight: 600;
+  position: relative;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  animation: inverseElectricPulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.inverse-electric-button::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    90deg,
+    var(--mint-dark),
+    var(--mint-mid),
+    var(--mint-light),
+    var(--mint-mid),
+    var(--mint-dark)
+  );
+  background-size: 200% 100%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: borderShimmer 3s linear infinite;
+}
+
+.inverse-electric-button:hover {
+  background: rgba(31, 175, 163, 0.08);
+  transform: translateY(-2px);
+  color: var(--mint-mid);
+}
+

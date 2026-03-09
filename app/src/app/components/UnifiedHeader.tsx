@@ -5,6 +5,24 @@ import Link from 'next/link'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useState } from 'react'
 
+function InverseConnectButton() {
+  return (
+    <ConnectButton.Custom>
+      {({ account, chain, openAccountModal, openConnectModal, mounted }) => {
+        const connected = mounted && account && chain
+        return (
+          <button
+            onClick={connected ? openAccountModal : openConnectModal}
+            className="inverse-electric-button px-4 py-2 rounded-lg font-semibold text-sm"
+          >
+            {connected ? account.displayName : 'Connect Wallet'}
+          </button>
+        )
+      }}
+    </ConnectButton.Custom>
+  )
+}
+
 export default function UnifiedHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -50,7 +68,7 @@ export default function UnifiedHeader() {
           >
             ClawClick Bot
           </a>
-          <ConnectButton />
+          <InverseConnectButton />
         </nav>
 
         {/* Mobile Menu Button */}
@@ -72,38 +90,23 @@ export default function UnifiedHeader() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-[var(--glass-border)] glass">
           <div className="px-4 py-4 space-y-3">
-            <Link
-              href="/docs"
-              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
+            <Link href="/docs" className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2" onClick={() => setMobileMenuOpen(false)}>
               Docs
             </Link>
-            <Link
-              href="/skill"
-              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
+            <Link href="/skill" className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2" onClick={() => setMobileMenuOpen(false)}>
               Skill.md
             </Link>
-            <Link
-              href="/readme"
-              className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
+            <Link href="/readme" className="block text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors py-2" onClick={() => setMobileMenuOpen(false)}>
               README
             </Link>
-            <a 
-              href="https://t.me/clawclickbot" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <a href="https://t.me/clawclickbot" target="_blank" rel="noopener noreferrer"
               className="block electric-button px-4 py-2 rounded-lg font-semibold text-sm text-center"
               onClick={() => setMobileMenuOpen(false)}
             >
               ClawClick Bot
             </a>
             <div className="pt-3">
-              <ConnectButton />
+              <InverseConnectButton />
             </div>
           </div>
         </div>
