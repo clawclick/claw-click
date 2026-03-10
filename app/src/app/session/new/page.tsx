@@ -250,7 +250,6 @@ function NewSessionWizard() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-semibold text-[var(--text-primary)]">claw.click</span>
-              <span className="px-2 py-0.5 text-[9px] font-medium bg-white/5 text-[var(--text-secondary)]/70 border border-[var(--glass-border)] rounded">BETA</span>
             </div>
           </Link>
           <ConnectButton />

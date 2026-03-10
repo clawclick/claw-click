@@ -24,7 +24,6 @@ export default function TermsPage() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold gradient-text">Claw.Click</span>
-              <span className="px-2 py-0.5 text-xs font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded">BETA</span>
             </div>
           </Link>
         </div>
@@ -169,7 +168,7 @@ export default function TermsPage() {
                 <strong className="text-white">THIRD-PARTY SERVICES:</strong> The Service integrates with third-party protocols including Uniswap and Alchemy. We are not responsible for the operation, security, or availability of these third-party services.
               </p>
               <p className="mb-4">
-                <strong className="text-white">BETA STATUS:</strong> The platform is currently in BETA. Features may change, and unexpected issues may occur.
+                <strong className="text-white">DEVELOPMENT STATUS:</strong> The platform is actively being developed. Features may change, and unexpected issues may occur.
               </p>
             </section>
 

@@ -493,9 +493,6 @@ function CreateAgentFlow() {
                 <span className="text-xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                   claw.click
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-mid)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">
-                  BETA
-                </span>
               </div>
               <span className="text-xs" style={{color:'#0F2F2C'}}>Agent Infrastructure</span>
             </div>

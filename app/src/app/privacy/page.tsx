@@ -17,7 +17,6 @@ export default function Privacy() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold gradient-text">Claw.Click</span>
-              <span className="px-2 py-0.5 text-xs font-bold bg-[#E8523D]/20 text-[#FF8C4A] border border-[#E8523D]/30 rounded">BETA</span>
             </div>
           </Link>
         </div>

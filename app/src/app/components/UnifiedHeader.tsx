@@ -284,7 +284,6 @@ export default function UnifiedHeader() {
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-3xl font-bold gradient-text leading-none">claw.click</span>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-light)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">BETA</span>
               </div>
               <span className="text-sm text-[var(--text-secondary)] font-medium hidden sm:block">Autonomous Framework</span>
             </div>
