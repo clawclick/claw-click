@@ -463,7 +463,7 @@ function NewSessionWizard() {
                     className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)] hover:text-[var(--mint-mid)] transition-colors"
                   >
                     <span>{showApiKeys ? '▼' : '▶'}</span>
-                    LLM API Keys (Optional)
+                    LLM API Keys (Recommended)
                   </button>
                   <p className="text-xs text-[var(--text-secondary)] mt-1 mb-3">
                     Provide API keys for the agent to use GPT-4, Claude, etc. Keys are encrypted and only available inside the session.
@@ -472,22 +472,22 @@ function NewSessionWizard() {
                   {showApiKeys && (
                     <div className="space-y-3 p-4 rounded-lg bg-white/[0.02] border border-[var(--glass-border)]">
                       <div>
+                        <label className="block text-xs text-[var(--text-secondary)] mb-1">Anthropic API Key (recommended)</label>
+                        <input
+                          type="password"
+                          value={anthropicKey}
+                          onChange={(e) => setAnthropicKey(e.target.value)}
+                          placeholder="sk-ant-..."
+                          className="w-full px-3 py-2 bg-black border border-[var(--glass-border)] rounded text-[var(--text-primary)] text-sm placeholder-white/20 focus:border-[var(--mint-mid)] focus:outline-none"
+                        />
+                      </div>
+                      <div>
                         <label className="block text-xs text-[var(--text-secondary)] mb-1">OpenAI API Key</label>
                         <input
                           type="password"
                           value={openaiKey}
                           onChange={(e) => setOpenaiKey(e.target.value)}
                           placeholder="sk-..."
-                          className="w-full px-3 py-2 bg-black border border-[var(--glass-border)] rounded text-[var(--text-primary)] text-sm placeholder-white/20 focus:border-[var(--mint-mid)] focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-[var(--text-secondary)] mb-1">Anthropic API Key</label>
-                        <input
-                          type="password"
-                          value={anthropicKey}
-                          onChange={(e) => setAnthropicKey(e.target.value)}
-                          placeholder="sk-ant-..."
                           className="w-full px-3 py-2 bg-black border border-[var(--glass-border)] rounded text-[var(--text-primary)] text-sm placeholder-white/20 focus:border-[var(--mint-mid)] focus:outline-none"
                         />
                       </div>

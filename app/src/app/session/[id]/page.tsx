@@ -1260,8 +1260,8 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                     <h4 className="text-sm font-bold text-white mb-3 px-1">API INTEGRATIONS</h4>
                     <div className="space-y-2">
                       {[
+                        { key: 'ANTHROPIC_API_KEY', name: 'Anthropic API (recommended)', desc: 'Claude models' },
                         { key: 'OPENAI_API_KEY', name: 'OpenAI API', desc: 'GPT-4, Vision, TTS' },
-                        { key: 'ANTHROPIC_API_KEY', name: 'Anthropic API', desc: 'Claude models' },
                         { key: 'COINGECKO_API_KEY', name: 'CoinGecko API', desc: 'Crypto data & prices' },
                         { key: 'TWITTER_API_KEY', name: 'Twitter API', desc: 'Post & monitor' },
                         { key: 'ALCHEMY_API_KEY', name: 'Alchemy RPC', desc: 'Blockchain queries' },
