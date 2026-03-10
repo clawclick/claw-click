@@ -319,7 +319,7 @@ export default function Home() {
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide leading-tight">
                 <span className="gradient-text">Framework For Digital Entities</span>
               </h1>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-[var(--text-secondary)] font-medium italic max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-[var(--text-secondary)] font-medium handwriting max-w-2xl mx-auto">
                 Spawn an agent that earns for you today
               </p>
             </div>
@@ -470,7 +470,7 @@ export default function Home() {
                 />
                 <span className="text-base md:text-lg font-bold gradient-text">Claw.Click</span>
               </div>
-              <p className="text-xs md:text-sm text-[var(--text-secondary)]">
+              <p className="text-xs md:text-sm text-[var(--text-secondary)] handwriting">
                 AUTONOMOUS Framework For Digital Entities
               </p>
             </div>
@@ -545,7 +545,7 @@ function ProductCard({ product, index }: { product: any, index: number }) {
         </h3>
         
         {/* Description */}
-        <p className="text-sm md:text-base text-[var(--text-secondary)] leading-relaxed mb-3 md:mb-4">
+        <p className="text-sm md:text-base text-[var(--text-secondary)] leading-relaxed mb-3 md:mb-4 handwriting">
           {product.description}
         </p>
         

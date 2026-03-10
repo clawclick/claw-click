@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono } from "next/font/google";
+import { Inter, Space_Mono, Caveat } from "next/font/google";
 import { Providers } from "./providers";
 import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
@@ -15,6 +15,13 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
   display: 'swap',
   variable: '--font-space-mono',
+});
+
+const caveat = Caveat({ 
+  weight: ['400', '500', '600', '700'],
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-caveat',
 });
 
 export const metadata: Metadata = {
@@ -106,7 +113,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${spaceMono.variable} ${caveat.variable}`}>
       <head>
         <meta name="theme-color" content="#45C7B8" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

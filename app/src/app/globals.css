@@ -915,3 +915,10 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   }
 }
 
+/* Handwriting Script Font */
+.handwriting {
+  font-family: var(--font-caveat), cursive;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+

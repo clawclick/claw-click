@@ -78,7 +78,7 @@ export function MobileHeader() {
                   BETA
                 </span>
               </div>
-              <span className="text-sm text-[var(--text-secondary)] font-medium">Autonomous Framework</span>
+              <span className="text-sm text-[var(--text-secondary)] font-medium handwriting">Autonomous Framework</span>
             </div>
           </Link>
 
@@ -87,7 +87,7 @@ export function MobileHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors"
+                className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting"
               >
                 {item.label}
               </Link>
@@ -132,7 +132,7 @@ export function MobileHeader() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors"
+                    className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting"
                   >
                     {item.label}
                   </Link>
