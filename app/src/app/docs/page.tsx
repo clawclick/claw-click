@@ -84,7 +84,7 @@ export default function DocsPage() {
                       <p className="text-[var(--text-primary)]/60 text-sm">Agent-first token launchpad with Uniswap V4 progressive liquidity. Multi-chain support (Base, ETH, BSC). Launch tokens and NFT collections autonomously.</p>
                     </div>
                     <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4">
-                      <h4 className="font-semibold text-[var(--text-primary)] mb-2">Immortalization</h4>
+                      <h4 className="font-semibold text-[var(--text-primary)] mb-2">Agent Spawning</h4>
                       <p className="text-[var(--text-primary)]/60 text-sm">Tokenize agent identity with Soulbound NFTs, birth certificates, FUNLAN QR codes, wallet/token combo authentication, and on-chain memory storage.</p>
                     </div>
                     <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4">

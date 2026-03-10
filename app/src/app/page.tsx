@@ -324,13 +324,13 @@ export default function Home() {
               </p>
             </div>
 
-            {/* CTA Buttons - Mobile Responsive */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full max-w-md sm:max-w-none">
-              <Link href="/spawner" className="w-full sm:w-auto">
+            {/* CTA Buttons - Mobile Responsive & Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 w-full">
+              <Link href="/spawner">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="spawn-agent-btn w-full sm:w-auto text-base md:text-lg px-6 md:px-10 py-4 md:py-5 flex items-center justify-center gap-3"
+                  className="spawn-agent-btn text-base md:text-lg px-6 md:px-10 py-4 md:py-5 flex items-center justify-center gap-3"
                 >
                   <Image src="/branding/lobster_icon_exact_size-rem_bk.png" alt="" width={24} height={24} className="object-contain lobster-heartbeat" />
                   Spawn Agent
@@ -338,7 +338,7 @@ export default function Home() {
               </Link>
               <button
                 onClick={() => setShowHowItWorks(true)}
-                className="flex items-center gap-3 text-[var(--mint-dark)] text-base md:text-lg font-bold hover:text-[var(--mint-mid)] transition-all"
+                className="flex items-center justify-center gap-3 text-[var(--mint-dark)] text-base md:text-lg font-bold hover:text-[var(--mint-mid)] transition-all"
               >
                 <span className="text-xl md:text-2xl">ⓘ</span> How It Works
               </button>
