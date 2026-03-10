@@ -350,58 +350,57 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative z-10 pt-40 pb-20 px-4">
+      {/* Hero Section - New Clean Layout */}
+      <section className="relative z-10 pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex flex-col items-center gap-0"
+            className="flex flex-col items-center text-center space-y-12"
           >
-            {/* Tagline — above SVG, centred */}
-            <div className="text-center mb-3">
-              <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-[0.3em] framework-text uppercase">
-                Framework For Digital Entities
-              </h2>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)] italic font-light mt-1" style={{letterSpacing:'0.04em'}}>
-                Spawn an agent that earns for you TODAY
-              </p>
-            </div>
-
-            {/* Hero row: SVG left (75% width) + buttons right, buttons overlap SVG by ~10% */}
-            <div className="relative flex items-center justify-center w-full">
-              {/* SVG — left side, 75% of viewport */}
-              <div className="flex-shrink-0" style={{width:'min(72vw, 975px)'}}>
+            {/* SVG Animation - Full Width, Centered */}
+            <div className="w-full flex justify-center mb-8">
+              <div className="max-w-4xl w-full">
                 <Image
                   src="/branding/claw_logo_spawn_animation.svg"
                   alt="Claw.Click"
                   width={975}
                   height={188}
-                  className="w-full h-auto block"
+                  className="w-full h-auto"
                   priority
                 />
               </div>
+            </div>
 
-              {/* Buttons — right side, overlapping SVG edge by ~10%, higher z-index */}
-              <div className="relative z-10 flex flex-col gap-4 flex-shrink-0" style={{marginLeft:'-10%'}}>
-                <Link href="/spawner">
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
-                    className="spawn-agent-btn text-base px-8 py-4 flex items-center gap-3 whitespace-nowrap"
-                  >
-                    <Image src="/branding/lobster_icon_exact_size-rem_bk.png" alt="" width={24} height={24} className="object-contain lobster-heartbeat" />
-                    Spawn Agent
-                  </motion.button>
-                </Link>
-                <button
-                  onClick={() => setShowHowItWorks(true)}
-                  className="flex items-center gap-2 text-[var(--mint-dark)] text-sm font-bold hover:text-[var(--mint-mid)] transition-all whitespace-nowrap justify-center"
+            {/* Main Heading and Subheading */}
+            <div className="text-center space-y-4">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wide">
+                <span className="gradient-text">Framework For Digital Entities</span>
+              </h1>
+              <p className="text-xl sm:text-2xl text-[var(--text-secondary)] font-medium">
+                Spawn an agent that earns for you TODAY
+              </p>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <Link href="/spawner">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="spawn-agent-btn text-lg px-10 py-5 flex items-center gap-3 whitespace-nowrap"
                 >
-                  <span className="text-base">ⓘ</span> How It Works
-                </button>
-              </div>
+                  <Image src="/branding/lobster_icon_exact_size-rem_bk.png" alt="" width={28} height={28} className="object-contain lobster-heartbeat" />
+                  Spawn Agent
+                </motion.button>
+              </Link>
+              <button
+                onClick={() => setShowHowItWorks(true)}
+                className="flex items-center gap-3 text-[var(--mint-dark)] text-lg font-bold hover:text-[var(--mint-mid)] transition-all whitespace-nowrap"
+              >
+                <span className="text-2xl">ⓘ</span> How It Works
+              </button>
             </div>
           </motion.div>
         </div>
