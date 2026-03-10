@@ -652,7 +652,7 @@ function CreateAgentFlow() {
                 <div className="text-center mb-8">
                   <div className="text-6xl mb-4">🤖</div>
                   <h2 className="text-2xl font-black text-white mb-2">Spawn Your Agent</h2>
-                  <p className="text-white/60 handwriting">Create an autonomous agent with tokenized identity and on-chain spawning via Uniswap V4</p>
+                  <p className="text-white/60">Create an autonomous agent with tokenized identity and on-chain spawning</p>
                 </div>
 
                 {/* Starting MCAP Selector */}
@@ -726,13 +726,13 @@ function CreateAgentFlow() {
                 <div className="p-4 rounded-lg border border-[rgba(69,199,184,0.2)] mb-6" style={{background:"rgba(46,230,214,0.06)"}}>
                   <p className="text-sm text-[var(--mint-mid)] font-semibold mb-2">🤖 Agent Spawning</p>
                   <p className="text-sm text-white/70 handwriting">
-                    Your agent gets its own token that can be traded immediately. You earn 70% of all trading fees.
+                    Your agent gets its own token that can be traded immediately
                   </p>
                 </div>
 
                 {/* Features - Simplified */}
                 <div className="mb-6">
-                  <p className="text-sm text-white/80 font-medium mb-4 handwriting">Your agent gets:</p>
+                  <p className="text-sm text-white/80 font-medium mb-4">Your agent gets:</p>
                   <div className="grid grid-cols-1 gap-3 text-sm">
                     <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Tradeable Token</span></div>
                     <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Birth Certificate NFT</span></div>

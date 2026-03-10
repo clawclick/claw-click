@@ -545,7 +545,7 @@ function ProductCard({ product, index }: { product: any, index: number }) {
         </h3>
         
         {/* Description */}
-        <p className="text-sm md:text-base text-[var(--text-secondary)] leading-relaxed mb-3 md:mb-4 handwriting">
+        <p className="text-sm md:text-base text-[var(--text-secondary)] leading-relaxed mb-3 md:mb-4">
           {product.description}
         </p>
         
