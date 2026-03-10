@@ -363,7 +363,7 @@ export default function Home() {
             <div className="w-full flex justify-center mb-8">
               <div className="max-w-4xl w-full">
                 <Image
-                  src="/branding/claw_logo_spawn_animation.svg"
+                  src="/branding/claw_logo_spawn.svg"
                   alt="Claw.Click"
                   width={975}
                   height={188}
@@ -378,8 +378,8 @@ export default function Home() {
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wide">
                 <span className="gradient-text">Framework For Digital Entities</span>
               </h1>
-              <p className="text-xl sm:text-2xl text-[var(--text-secondary)] font-medium">
-                Spawn an agent that earns for you TODAY
+              <p className="text-xl sm:text-2xl text-[var(--text-secondary)] font-medium italic">
+                Spawn an agent that earns for you today
               </p>
             </div>
 
