@@ -167,9 +167,9 @@ function HowItWorksModal({ onClose }: { onClose: () => void }) {
                 {step.links&&step.links.length>0&&(
                   <div className="flex flex-wrap gap-2 mt-2">
                     {step.links.map((lk:any,j:number)=>lk.href?(
-                      lk.ext?<a key={j} href={lk.href} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1 rounded-full font-semibold" style={{background:`${step.color}22`,border:`1px solid ${step.color}60`,color:step.color}}>{lk.label}</a>
-                      :<Link key={j} href={lk.href} onClick={onClose} className="text-xs px-3 py-1 rounded-full font-semibold" style={{background:`${step.color}22`,border:`1px solid ${step.color}60`,color:step.color}}>{lk.label}</Link>
-                    ):<span key={j} className="text-xs px-3 py-1 rounded-full text-white/30" style={{border:'1px solid rgba(255,255,255,0.1)'}}>{lk.label}</span>)}
+                      lk.ext?<a key={j} href={lk.href} target="_blank" rel="noopener noreferrer" className="inline-block text-xs px-3 py-1 rounded-full font-semibold whitespace-nowrap" style={{background:`${step.color}22`,border:`1px solid ${step.color}60`,color:step.color}}>{lk.label}</a>
+                      :<Link key={j} href={lk.href} onClick={onClose} className="inline-block text-xs px-3 py-1 rounded-full font-semibold whitespace-nowrap" style={{background:`${step.color}22`,border:`1px solid ${step.color}60`,color:step.color}}>{lk.label}</Link>
+                    ):<span key={j} className="inline-block text-xs px-3 py-1 rounded-full text-white/30 whitespace-nowrap" style={{border:'1px solid rgba(255,255,255,0.1)'}}>{lk.label}</span>)}
                   </div>
                 )}
               </div>
@@ -545,7 +545,7 @@ function ProductCard({ product, index }: { product: any, index: number }) {
         </h3>
         
         {/* Description */}
-        <p className="text-sm md:text-base text-[var(--text-secondary)] leading-relaxed mb-3 md:mb-4">
+        <p className="text-sm md:text-base text-[var(--text-secondary)] leading-relaxed mb-3 md:mb-4 handwriting">
           {product.description}
         </p>
         

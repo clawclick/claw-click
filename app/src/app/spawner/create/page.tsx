@@ -494,7 +494,7 @@ function CreateAgentFlow() {
                   claw.click
                 </span>
               </div>
-              <span className="text-xs" style={{color:'#0F2F2C'}}>Agent Infrastructure</span>
+              <span className="text-xs handwriting" style={{color:'#0F2F2C'}}>Agent Infrastructure</span>
             </div>
           </Link>
           <ConnectButton />

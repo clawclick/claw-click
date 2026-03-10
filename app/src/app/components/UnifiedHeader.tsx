@@ -285,19 +285,19 @@ export default function UnifiedHeader() {
               <div className="flex items-center gap-2">
                 <span className="text-3xl font-bold gradient-text leading-none">claw.click</span>
               </div>
-              <span className="text-sm text-[var(--text-secondary)] font-medium hidden sm:block">Autonomous Framework</span>
+              <span className="text-sm text-[var(--text-secondary)] font-medium hidden sm:block handwriting">Autonomous Framework</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/docs" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
+            <Link href="/docs" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
               Docs
             </Link>
-            <Link href="/skill" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
+            <Link href="/skill" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
               Skill.md
             </Link>
-            <Link href="/readme" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors">
+            <Link href="/readme" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
               README
             </Link>
             {/* How It Works info button */}

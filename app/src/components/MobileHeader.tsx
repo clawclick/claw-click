@@ -84,7 +84,7 @@ export function MobileHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-base text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors"
+                className="text-base text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting"
               >
                 {item.label}
               </Link>
@@ -129,7 +129,7 @@ export function MobileHeader() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="block px-4 py-2 text-base text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors"
+                    className="block px-4 py-2 text-base text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting"
                   >
                     {item.label}
                   </Link>
