@@ -809,10 +809,109 @@ input[type="range"].slider-thumb::-moz-range-thumb:hover {
   transform-origin: left center;
 }
 
-/* Mobile bottom nav safe spacing — prevent content hiding behind bottom bar */
+/* Mobile Responsive Improvements */
 @media (max-width: 767px) {
+  /* Safe area padding */
   body {
     padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  /* Prevent horizontal scroll on mobile */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* Mobile typography */
+  .gradient-text {
+    line-height: 1.1;
+  }
+
+  /* Mobile orbs - reduce size and blur */
+  .orb {
+    width: 200px !important;
+    height: 200px !important;
+    filter: blur(50px);
+  }
+
+  /* Mobile glass components - less blur for performance */
+  .glass {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Mobile button improvements */
+  .spawn-agent-btn {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    min-height: 48px;
+    touch-action: manipulation;
+  }
+
+  .spawn-agent-btn::after {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Mobile agent cards */
+  .agent-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  /* Mobile network particles - hide some for performance */
+  .network-particle:nth-child(even) {
+    display: none;
+  }
+
+  /* Mobile safe tapping */
+  button, a, [role="button"] {
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile text improvements */
+  .font-mono {
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+
+  /* Mobile form improvements */
+  input[type="text"], 
+  input[type="email"],
+  textarea {
+    font-size: 16px; /* Prevent iOS zoom */
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+}
+
+/* Tablet and small desktop improvements */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet-specific adjustments */
+  .orb {
+    filter: blur(80px);
+  }
+  
+  .glass {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) {
+  /* Remove hover effects on touch devices */
+  .glass-hover:hover {
+    transform: none;
+  }
+  
+  /* Make touch targets larger */
+  button, a[role="button"] {
+    min-height: 48px;
+    padding: 12px 16px;
   }
 }
 
