@@ -236,14 +236,47 @@ export default function SessionsPage() {
     try {
       let paymentTx: string
 
-      if (treasuryAddress && treasuryAddress !== '0x0000000000000000000000000000000000000000') {
+      // Re-fetch payment inputs right before sending tx to avoid stale price/estimate mismatch.
+      const [paymentData, estimateData] = await Promise.all([
+        fetch(clawsFunApiUrl('/api/payment')).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+        fetch(clawsFunApiUrl('/api/session/estimate'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            gpuType: undefined,
+            numGpus: LOWEST_TIER.numGpus,
+            cpuCores: LOWEST_TIER.cpuCores,
+            memoryGb: LOWEST_TIER.memoryGb,
+            diskGb: LOWEST_TIER.diskGb,
+            durationHours,
+            geolocation: undefined,
+          }),
+        }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      ])
+
+      const freshEthPrice = typeof paymentData?.ethPriceUsd === 'number' && paymentData.ethPriceUsd > 0
+        ? paymentData.ethPriceUsd
+        : ethPriceUsd
+      const freshTreasury = typeof paymentData?.treasuryAddress === 'string'
+        ? paymentData.treasuryAddress
+        : treasuryAddress
+
+      const estimatedHourly =
+        estimateData && estimateData.available && typeof estimateData.hourlyPrice === 'number' && estimateData.hourlyPrice > 0
+          ? estimateData.hourlyPrice * 1.1
+          : hourlyPrice
+
+      // Add a small buffer so backend-side recomputation doesn't reject by tiny deltas.
+      const payableEth = ((estimatedHourly * durationHours * 1.03) / freshEthPrice).toFixed(6)
+
+      if (freshTreasury && freshTreasury !== '0x0000000000000000000000000000000000000000') {
         setCreationStatus('Confirm payment in your wallet...')
         paymentTx = await sendTransactionAsync({
-          to: treasuryAddress as `0x${string}`,
-          value: parseEther(totalEth),
+          to: freshTreasury as `0x${string}`,
+          value: parseEther(payableEth),
         })
         setCreationStatus('Payment sent. Verifying and provisioning GPU...')
-        await new Promise((resolve) => setTimeout(resolve, 4500))
+        await new Promise((resolve) => setTimeout(resolve, 6000))
       } else {
         paymentTx = `0x${'f'.repeat(64)}`
       }
@@ -273,7 +306,8 @@ export default function SessionsPage() {
 
       const created = await createRes.json()
       if (!createRes.ok) {
-        throw new Error(created.error || 'Failed to create session.')
+        const detail = created?.details || created?.reason || created?.message
+        throw new Error(detail ? `${created.error || 'Failed to create session.'} (${detail})` : (created.error || 'Failed to create session.'))
       }
 
       setCreationStatus('Session is booting. Opening terminal...')
@@ -343,7 +377,7 @@ export default function SessionsPage() {
           {(step === 'address' || step === 'checking') && (
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center px-4">
               <div className="w-full max-w-lg rounded-xl border border-[var(--glass-border)] bg-[#0b1118] p-5 sm:p-6">
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">send the immortal agent's token address</h3>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Enter your immortal agent's token address</h3>
                 <input
                   type="text"
                   value={tokenAddressInput}
