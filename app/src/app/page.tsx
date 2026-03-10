@@ -163,7 +163,7 @@ function HowItWorksModal({ onClose }: { onClose: () => void }) {
               </div>
               <div className="pb-2">
                 <h3 className="font-semibold mb-1" style={{color:step.color}}>{step.title}</h3>
-                <p className="text-white/60 text-sm leading-relaxed">{step.body}</p>
+                <p className="text-white/60 text-sm leading-relaxed handwriting">{step.body}</p>
                 {step.links&&step.links.length>0&&(
                   <div className="flex flex-wrap gap-2 mt-2">
                     {step.links.map((lk:any,j:number)=>lk.href?(

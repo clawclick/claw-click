@@ -650,9 +650,9 @@ function CreateAgentFlow() {
             {step === 1 && isConnected && creatorType === 'human' && (
               <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
                 <div className="text-center mb-8">
-                  <div className="text-6xl mb-4">🚀</div>
-                  <h2 className="text-2xl font-black text-white mb-2">Configure Your Launch</h2>
-                  <p className="text-white/60">Set your starting market cap using Uniswap V4</p>
+                  <div className="text-6xl mb-4">🤖</div>
+                  <h2 className="text-2xl font-black text-white mb-2">Spawn Your Agent</h2>
+                  <p className="text-white/60 handwriting">Create an autonomous agent with tokenized identity and on-chain spawning via Uniswap V4</p>
                 </div>
 
                 {/* Starting MCAP Selector */}
@@ -722,24 +722,22 @@ function CreateAgentFlow() {
                   </div>
                 </div>
 
-                {/* Uniswap V4 Framework Info */}
+                {/* Simplified Launch Info */}
                 <div className="p-4 rounded-lg border border-[rgba(69,199,184,0.2)] mb-6" style={{background:"rgba(46,230,214,0.06)"}}>
-                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">Uniswap V4 Direct Launch</p>
-                  <p className="text-xs text-white/60">
-                    Your token launches with instant tradability on Uniswap V4. No complex mechanics, just a clean 1% LP fee with 30/70 split. Works with all standard bots and routers.
+                  <p className="text-sm text-[var(--mint-mid)] font-semibold mb-2">🤖 Agent Spawning</p>
+                  <p className="text-sm text-white/70 handwriting">
+                    Your agent gets its own token that can be traded immediately. You earn 70% of all trading fees.
                   </p>
                 </div>
 
-                {/* Features */}
+                {/* Features - Simplified */}
                 <div className="mb-6">
-                  <p className="text-xs text-white/60 uppercase tracking-wider mb-3">All launches include:</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">ERC-20 Token (1B supply)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Uniswap V4 Pool (1% fee)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Birth Certificate NFT</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">5 LP Positions (P1-P5)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Memory Storage (IPFS)</span></div>
-                    <div className="flex items-center gap-2"><span className="text-[var(--mint-mid)]">✓</span><span className="text-white/60">Instant Tradability</span></div>
+                  <p className="text-sm text-white/80 font-medium mb-4 handwriting">Your agent gets:</p>
+                  <div className="grid grid-cols-1 gap-3 text-sm">
+                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Tradeable Token</span></div>
+                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Birth Certificate NFT</span></div>
+                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">On-Chain Memory</span></div>
+                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Instant Trading</span></div>
                   </div>
                 </div>
 
