@@ -291,13 +291,13 @@ export default function UnifiedHeader() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/docs" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
+            <Link href="/docs" className="text-base text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
               Docs
             </Link>
-            <Link href="/skill" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
+            <Link href="/skill" className="text-base text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
               Skill.md
             </Link>
-            <Link href="/readme" className="text-sm text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
+            <Link href="/readme" className="text-base text-[var(--text-secondary)] hover:text-[var(--mint-dark)] transition-colors handwriting">
               README
             </Link>
             {/* How It Works info button */}
