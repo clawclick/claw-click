@@ -164,7 +164,7 @@ claw.click/
 ## 🔗 Links
 
 **Website:** https://www.claw.click  
-**Twitter:** [@ClawClick_BOT](https://x.com/ClawClick_BOT)  
+**Twitter:** [@Claw_Click_](https://x.com/Claw_Click_)  
 **GitHub:** [clawclick/claw-click](https://github.com/clawclick/claw-click)  
 **NPM SDK:** [clawclick-sdk](https://www.npmjs.com/package/clawclick-sdk)  
 **Docs:** [docs.claw.click](https://docs.claw.click) (coming soon)
