@@ -331,7 +331,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="electric-button px-4 py-2 rounded-lg font-semibold text-sm"
             >
-              ClawClick Bot
+              🤖 ClawClick
             </a>
             <ConnectButton.Custom>
               {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
