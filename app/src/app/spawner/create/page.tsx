@@ -97,6 +97,9 @@ const MIN_BOOTSTRAP_ETH = 0.001;
 // Birth certificate immortalization fee (0.005 ETH)
 const IMMORTALIZATION_FEE = 0.005;
 
+// Memory upload fee
+const MEMORY_UPLOAD_FEE = 0.0005; // ETH (~$1 at current prices)
+
 // ── Chain icon helper ─────────────────────────────────────────────────────────
 function ChainImg({ chainId, size = 28 }: { chainId: number; size?: number }) {
   const chains = useChains()
@@ -118,7 +121,6 @@ function CreateAgentFlow() {
   
   const [step, setStep] = useState(initialType ? 1 : 0)
   const [creatorType, setCreatorType] = useState<'human' | 'agent' | null>(initialType)
-  const [copiedField, setCopiedField] = useState<string | null>(null)
   const [ethPrice, setEthPrice] = useState<number | null>(null)
   const [agentWallet, setAgentWallet] = useState<Hex | null>(null)
   const [isUploadingMemory, setIsUploadingMemory] = useState(false)
@@ -132,18 +134,15 @@ function CreateAgentFlow() {
   // NFTid minting state
   const [nftidMintPhase, setNftidMintPhase] = useState<'idle' | 'minting' | 'confirming' | 'done'>('idle')
   const [mintedNftidTokenId, setMintedNftidTokenId] = useState<bigint | null>(null)
+  
   const [formData, setFormData] = useState({
     name: '',
     symbol: '',
     chain: 'Base',
-    // Starting MCAP (1-10 ETH, default 5)
     genesisBuy: 5,
-    // Fee split recipients (up to 5 wallets) - for 30/70 LP fee split
     feeSplitWallets: [] as string[],
     feeSplitPercentages: [] as number[],
-    // Memory & Deployment
     memoryFiles: [] as File[],
-    startSession: false,
     feeAcknowledged: false
   })
 
@@ -159,11 +158,9 @@ function CreateAgentFlow() {
 
   const { 
     data: hash, 
-    writeContract, 
     writeContractAsync,
     isPending: isWritePending,
     error: writeError,
-    reset: resetWrite
   } = useWriteContract()
 
   const { 
@@ -213,9 +210,6 @@ function CreateAgentFlow() {
     setAgentWallet(randomWallet)
   }, [])
 
-  // Memory upload fee
-  const MEMORY_UPLOAD_FEE = 0.0005 // ETH (~$1 at current prices)
-
   // Cost Calculation
   const totalCost = useMemo(() => {
     const memoryFee = formData.memoryFiles.length > 0 ? MEMORY_UPLOAD_FEE : 0
@@ -256,9 +250,8 @@ function CreateAgentFlow() {
       }
 
       console.log('[Deploy] Starting agent deployment (bundled 1-tx flow)...')
-      console.log('[Deploy] Chain:', chainId, '| Bundler:', bundlerAddr)
 
-      // Build FeeSplit struct (up to 5 wallets) - for 30/70 LP fee split (creator gets 70%)
+      // Build FeeSplit struct
       const ZERO_ADDR = '0x0000000000000000000000000000000000000000'
       const feeSplitWallets: string[] = []
       const feeSplitPercentages: number[] = []
@@ -267,17 +260,15 @@ function CreateAgentFlow() {
         const validWallets = formData.feeSplitWallets.filter(w => w && w.startsWith('0x'))
         for (let i = 0; i < 5; i++) {
           feeSplitWallets.push(validWallets[i] || ZERO_ADDR)
-          feeSplitPercentages.push((formData.feeSplitPercentages[i] || 0) * 100) // Convert % to BPS (uint16)
+          feeSplitPercentages.push((formData.feeSplitPercentages[i] || 0) * 100)
         }
       } else {
-        // Default: 100% to creator wallet
         feeSplitWallets.push(creatorAddress, ZERO_ADDR, ZERO_ADDR, ZERO_ADDR, ZERO_ADDR)
         feeSplitPercentages.push(10000, 0, 0, 0, 0)
       }
 
       const walletCount = feeSplitWallets.filter(w => w !== ZERO_ADDR).length
 
-      // CreateParams struct - includes launchType
       const createParams = {
         name: formData.name,
         symbol: formData.symbol,
@@ -289,19 +280,14 @@ function CreateAgentFlow() {
           percentages: feeSplitPercentages as unknown as readonly [number, number, number, number, number],
           count: walletCount
         },
-        launchType: LaunchType.DIRECT // CRITICAL: All claw.click launches use DIRECT (hookless, 1% LP fee)
+        launchType: LaunchType.DIRECT
       }
 
-      // msg.value = bootstrap ETH + immortalization fee (0.005 ETH) — single bundled tx
       const bootstrapValue = MIN_BOOTSTRAP_ETH
       const totalValue = bootstrapValue + IMMORTALIZATION_FEE
 
-      console.log('[Deploy] CreateParams:', JSON.stringify(createParams, (_, v) => typeof v === 'bigint' ? v.toString() : v, 2))
-      console.log('[Deploy] Bootstrap:', bootstrapValue, 'ETH + Immortalization:', IMMORTALIZATION_FEE, 'ETH = Total:', totalValue, 'ETH')
-
       setDeployPhase('launching')
 
-      // Single bundled tx: createLaunch + mintBirthCertificate via AgentLaunchBundler
       const bundleHash = await writeContractAsync({
         address: bundlerAddr as Hex,
         abi: ABIS.LaunchBundler,
@@ -320,16 +306,13 @@ function CreateAgentFlow() {
         gas: BigInt(10_000_000),
       })
 
-      console.log('[Deploy] Bundled tx submitted:', bundleHash)
       setDeployPhase('confirming')
 
-      // Wait for receipt and parse AgentLaunchBundled event
       if (publicClient && bundleHash) {
         const bundleReceipt = await publicClient.waitForTransactionReceipt({ hash: bundleHash })
-        console.log('[Deploy] Bundled tx confirmed, status:', bundleReceipt.status, '| Logs:', bundleReceipt.logs.length)
 
         if (bundleReceipt.status === 'reverted') {
-          throw new Error('Transaction reverted on-chain. Check Etherscan for details: ' + bundleHash)
+          throw new Error('Transaction reverted on-chain')
         }
 
         // Parse AgentLaunchBundled event
@@ -351,26 +334,6 @@ function CreateAgentFlow() {
               setLaunchedToken(args.token)
               setLaunchedPoolId(args.poolId)
               setBirthCertNftId(args.nftId)
-              console.log('[Deploy] Token:', args.token, '| Pool:', args.poolId, '| NFT:', args.nftId.toString())
-
-              // Fire-and-forget: auto-verify token on block explorer
-              fetch('/api/verify-token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  tokenAddress: args.token,
-                  name: formData.name,
-                  symbol: formData.symbol,
-                  hookAddress: addresses.clawclick.hook,
-                  beneficiary: creatorAddress,
-                  agentWallet: agentWallet,
-                  chainId,
-                }),
-              })
-                .then(r => r.json())
-                .then(r => console.log('[Verify] Token verification result:', r))
-                .catch(e => console.warn('[Verify] Token verification failed (non-blocking):', e))
-
               break
             }
           } catch { /* not this event */ }
@@ -386,27 +349,18 @@ function CreateAgentFlow() {
     }
   }
 
-  const copyToClipboard = (text: string, field: string) => {
-    navigator.clipboard.writeText(text)
-    setCopiedField(field)
-    setTimeout(() => setCopiedField(null), 2000)
-  }
-
-  const handleNext = () => setStep(step + 1)
-  const handleBack = () => setStep(step - 1)
-
   // Handle free NFTid mint
   const handleFreeMint = async () => {
     try {
       setNftidMintPhase('minting')
       
-      const mintTx = await writeNftidMint({
+      await writeNftidMint({
         address: CLAWD_NFT_ADDRESS.base,
         abi: CLAWD_NFT_ABI,
         functionName: 'mint',
-        args: [true, BigInt(50)], // useFreeMint = true, max attempts = 50
-        value: BigInt(0), // free for birth cert holders
-        chainId: 8453, // Base mainnet
+        args: [true, BigInt(50)],
+        value: BigInt(0),
+        chainId: 8453,
       })
 
       setNftidMintPhase('confirming')
@@ -422,7 +376,6 @@ function CreateAgentFlow() {
     if (isNftidMintSuccess && nftidMintReceipt && publicClient) {
       setNftidMintPhase('done')
       
-      // Parse Minted event to get token ID
       try {
         for (const log of nftidMintReceipt.logs) {
           try {
@@ -435,7 +388,6 @@ function CreateAgentFlow() {
               const tokenId = (decoded.args as any).tokenId
               setMintedNftidTokenId(tokenId)
               
-              // Redirect after 2 seconds
               setTimeout(() => {
                 router.push(`/soul/${tokenId.toString()}`)
               }, 2000)
@@ -448,30 +400,6 @@ function CreateAgentFlow() {
       }
     }
   }, [isNftidMintSuccess, nftidMintReceipt, publicClient, router])
-  
-  const handleMemoryUpload = async () => {
-    if (formData.memoryFiles.length === 0) {
-      handleNext()
-      return
-    }
-
-    setIsUploadingMemory(true)
-    try {
-      const cid = await uploadToPinata(formData.memoryFiles)
-      setMemoryCID(cid)
-      handleNext()
-    } catch (error) {
-      console.error('Failed to upload memory:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      const skip = confirm(`Failed to upload memory files.\n\nError: ${errorMessage}\n\nClick OK to skip and continue.`)
-      if (skip) {
-        setFormData({ ...formData, memoryFiles: [] })
-        handleNext()
-      }
-    } finally {
-      setIsUploadingMemory(false)
-    }
-  }
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden" style={{background:"var(--bg-soft)"}}>
@@ -503,18 +431,6 @@ function CreateAgentFlow() {
 
       <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6 relative z-10">
         <div className="max-w-2xl mx-auto">
-          {/* Progress */}
-          {step > 0 && (
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-2">
-                {[1, 2, 3, 4, 5, 6].map((s) => (
-                  <div key={s} className={`flex-1 h-1 rounded-full transition-all mx-0.5 ${s <= step ? 'bg-[var(--mint-mid)]' : 'bg-[var(--mint-mid)]/20'}`} />
-                ))}
-              </div>
-              <div className="text-sm text-[var(--text-secondary)] text-center">Step {step} of 6</div>
-            </div>
-          )}
-
           <AnimatePresence mode="wait">
             {/* Step 0: Entry */}
             {step === 0 && (
@@ -546,7 +462,7 @@ function CreateAgentFlow() {
               </motion.div>
             )}
 
-            {/* Agent CLI Instructions (when creatorType === 'agent') */}
+            {/* Agent CLI Instructions */}
             {step === 1 && isConnected && creatorType === 'agent' && (
               <motion.div key="agent-cli" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
                 <div className="text-center mb-8">
@@ -555,559 +471,267 @@ function CreateAgentFlow() {
                   <p className="text-white/60">Agents use CLI commands to self-create. Follow these steps:</p>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Step 1: Init */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">Step 1:</span> Initialize Identity
+                <div className="bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 rounded-xl p-6 border border-[var(--mint-mid)]/30 mb-6">
+                  <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                    <span className="text-[var(--mint-dark)]">⚡</span> One-liner (all steps)
+                  </h3>
+                  <div className="bg-black/50 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-2">
+                    <code className="text-sm text-[var(--mint-dark)] break-all">
+                      npx @clawclick/clawclick create --name "YourAgent" --symbol "AGENT" --network base --starting-mcap 5
+                    </code>
+                  </div>
+                  <p className="text-xs text-white/60">Deploys token with 5 ETH starting MCAP. Mints birth certificate! 🚀</p>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Step 1 */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">1.</span> Initialize Identity
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-[rgba(69,199,184,0.25)] mb-2">
-                      <code className="text-sm text-[var(--mint-mid)] break-all">
+                    <div className="bg-black/50 rounded-lg p-3 border border-[rgba(69,199,184,0.25)] mb-2">
+                      <code className="text-xs text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick init --name "YourAgent" --symbol "AGENT"
                       </code>
                     </div>
-                    <p className="text-xs text-white/60">Generates wallet, creates config file</p>
                   </div>
 
-                  {/* Step 2: FUNLAN */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">Step 2:</span> Generate FUNLAN Identity
+                  {/* Step 2 */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">2.</span> Generate FUNLAN Identity
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-[rgba(69,199,184,0.25)] mb-2">
-                      <code className="text-sm text-[var(--mint-mid)] break-all">
+                    <div className="bg-black/50 rounded-lg p-3 border border-[rgba(69,199,184,0.25)] mb-2">
+                      <code className="text-xs text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick funlan --generate
                       </code>
                     </div>
-                    <p className="text-xs text-white/60">Creates FUNLAN.md with your emoji identity grid</p>
                   </div>
 
-                  {/* Step 3: Memory */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">Step 3:</span> Upload Memory (Optional)
+                  {/* Step 3 */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">3.</span> Upload Memory (Optional)
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-[rgba(69,199,184,0.25)] mb-2">
-                      <code className="text-sm text-[var(--mint-mid)] break-all">
+                    <div className="bg-black/50 rounded-lg p-3 border border-[rgba(69,199,184,0.25)] mb-2">
+                      <code className="text-xs text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick memory upload ./memories/
                       </code>
                     </div>
-                    <p className="text-xs text-white/60">Uploads memory files to IPFS with wallet signature</p>
                   </div>
 
-                  {/* Step 4: Deploy */}
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">Step 4:</span> Deploy & Tokenize
+                  {/* Step 4 */}
+                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20">
+                    <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                      <span className="text-[var(--mint-mid)]">4.</span> Deploy & Tokenize
                     </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-[rgba(69,199,184,0.25)] mb-2">
-                      <code className="text-sm text-[var(--mint-mid)] break-all">
+                    <div className="bg-black/50 rounded-lg p-3 border border-[rgba(69,199,184,0.25)] mb-2">
+                      <code className="text-xs text-[var(--mint-mid)] break-all">
                         npx @clawclick/clawclick deploy --network base --starting-mcap 5
                       </code>
                     </div>
                     <p className="text-xs text-white/60">Deploys token with 5 ETH starting MCAP. Mints birth certificate! 🚀</p>
                   </div>
+                </div>
 
-                  {/* One-liner */}
-                  <div className="bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 rounded-xl p-6 border border-[var(--mint-mid)]/30">
-                    <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                      <span className="text-[var(--mint-dark)]"></span> One-liner (all steps)
-                    </h3>
-                    <div className="bg-black/50 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-2">
-                      <code className="text-sm text-[var(--mint-dark)] break-all">
-                        npx @clawclick/clawclick create --name "YourAgent" --symbol "AGENT" --network base --starting-mcap 5
-                      </code>
-                    </div>
-                  </div>
+                <div className="text-center pt-6">
+                  <Link
+                    href="/docs/cli"
+                    className="inline-flex items-center gap-2 text-[var(--mint-mid)] hover:text-[var(--mint-dark)] transition-colors text-sm"
+                  >
+                    📖 View full CLI documentation
+                  </Link>
+                </div>
 
-                  {/* Documentation Link */}
-                  <div className="text-center pt-4">
-                    <Link
-                      href="/docs/cli"
-                      className="inline-flex items-center gap-2 text-[var(--mint-mid)] hover:text-[var(--mint-dark)] transition-colors text-sm"
-                    >
-                      <span></span> View full CLI documentation for all options and flags.
-                    </Link>
-                  </div>
-
-                  {/* Back button */}
-                  <div className="flex justify-center pt-6">
-                    <button
-                      onClick={() => { setStep(0); setCreatorType(null) }}
-                      className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all"
-                    >
-                      ← Back to Creator Selection
-                    </button>
-                  </div>
+                <div className="flex justify-center pt-6">
+                  <button
+                    onClick={() => { setStep(0); setCreatorType(null) }}
+                    className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all"
+                  >
+                    ← Back to Creator Selection
+                  </button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 1: Configure Your Launch (Human only) */}
+            {/* Single-Step Human Form */}
             {step === 1 && isConnected && creatorType === 'human' && (
-              <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
+              <motion.div key="single-step" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
                 <div className="text-center mb-8">
                   <div className="text-6xl mb-4">🤖</div>
                   <h2 className="text-2xl font-black text-white mb-2">Spawn Your Agent</h2>
                   <p className="text-white/60">Create an autonomous agent with tokenized identity and on-chain spawning</p>
                 </div>
 
-                {/* Starting MCAP Selector */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm font-semibold text-white">Starting Market Cap</span>
-                  </div>
-                  <p className="text-xs text-white/60 mb-4">Choose your initial token valuation (1-10 ETH)</p>
-                  
-                  <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20">
-                    {/* MCAP Slider */}
-                    <div className="mb-4">
-                      <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        step="0.1"
-                        value={formData.genesisBuy || 5}
-                        onChange={(e) => setFormData({ ...formData, genesisBuy: parseFloat(e.target.value) })}
-                        className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-[#1E2832] accent-[var(--mint-mid)]"
-                      />
-                      <div className="flex justify-between text-xs text-white/60 mt-1">
-                        <span>1 ETH</span>
-                        <span>5 ETH</span>
-                        <span>10 ETH</span>
-                      </div>
-                    </div>
-                    
-                    {/* Current Value Display */}
-                    <div className="p-3  rounded-lg border border-[var(--mint-mid)]/20 mb-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white/60 text-sm">Starting MCAP:</span>
-                        <span className="text-[var(--mint-mid)] font-bold text-lg">{formData.genesisBuy || 5} ETH {ethPrice ? `(~$${((formData.genesisBuy || 5) * ethPrice).toLocaleString()})` : ''}</span>
-                      </div>
-                    </div>
-
-                    {/* Uniswap V4 Info */}
-                    <div className="space-y-3">
-                      {/* LP Fee Info */}
-                      <div className="p-3  rounded-lg border border-[var(--mint-mid)]/10">
-                        <p className="text-xs text-white/60 mb-2">Liquidity Provider Fee:</p>
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-white/60">Pool Fee:</span>
-                            <span className="text-white font-semibold">1% flat on all trades</span>
-                          </div>
-                          <div className="flex justify-between text-xs">
-                            <span className="text-white/60">Split:</span>
-                            <span className="text-[var(--mint-mid)] font-semibold">30% platform / 70% creator</span>
-                          </div>
-                        </div>
-                        <p className="text-xs text-white/60 mt-2 italic">Fees collected from 1% LP fee across all positions (P1-P5)</p>
-                      </div>
-
-                      {/* Position Info */}
-                      <div className="p-3  rounded-lg border border-[var(--mint-mid)]/10">
-                        <p className="text-xs text-white/60 mb-2">Liquidity Positions:</p>
-                        <div className="space-y-1 text-xs">
-                          <div className="flex justify-between">
-                            <span className="text-white/60">Position Strategy:</span>
-                            <span className="text-white">P1 → P5 (concentrated ranges)</span>
-                          </div>
-                          <p className="text-white/60 mt-1 italic text-[10px]">Liquidity distributed across 5 positions as token grows</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Simplified Launch Info */}
-                <div className="p-4 rounded-lg border border-[rgba(69,199,184,0.2)] mb-6" style={{background:"rgba(46,230,214,0.06)"}}>
-                  <p className="text-sm text-[var(--mint-mid)] font-semibold mb-2">🤖 Agent Spawning</p>
-                  <p className="text-sm text-white/70 handwriting">
-                    Your agent gets its own token that can be traded immediately
-                  </p>
-                </div>
-
-                {/* Features - Simplified */}
+                {/* Starting MCAP Row */}
                 <div className="mb-6">
-                  <p className="text-sm text-white/80 font-medium mb-4">Your agent gets:</p>
-                  <div className="grid grid-cols-1 gap-3 text-sm">
-                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Tradeable Token</span></div>
-                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Birth Certificate NFT</span></div>
-                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">On-Chain Memory</span></div>
-                    <div className="flex items-center gap-3"><span className="text-[var(--mint-mid)] text-lg">✓</span><span className="text-white/80 handwriting">Instant Trading</span></div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <button onClick={handleBack} className="border border-[rgba(69,199,184,0.3)] text-white/60 hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3" style={{background:"rgba(5,25,22,0.8)"}}>Back</button>
-                  <button onClick={handleNext} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3">Continue</button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 2: Agent Naming (Human only) */}
-            {step === 2 && isConnected && creatorType === 'human' && (
-              <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                <h2 className="text-2xl font-black text-white mb-6">Agent Identity</h2>
-                
-                <div className="space-y-6 mb-8">
-                  <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Agent Name *</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="ClawdiusMaximus"
-                      className="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 border border-[rgba(69,199,184,0.2)] focus:border-[var(--mint-mid)] focus:outline-none" style={{background:"rgba(5,25,22,0.9)"}}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Token Symbol *</label>
-                    <input
-                      type="text"
-                      value={formData.symbol}
-                      onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
-                      placeholder="CLAW"
-                      className="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 border border-[rgba(69,199,184,0.2)] focus:border-[var(--mint-mid)] focus:outline-none" style={{background:"rgba(5,25,22,0.9)"}}
-                      maxLength={10}
-                      required
-                    />
-                    <p className="text-xs text-white/60 mt-2">Must be unique and uppercase</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <button onClick={handleBack} className="border border-[rgba(69,199,184,0.3)] text-white/60 hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3" style={{background:"rgba(5,25,22,0.8)"}}>Back</button>
-                  <button onClick={handleNext} disabled={!formData.name || !formData.symbol} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">Continue</button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 3: Network (Human only) */}
-            {step === 3 && isConnected && creatorType === 'human' && (
-              <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                <h2 className="text-2xl font-black text-white mb-6">Select Network</h2>
-                <p className="text-white/60 mb-6">Choose the blockchain network for your agent:</p>
-                
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <button
-                    onClick={() => setFormData({ ...formData, chain: 'Base' })}
-                    className={`p-4 rounded-xl border-2 transition-all text-left ${
-                      formData.chain === 'Base'
-                        ? 'border-[#4A90E2] bg-[#4A90E2]/10 shadow-[0_0_20px_rgba(74,144,226,0.2)]'
-                        : 'border-[#4A90E2]/30 bg-[rgba(0, 0, 0, 0.5)]/50 hover:border-[#4A90E2]/60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <ChainImg chainId={8453} />
-                      {formData.chain === 'Base' && <span className="text-[#4A90E2]">✓</span>}
-                    </div>
-                    <p className="text-lg font-bold text-white mb-1">Base</p>
-                    <p className="text-xs text-[#4A90E2]">L2 • Low fees</p>
-                  </button>
-
-                  <button
-                    onClick={() => setFormData({ ...formData, chain: 'Sepolia' })}
-                    className={`p-4 rounded-xl border-2 transition-all text-left ${
-                      formData.chain === 'Sepolia'
-                        ? 'border-[#9CA3AF] bg-[#9CA3AF]/10 shadow-[0_0_20px_rgba(156,163,175,0.2)]'
-                        : 'border-[#9CA3AF]/30 bg-[rgba(0, 0, 0, 0.5)]/50 hover:border-[#9CA3AF]/60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <ChainImg chainId={11155111} />
-                      {formData.chain === 'Sepolia' && <span className="text-[#9CA3AF]">✓</span>}
-                    </div>
-                    <p className="text-lg font-bold text-white mb-1">Sepolia</p>
-                    <p className="text-xs text-[#9CA3AF]">Testnet • Free to deploy</p>
-                  </button>
-
-                  <div className="p-4 rounded-xl border-2 border-[#8B7FD4]/20 bg-[rgba(0, 0, 0, 0.5)]/30 opacity-50 cursor-not-allowed">
-                    <div className="flex items-center justify-between mb-2">
-                      <ChainImg chainId={1} />
-                      <span className="text-xs px-2 py-0.5 rounded bg-[#8B7FD4]/20 text-[#8B7FD4]">Soon</span>
-                    </div>
-                    <p className="text-lg font-bold text-[#8B7FD4]/60 mb-1">Ethereum</p>
-                    <p className="text-xs text-white/60/50">Mainnet • Most secure</p>
-                  </div>
-
-                  <div className="p-4 rounded-xl border-2 border-[#F0B90B]/20 bg-[rgba(0, 0, 0, 0.5)]/30 opacity-50 cursor-not-allowed">
-                    <div className="flex items-center justify-between mb-2">
-                      <ChainImg chainId={56} />
-                      <span className="text-xs px-2 py-0.5 rounded bg-[#F0B90B]/20 text-[#F0B90B]">Soon</span>
-                    </div>
-                    <p className="text-lg font-bold text-[#F0B90B]/60 mb-1">BSC</p>
-                    <p className="text-xs text-white/60/50">BNB Chain • Fast & cheap</p>
-                  </div>
-                </div>
-
-                <p className="text-sm text-white/60 mb-6">Connected to: <strong className="text-white">{connectedChain?.name || 'Unknown'}</strong></p>
-                
-                {connectedChain?.id !== 11155111 && connectedChain?.id !== 8453 && (
-                  <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/30 mb-6">
-                    <p className="text-sm text-yellow-400 font-semibold mb-2">⚠️ Wrong Network</p>
-                    <p className="text-xs text-white/60">Please switch to {formData.chain === 'Base' ? 'Base' : 'Sepolia testnet'} to continue.</p>
-                  </div>
-                )}
-
-                <div className="flex gap-4">
-                  <button onClick={handleBack} className="border border-[rgba(69,199,184,0.3)] text-white/60 hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3" style={{background:"rgba(5,25,22,0.8)"}}>Back</button>
-                  <button onClick={handleNext} disabled={(formData.chain === 'Sepolia' && connectedChain?.id !== 11155111) || (formData.chain === 'Base' && connectedChain?.id !== 8453)} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed">
-                    {(formData.chain === 'Sepolia' && connectedChain?.id === 11155111) || (formData.chain === 'Base' && connectedChain?.id === 8453) ? 'Continue' : 'Switch Network'}
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 4: FUNLAN (Human only) */}
-            {step === 4 && isConnected && creatorType === 'human' && (
-              <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                <div className="flex items-center gap-3 mb-6">
-                  <img src="/branding/lobster_icon_exact_size-rem_bk.png" alt="lobster" style={{width:40,height:40,objectFit:'contain',display:'inline-block',verticalAlign:'middle'}}/>
-                  <div>
-                    <h2 className="text-2xl font-black text-white">Agent Language</h2>
-                    <p className="text-sm text-white/60">FUNLAN - The emoji-based agent identity system</p>
-                  </div>
-                </div>
-
-                {/* FUNLAN content stays the same... */}
-                <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-6 border border-[var(--mint-mid)]/20 mb-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-bold text-white">Identity Grid Preview</h3>
-                    <span className="text-xs px-2 py-1 rounded bg-[var(--mint-mid)]/20 text-[var(--mint-mid)]">Auto-generated</span>
+                    <span className="text-sm font-semibold text-white">Starting MCAP: {formData.genesisBuy} ETH (~${ethPrice ? ((formData.genesisBuy || 5) * ethPrice).toLocaleString() : '10,251.1'})</span>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="0.1"
+                      value={formData.genesisBuy || 5}
+                      onChange={(e) => setFormData({ ...formData, genesisBuy: parseFloat(e.target.value) })}
+                      className="w-32 h-2 rounded-lg appearance-none cursor-pointer bg-[#1E2832] accent-[var(--mint-mid)]"
+                    />
                   </div>
-                  <p className="text-xs text-white/60 mb-4">
-                    Your agent's unique 5x5 emoji grid will be deterministically generated from their wallet address.
-                    This identity is permanent and verifiable on-chain.
-                  </p>
-                  <div className="grid grid-cols-5 gap-1 max-w-[160px] mx-auto mb-4">
-                    {['🔥','💎','🦞','','🌊','🎯','💀','🚀','🌙','✨','🔮','🎲','🌈','💫','🎪','🦋','🌸','⭐','🔱','🎭','💝','🌺','🎨','🔥','💎'].map((emoji, i) => (
-                      <div key={i} className="w-6 h-6  rounded flex items-center justify-center text-sm">
-                        {emoji}
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-center text-white/60">Preview only - actual grid generated at deployment</p>
+                  <p className="text-xs text-white/60">1% LP fee • 70/30 split to agent creator</p>
                 </div>
 
-                <div className="space-y-3 mb-6">
-                  <p className="text-xs text-white/60 uppercase tracking-wider">What gets created:</p>
-                  <div className="grid gap-2">
-                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/10">
-                      <span className="text-[var(--mint-mid)]">✓</span>
-                      <div>
-                        <span className="text-white text-sm">FUNLAN.md generated</span>
-                        <p className="text-xs text-white/60">Your agent's identity specification file</p>
-                      </div>
+                {/* Name & Ticker Row */}
+                <div className="mb-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Agent Name"
+                        className="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 border border-[rgba(69,199,184,0.2)] focus:border-[var(--mint-mid)] focus:outline-none" style={{background:"rgba(5,25,22,0.9)"}}
+                        required
+                      />
                     </div>
-                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/10">
-                      <span className="text-[var(--mint-mid)]">✓</span>
-                      <div>
-                        <span className="text-white text-sm">Emoji-based symbolic language</span>
-                        <p className="text-xs text-white/60">Unique visual identity derived from wallet</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/10">
-                      <span className="text-[var(--mint-mid)]">✓</span>
-                      <div>
-                        <span className="text-white text-sm">Uploaded to IPFS</span>
-                        <p className="text-xs text-white/60">Permanently stored and content-addressed</p>
-                      </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={formData.symbol}
+                        onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
+                        placeholder="TICKER"
+                        className="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 border border-[rgba(69,199,184,0.2)] focus:border-[var(--mint-mid)] focus:outline-none" style={{background:"rgba(5,25,22,0.9)"}}
+                        maxLength={10}
+                        required
+                      />
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/30 mb-6">
+                {/* Network Dropdown */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-white/60 mb-2">Network</label>
+                  <select
+                    value={formData.chain}
+                    onChange={(e) => setFormData({ ...formData, chain: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg text-white border border-[rgba(69,199,184,0.2)] focus:border-[var(--mint-mid)] focus:outline-none" style={{background:"rgba(5,25,22,0.9)"}}
+                  >
+                    <option value="Base">Base (Recommended)</option>
+                    <option value="Sepolia">Sepolia (Testnet)</option>
+                  </select>
+                </div>
+
+                {/* FUNLAN One-liner with Expandable Details */}
+                <div className="mb-6">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-purple-400"></span>
-                    <span className="text-sm font-semibold text-purple-400">Soulbound Birth Certificate</span>
-                  </div>
-                  <p className="text-xs text-white/60">
-                    Your agent receives a non-transferable ERC-721 NFT as their birth certificate.
-                    This proves their on-chain existence and links their identity permanently.
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-center gap-4 mb-6">
-                  <a 
-                    href="https://github.com/ClawsFun/FUNLAN" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-[rgba(0, 0, 0, 0.5)] border border-[var(--mint-mid)]/40 rounded-lg hover:border-[rgba(46,230,214,0.6)] hover:bg-[var(--mint-mid)]/10 transition-all text-sm"
-                    style={{ color: 'var(--mint-mid)' }}
-                  >
-                    <svg className="w-4 h-4" fill="var(--mint-mid)" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
-                    <span style={{ color: 'var(--mint-mid)' }}>View FUNLAN Spec</span>
-                  </a>
-                  <a 
-                    href="/docs?page=funlan" 
-                    className="flex items-center gap-2 px-4 py-2 bg-[rgba(0, 0, 0, 0.5)] border border-[var(--mint-mid)]/40 rounded-lg hover:border-[rgba(46,230,214,0.6)] hover:bg-[var(--mint-mid)]/10 transition-all text-sm"
-                    style={{ color: 'var(--mint-mid)' }}
-                  >
-                    <span style={{ color: 'var(--mint-mid)' }}>Learn More</span>
-                  </a>
-                </div>
-
-                <div className="flex gap-4">
-                  <button onClick={handleBack} className="border border-[rgba(69,199,184,0.3)] text-white/60 hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3" style={{background:"rgba(5,25,22,0.8)"}}>Back</button>
-                  <button onClick={handleNext} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3">Continue</button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 5: Memory (Human only) */}
-            {step === 5 && isConnected && creatorType === 'human' && (
-              <motion.div key="step5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="flex justify-center"><svg width="36" height="36" viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="20" rx="20" ry="10" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)"/><path d="M12 20 L12 44 Q12 54 32 54 Q52 54 52 44 L52 20" stroke="#45C7B8" strokeWidth="2.5"/><ellipse cx="32" cy="44" rx="20" ry="10" stroke="#45C7B8" strokeWidth="2" fill="rgba(69,199,184,0.05)"/><path d="M12 32 Q12 42 32 42 Q52 42 52 32" stroke="#7DE2D1" strokeWidth="1.5" strokeDasharray="4 3"/><circle cx="32" cy="20" r="4" fill="#2EE6D6" style={{animation:"ip-pulse 2s ease-in-out infinite"}}/></svg></span>
-                  <h2 className="text-2xl font-black text-white">Memory Upload</h2>
-                </div>
-                <p className="text-sm text-[var(--mint-mid)] mb-6">Optional — can be added later via CLI or dashboard</p>
-                
-                <div className="bg-[rgba(0, 0, 0, 0.5)] rounded-xl p-4 border border-[var(--mint-mid)]/20 mb-6">
-                  <h3 className="text-sm font-bold text-white mb-2">What is Agent Memory?</h3>
-                  <p className="text-xs text-white/60 mb-3">
-                    Memory files give your agent context, personality, and knowledge. They are cryptographically signed 
-                    by the agent wallet and stored permanently on IPFS.
-                  </p>
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/60">Content-addressed storage</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/60">Wallet-signed verification</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/60">Immutable records</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/60">Survives runtime shutdown</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="border-2 border-dashed border-[var(--mint-mid)]/20 rounded-lg p-8 text-center cursor-pointer /30 mb-6 hover:border-[rgba(46,230,214,0.6)]/40 transition-all">
-                  <input type="file" id="memory-upload" multiple accept=".md,.txt,.json" onChange={(e) => { if (e.target.files) setFormData({ ...formData, memoryFiles: [...formData.memoryFiles, ...Array.from(e.target.files)] }) }} className="hidden" />
-                  <label htmlFor="memory-upload" className="cursor-pointer">
-                    <div className="flex justify-center mb-4"><svg width="52" height="52" viewBox="0 0 64 64" fill="none"><path d="M6 20 Q6 14 12 14 L26 14 L30 20 L52 20 Q58 20 58 26 L58 50 Q58 56 52 56 L12 56 Q6 56 6 50 Z" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)"/><line x1="20" y1="36" x2="44" y2="36" stroke="#2EE6D6" strokeWidth="2" strokeLinecap="round" style={{animation:"ip-pulse 2s ease-in-out infinite"}}/><line x1="20" y1="44" x2="36" y2="44" stroke="#45C7B8" strokeWidth="2" strokeLinecap="round"/><circle cx="48" cy="44" r="3" fill="#2EE6D6" opacity="0.8"/></svg></div>
-                    <p className="text-white font-semibold mb-2">Upload Memory Files</p>
-                    <p className="text-sm text-white/60 mb-2">.md, .txt, .json</p>
-                    <p className="text-xs text-white/60/70">Drag & drop or click to browse</p>
-                  </label>
-                </div>
-
-                {formData.memoryFiles.length > 0 && (
-                  <div className="space-y-2 mb-6">
-                    <p className="text-xs text-white/60 mb-2">📎 {formData.memoryFiles.length} file(s) selected:</p>
-                    {formData.memoryFiles.map((file, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-[rgba(0, 0, 0, 0.5)]/50 border border-[var(--mint-mid)]/20 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">📄</span>
-                          <div>
-                            <span className="text-sm text-white">{file.name}</span>
-                            <p className="text-xs text-white/60">{(file.size / 1024).toFixed(1)} KB</p>
+                    <span className="text-sm font-semibold text-white">Your agent gets auto-generated FUNLAN</span>
+                    <details className="inline">
+                      <summary className="cursor-pointer text-[var(--mint-mid)] text-xs">ⓘ</summary>
+                      <div className="mt-2 p-3 bg-[rgba(0, 0, 0, 0.5)] rounded-lg border border-[var(--mint-mid)]/20 text-xs">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[var(--mint-mid)]">✓</span>
+                            <span className="text-white/80">FUNLAN.md generated - Your agent's identity specification file</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[var(--mint-mid)]">✓</span>
+                            <span className="text-white/80">Emoji-based symbolic language - Unique visual identity derived from wallet</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[var(--mint-mid)]">✓</span>
+                            <span className="text-white/80">Uploaded to IPFS - Permanently stored and content-addressed</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[var(--mint-mid)]">✓</span>
+                            <span className="text-white/80">Soulbound Birth Certificate - Non-transferable ERC-721 NFT as proof of existence</span>
                           </div>
                         </div>
-                        <button onClick={() => setFormData({ ...formData, memoryFiles: formData.memoryFiles.filter((_, idx) => idx !== i) })} className="text-sm text-red-400 hover:text-red-300">Remove</button>
+                        <div className="mt-3 pt-2 border-t border-[var(--mint-mid)]/20">
+                          <a 
+                            href="https://github.com/ClawsFun/FUNLAN" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[var(--mint-mid)] hover:underline text-xs"
+                          >
+                            View FUNLAN Spec →
+                          </a>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="bg-[var(--mint-mid)]/5 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-6">
-                  <p className="text-xs text-[var(--mint-mid)] font-semibold mb-2">Suggested memory files:</p>
-                  <ul className="text-xs text-white/60 space-y-1">
-                    <li>• <strong>README.md</strong> - Agent description and capabilities</li>
-                    <li>• <strong>PERSONALITY.md</strong> - Behavior and communication style</li>
-                    <li>• <strong>KNOWLEDGE.json</strong> - Domain expertise and facts</li>
-                    <li>• <strong>GOALS.md</strong> - Mission and objectives</li>
-                  </ul>
-                </div>
-
-                <div className="flex gap-4">
-                  <button onClick={handleBack} disabled={isUploadingMemory} className="border border-[rgba(69,199,184,0.3)] text-white/60 hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3 disabled:opacity-50" style={{background:"rgba(5,25,22,0.8)"}}>Back</button>
-                  <button onClick={handleMemoryUpload} disabled={isUploadingMemory} className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg flex-1 py-3 disabled:opacity-50">
-                    {isUploadingMemory ? 'Uploading to IPFS...' : formData.memoryFiles.length > 0 ? 'Upload & Continue' : 'Skip for now'}
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 6: Deploy & Review (Human only) */}
-            {step === 6 && isConnected && creatorType === 'human' && (
-              <motion.div key="step6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
-                <h2 className="text-2xl font-black text-white mb-6">Deploy Agent: {formData.name} (${formData.symbol})</h2>
-                
-                {/* Summary */}
-                <div className="space-y-3 mb-6 p-4 bg-[rgba(0, 0, 0, 0.5)] rounded-xl border border-[var(--mint-mid)]/20">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/60">Starting MCAP:</span>
-                    <span className="text-white">{formData.genesisBuy} ETH {ethPrice ? `(~$${((formData.genesisBuy || 5) * ethPrice).toLocaleString()})` : ''}</span>
+                    </details>
                   </div>
                 </div>
 
-                {/* Fee Split (70% Creator Share from 1% LP fee) */}
+                {/* Memory Upload - Compact */}
                 <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg"></span>
-                    <span className="text-sm font-semibold text-white">Fee Split (70% Creator Share)</span>
-                  </div>
-                  <p className="text-xs text-white/60 mb-4">Split your 70% share of the 1% LP fee across up to 5 wallets. Leave empty to use connected wallet.</p>
-                  
-                  <div className="space-y-3">
-                    {[0, 1, 2, 3, 4].map((idx) => {
-                      const isDisabled = idx > 0 && !(formData.feeSplitWallets[idx - 1]?.trim())
-                      return (
-                      <div key={idx} className={`flex gap-2 ${isDisabled ? 'opacity-50' : ''}`}>
-                        <input
-                          type="text"
-                          value={formData.feeSplitWallets[idx] || ''}
-                          onChange={(e) => {
-                            const newWallets = [...formData.feeSplitWallets]
-                            while (newWallets.length <= idx) newWallets.push('')
-                            newWallets[idx] = e.target.value
-                            setFormData({ ...formData, feeSplitWallets: newWallets })
-                          }}
-                          placeholder={idx === 0 ? creatorAddress || '0x...' : '0x... (optional)'}
-                          className="flex-1 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-3 py-2 text-white font-mono text-xs placeholder:text-white/60/50 focus:border-[var(--mint-mid)] focus:outline-none"
-                          disabled={isDisabled}
-                        />
-                        <input
-                          type="number"
-                          value={formData.feeSplitPercentages[idx] ?? (idx === 0 && formData.feeSplitWallets.length === 0 ? 100 : 0)}
-                          onChange={(e) => {
-                            const newPercentages = [...formData.feeSplitPercentages]
-                            while (newPercentages.length <= idx) newPercentages.push(0)
-                            newPercentages[idx] = parseInt(e.target.value) || 0
-                            setFormData({ ...formData, feeSplitPercentages: newPercentages })
-                          }}
-                          placeholder="%"
-                          min="0"
-                          max="100"
-                          className="w-20 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-3 py-2 text-white text-center text-xs focus:border-[var(--mint-mid)] focus:outline-none"
-                          disabled={isDisabled}
-                        />
-                        <span className="text-white/60 text-xs flex items-center">%</span>
+                  <div className="border border-dashed border-[var(--mint-mid)]/20 rounded-lg p-4 text-center cursor-pointer hover:border-[rgba(46,230,214,0.6)] transition-all">
+                    <input type="file" id="memory-upload" multiple accept=".md,.txt,.json" onChange={(e) => { if (e.target.files) setFormData({ ...formData, memoryFiles: [...formData.memoryFiles, ...Array.from(e.target.files)] }) }} className="hidden" />
+                    <label htmlFor="memory-upload" className="cursor-pointer">
+                      <div className="flex items-center justify-center gap-3">
+                        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+                          <path d="M6 20 Q6 14 12 14 L26 14 L30 20 L52 20 Q58 20 58 26 L58 50 Q58 56 52 56 L12 56 Q6 56 6 50 Z" stroke="#45C7B8" strokeWidth="2.5" fill="rgba(69,199,184,0.08)"/>
+                          <line x1="20" y1="36" x2="44" y2="36" stroke="#2EE6D6" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                        <div>
+                          <p className="text-sm text-white font-semibold">Upload Memory Files</p>
+                          <p className="text-xs text-white/60">.md, .txt, .json</p>
+                          <p className="text-xs text-white/60/70">Drag & drop or click to browse</p>
+                        </div>
                       </div>
-                      )
-                    })}
-                    <p className="text-xs text-white/60 mt-2">
-                      ⚠️ Percentages must sum to 100%. Platform receives 30% automatically.
-                    </p>
+                    </label>
                   </div>
+                  
+                  {formData.memoryFiles.length > 0 && (
+                    <div className="mt-3 text-xs text-white/60">
+                      📎 {formData.memoryFiles.length} file(s) selected
+                    </div>
+                  )}
+
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-[var(--mint-mid)] text-xs">Suggested memory files</summary>
+                    <ul className="mt-2 text-xs text-white/60 space-y-1 pl-4">
+                      <li>• README.md - Agent description and capabilities</li>
+                      <li>• PERSONALITY.md - Behavior and communication style</li>
+                      <li>• KNOWLEDGE.json - Domain expertise and facts</li>
+                      <li>• GOALS.md - Mission and objectives</li>
+                    </ul>
+                  </details>
+                </div>
+
+                {/* Fee Split - Simplified */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-white/60 mb-2">Fee Split (70% Creator Share)</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={formData.feeSplitWallets[0] || creatorAddress || ''}
+                      onChange={(e) => {
+                        const newWallets = [...formData.feeSplitWallets]
+                        newWallets[0] = e.target.value
+                        setFormData({ ...formData, feeSplitWallets: newWallets })
+                      }}
+                      placeholder={creatorAddress || '0x...'}
+                      className="flex-1 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-3 py-2 text-white font-mono text-xs focus:border-[var(--mint-mid)] focus:outline-none"
+                    />
+                    <span className="flex items-center text-white text-xs px-3">100%</span>
+                  </div>
+                  <button 
+                    type="button"
+                    className="text-xs text-[var(--mint-mid)] hover:underline"
+                    onClick={() => {
+                      const newWallets = [...formData.feeSplitWallets, '']
+                      const newPercentages = [...formData.feeSplitPercentages, 0]
+                      setFormData({ ...formData, feeSplitWallets: newWallets, feeSplitPercentages: newPercentages })
+                    }}
+                  >
+                    + wallet for split
+                  </button>
+                  <p className="text-xs text-white/60 mt-2">Receive your fees here</p>
                 </div>
 
                 {/* Cost Breakdown */}
                 <div className="mb-6 p-4 bg-[var(--mint-mid)]/5 rounded-xl border border-[var(--mint-mid)]/20">
-                  <p className="text-sm font-semibold text-white mb-3">Cost Breakdown</p>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-white/60">Pool Bootstrap (min {MIN_BOOTSTRAP_ETH} ETH):</span>
+                      <span className="text-white/60">Pool Bootstrap:</span>
                       <span className="text-white">{totalCost.bootstrapETH.toFixed(4)} ETH</span>
                     </div>
                     <div className="flex justify-between">
@@ -1116,14 +740,10 @@ function CreateAgentFlow() {
                     </div>
                     {formData.memoryFiles.length > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-white/60">Memory Upload Fee:</span>
+                        <span className="text-white/60">Memory Upload:</span>
                         <span className="text-white">{MEMORY_UPLOAD_FEE.toFixed(4)} ETH</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-xs">
-                      <span className="text-white/60">Gas Fees:</span>
-                      <span className="text-white/60">+ network gas</span>
-                    </div>
                     <hr className="border-[var(--mint-mid)]/20" />
                     <div className="flex justify-between font-semibold">
                       <span className="text-white">Total:</span>
@@ -1131,7 +751,6 @@ function CreateAgentFlow() {
                     </div>
                     {ethPrice && (
                       <div className="flex justify-between text-xs">
-                        <span className="text-white/60">USD Equivalent:</span>
                         <span className="text-white/60">≈ ${totalCost.totalUSD}</span>
                       </div>
                     )}
@@ -1151,18 +770,38 @@ function CreateAgentFlow() {
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input type="checkbox" checked={formData.feeAcknowledged} onChange={(e) => setFormData({ ...formData, feeAcknowledged: e.target.checked })} className="w-5 h-5 mt-0.5 rounded border-[var(--mint-mid)]/30 bg-[rgba(0, 0, 0, 0.5)] text-[var(--mint-mid)]" />
                     <span className="text-sm text-white/60">
-                      I understand this uses Uniswap V4 with a 1% LP fee (flat across all positions). Market determines price. Platform takes 30% of fees, I receive 70%.
+                      I understand this uses Uniswap V4 with a 1% LP fee. Platform takes 30% of fees, I receive 70%.
                     </span>
                   </label>
                 </div>
 
+                {/* Deploy Button */}
                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                   <button
-                    onClick={handleCreateAgent}
-                    disabled={isWritePending || isConfirming || (deployPhase !== 'idle' && deployPhase !== 'done') || deployPhase === 'done' || !formData.feeAcknowledged}
+                    onClick={async () => {
+                      // Handle memory upload first if needed
+                      if (formData.memoryFiles.length > 0 && !memoryCID) {
+                        setIsUploadingMemory(true)
+                        try {
+                          const cid = await uploadToPinata(formData.memoryFiles)
+                          setMemoryCID(cid)
+                        } catch (error) {
+                          console.error('Failed to upload memory:', error)
+                          const skip = confirm(`Failed to upload memory files. Continue without memory?`)
+                          if (!skip) return
+                          setFormData({ ...formData, memoryFiles: [] })
+                        } finally {
+                          setIsUploadingMemory(false)
+                        }
+                      }
+                      // Then deploy
+                      handleCreateAgent()
+                    }}
+                    disabled={isWritePending || isConfirming || (deployPhase !== 'idle' && deployPhase !== 'done') || deployPhase === 'done' || !formData.feeAcknowledged || !formData.name || !formData.symbol || isUploadingMemory}
                     className="bg-[var(--mint-mid)] text-black font-semibold hover:shadow-[0_0_20px_rgba(30,230,183,0.5)] transition-all rounded-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isWritePending ? 'Sign in Wallet...' : 
+                    {isUploadingMemory ? 'Uploading Memory...' :
+                     isWritePending ? 'Sign in Wallet...' : 
                      deployPhase === 'launching' ? 'Deploying Agent...' :
                      deployPhase === 'confirming' ? 'Confirming on Chain...' :
                      deployPhase === 'done' ? '✓ Agent Immortalized' : 
@@ -1175,9 +814,16 @@ function CreateAgentFlow() {
                   )}
                 </div>
 
+                {/* Back Button */}
+                <div className="flex justify-center">
+                  <button onClick={() => { setStep(0); setCreatorType(null) }} className="border border-[rgba(69,199,184,0.3)] text-white/60 hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg px-6 py-2 text-sm" style={{background:"rgba(5,25,22,0.8)"}}>
+                    ← Back to Creator Selection
+                  </button>
+                </div>
+
                 {/* Launched Token Info */}
                 {launchedToken && (
-                  <div className="mb-6 p-4 bg-[var(--mint-mid)]/10 rounded-xl border border-[var(--mint-mid)]/30">
+                  <div className="mt-6 p-4 bg-[var(--mint-mid)]/10 rounded-xl border border-[var(--mint-mid)]/30">
                     <p className="text-sm font-semibold text-[var(--mint-mid)] mb-2">🎉 Token Deployed!</p>
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
@@ -1193,10 +839,6 @@ function CreateAgentFlow() {
                     </div>
                   </div>
                 )}
-
-                <div className="flex gap-4">
-                  <button onClick={handleBack} className="border border-[rgba(69,199,184,0.3)] text-white/60 hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg flex-1 py-3" style={{background:"rgba(5,25,22,0.8)"}}>Back</button>
-                </div>
               </motion.div>
             )}
 
@@ -1288,7 +930,7 @@ function CreateAgentFlow() {
 
             {/* Error */}
             {writeError && !isWritePending && !isConfirming && (
-              <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className=" border border-red-500/25 rounded-2xl p-8 text-center mt-6">
+              <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border border-red-500/25 rounded-2xl p-8 text-center mt-6">
                 <div className="text-6xl mb-6">❌</div>
                 <h2 className="text-2xl font-black text-white mb-4">Failed</h2>
                 <p className="text-white/60 mb-4">{writeError.message}</p>
@@ -1309,4 +951,3 @@ export default function CreateAgent() {
     </Suspense>
   )
 }
-
