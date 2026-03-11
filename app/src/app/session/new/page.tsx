@@ -10,14 +10,9 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { clawsFunApiUrl } from '../../../lib/api'
 
-const GPU_OPTIONS = [
-  { id: 'any', label: 'Any GPU', desc: 'Cheapest available GPU', minPrice: 0.03 },
-  { id: 'RTX 4060', label: 'RTX 4060', desc: '8GB VRAM, budget inference', minPrice: 0.06 },
-  { id: 'RTX 4090', label: 'RTX 4090', desc: '24GB VRAM, fast inference', minPrice: 0.24 },
-  { id: 'RTX 5090', label: 'RTX 5090', desc: '32GB VRAM, next-gen flagship', minPrice: 0.30 },
-  { id: 'H100 SXM', label: 'H100 SXM', desc: '80GB VRAM, enterprise workloads', minPrice: 1.47 },
-  { id: 'H200', label: 'H200', desc: '141GB HBM3e, next-gen datacenter', minPrice: 1.94 },
-]
+type GpuOption = { id: string; label: string; desc: string; minPrice: number; available?: number }
+
+const ANY_GPU: GpuOption = { id: 'any', label: 'Any GPU', desc: 'Cheapest available GPU', minPrice: 0.03 }
 
 const LOCATION_TO_COUNTRIES: Record<string, string | undefined> = {
   any: undefined,
@@ -57,6 +52,32 @@ function NewSessionWizard() {
   const [numGpus, setNumGpus] = useState(1)
   const [diskGb, setDiskGb] = useState(10)
   const [location, setLocation] = useState('any')
+
+  // Dynamic GPU list from API
+  const [gpuOptions, setGpuOptions] = useState<GpuOption[]>([ANY_GPU])
+  const [gpusLoading, setGpusLoading] = useState(true)
+
+  useEffect(() => {
+    setGpusLoading(true)
+    fetch(clawsFunApiUrl('/api/session/gpus'))
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.gpus?.length) {
+          const fetched: GpuOption[] = data.gpus.slice(0, 20).map((g: any) => ({
+            id: g.name,
+            label: g.name,
+            desc: `${g.vramGb}GB VRAM`,
+            minPrice: g.minPricePerHour,
+            available: g.available,
+          }))
+          const cheapest = Math.min(...fetched.map(g => g.minPrice))
+          const anyGpu: GpuOption = { ...ANY_GPU, minPrice: cheapest }
+          setGpuOptions([anyGpu, ...fetched])
+        }
+      })
+      .catch(() => {})
+      .finally(() => setGpusLoading(false))
+  }, [])
 
   // Auto-adjust when GPU type changes
   useEffect(() => {
@@ -149,7 +170,7 @@ function NewSessionWizard() {
   }, [gpuType, numGpus, cpu, memory, diskGb, duration, location])
 
   // Pricing calculation
-  const selectedGpu = GPU_OPTIONS.find(g => g.id === gpuType) || GPU_OPTIONS[0]
+  const selectedGpu = gpuOptions.find(g => g.id === gpuType) || gpuOptions[0]
   const fallbackHourly = (selectedGpu.minPrice * numGpus + cpu * 0.01 + memory * 0.005)
   const hourlyPrice = (realHourlyPrice !== null ? realHourlyPrice : fallbackHourly) * PLATFORM_MARKUP
   const totalPrice = hourlyPrice * duration
@@ -269,7 +290,7 @@ function NewSessionWizard() {
               Launch a GPU-powered compute session for <span className="text-[var(--mint-mid)] font-semibold">{agentName}</span>
             </p>
             <p className="text-xs text-[var(--text-secondary)]/50 mb-8">
-              This will provision a Vast.ai GPU instance and deploy the agent with its on-chain memories from IPFS.
+              This will provision a secure, private Vast.ai GPU instance and deploy the agent with its on-chain memories from IPFS.
             </p>
 
             {/* Error */}
@@ -303,23 +324,32 @@ function NewSessionWizard() {
               <div className="space-y-8">
                 {/* GPU Selection */}
                 <div>
-                  <label className="block text-sm font-bold text-[var(--text-primary)] mb-3">GPU Type</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {GPU_OPTIONS.map((gpu) => (
-                      <button
-                        key={gpu.id}
-                        onClick={() => setGpuType(gpu.id)}
-                        className={`p-3 rounded-lg border text-left transition-all ${
-                          gpuType === gpu.id
-                            ? 'border-[var(--mint-mid)] bg-[var(--mint-mid)]/15 ring-1 ring-[var(--mint-mid)]/40 shadow-[0_0_12px_rgba(232,82,61,0.15)]'
-                            : 'border-[var(--glass-border)] bg-white/[0.02] hover:border-[var(--glass-border)]'
-                        }`}
-                      >
-                        <div className={`text-sm font-bold ${gpuType === gpu.id ? 'text-[var(--mint-mid)]' : 'text-[var(--text-primary)]'}`}>{gpu.label}</div>
-                        <div className="text-xs text-[var(--text-secondary)]">{gpu.desc}</div>
-                        <div className="text-xs text-[var(--mint-mid)] mt-1">from ${gpu.minPrice.toFixed(2)}/hr</div>
-                      </button>
-                    ))}
+                  <label className="block text-sm font-bold text-[var(--text-primary)] mb-3">
+                    GPU Type
+                    {gpusLoading && <span className="ml-2 text-xs text-[var(--text-secondary)] font-normal">Loading available GPUs...</span>}
+                    {!gpusLoading && gpuOptions.length > 1 && <span className="ml-2 text-xs text-[var(--text-secondary)] font-normal">({gpuOptions.length - 1} available)</span>}
+                  </label>
+                  <div className="max-h-[280px] overflow-y-auto rounded-lg pr-1" style={{ scrollbarWidth: 'thin' }}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {gpuOptions.map((gpu) => (
+                        <button
+                          key={gpu.id}
+                          onClick={() => setGpuType(gpu.id)}
+                          className={`p-3 rounded-lg border text-left transition-all ${
+                            gpuType === gpu.id
+                              ? 'border-[var(--mint-mid)] bg-[var(--mint-mid)]/15 ring-1 ring-[var(--mint-mid)]/40 shadow-[0_0_12px_rgba(232,82,61,0.15)]'
+                              : 'border-[var(--glass-border)] bg-white/[0.02] hover:border-[var(--glass-border)]'
+                          }`}
+                        >
+                          <div className={`text-sm font-bold ${gpuType === gpu.id ? 'text-[var(--mint-mid)]' : 'text-[var(--text-primary)]'}`}>{gpu.label}</div>
+                          <div className="text-xs text-[var(--text-secondary)]">{gpu.desc}</div>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-xs text-[var(--mint-mid)]">from ${gpu.minPrice.toFixed(2)}/hr</span>
+                            {gpu.available != null && <span className="text-[10px] text-[var(--text-secondary)]">{gpu.available} avail</span>}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Number of GPUs */}
