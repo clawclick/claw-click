@@ -418,26 +418,26 @@ function CreateAgentFlow() {
         <div className="orb orb-2 opacity-20"></div>
         <div className="orb orb-3 opacity-25"></div>
       </div>
-      {/* Header */}
+      {/* Header - Bigger */}
       <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]" >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-10 h-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-4">
+            <div className="relative w-12 h-12">
               <Image 
                 src="/branding/logo_rm_bk.png" 
                 alt="Claw.Click" 
-                width={40}
-                height={40}
+                width={48}
+                height={48}
                 className="object-contain"
               />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
+                <span className="text-2xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                   claw.click
                 </span>
               </div>
-              <span className="text-xs handwriting" style={{color:'#0F2F2C'}}>Agent Infrastructure</span>
+              <span className="text-sm handwriting" style={{color:'#45C7B8'}}>Agent Infrastructure</span>
             </div>
           </Link>
           <ConnectButton />
@@ -450,7 +450,7 @@ function CreateAgentFlow() {
             {/* Step 0: Entry */}
             {step === 0 && (
               <motion.div key="step0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center">
-                <h1 className="text-4xl font-black text-[var(--text-primary)] mb-4">Create Agent</h1>
+                <h1 className="text-4xl font-black text-[#45C7B8] mb-4">Create Agent</h1>
                 <p className="text-[var(--text-secondary)] mb-12">Who is creating this agent?</p>
                 <div className="grid md:grid-cols-2 gap-6 max-w-lg mx-auto">
                   <button onClick={() => { setCreatorType('human'); setStep(1) }} className="hover:border-[rgba(46,230,214,0.7)] transition-all group rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
@@ -561,14 +561,14 @@ function CreateAgentFlow() {
 
                 <div className="bg-gradient-to-br from-[var(--mint-mid)]/10 to-[var(--mint-dark)]/10 rounded-xl p-6 border border-[var(--mint-mid)]/30 mb-6">
                   <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                    <span className="text-[var(--mint-dark)]">⚡</span> One-liner (all steps)
+                    <span className="text-[var(--mint-dark)]">•</span> One-liner (all steps)
                   </h3>
                   <div className="bg-black/50 rounded-lg p-4 border border-[var(--mint-mid)]/20 mb-2">
                     <code className="text-sm text-[var(--mint-dark)] break-all">
                       npx @clawclick/clawclick create --name "YourAgent" --symbol "AGENT" --network base --starting-mcap 5
                     </code>
                   </div>
-                  <p className="text-xs text-white/60">Deploys token with 5 ETH starting MCAP. Mints birth certificate! 🚀</p>
+                  <p className="text-xs text-white/60">Deploys token with 5 ETH starting MCAP. Mints birth certificate!</p>
                 </div>
 
                 <div className="space-y-4">
@@ -618,7 +618,7 @@ function CreateAgentFlow() {
                         npx @clawclick/clawclick deploy --network base --starting-mcap 5
                       </code>
                     </div>
-                    <p className="text-xs text-white/60">Deploys token with 5 ETH starting MCAP. Mints birth certificate! 🚀</p>
+                    <p className="text-xs text-white/60">Deploys token with 5 ETH starting MCAP. Mints birth certificate!</p>
                   </div>
                 </div>
 
@@ -627,7 +627,7 @@ function CreateAgentFlow() {
                     href="/docs/cli"
                     className="inline-flex items-center gap-2 text-[var(--mint-mid)] hover:text-[var(--mint-dark)] transition-colors text-sm"
                   >
-                    📖 View full CLI documentation
+                    View full CLI documentation
                   </Link>
                 </div>
 

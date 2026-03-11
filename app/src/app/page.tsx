@@ -324,8 +324,8 @@ export default function Home() {
               </p>
             </div>
 
-            {/* CTA Buttons - Mobile Responsive & Centered */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 w-full">
+            {/* Primary CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 w-full mb-6">
               <Link href="/spawner/create">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -336,6 +336,19 @@ export default function Home() {
                   Spawn Agent
                 </motion.button>
               </Link>
+              <Link href="/spawner">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-base md:text-lg px-6 md:px-10 py-4 md:py-5 flex items-center justify-center gap-3 border border-[var(--mint-mid)]/30 bg-transparent hover:bg-[var(--mint-mid)]/5 rounded-full text-[var(--mint-mid)] font-semibold transition-all"
+                >
+                  Browse Agents
+                </motion.button>
+              </Link>
+            </div>
+
+            {/* Secondary Action */}
+            <div className="flex justify-center">
               <button
                 onClick={() => setShowHowItWorks(true)}
                 className="flex items-center justify-center gap-3 text-[var(--mint-dark)] text-base md:text-lg font-bold hover:text-[var(--mint-mid)] transition-all"
