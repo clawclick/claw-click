@@ -5,6 +5,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
 import Link from 'next/link'
 import Image from 'next/image'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { clawsFunApiUrl } from '../../../lib/api'
 
 interface SessionData {
@@ -997,6 +999,13 @@ export default function SessionTerminal({ params }: { params: { id: string } }) 
                       <div className="flex items-center gap-2">
                         <span className="text-yellow-400">{msg.toolPhase === 'start' ? '⚙️' : '✓'}</span>
                         <span>{msg.content}</span>
+                      </div>
+                    ) : msg.type === 'assistant' ? (
+                      <div className="prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_h1]:text-xl [&_h1]:font-bold [&_h1]:my-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:my-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:my-2 [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[var(--mint-light)] [&_pre]:bg-black/30 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_a]:text-[var(--mint-mid)] [&_a]:underline [&_hr]:border-white/10 [&_blockquote]:border-l-[var(--mint-mid)] [&_blockquote]:text-white/70">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content || ''}</ReactMarkdown>
+                        {msg.isStreaming && (
+                          <span className="inline-block w-2 h-4 bg-[var(--mint-mid)] ml-0.5 animate-pulse" />
+                        )}
                       </div>
                     ) : (
                       <div className="whitespace-pre-wrap">
