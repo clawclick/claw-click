@@ -22,6 +22,13 @@ const nextConfig = {
       { source: '/immortal/create', destination: '/spawner/create', permanent: true },
       { source: '/immortal/agent/:address', destination: '/spawner/agent/:address', permanent: true },
       { source: '/locker', destination: '/m-sig', permanent: true },
+      // app.claw.click root → dashboard
+      {
+        source: '/',
+        has: [{ type: 'host', value: 'app.claw.click' }],
+        destination: '/dashboard',
+        permanent: false,
+      },
       // Session subdomain redirects
       {
         source: '/session/:path*',

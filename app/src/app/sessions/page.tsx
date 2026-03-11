@@ -74,7 +74,7 @@ export default function SessionsPage() {
   const [agent, setAgent] = useState<Agent | null>(null)
   const [birthCertNftId, setBirthCertNftId] = useState<number | null>(null)
   const [durationHours, setDurationHours] = useState(4)
-  const [llmProvider, setLlmProvider] = useState<LlmProvider>('openai')
+  const [llmProvider, setLlmProvider] = useState<LlmProvider>('anthropic')
   const [llmApiKey, setLlmApiKey] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [creationStatus, setCreationStatus] = useState('')
@@ -406,23 +406,23 @@ export default function SessionsPage() {
                   <label className="block text-xs text-[var(--text-secondary)] mb-1">LLM provider</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
+                      onClick={() => setLlmProvider('anthropic')}
+                      className={`py-2 rounded border text-sm ${llmProvider === 'anthropic' ? 'border-[var(--mint-mid)] text-[var(--mint-mid)] bg-[var(--mint-mid)]/10' : 'border-[var(--glass-border)] text-[var(--text-secondary)]'}`}
+                    >
+                      Anthropic (recommended)
+                    </button>
+                    <button
                       onClick={() => setLlmProvider('openai')}
                       className={`py-2 rounded border text-sm ${llmProvider === 'openai' ? 'border-[var(--mint-mid)] text-[var(--mint-mid)] bg-[var(--mint-mid)]/10' : 'border-[var(--glass-border)] text-[var(--text-secondary)]'}`}
                     >
                       OpenAI
-                    </button>
-                    <button
-                      onClick={() => setLlmProvider('anthropic')}
-                      className={`py-2 rounded border text-sm ${llmProvider === 'anthropic' ? 'border-[var(--mint-mid)] text-[var(--mint-mid)] bg-[var(--mint-mid)]/10' : 'border-[var(--glass-border)] text-[var(--text-secondary)]'}`}
-                    >
-                      Anthropic
                     </button>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs text-[var(--text-secondary)] mb-1">
-                    {llmProvider === 'openai' ? 'OpenAI API key' : 'Anthropic API key'}
+                    {llmProvider === 'openai' ? 'OpenAI API key' : 'Anthropic API key (recommended)'}
                   </label>
                   <input
                     type="password"

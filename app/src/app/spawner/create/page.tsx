@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SEPOLIA_ADDRESSES, BASE_ADDRESSES, ABIS, LaunchType } from '../../../lib/contracts'
 import { uploadToPinata } from '../../../lib/ipfs'
+import { clawsFunApiUrl } from '../../../lib/api'
 import { CLAWD_NFT_ADDRESS, CLAWD_NFT_ABI } from '../../../lib/contracts/clawdNFT'
 
 // ── Animated creator type icons ──────────────────────────────────────────────
@@ -202,12 +203,20 @@ function CreateAgentFlow() {
       .catch(() => setEthPrice(2300))
   }, [])
 
-  // Generate agent wallet on mount
+  // Create agent wallet contract on mount
   useEffect(() => {
-    const randomWallet = `0x${Array.from({length: 40}, () => 
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')}` as Hex
-    setAgentWallet(randomWallet)
+    const createWallet = async () => {
+      try {
+        const res = await fetch(clawsFunApiUrl('/api/agent/wallet/create'), { method: 'POST' })
+        if (!res.ok) throw new Error('Failed to create agent wallet')
+        const data = await res.json()
+        setAgentWallet(data.agentAddress as Hex)
+      } catch (err) {
+        console.error('Failed to create agent wallet:', err)
+        alert('Failed to create agent wallet. Please try again.')
+      }
+    }
+    createWallet()
   }, [])
 
   // Cost Calculation
