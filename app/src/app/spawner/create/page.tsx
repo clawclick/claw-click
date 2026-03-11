@@ -708,31 +708,67 @@ function CreateAgentFlow() {
                 {/* Fee Split - Simplified */}
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-white/60 mb-2">Fee Split (70% Creator Share)</label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={formData.feeSplitWallets[0] || creatorAddress || ''}
-                      onChange={(e) => {
-                        const newWallets = [...formData.feeSplitWallets]
-                        newWallets[0] = e.target.value
-                        setFormData({ ...formData, feeSplitWallets: newWallets })
-                      }}
-                      placeholder={creatorAddress || '0x...'}
-                      className="flex-1 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-3 py-2 text-white font-mono text-xs focus:border-[var(--mint-mid)] focus:outline-none"
-                    />
-                    <span className="flex items-center text-white text-xs px-3">100%</span>
+                  
+                  {/* Render all wallet inputs */}
+                  <div className="space-y-3 mb-2">
+                    {(formData.feeSplitWallets.length > 0 ? formData.feeSplitWallets : ['']).map((wallet, idx) => (
+                      <div key={idx} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={wallet || (idx === 0 ? creatorAddress || '' : '')}
+                          onChange={(e) => {
+                            const newWallets = [...formData.feeSplitWallets]
+                            while (newWallets.length <= idx) newWallets.push('')
+                            newWallets[idx] = e.target.value
+                            setFormData({ ...formData, feeSplitWallets: newWallets })
+                          }}
+                          placeholder={idx === 0 ? (creatorAddress || '0x...') : '0x... (optional)'}
+                          className="flex-1 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-3 py-2 text-white font-mono text-xs focus:border-[var(--mint-mid)] focus:outline-none"
+                        />
+                        <input
+                          type="number"
+                          value={formData.feeSplitPercentages[idx] ?? (idx === 0 ? 100 : 0)}
+                          onChange={(e) => {
+                            const newPercentages = [...formData.feeSplitPercentages]
+                            while (newPercentages.length <= idx) newPercentages.push(0)
+                            newPercentages[idx] = parseInt(e.target.value) || 0
+                            setFormData({ ...formData, feeSplitPercentages: newPercentages })
+                          }}
+                          min="0"
+                          max="100"
+                          className="w-16 bg-black border border-[var(--mint-mid)]/20 rounded-lg px-2 py-2 text-white text-center text-xs focus:border-[var(--mint-mid)] focus:outline-none"
+                        />
+                        <span className="flex items-center text-white/60 text-xs">%</span>
+                        {idx > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newWallets = formData.feeSplitWallets.filter((_, i) => i !== idx)
+                              const newPercentages = formData.feeSplitPercentages.filter((_, i) => i !== idx)
+                              setFormData({ ...formData, feeSplitWallets: newWallets, feeSplitPercentages: newPercentages })
+                            }}
+                            className="text-red-400 hover:text-red-300 text-xs px-1"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  <button 
-                    type="button"
-                    className="text-xs text-[var(--mint-mid)] hover:underline"
-                    onClick={() => {
-                      const newWallets = [...formData.feeSplitWallets, '']
-                      const newPercentages = [...formData.feeSplitPercentages, 0]
-                      setFormData({ ...formData, feeSplitWallets: newWallets, feeSplitPercentages: newPercentages })
-                    }}
-                  >
-                    + wallet for split
-                  </button>
+                  
+                  {formData.feeSplitWallets.length < 5 && (
+                    <button 
+                      type="button"
+                      className="text-xs text-[var(--mint-mid)] hover:underline"
+                      onClick={() => {
+                        const newWallets = [...formData.feeSplitWallets, '']
+                        const newPercentages = [...formData.feeSplitPercentages, 0]
+                        setFormData({ ...formData, feeSplitWallets: newWallets, feeSplitPercentages: newPercentages })
+                      }}
+                    >
+                      + wallet for split
+                    </button>
+                  )}
                   <p className="text-xs text-white/60 mt-2">Receive your fees here</p>
                 </div>
 
