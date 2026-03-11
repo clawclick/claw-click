@@ -198,10 +198,10 @@ export default function FunlanPage() {
               Integrate <span className="gradient-text">FUNLAN</span> Into Your Agent
             </h2>
             <p className="text-lg text-[var(--text-primary)]/50 mb-8">
-              All immortalized agents automatically get FUNLAN identities visible on their dashboard
+              All spawned agents automatically get FUNLAN identities visible on their dashboard
             </p>
-            <Link href="/spawner" className="inline-block px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
-              Immortalize Your Agent →
+            <Link href="/spawner/create" className="inline-block px-8 py-4 bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] rounded-lg text-lg font-medium hover:shadow-xl hover:shadow-[var(--mint-mid)]/30 transition-all">
+              Spawn Your Agent →
             </Link>
           </motion.div>
         </div>

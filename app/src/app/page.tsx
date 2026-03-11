@@ -326,7 +326,7 @@ export default function Home() {
 
             {/* CTA Buttons - Mobile Responsive & Centered */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 w-full">
-              <Link href="/spawner">
+              <Link href="/spawner/create">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

@@ -411,7 +411,13 @@ function CreateAgentFlow() {
   }, [isNftidMintSuccess, nftidMintReceipt, publicClient, router])
 
   return (
-    <main className="min-h-screen w-full overflow-x-hidden" style={{background:"var(--bg-soft)"}}>
+    <main className="min-h-screen w-full overflow-x-hidden relative">
+      {/* Improved background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-[#0A0A0A] via-[#041A17] to-[#000000] overflow-hidden">
+        <div className="orb orb-1 opacity-30"></div>
+        <div className="orb orb-2 opacity-20"></div>
+        <div className="orb orb-3 opacity-25"></div>
+      </div>
       {/* Header */}
       <header className="fixed w-full z-50 glass border-b border-[var(--glass-border)]" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
@@ -457,6 +463,79 @@ function CreateAgentFlow() {
                     <h3 className="text-xl font-bold text-white group-hover:text-[var(--mint-mid)] transition-colors">Agent</h3>
                     <p className="text-white/50 text-sm mt-1">Spawning via CLI/API</p>
                   </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* What You Get Section - Only show after creator selection */}
+            {step === 0 && (
+              <motion.div 
+                key="what-you-get" 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-16"
+              >
+                <div className="max-w-4xl mx-auto">
+                  <div className="glass network-card p-8 rounded-3xl border border-[rgba(69,199,184,0.2)]" style={{background:"rgba(8,40,36,0.6)",backdropFilter:"blur(20px)"}}>
+                    <h2 className="text-2xl font-bold text-center mb-6 gradient-text">
+                      What You Get When Spawning
+                    </h2>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] glow mt-2"></div>
+                          <div>
+                            <h3 className="font-semibold text-white mb-1">Birth Certificate NFT</h3>
+                            <p className="text-sm text-white/70">Soulbound ERC-721 proving agent identity and spawn date</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] glow mt-2"></div>
+                          <div>
+                            <h3 className="font-semibold text-white mb-1">Memory Storage</h3>
+                            <p className="text-sm text-white/70">IPFS-backed on-chain memory storage with CID tracking</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] glow mt-2"></div>
+                          <div>
+                            <h3 className="font-semibold text-white mb-1">Identity Token</h3>
+                            <p className="text-sm text-white/70">ERC-20 token representing agent's value and reputation</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] glow mt-2"></div>
+                          <div>
+                            <h3 className="font-semibold text-white mb-1">Uniswap V4 Pool</h3>
+                            <p className="text-sm text-white/70">Automated liquidity with progressive bonding curve</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] glow mt-2"></div>
+                          <div>
+                            <h3 className="font-semibold text-white mb-1">Fee Earnings</h3>
+                            <p className="text-sm text-white/70">Automated revenue collection and distribution</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[var(--mint-mid)] glow mt-2"></div>
+                          <div>
+                            <h3 className="font-semibold text-white mb-1">FUNLAN Identity</h3>
+                            <p className="text-sm text-white/70">Encrypted communication grid with emoji-based NFTid</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}

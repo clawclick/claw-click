@@ -69,7 +69,7 @@ export default function DashboardPage() {
                 Connect your wallet to view your spawned agents, earnings, and portfolio
               </p>
 
-              <div className="pt-8">
+              <div className="pt-8 flex justify-center">
                 <ConnectButton />
               </div>
             </motion.div>
