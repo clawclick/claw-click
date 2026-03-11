@@ -23,18 +23,18 @@ const nextConfig = {
       { source: '/immortal/agent/:address', destination: '/spawner/agent/:address', permanent: true },
       { source: '/locker', destination: '/m-sig', permanent: true },
       // Session subdomain redirects
-      {
-        source: '/session/:path*',
-        has: [{ type: 'host', value: 'claw.click' }],
-        destination: 'https://app.claw.click/session/:path*',
-        permanent: true,
-      },
-      {
-        source: '/session/:path*',
-        has: [{ type: 'host', value: 'www.claw.click' }],
-        destination: 'https://app.claw.click/session/:path*',
-        permanent: true,
-      },
+      // {
+      //   source: '/session/:path*',
+      //   has: [{ type: 'host', value: 'claw.click' }],
+      //   destination: 'https://app.claw.click/session/:path*',
+      //   permanent: true,
+      // },
+      // {
+      //   source: '/session/:path*',
+      //   has: [{ type: 'host', value: 'www.claw.click' }],
+      //   destination: 'https://app.claw.click/session/:path*',
+      //   permanent: true,
+      // },
     ];
   },
   webpack: (config) => {
