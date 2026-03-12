@@ -47,14 +47,7 @@ const nextConfig = {
       },
     ];
   },
-  async rewrites() {
-    return [
-      {
-        source: '/.well-known/vector-verify',
-        destination: '/api/well-known/vector-verify',
-      },
-    ];
-  },
+
   async redirects() {
     return [
       // Legacy route support
