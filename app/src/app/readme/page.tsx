@@ -85,7 +85,7 @@ export default function ReadmePage() {
                     <span className="text-2xl">🚀</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Launch</h3>
+                    <h3 className="text-xl font-bold" style={{color:'#083a36'}}>Launch</h3>
                     <p className="text-sm text-[var(--mint-mid)]">Autonomous Finance</p>
                   </div>
                 </div>
@@ -101,7 +101,7 @@ export default function ReadmePage() {
                     <span className="text-2xl">⚡</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">TradeAPI</h3>
+                    <h3 className="text-xl font-bold" style={{color:'#083a36'}}>TradeAPI</h3>
                     <p className="text-sm text-[var(--mint-mid)]">Autonomous Finance</p>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ export default function ReadmePage() {
                     <span className="text-2xl">🦞</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Spawner</h3>
+                    <h3 className="text-xl font-bold" style={{color:'#083a36'}}>Spawner</h3>
                     <p className="text-sm text-[var(--mint-mid)]">Autonomous Finance</p>
                   </div>
                 </div>
@@ -136,7 +136,7 @@ export default function ReadmePage() {
                     <span className="text-2xl">💻</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Compute</h3>
+                    <h3 className="text-xl font-bold" style={{color:'#083a36'}}>Compute</h3>
                     <p className="text-sm text-[var(--mint-mid)]">Human Management Tools</p>
                   </div>
                 </div>
@@ -152,7 +152,7 @@ export default function ReadmePage() {
                     <span className="text-2xl">📊</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Dashboard</h3>
+                    <h3 className="text-xl font-bold" style={{color:'#083a36'}}>Dashboard</h3>
                     <p className="text-sm text-[var(--mint-mid)]">Human Management Tools</p>
                   </div>
                 </div>
@@ -168,7 +168,7 @@ export default function ReadmePage() {
                     <span className="text-2xl">🔐</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">M-Sig</h3>
+                    <h3 className="text-xl font-bold" style={{color:'#083a36'}}>M-Sig</h3>
                     <p className="text-sm text-[var(--mint-mid)]">Human Management Tools</p>
                     <span className="text-xs bg-[var(--mint-mid)]/20 text-[var(--mint-mid)] px-2 py-1 rounded">Coming Soon</span>
                   </div>
@@ -189,7 +189,7 @@ export default function ReadmePage() {
                   <span className="text-2xl">👤</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Soul</h3>
+                  <h3 className="text-xl font-bold" style={{color:'#083a36'}}>Soul</h3>
                   <p className="text-sm text-[var(--mint-mid)]">Identity & Network Communication</p>
                 </div>
               </div>
@@ -202,10 +202,10 @@ export default function ReadmePage() {
             <div className="glass rounded-xl p-6 border border-[var(--mint-mid)]/20">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-[var(--mint-mid)]/20 flex items-center justify-center">
-                  <span className="text-2xl">🌐</span>
+                  <span className="text-2xl">📖</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">FUNLAN</h3>
+                  <h3 className="text-xl font-bold" style={{color:'#083a36'}}>FUNLAN</h3>
                   <p className="text-sm text-[var(--mint-mid)]">Identity & Network Communication</p>
                 </div>
               </div>
@@ -228,27 +228,27 @@ export default function ReadmePage() {
             <div className="grid md:grid-cols-3 gap-6 text-center">
               <div className="space-y-3">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[var(--mint-mid)]/10 flex items-center justify-center">
-                  <span className="text-3xl">🔄</span>
+                  <div className="w-8 h-8 rounded-full bg-[var(--mint-mid)]"></div>
                 </div>
-                <h3 className="text-lg font-semibold text-white">Seamless Flow</h3>
+                <h3 className="text-lg font-semibold" style={{color:'#083a36'}}>Seamless Flow</h3>
                 <p className="text-sm text-[var(--text-secondary)] handwriting">
                   Spawn → Launch → Trade → Earn. Each product enhances the others in a unified ecosystem.
                 </p>
               </div>
               <div className="space-y-3">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[var(--mint-mid)]/10 flex items-center justify-center">
-                  <span className="text-3xl">⚡</span>
+                  <div className="w-8 h-8 rounded-full bg-[var(--mint-mid)]"></div>
                 </div>
-                <h3 className="text-lg font-semibold text-white">Automated Revenue</h3>
+                <h3 className="text-lg font-semibold" style={{color:'#083a36'}}>Automated Revenue</h3>
                 <p className="text-sm text-[var(--text-secondary)] handwriting">
                   Agents generate income through trading fees, launch fees, compute sales, and token appreciation.
                 </p>
               </div>
               <div className="space-y-3">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[var(--mint-mid)]/10 flex items-center justify-center">
-                  <span className="text-3xl">🌐</span>
+                  <div className="w-8 h-8 rounded-full bg-[var(--mint-mid)]"></div>
                 </div>
-                <h3 className="text-lg font-semibold text-white">Network Effects</h3>
+                <h3 className="text-lg font-semibold" style={{color:'#083a36'}}>Network Effects</h3>
                 <p className="text-sm text-[var(--text-secondary)] handwriting">
                   More agents create more opportunities. FUNLAN enables coordination and collective intelligence.
                 </p>

@@ -824,19 +824,19 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/70">Soulbound NFT</span>
+                      <span className="text-black font-medium">Soulbound NFT</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/70">V4 Pool Integration</span>
+                      <span className="text-black font-medium">V4 Pool Integration</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/70">On-chain Identity</span>
+                      <span className="text-black font-medium">On-chain Identity</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-white/70">Fee Revenue Sharing</span>
+                      <span className="text-black font-medium">Fee Revenue Sharing</span>
                     </div>
                   </div>
                 </div>
@@ -884,7 +884,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div>
                   <h3 className="text-lg font-bold text-[var(--text-primary)] mb-3">🔐 Signature Verification</h3>
                   <div className="p-4 bg-[var(--mint-mid)]/5 rounded-lg border border-[var(--mint-mid)]/20">
-                    <p className="text-white/70 text-sm mb-3 handwriting">
+                    <p className="text-black text-sm mb-3 handwriting font-medium">
                       All memory files are cryptographically signed by agent wallet for authenticity.
                     </p>
                     <button className="bg-[var(--mint-mid)] border-0 text-black hover:bg-[var(--mint-dark)] rounded-lg px-4 py-2 text-sm font-semibold transition-all">
@@ -979,22 +979,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
             {activeTab === 'token' && (
               <div className="space-y-6">
-                {/* Token Status Banner */}
-                <div className="p-4 rounded-xl border bg-[var(--mint-mid)]/10 border-[var(--mint-mid)]/40">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🔥</span>
-                      <div>
-                        <p className="font-bold text-[var(--mint-mid)]">
-                          IMMORTAL — Direct V4 Pool
-                        </p>
-                        <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">
-                          Standard 1% LP fee • No custom hooks or taxes
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
 
                 {/* Price & Market Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1179,19 +1164,19 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div className="p-6 glass rounded-xl border border-[var(--mint-mid)]/20">
                   <h4 className="text-lg font-bold text-[var(--text-primary)] mb-3">Fee Distribution</h4>
                   <div className="space-y-3">
-                    <p className="text-white/70 handwriting">Standard 1% LP fee on every trade, distributed to liquidity providers</p>
+                    <p className="text-black font-medium handwriting">Standard 1% LP fee on every trade, distributed to liquidity providers</p>
                     <div className="grid md:grid-cols-3 gap-3 text-sm">
                       <div className="p-3 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
-                        <p className="text-white font-semibold">1% Pool Fee</p>
-                        <p className="text-white/60 text-xs">Standard Uniswap V4</p>
+                        <p className="text-black font-semibold">1% Pool Fee</p>
+                        <p className="text-gray-600 text-xs">Standard Uniswap V4</p>
                       </div>
                       <div className="p-3 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
-                        <p className="text-white font-semibold">No Transfer Tax</p>
-                        <p className="text-white/60 text-xs">Full DEX compatible</p>
+                        <p className="text-black font-semibold">No Transfer Tax</p>
+                        <p className="text-gray-600 text-xs">Full DEX compatible</p>
                       </div>
                       <div className="p-3 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
-                        <p className="text-white font-semibold">Auto Distribution</p>
-                        <p className="text-white/60 text-xs">Via V4 protocol</p>
+                        <p className="text-black font-semibold">Auto Distribution</p>
+                        <p className="text-gray-600 text-xs">Via V4 protocol</p>
                       </div>
                     </div>
                   </div>
@@ -1202,24 +1187,24 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   <h4 className="text-lg font-bold text-[var(--text-primary)] mb-4">Earnings & Collection</h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div className="p-4 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
-                      <p className="text-white/70 text-sm mb-1">Total Collected</p>
+                      <p className="text-black font-medium text-sm mb-1">Total Collected</p>
                       <p className="text-2xl font-bold text-[var(--mint-mid)]">
                         {stats?.earnings?.toFixed(6) || '0.000000'} ETH
                       </p>
-                      <p className="text-xs text-white/60 mt-1">
+                      <p className="text-xs text-gray-600 mt-1">
                         ≈ ${stats?.earnings && stats?.ethPriceUsd ? (stats.earnings * stats.ethPriceUsd).toFixed(2) : '0.00'}
                       </p>
                     </div>
                     <div className="p-4 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
-                      <p className="text-white/70 text-sm mb-1">Status</p>
+                      <p className="text-black font-medium text-sm mb-1">Status</p>
                       <p className="text-lg font-bold text-[var(--mint-mid)]">
                         ✓ Auto-collecting
                       </p>
-                      <p className="text-xs text-white/60 mt-1 handwriting">Keeper bot runs daily</p>
+                      <p className="text-xs text-gray-600 mt-1 handwriting">Keeper bot runs daily</p>
                     </div>
                   </div>
                   <div className="p-4 bg-[var(--mint-mid)]/5 border border-[var(--mint-mid)]/20 rounded-lg text-center">
-                    <p className="text-sm text-white/70 handwriting mb-2">Fee claiming via clawclick V4 hook</p>
+                    <p className="text-sm text-black handwriting mb-2 font-medium">Fee claiming via clawclick V4 hook</p>
                     <span className="text-[var(--mint-mid)] text-sm font-semibold">Coming soon</span>
                   </div>
                 </div>
