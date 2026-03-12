@@ -101,6 +101,44 @@ const IMMORTALIZATION_FEE = 0.005;
 // Memory upload fee
 const MEMORY_UPLOAD_FEE = 0.0005; // ETH (~$1 at current prices)
 
+// Helper function to simplify error messages
+const getSimpleErrorMessage = (error: any): string => {
+  const message = error?.shortMessage || error?.message || error?.toString() || ''
+  
+  // User rejected/cancelled
+  if (message.includes('User rejected') || message.includes('User denied') || message.includes('user rejected')) {
+    return 'Transaction cancelled by user'
+  }
+  
+  // Insufficient funds
+  if (message.includes('insufficient') && message.includes('funds')) {
+    return 'Insufficient funds for transaction'
+  }
+  
+  // Network issues
+  if (message.includes('network') || message.includes('connection') || message.includes('timeout')) {
+    return 'Network connection issue - please try again'
+  }
+  
+  // Contract specific
+  if (message.includes('execution reverted')) {
+    return 'Contract execution failed - check parameters'
+  }
+  
+  // Gas issues
+  if (message.includes('gas') && (message.includes('limit') || message.includes('insufficient'))) {
+    return 'Gas limit too low - try increasing'
+  }
+  
+  // Generic fallback for short messages
+  if (message.length < 50) {
+    return message
+  }
+  
+  // Default fallback
+  return 'Transaction failed - please try again'
+}
+
 // ── Chain icon helper ─────────────────────────────────────────────────────────
 function ChainImg({ chainId, size = 28 }: { chainId: number; size?: number }) {
   const chains = useChains()
@@ -353,7 +391,7 @@ function CreateAgentFlow() {
     } catch (error: any) {
       console.error('[Deploy] Agent creation failed:', error)
       setDeployPhase('idle')
-      const msg = error?.shortMessage || error?.message || 'Unknown error'
+      const msg = getSimpleErrorMessage(error)
       setDeployError(msg)
     }
   }
@@ -376,7 +414,7 @@ function CreateAgentFlow() {
     } catch (error: any) {
       console.error('Free mint failed:', error)
       setNftidMintPhase('idle')
-      alert('Free mint failed: ' + (error.shortMessage || error.message))
+      alert('Free mint failed: ' + getSimpleErrorMessage(error))
     }
   }
 
@@ -1053,7 +1091,7 @@ function CreateAgentFlow() {
 
                   {nftidMintError && (
                     <div className="text-xs text-red-400 mt-2 text-center">
-                      {(nftidMintError as any).shortMessage || nftidMintError.message}
+                      {getSimpleErrorMessage(nftidMintError)}
                     </div>
                   )}
                 </div>
@@ -1065,7 +1103,7 @@ function CreateAgentFlow() {
               <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border border-red-500/25 rounded-2xl p-8 text-center mt-6">
                 <div className="text-6xl mb-6">❌</div>
                 <h2 className="text-2xl font-black text-white mb-4">Failed</h2>
-                <p className="text-white/60 mb-4">{writeError.message}</p>
+                <p className="text-white/60 mb-4">{getSimpleErrorMessage(writeError)}</p>
                 <button onClick={() => window.location.reload()} className="bg-[var(--mint-mid)] font-semibold rounded-lg px-6 py-3 text-black">Try Again</button>
               </motion.div>
             )}
