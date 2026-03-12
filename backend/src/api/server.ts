@@ -196,7 +196,7 @@ app.get('/api/stats/agents/graduated', async (req, res) => {
 // ============================================================================
 app.get('/api/agents/recent', async (req, res) => {
   try {
-    const { limit = 10 } = req.query
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 10, 1), 100)
     const chainId = getChainId(req)
     const chainFilter = chainId !== null ? 'AND chain_id = $2' : ''
     const params = chainId !== null ? [limit, chainId] : [limit]
@@ -249,12 +249,12 @@ app.get('/api/tokens', async (req, res) => {
   try {
     const { 
       sort = 'new',
-      limit = 20,
-      offset = 0,
       search = '',
       graduated,
       launch_type,
     } = req.query
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 20, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
     const chainId = getChainId(req)
     
     let orderBy = 'launched_at DESC'
@@ -316,8 +316,8 @@ app.get('/api/tokens', async (req, res) => {
     res.json({
       tokens: result.rows,
       total: parseInt(countResult.rows[0].total),
-      limit: parseInt(limit as string),
-      offset: parseInt(offset as string),
+      limit,
+      offset,
       eth_price_usd: getETHPriceSync()
     })
   } catch (error) {
@@ -629,7 +629,9 @@ app.post(
 /** GET /api/funlan/posts — list top-level posts with reply counts */
 app.get('/api/funlan/posts', async (req, res) => {
   try {
-    const { sort = 'hot', limit = 50, offset = 0 } = req.query
+    const { sort = 'hot' } = req.query
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
 
     let orderBy: string
     switch (sort) {
@@ -662,7 +664,7 @@ app.get('/api/funlan/posts', async (req, res) => {
       WHERE p.parent_id IS NULL
       ORDER BY ${orderBy}
       LIMIT $1 OFFSET $2
-    `, [Number(limit), Number(offset)])
+    `, [limit, offset])
 
     res.json(result.rows)
   } catch (error) {
