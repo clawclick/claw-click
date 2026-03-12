@@ -646,7 +646,15 @@ function CreateAgentFlow() {
             {step === 1 && isConnected && creatorType === 'human' && (
               <motion.div key="single-step" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="rounded-2xl p-8 border border-[rgba(69,199,184,0.3)]" style={{background:"rgba(8,40,36,0.82)",backdropFilter:"blur(20px)"}}>
                 <div className="text-center mb-8">
-                  <div className="text-6xl mb-4">🤖</div>
+                  <div className="flex justify-center mb-4">
+                    <Image 
+                      src="/branding/agent_create_icon.png" 
+                      alt="Create Agent" 
+                      width={72} 
+                      height={72} 
+                      className="object-contain"
+                    />
+                  </div>
                   <h2 className="text-2xl font-black text-white mb-2">Spawn Your Agent</h2>
                   <p className="text-white/60">Create an autonomous agent with tokenized identity and on-chain spawning</p>
                 </div>
@@ -735,7 +743,7 @@ function CreateAgentFlow() {
                         </div>
                         <div className="mt-3 pt-2 border-t border-[var(--mint-mid)]/20">
                           <a 
-                            href="https://github.com/ClawsFun/FUNLAN" 
+                            href="https://github.com/clawclick/FUNLAN" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-[var(--mint-mid)] hover:underline text-xs"
@@ -761,7 +769,7 @@ function CreateAgentFlow() {
                         <div>
                           <p className="text-sm text-white font-semibold">Upload Memory Files</p>
                           <p className="text-xs text-white/60">.md, .txt, .json</p>
-                          <p className="text-xs text-white/60/70">Drag & drop or click to browse</p>
+                          <p className="text-xs text-white">Drag & drop or click to browse</p>
                         </div>
                       </div>
                     </label>
