@@ -344,11 +344,8 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   <span className="text-xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                     claw.click
                   </span>
-                  <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-mid)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">
-                    BETA
-                  </span>
                 </div>
-                <span className="text-xs text-[var(--text-secondary)]">Agent Infrastructure</span>
+                <span className="text-xs handwriting" style={{color:'#45C7B8'}}>Agent Infrastructure</span>
               </div>
             </Link>
             <ConnectButton />
@@ -407,11 +404,8 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <span className="text-xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
                   claw.click
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--mint-mid)]/20 text-[var(--mint-dark)] border border-[var(--mint-mid)]/30 rounded uppercase tracking-wide">
-                  BETA
-                </span>
               </div>
-              <span className="text-xs text-[var(--text-secondary)]">Agent Infrastructure</span>
+              <span className="text-xs handwriting" style={{color:'#45C7B8'}}>Agent Infrastructure</span>
             </div>
           </Link>
           
@@ -825,24 +819,24 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 </div>
 
                 {/* Properties Row */}
-                <div className="bg-[rgba(0, 0, 0, 0.5)]/70 rounded-xl p-4 border border-[var(--mint-mid)]/20">
-                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3">⚡ Immortal Properties</h4>
+                <div className="glass rounded-xl p-4 border border-[var(--mint-mid)]/20">
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3">Agent Properties</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-[rgba(255, 255, 255, 0.5)]">Non-transferrable NFT</span>
+                      <span className="text-white/70">Soulbound NFT</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-[rgba(255, 255, 255, 0.5)]">V4 hook protection</span>
+                      <span className="text-white/70">V4 Pool Integration</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-[rgba(255, 255, 255, 0.5)]">On-chain identity</span>
+                      <span className="text-white/70">On-chain Identity</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--mint-mid)]">✓</span>
-                      <span className="text-[rgba(255, 255, 255, 0.5)]">Fee revenue sharing</span>
+                      <span className="text-white/70">Fee Revenue Sharing</span>
                     </div>
                   </div>
                 </div>
@@ -888,12 +882,12 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">Verify Signature</h3>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
-                    <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-3">
-                      All memory files are cryptographically signed by agent wallet.
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-3">🔐 Signature Verification</h3>
+                  <div className="p-4 bg-[var(--mint-mid)]/5 rounded-lg border border-[var(--mint-mid)]/20">
+                    <p className="text-white/70 text-sm mb-3 handwriting">
+                      All memory files are cryptographically signed by agent wallet for authenticity.
                     </p>
-                    <button className="bg-[#000000] border border-[var(--mint-mid)]/30 text-[rgba(255, 255, 255, 0.5)] hover:bg-[rgba(0, 0, 0, 0.5)] rounded-lg px-4 py-2 text-sm">
+                    <button className="bg-[var(--mint-mid)] border-0 text-black hover:bg-[var(--mint-dark)] rounded-lg px-4 py-2 text-sm font-semibold transition-all">
                       Verify All Files
                     </button>
                   </div>
@@ -1182,48 +1176,51 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 )}
 
                 {/* Fee Structure Info */}
-                <div className="p-6 bg-[var(--mint-mid)]/5 rounded-xl border border-[var(--mint-mid)]/20">
-                  <h4 className="text-lg font-bold text-[var(--text-primary)] mb-3">💰 Trading Fees & Distribution</h4>
-                  <div className="space-y-3 text-sm">
-                    <p className="text-[rgba(255, 255, 255, 0.5)] mb-2">Standard 1% LP fee on every trade, distributed to liquidity providers:</p>
-                    <div className="mt-3 p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mb-1"><strong className="text-[var(--text-primary)]">Fee Structure:</strong></p>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• 1% Uniswap V4 LP fee (standard pool fee)</p>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• No custom hooks or transfer taxes</p>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">• Full DEX aggregator compatibility</p>
+                <div className="p-6 glass rounded-xl border border-[var(--mint-mid)]/20">
+                  <h4 className="text-lg font-bold text-[var(--text-primary)] mb-3">Fee Distribution</h4>
+                  <div className="space-y-3">
+                    <p className="text-white/70 handwriting">Standard 1% LP fee on every trade, distributed to liquidity providers</p>
+                    <div className="grid md:grid-cols-3 gap-3 text-sm">
+                      <div className="p-3 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
+                        <p className="text-white font-semibold">1% Pool Fee</p>
+                        <p className="text-white/60 text-xs">Standard Uniswap V4</p>
+                      </div>
+                      <div className="p-3 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
+                        <p className="text-white font-semibold">No Transfer Tax</p>
+                        <p className="text-white/60 text-xs">Full DEX compatible</p>
+                      </div>
+                      <div className="p-3 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
+                        <p className="text-white font-semibold">Auto Distribution</p>
+                        <p className="text-white/60 text-xs">Via V4 protocol</p>
+                      </div>
                     </div>
-                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)] italic mt-3">
-                      Fees distributed automatically to liquidity providers via Uniswap V4 protocol.
-                    </p>
                   </div>
                 </div>
 
-                {/* Earnings & Claim Section */}
-                <div className="p-6 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[var(--mint-mid)]/30">
-                  <h4 className="text-lg font-bold text-[var(--text-primary)] mb-4">💎 Earnings & Collection</h4>
+                {/* Earnings & Collection Section */}
+                <div className="p-6 glass rounded-xl border border-[var(--mint-mid)]/20">
+                  <h4 className="text-lg font-bold text-[var(--text-primary)] mb-4">Earnings & Collection</h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <div className="p-4 bg-[#000000] rounded-lg border border-[var(--mint-mid)]/20">
-                      <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Total Collected</p>
+                    <div className="p-4 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
+                      <p className="text-white/70 text-sm mb-1">Total Collected</p>
                       <p className="text-2xl font-bold text-[var(--mint-mid)]">
                         {stats?.earnings?.toFixed(6) || '0.000000'} ETH
                       </p>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-1">
+                      <p className="text-xs text-white/60 mt-1">
                         ≈ ${stats?.earnings && stats?.ethPriceUsd ? (stats.earnings * stats.ethPriceUsd).toFixed(2) : '0.00'}
                       </p>
                     </div>
-                    <div className="p-4 bg-[#000000] rounded-lg border border-[var(--mint-mid)]/20">
-                      <p className="text-[rgba(255, 255, 255, 0.5)] text-sm mb-1">Status</p>
+                    <div className="p-4 bg-[var(--mint-mid)]/10 rounded-lg border border-[var(--mint-mid)]/20">
+                      <p className="text-white/70 text-sm mb-1">Status</p>
                       <p className="text-lg font-bold text-[var(--mint-mid)]">
-                        ✅ Auto-collecting
+                        ✓ Auto-collecting
                       </p>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)] mt-1">Keeper bot runs daily</p>
+                      <p className="text-xs text-white/60 mt-1 handwriting">Keeper bot runs daily</p>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex-1 bg-[#000000] border border-[var(--mint-mid)]/30 py-3 px-6 rounded-lg text-center">
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Fee claiming via clawclick V4 hook</p>
-                      <code className="text-[var(--mint-mid)] text-xs font-mono">Coming soon</code>
-                    </div>
+                  <div className="p-4 bg-[var(--mint-mid)]/5 border border-[var(--mint-mid)]/20 rounded-lg text-center">
+                    <p className="text-sm text-white/70 handwriting mb-2">Fee claiming via clawclick V4 hook</p>
+                    <span className="text-[var(--mint-mid)] text-sm font-semibold">Coming soon</span>
                   </div>
                 </div>
               </div>

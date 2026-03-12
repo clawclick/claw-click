@@ -401,7 +401,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
               onClick={() => { setIsBuy(true); setInputAmount('') }}
               className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
                 isBuy
-                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                  ? 'bg-[var(--mint-mid)]/20 text-[var(--mint-mid)] border border-[var(--mint-mid)]/30'
                   : 'text-[#9AA4B2] hover:text-white'
               }`}
             >
@@ -583,7 +583,7 @@ export default function TradeModal({ isOpen, onClose, token }: TradeModalProps) 
                   ? {background:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.3)'}
                   : txStatus === 'success' || txStatus === 'error'
                   ? {}
-                  : {background:'#00C48C', color:'#0F2F2C'}
+                  : {background:'var(--mint-mid)', color:'#000000'}
               }
             >
               {!address ? (
