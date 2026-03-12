@@ -697,7 +697,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                             </a>
                           </div>
                         </div>
-                        <div className="rounded p-2 font-mono text-[9px] text-[#00C48C] overflow-hidden border border-[var(--glass-border)] bg-white/[0.02]">
+                        <div className="rounded p-2 font-mono text-[9px] text-[#45c7b8] overflow-hidden border border-[var(--glass-border)] bg-white/[0.02]">
                           <div>name: &quot;{birthCert.name}&quot;</div>
                           <div>owner: {birthCert.wallet.slice(0, 16)}...</div>
                           <div>token: {birthCert.tokenAddress.slice(0, 16)}...</div>
@@ -979,73 +979,6 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
             {activeTab === 'token' && (
               <div className="space-y-6">
-
-
-                {/* Price & Market Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
-                    <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Price</p>
-                    <p className="text-xl font-bold text-[var(--text-primary)]">
-                      {stats?.price && stats?.ethPriceUsd ? `$${(stats.price * stats.ethPriceUsd).toFixed(8)}` : '—'}
-                    </p>
-                    <p className="text-[10px] text-[rgba(255, 255, 255, 0.5)] mt-1">
-                      {stats?.price ? `${stats.price.toFixed(10)} ETH` : ''}
-                    </p>
-                    {stats?.priceChange24h !== undefined && stats.priceChange24h !== 0 && (
-                      <p className={`text-xs mt-1 font-semibold ${stats.priceChange24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {stats.priceChange24h >= 0 ? '▲' : '▼'} {Math.abs(stats.priceChange24h).toFixed(2)}% (24h)
-                      </p>
-                    )}
-                  </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
-                    <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Market Cap</p>
-                    <p className="text-xl font-bold text-[var(--text-primary)]">
-                      {stats?.marketCap 
-                        ? `$${(stats.marketCap * (stats?.ethPriceUsd || 0)).toFixed(2)}`
-                        : '—'}
-                    </p>
-                    <p className="text-[10px] text-[rgba(255, 255, 255, 0.5)] mt-1">
-                      {stats?.marketCap ? `${stats.marketCap.toFixed(6)} ETH` : ''}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
-                    <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">Volume (24h)</p>
-                    <p className="text-xl font-bold text-[var(--text-primary)]">
-                      {stats?.volume24h 
-                        ? `$${(stats.volume24h * (stats?.ethPriceUsd || 0)).toFixed(2)}`
-                        : '$0'}
-                    </p>
-                    <p className="text-[10px] text-[rgba(255, 255, 255, 0.5)] mt-1">
-                      Total: ${stats?.volumeTotal ? (stats.volumeTotal * (stats?.ethPriceUsd || 0)).toFixed(2) : '0'}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20">
-                    <p className="text-[rgba(255, 255, 255, 0.5)] text-xs mb-1">ETH Price</p>
-                    <p className="text-xl font-bold text-[var(--text-primary)]">
-                      ${stats?.ethPriceUsd ? stats.ethPriceUsd.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '—'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* 24h Activity */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
-                    <p className="text-2xl font-bold text-[var(--text-primary)]">{stats?.txCount24h || 0}</p>
-                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Trades (24h)</p>
-                  </div>
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
-                    <p className="text-2xl font-bold text-green-400">{stats?.buys24h || 0}</p>
-                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Buys (24h)</p>
-                  </div>
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
-                    <p className="text-2xl font-bold text-red-400">{stats?.sells24h || 0}</p>
-                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Sells (24h)</p>
-                  </div>
-                  <div className="p-3 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
-                    <p className="text-2xl font-bold text-[var(--text-primary)]">{stats?.txCountTotal || 0}</p>
-                    <p className="text-xs text-[rgba(255, 255, 255, 0.5)]">Total Trades</p>
-                  </div>
-                </div>
 
                 {/* Price Chart - GeckoTerminal Embed */}
                 <div>

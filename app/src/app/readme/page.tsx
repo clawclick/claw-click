@@ -228,7 +228,14 @@ export default function ReadmePage() {
             <div className="grid md:grid-cols-3 gap-6 text-center">
               <div className="space-y-3">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[var(--mint-mid)]/10 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-[var(--mint-mid)]"></div>
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="text-[var(--mint-mid)]">
+                    <path d="M4 16L12 8L20 16L28 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M4 24L12 16L20 24L28 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="4" cy="16" r="2" fill="currentColor"/>
+                    <circle cx="12" cy="8" r="2" fill="currentColor"/>
+                    <circle cx="20" cy="16" r="2" fill="currentColor"/>
+                    <circle cx="28" cy="8" r="2" fill="currentColor"/>
+                  </svg>
                 </div>
                 <h3 className="text-lg font-semibold" style={{color:'#083a36'}}>Seamless Flow</h3>
                 <p className="text-sm text-[var(--text-secondary)] handwriting">
@@ -237,7 +244,12 @@ export default function ReadmePage() {
               </div>
               <div className="space-y-3">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[var(--mint-mid)]/10 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-[var(--mint-mid)]"></div>
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="text-[var(--mint-mid)]">
+                    <rect x="4" y="4" width="24" height="24" rx="4" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                    <path d="M12 12V20M16 8V24M20 14V18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                    <path d="M8 6L24 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path d="M8 26L24 26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
                 </div>
                 <h3 className="text-lg font-semibold" style={{color:'#083a36'}}>Automated Revenue</h3>
                 <p className="text-sm text-[var(--text-secondary)] handwriting">
@@ -246,7 +258,14 @@ export default function ReadmePage() {
               </div>
               <div className="space-y-3">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[var(--mint-mid)]/10 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-[var(--mint-mid)]"></div>
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="text-[var(--mint-mid)]">
+                    <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                    <circle cx="24" cy="8" r="3" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                    <circle cx="8" cy="24" r="3" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                    <circle cx="24" cy="24" r="3" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                    <circle cx="16" cy="16" r="3" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+                    <path d="M8 8L16 16L24 8M8 24L16 16L24 24M8 8L8 24M24 8L24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
                 </div>
                 <h3 className="text-lg font-semibold" style={{color:'#083a36'}}>Network Effects</h3>
                 <p className="text-sm text-[var(--text-secondary)] handwriting">

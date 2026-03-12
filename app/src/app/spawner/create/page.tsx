@@ -433,11 +433,11 @@ function CreateAgentFlow() {
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold bg-gradient-to-r from-[var(--mint-mid)] to-[var(--mint-dark)] text-transparent bg-clip-text">
+                <span className="text-2xl font-bold text-white">
                   claw.click
                 </span>
               </div>
-              <span className="text-sm handwriting" style={{color:'#45C7B8'}}>Agent Infrastructure</span>
+              <span className="text-sm handwriting text-[#45C7B8]">Agent Infrastructure</span>
             </div>
           </Link>
           <ConnectButton />
