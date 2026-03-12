@@ -36,7 +36,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
               "font-src 'self' fonts.gstatic.com",
               "img-src 'self' data: https: *.pinata.cloud *.ipfs.io",
-              "connect-src 'self' *.vercel.com *.walletconnect.com *.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org *.infura.io *.alchemy.com *.ankr.com *.base.org",
+              "connect-src 'self' *.vercel.com *.walletconnect.com *.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org *.infura.io *.alchemy.com *.ankr.com *.base.org *.herokuapp.com",
               "frame-src 'self' *.walletconnect.com *.walletconnect.org",
               "object-src 'none'",
               "base-uri 'self'",
