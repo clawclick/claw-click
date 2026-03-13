@@ -528,7 +528,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
               </a>
 
               <a
-                href={`https://www.geckoterminal.com/base/pools/${agent.token}`}
+                href={`https://www.geckoterminal.com/base/tokens/${agent.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-4 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 hover:border-[var(--mint-mid)]/40 hover:bg-[rgba(0, 0, 0, 0.5)]/70 transition-all group"
@@ -985,7 +985,7 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                   <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">📈 Live Price Chart</h3>
                   <div className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-xl border border-[var(--mint-mid)]/20 overflow-hidden">
                     <iframe 
-                      src={`https://www.geckoterminal.com/base/pools/${agent.token}?embed=1&info=0&swaps=0&grayscale=0&light_chart=0`}
+                      src={`https://www.geckoterminal.com/base/tokens/${agent.token}?embed=1&info=0&swaps=0&grayscale=0&light_chart=0`}
                       className="w-full h-[600px] border-0"
                       title="GeckoTerminal Chart"
                       allow="clipboard-write"
