@@ -39,6 +39,315 @@ interface MemoryEntry {
   contentHash: `0x${string}`
 }
 
+// ── Pretty memory content renderer ────────────────────────────────────────────
+function renderMarkdown(md: string) {
+  const lines = md.split('\n')
+  const elements: React.ReactNode[] = []
+  let inCodeBlock = false
+  let codeLines: string[] = []
+  let codeLang = ''
+  let inTable = false
+  let tableRows: string[][] = []
+  let listItems: React.ReactNode[] = []
+
+  const flushList = () => {
+    if (listItems.length > 0) {
+      elements.push(<ul key={`list-${elements.length}`} className="space-y-1 my-2 ml-4">{listItems}</ul>)
+      listItems = []
+    }
+  }
+
+  const flushTable = () => {
+    if (tableRows.length > 0) {
+      const header = tableRows[0]
+      const body = tableRows.slice(1).filter(r => !r.every(c => /^[-:]+$/.test(c.trim())))
+      elements.push(
+        <div key={`table-${elements.length}`} className="overflow-x-auto my-3">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr>
+                {header.map((h, i) => (
+                  <th key={i} className="text-left px-3 py-1.5 border-b border-[#2a7a72]/30 text-[#1a5c56] font-semibold">{h.trim()}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {body.map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((cell, ci) => (
+                    <td key={ci} className="px-3 py-1.5 border-b border-[#2a7a72]/15 text-[#2a6b65] font-mono">{cell.trim()}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+      tableRows = []
+      inTable = false
+    }
+  }
+
+  const inlineFormat = (text: string): React.ReactNode => {
+    // Bold, inline code, links
+    const parts: React.ReactNode[] = []
+    const regex = /(`[^`]+`|\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g
+    let lastIndex = 0
+    let match
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index))
+      const m = match[0]
+      if (m.startsWith('`')) {
+        parts.push(<code key={match.index} className="bg-[#1a5c56]/10 text-[#1a5c56] px-1.5 py-0.5 rounded text-[11px] font-mono">{m.slice(1, -1)}</code>)
+      } else if (m.startsWith('**')) {
+        parts.push(<strong key={match.index} className="text-[#0f3d38] font-semibold">{m.slice(2, -2)}</strong>)
+      } else if (m.startsWith('[')) {
+        const linkMatch = m.match(/\[([^\]]+)\]\(([^)]+)\)/)
+        if (linkMatch) {
+          parts.push(<a key={match.index} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-[#0e6e63] hover:underline">{linkMatch[1]}</a>)
+        }
+      }
+      lastIndex = match.index + m.length
+    }
+    if (lastIndex < text.length) parts.push(text.slice(lastIndex))
+    return parts.length === 1 ? parts[0] : <>{parts}</>
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+
+    // Code blocks
+    if (line.trimStart().startsWith('```')) {
+      if (inCodeBlock) {
+        elements.push(
+          <div key={`code-${elements.length}`} className="my-3 rounded-lg overflow-hidden border border-[#2a7a72]/25">
+            {codeLang && <div className="bg-[#0f3d38] px-3 py-1 text-[10px] text-[#7DE2D1] font-mono border-b border-[#1a5c56]/50">{codeLang}</div>}
+            <pre className="bg-[#133f3a] px-4 py-3 text-xs text-[#b5ece5] font-mono overflow-x-auto leading-relaxed">{codeLines.join('\n')}</pre>
+          </div>
+        )
+        codeLines = []
+        codeLang = ''
+        inCodeBlock = false
+      } else {
+        flushList()
+        flushTable()
+        inCodeBlock = true
+        codeLang = line.trimStart().slice(3).trim()
+      }
+      continue
+    }
+    if (inCodeBlock) { codeLines.push(line); continue }
+
+    // Table rows
+    if (line.includes('|') && line.trim().startsWith('|')) {
+      flushList()
+      const cells = line.split('|').slice(1, -1)
+      if (!inTable) inTable = true
+      tableRows.push(cells)
+      continue
+    } else if (inTable) {
+      flushTable()
+    }
+
+    // Horizontal rule
+    if (/^-{3,}$/.test(line.trim()) || /^\*{3,}$/.test(line.trim())) {
+      flushList()
+      elements.push(<hr key={`hr-${elements.length}`} className="border-[#45C7B8]/20 my-3" />)
+      continue
+    }
+
+    // YAML frontmatter delimiter (---) - skip
+    if (line.trim() === '---' && (i === 0 || elements.length === 0)) continue
+
+    // Headings
+    const headingMatch = line.match(/^(#{1,4})\s+(.+)/)
+    if (headingMatch) {
+      flushList()
+      const level = headingMatch[1].length
+      const text = headingMatch[2]
+      const styles: Record<number, string> = {
+        1: 'text-sm font-bold text-[#0f3d38] mt-4 mb-2',
+        2: 'text-sm font-bold text-[#1a5c56] mt-3 mb-1.5',
+        3: 'text-xs font-semibold text-[#1a5c56]/90 mt-2 mb-1',
+        4: 'text-xs font-semibold text-[#2a6b65] mt-2 mb-1',
+      }
+      elements.push(<div key={`h-${elements.length}`} className={styles[level] || styles[4]}>{inlineFormat(text)}</div>)
+      continue
+    }
+
+    // List items (- or *)
+    const listMatch = line.match(/^\s*[-*•]\s+(.+)/)
+    if (listMatch) {
+      listItems.push(
+        <li key={`li-${elements.length}-${listItems.length}`} className="flex items-start gap-2 text-xs text-[#2a6b65]">
+          <span className="text-[#45C7B8] mt-0.5 shrink-0">•</span>
+          <span>{inlineFormat(listMatch[1])}</span>
+        </li>
+      )
+      continue
+    }
+
+    // Numbered list
+    const numMatch = line.match(/^\s*(\d+)\.\s+(.+)/)
+    if (numMatch) {
+      listItems.push(
+        <li key={`li-${elements.length}-${listItems.length}`} className="flex items-start gap-2 text-xs text-[#2a6b65]">
+          <span className="text-[#45C7B8] mt-0.5 shrink-0 font-mono text-[10px]">{numMatch[1]}.</span>
+          <span>{inlineFormat(numMatch[2])}</span>
+        </li>
+      )
+      continue
+    }
+
+    flushList()
+
+    // Empty line
+    if (line.trim() === '') continue
+
+    // Regular paragraph
+    elements.push(<p key={`p-${elements.length}`} className="text-xs text-[#2a6b65] leading-relaxed my-1">{inlineFormat(line)}</p>)
+  }
+
+  flushList()
+  flushTable()
+  return elements
+}
+
+function MemoryContent({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false)
+
+  const parsed = useMemo(() => {
+    const trimmed = text.trim()
+
+    // Try to parse as JSON
+    try {
+      const json = JSON.parse(trimmed)
+      if (typeof json === 'object' && json !== null) {
+        return { type: 'json' as const, data: json }
+      }
+    } catch {}
+
+    // Treat as markdown/text
+    return { type: 'markdown' as const, data: trimmed }
+  }, [text])
+
+  if (parsed.type === 'json') {
+    const { data } = parsed
+    const name = data.name || data.title || null
+    const description = data.description || data.desc || null
+    const version = data.version || null
+
+    // Collect markdown-heavy string fields
+    const markdownFields = Object.entries(data).filter(
+      ([key, val]) => typeof val === 'string' && (val as string).length > 200 && !['name', 'title', 'description', 'desc', 'version'].includes(key)
+    )
+
+    // Collect object/map fields (like references)
+    const objectFields = Object.entries(data).filter(
+      ([, val]) => typeof val === 'object' && val !== null && !Array.isArray(val)
+    )
+
+    // Collect short string fields
+    const shortFields = Object.entries(data).filter(
+      ([key, val]) => typeof val === 'string' && (val as string).length <= 200 && !['name', 'title', 'description', 'desc', 'version'].includes(key)
+    )
+
+    return (
+      <div className="space-y-3">
+        {/* Header */}
+        {(name || description) && (
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#45C7B8]/15 flex items-center justify-center shrink-0 mt-0.5">
+              <span className="text-sm">🧠</span>
+            </div>
+            <div className="min-w-0">
+              {name && <h4 className="text-sm font-bold text-[#0f3d38]">{name}</h4>}
+              {version && <span className="text-[10px] text-[#45C7B8] font-mono">v{version}</span>}
+              {description && <p className="text-xs text-[#2a6b65] mt-1 leading-relaxed">{description}</p>}
+            </div>
+          </div>
+        )}
+
+        {/* Short fields */}
+        {shortFields.length > 0 && (
+          <div className="grid grid-cols-2 gap-2">
+            {shortFields.map(([key, val]) => (
+              <div key={key} className="bg-[#45C7B8]/8 rounded-lg px-3 py-2">
+                <span className="text-[10px] text-[#45C7B8] uppercase tracking-wider">{key.replace(/_/g, ' ')}</span>
+                <p className="text-xs text-[#1a5c56] font-mono mt-0.5 truncate">{String(val)}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Expandable markdown fields */}
+        {markdownFields.length > 0 && (
+          <div className="space-y-2">
+            {markdownFields.map(([key, val]) => (
+              <details key={key} className="group">
+                <summary className="cursor-pointer flex items-center gap-2 text-xs text-[#1a5c56] hover:text-[#0f3d38] transition-colors py-1">
+                  <svg className="w-3 h-3 transition-transform group-open:rotate-90 text-[#45C7B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                  <span className="font-semibold">{key.replace(/_/g, ' ')}</span>
+                  <span className="text-[#45C7B8]/60 text-[10px]">({(val as string).length} chars)</span>
+                </summary>
+                <div className="mt-2 pl-5 border-l-2 border-[#45C7B8]/30 space-y-1">
+                  {renderMarkdown(String(val))}
+                </div>
+              </details>
+            ))}
+          </div>
+        )}
+
+        {/* Object/reference fields */}
+        {objectFields.length > 0 && objectFields.map(([key, val]) => (
+          <details key={key} className="group">
+            <summary className="cursor-pointer flex items-center gap-2 text-xs text-[#1a5c56] hover:text-[#0f3d38] transition-colors py-1">
+              <svg className="w-3 h-3 transition-transform group-open:rotate-90 text-[#45C7B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              <span className="font-semibold">{key.replace(/_/g, ' ')}</span>
+              <span className="text-[#45C7B8]/60 text-[10px]">({Object.keys(val as object).length} items)</span>
+            </summary>
+            <div className="mt-2 pl-5 space-y-3">
+              {Object.entries(val as Record<string, unknown>).map(([subKey, subVal]) => (
+                <div key={subKey} className="border-l-2 border-[#45C7B8]/25 pl-3">
+                  <span className="text-[10px] text-[#45C7B8] font-mono font-semibold">{subKey}</span>
+                  {typeof subVal === 'string' && (subVal as string).length > 100 ? (
+                    <div className="mt-1 space-y-1">{renderMarkdown(subVal as string)}</div>
+                  ) : (
+                    <p className="text-xs text-[#2a6b65] mt-0.5 font-mono">{String(subVal)}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
+        ))}
+      </div>
+    )
+  }
+
+  // Markdown/plain text
+  const content = renderMarkdown(parsed.data as string)
+  const isLong = (parsed.data as string).length > 500
+
+  return (
+    <div className="space-y-1">
+      <div className={`${!expanded && isLong ? 'max-h-48 overflow-hidden relative' : ''}`}>
+        {content}
+        {!expanded && isLong && (
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#e8f8f6] to-transparent" />
+        )}
+      </div>
+      {isLong && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-xs text-[#45C7B8] hover:text-[#1a5c56] transition-colors mt-1"
+        >
+          {expanded ? '▲ Show less' : '▼ Show more'}
+        </button>
+      )}
+    </div>
+  )
+}
+
 interface SessionListItem {
   id: number
   agentName: string
@@ -848,30 +1157,28 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
                 <div>
                   <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">Memory Files ({memoryCount})</h3>
                   {memoriesLoading ? (
-                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
+                    <div className="p-8 bg-black/40 rounded-lg border border-white/5 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--mint-mid)] border-t-transparent mx-auto mb-3"></div>
-                      <p className="text-[rgba(255, 255, 255, 0.5)]">Loading memories from chain...</p>
+                      <p className="text-white/50">Loading memories from chain...</p>
                     </div>
                   ) : memories.length === 0 ? (
-                    <div className="p-8 bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 text-center">
-                      <p className="text-[rgba(255, 255, 255, 0.5)]">No memory files uploaded yet</p>
-                      <p className="text-xs text-[rgba(255, 255, 255, 0.5)]/70 mt-2">Use <code className="text-[var(--mint-mid)]">clawsfun memory upload</code> to store memories on-chain</p>
+                    <div className="p-8 bg-black/40 rounded-lg border border-white/5 text-center">
+                      <p className="text-white/50">No memory files uploaded yet</p>
+                      <p className="text-xs text-white/35 mt-2">Use <code className="text-[var(--mint-mid)]">clawsfun memory upload</code> to store memories on-chain</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {memories.map((mem, idx) => (
-                        <div key={idx} className="bg-[rgba(0, 0, 0, 0.5)]/50 rounded-lg border border-[var(--mint-mid)]/20 p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-[var(--mint-mid)] font-mono">#{memoryCount - idx}</span>
-                            <span className="text-xs text-[rgba(255, 255, 255, 0.5)]">
+                        <div key={idx} className="bg-[#e8f8f6] rounded-lg border border-[#45C7B8]/20 p-5">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs text-[#45C7B8] font-mono font-semibold">#{memoryCount - idx}</span>
+                            <span className="text-xs text-[#2a6b65]/60">
                               {new Date(Number(mem.timestamp) * 1000).toLocaleString()}
                             </span>
                           </div>
-                          <p className="text-[var(--text-primary)] text-sm leading-relaxed whitespace-pre-wrap">
-                            {mem.fullText || <span className="text-[rgba(255, 255, 255, 0.5)] italic">Binary / CID content</span>}
-                          </p>
-                          <div className="mt-2 flex items-center gap-2">
-                            <span className="text-[10px] text-[rgba(255, 255, 255, 0.5)]/50 font-mono break-all">
+                          <MemoryContent text={mem.fullText || ''} />
+                          <div className="mt-3 pt-2 border-t border-[#45C7B8]/15 flex items-center gap-2">
+                            <span className="text-[10px] text-[#2a6b65]/40 font-mono break-all">
                               Hash: {mem.contentHash}
                             </span>
                           </div>
@@ -883,8 +1190,8 @@ export default function AgentDashboard({ params }: { params: { id: string } }) {
 
                 <div>
                   <h3 className="text-lg font-bold text-[var(--text-primary)] mb-3">🔐 Signature Verification</h3>
-                  <div className="p-4 bg-[var(--mint-mid)]/5 rounded-lg border border-[var(--mint-mid)]/20">
-                    <p className="text-black text-sm mb-3 handwriting font-medium">
+                  <div className="p-4 bg-[#e8f8f6] rounded-lg border border-[#45C7B8]/20">
+                    <p className="text-[#1a5c56] text-sm mb-3 handwriting font-medium">
                       All memory files are cryptographically signed by agent wallet for authenticity.
                     </p>
                     <button className="bg-[var(--mint-mid)] border-0 text-black hover:bg-[var(--mint-dark)] rounded-lg px-4 py-2 text-sm font-semibold transition-all">
