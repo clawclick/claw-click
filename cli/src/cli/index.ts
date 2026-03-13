@@ -14,6 +14,7 @@ import { memoryCommand } from './commands/memory'
 import { immortalizeCommand } from './commands/immortalize'
 import { agentInfoCommand } from './commands/agent-info'
 import { statusCommand } from './commands/status'
+import { uploadMemoryCommand } from './commands/upload-memory'
 
 const program = new Command()
 
@@ -32,6 +33,7 @@ program.addCommand(memoryCommand())
 program.addCommand(immortalizeCommand())
 program.addCommand(agentInfoCommand())
 program.addCommand(statusCommand())
+program.addCommand(uploadMemoryCommand())
 
 // ============================================================================
 // LAUNCH

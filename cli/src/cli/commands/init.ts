@@ -11,6 +11,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import {
   generateAgentWallet,
+  createAgentWalletRemote,
   saveConfig,
   findConfig,
   type AgentConfig,
@@ -31,6 +32,7 @@ export function initCommand(): Command {
     .option('--tax-wallets <wallets>', 'Comma-separated tax wallet addresses')
     .option('--tax-percentages <pcts>', 'Comma-separated tax percentages')
     .option('--no-funlan', 'Skip FUNLAN.md generation')
+    .option('--local-wallet', 'Generate wallet locally instead of via backend (key stays on disk)')
     .option('--force', 'Overwrite existing config')
     .action(async (opts) => {
       await runInit(opts)
@@ -87,8 +89,27 @@ export async function runInit(opts: any): Promise<AgentConfig> {
 
   // Generate agent wallet
   const spinner = ora('Generating agent wallet...').start()
-  const wallet = generateAgentWallet()
-  spinner.succeed(`Agent wallet: ${chalk.cyan(wallet.address)}`)
+  let wallet: { address: `0x${string}`; privateKey?: `0x${string}` }
+
+  if (opts.localWallet) {
+    // Local generation — private key stored in clawclick.json
+    const local = generateAgentWallet()
+    wallet = { address: local.address, privateKey: local.privateKey }
+    spinner.succeed(`Agent wallet (local): ${chalk.cyan(wallet.address)}`)
+  } else {
+    // Remote generation — key encrypted & stored on backend (same as UI)
+    try {
+      const remote = await createAgentWalletRemote()
+      wallet = { address: remote.address }
+      spinner.succeed(`Agent wallet (server-managed): ${chalk.cyan(wallet.address)}`)
+    } catch (err: any) {
+      spinner.fail('Failed to create wallet via backend')
+      console.log(chalk.yellow('  Falling back to local wallet generation...'))
+      const local = generateAgentWallet()
+      wallet = { address: local.address, privateKey: local.privateKey }
+      console.log(chalk.green(`  ✔ Agent wallet (local): ${chalk.cyan(wallet.address)}`))
+    }
+  }
 
   // Parse tax wallets
   let taxWallets: string[] = []
@@ -116,7 +137,7 @@ export async function runInit(opts: any): Promise<AgentConfig> {
     symbol,
     network,
     agentWallet: wallet.address,
-    agentPrivateKey: wallet.privateKey,
+    agentPrivateKey: wallet.privateKey || ('' as `0x${string}`),
     creatorWallet: creatorAddr,
     creatorPrivateKey: opts.creatorKey || undefined,
     startingMcap,
@@ -151,6 +172,9 @@ export async function runInit(opts: any): Promise<AgentConfig> {
   console.log('')
   console.log(chalk.dim('Next: run `clawclick deploy` to launch on-chain'))
   console.log(chalk.dim(`⚠ Fund ${wallet.address} with ETH before deploying`))
+  if (!wallet.privateKey) {
+    console.log(chalk.dim('🔒 Private key managed by server — agent signing goes through backend'))
+  }
 
   return config
 }

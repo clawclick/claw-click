@@ -20,6 +20,8 @@ export function createCommand(): Command {
     .option('--dev-buy <percent>', 'Dev buy percent', '0')
     .option('--creator-key <key>', 'Creator private key (or env CLAWCLICK_CREATOR_KEY)')
     .option('--rpc <url>', 'RPC URL override')
+    .option('--memory-cid <cid>', 'IPFS CID for agent memory (from upload-memory command)')
+    .option('--avatar-cid <cid>', 'IPFS CID for agent avatar image')
     .action(async (opts) => {
       await runCreate(opts)
     })
@@ -48,5 +50,7 @@ export async function runCreate(opts: any): Promise<void> {
   await runDeploy({
     creatorKey: opts.creatorKey || process.env.CLAWCLICK_CREATOR_KEY,
     rpc: opts.rpc,
+    memoryCid: opts.memoryCid,
+    avatarCid: opts.avatarCid,
   })
 }

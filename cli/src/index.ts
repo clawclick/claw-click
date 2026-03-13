@@ -69,6 +69,7 @@ export type {
 // ── Wallet utilities ──
 export {
   generateAgentWallet,
+  createAgentWalletRemote,
   loadAccount,
   getChain,
   createReader,

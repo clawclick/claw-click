@@ -23,6 +23,8 @@ export function deployCommand(): Command {
     .option('--skip-token', 'Skip token creation (only mint birth cert)')
     .option('--skip-nft', 'Skip birth certificate (only create token)')
     .option('--no-bundle', 'Use 2-step flow instead of single bundled transaction')
+    .option('--memory-cid <cid>', 'IPFS CID for agent memory (from upload-memory command)')
+    .option('--avatar-cid <cid>', 'IPFS CID for agent avatar image')
     .option('--dry-run', 'Simulate without sending transactions')
     .action(async (opts) => {
       await runDeploy(opts)
@@ -99,6 +101,8 @@ export async function runDeploy(opts: any): Promise<void> {
         taxWallets: config.taxWallets as `0x${string}`[],
         taxPercentages: config.taxPercentages,
         creator: creatorAccount.address,
+        memoryCID: opts.memoryCid || config.memoryCID || '',
+        avatarCID: opts.avatarCid || '',
       })
 
       tokenAddress = result.tokenAddress

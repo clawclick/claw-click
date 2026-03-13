@@ -11,6 +11,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { Network } from './contracts';
 
+const DEFAULT_CLAWSFUN_BACKEND = 'https://claws-fun-backend-764a4f25b49e.herokuapp.com';
+
 export interface AgentConfig {
   name: string;
   symbol: string;
@@ -31,11 +33,32 @@ export interface AgentConfig {
 
 const CONFIG_FILENAME = 'clawclick.json';
 
-/** Generate a fresh random agent wallet */
+/** Generate a fresh random agent wallet (local — key stays on disk) */
 export function generateAgentWallet(): { address: `0x${string}`; privateKey: `0x${string}` } {
   const key = generatePrivateKey();
   const account = privateKeyToAccount(key);
   return { address: account.address, privateKey: key };
+}
+
+/**
+ * Create an agent wallet via the claws-fun backend.
+ * The private key is generated, encrypted, and stored server-side — only the
+ * public address is returned. This matches the UI spawner flow.
+ */
+export async function createAgentWalletRemote(
+  backendUrl?: string,
+): Promise<{ address: `0x${string}` }> {
+  const url = (backendUrl || DEFAULT_CLAWSFUN_BACKEND).replace(/\/$/, '');
+  const res = await fetch(`${url}/api/agent/wallet/create`, { method: 'POST' });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to create agent wallet: ${res.status} ${text}`);
+  }
+  const data = await res.json();
+  if (!data.agentAddress) {
+    throw new Error('Backend did not return agentAddress');
+  }
+  return { address: data.agentAddress as `0x${string}` };
 }
 
 /** Load account from private key */
