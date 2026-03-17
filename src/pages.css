@@ -10,10 +10,10 @@
 /* API Documentation Sidebar */
 .api-docs-sidebar {
   position: fixed;
-  top: 60px;
+  top: 0;
   left: 0;
   width: 280px;
-  height: calc(100vh - 220px);
+  height: 100vh;
   background: #f8f9fa;
   border-right: 1px solid #e5e5e5;
   z-index: 50;
@@ -36,7 +36,7 @@
 }
 
 .sidebar-content {
-  padding: 2rem 1.5rem;
+  padding: 80px 1.5rem 2rem;
 }
 
 .sidebar-title {
@@ -94,7 +94,7 @@
 .api-docs-main {
   margin-left: 280px;
   width: calc(100% - 280px);
-  min-height: calc(100vh - 220px);
+  min-height: 100vh;
   padding-bottom: 2rem;
 }
 
