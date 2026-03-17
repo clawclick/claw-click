@@ -25,6 +25,14 @@ const HeroSection = () => {
           </div>
         </div>
         
+        <div className="site-image-section">
+          <img 
+            src="/site_homepage_image.png" 
+            alt="Site Homepage Image" 
+            className="site-homepage-image"
+          />
+        </div>
+        
         <div className="hero-logo-section">
           <img 
             src="/main-logo.png" 
