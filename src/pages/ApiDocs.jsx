@@ -4,25 +4,43 @@ const ApiDocs = () => {
   const endpointCategories = [
     {
       category: "Market Data",
-      description: "Real-time and historical market data from multiple sources",
+      description: "Token prices, historical data, and market information",
       endpoints: [
         {
           method: "GET",
-          path: "/api/v1/market/token",
-          description: "Get token price and market data",
-          params: ["address", "chain", "timeframe?"]
-        },
-        {
-          method: "GET", 
-          path: "/api/v1/market/trending",
-          description: "Get trending tokens across all chains",
-          params: ["limit?", "timeframe?", "chain?"]
+          path: "/tokenPoolInfo",
+          description: "Token price, market cap, liquidity, volume, and pool info",
+          params: ["tokenAddress*", "chain?", "poolAddress?", "symbol?", "tokenName?"]
         },
         {
           method: "GET",
-          path: "/api/v1/market/pairs/new",
-          description: "Monitor new token pairs creation",
-          params: ["chain", "dex?", "limit?"]
+          path: "/tokenPriceHistory",
+          description: "Historical OHLCV price data for charting",
+          params: ["tokenAddress*", "chain?", "limit?", "interval?", "asset?"]
+        },
+        {
+          method: "GET",
+          path: "/detailedTokenStats",
+          description: "Bucketed token stats from Codex (cached 30 min)",
+          params: ["tokenAddress*", "chain?", "durations?", "bucketCount?"]
+        },
+        {
+          method: "GET",
+          path: "/trendingTokens",
+          description: "Currently trending tokens across all chains",
+          params: []
+        },
+        {
+          method: "GET",
+          path: "/tokenSearch",
+          description: "Search tokens by name, symbol, or address",
+          params: ["query*"]
+        },
+        {
+          method: "GET",
+          path: "/filterTokens",
+          description: "Filter and rank tokens by on-chain metrics",
+          params: ["network?", "phrase?", "minLiquidity?", "sortBy?", "limit?"]
         }
       ]
     },
@@ -31,94 +49,162 @@ const ApiDocs = () => {
       description: "Token security analysis and risk scoring",
       endpoints: [
         {
-          method: "POST",
-          path: "/api/v1/risk/analyze",
-          description: "Comprehensive token risk analysis",
-          params: ["address", "chain", "depth?"]
+          method: "GET",
+          path: "/isScam",
+          description: "Quick scam check with risk score",
+          params: ["tokenAddress*", "chain?"]
         },
         {
           method: "GET",
-          path: "/api/v1/risk/honeypot",
-          description: "Check for honeypot contracts",
-          params: ["address", "chain"]
+          path: "/fullAudit",
+          description: "Deep contract audit (taxes, ownership, trading flags)",
+          params: ["tokenAddress*", "chain?"]
         }
       ]
     },
     {
-      category: "Sentiment Analysis",
-      description: "Social sentiment aggregation from multiple platforms",
+      category: "Wallet Analysis",
+      description: "Wallet tracking, holder analysis, and smart money movements",
       endpoints: [
         {
           method: "GET",
-          path: "/api/v1/sentiment/token",
-          description: "Get social sentiment for token",
-          params: ["address", "sources?", "timeframe?"]
+          path: "/walletReview",
+          description: "Comprehensive wallet analysis - PnL, holdings, protocols",
+          params: ["walletAddress*", "chain?", "days?", "pageCount?"]
         },
         {
           method: "GET",
-          path: "/api/v1/sentiment/kol",
-          description: "KOL activity and sentiment tracking",
-          params: ["token?", "influencer?", "platform?"]
+          path: "/holderAnalysis",
+          description: "Holder distribution, concentration, whale tracking",
+          params: ["tokenAddress*", "chain?"]
+        },
+        {
+          method: "GET",
+          path: "/tokenHolders",
+          description: "Raw token-holder ledger for EVM tokens",
+          params: ["tokenAddress*", "network?", "cursor?", "limit?"]
+        },
+        {
+          method: "GET",
+          path: "/topTraders",
+          description: "Top traders for a specific token (multi-chain)",
+          params: ["tokenAddress*", "chain?", "timeFrame?"]
         }
       ]
     },
     {
-      category: "Wallet Tracking",
-      description: "Track alpha wallets and smart money movements",
+      category: "Trading & DEX",
+      description: "Swap execution, quotes, and DEX operations",
       endpoints: [
         {
           method: "GET",
-          path: "/api/v1/wallet/portfolio",
-          description: "Get wallet portfolio breakdown",
-          params: ["address", "chain?", "include_nft?"]
+          path: "/swap",
+          description: "Build unsigned swap transaction",
+          params: ["chain*", "dex*", "walletAddress*", "tokenIn*", "tokenOut*", "amountIn*", "slippageBps?"]
         },
         {
           method: "GET",
-          path: "/api/v1/wallet/transactions",
-          description: "Get wallet transaction history",
-          params: ["address", "chain?", "limit?", "token?"]
+          path: "/swapQuote",
+          description: "Get swap quote without building transaction",
+          params: ["chain*", "dex*", "tokenIn*", "tokenOut*", "amountIn*", "slippageBps?"]
+        },
+        {
+          method: "GET",
+          path: "/swapDexes",
+          description: "List available DEXes for a chain",
+          params: ["chain*"]
+        },
+        {
+          method: "GET",
+          path: "/approve",
+          description: "Build unsigned approval transaction for swaps",
+          params: ["chain*", "dex*", "walletAddress*", "tokenIn*", "tokenOut*", "amount?"]
+        },
+        {
+          method: "GET",
+          path: "/unwrap",
+          description: "Build unsigned wrapped-native withdraw transaction",
+          params: ["chain*", "walletAddress*", "amount*"]
         }
       ]
     },
     {
-      category: "DEX Operations",
-      description: "Multi-chain DEX interactions and data",
+      category: "Social & Sentiment",
+      description: "Social sentiment aggregation and market overview",
       endpoints: [
         {
-          method: "POST",
-          path: "/api/v1/dex/quote",
-          description: "Get swap quotes across DEXs",
-          params: ["tokenA", "tokenB", "amount", "chain", "slippage?"]
+          method: "GET",
+          path: "/marketOverview",
+          description: "Combined sentiment, social signals, pool data, and risk check",
+          params: ["tokenAddress?", "chain?", "asset?", "poolAddress?"]
         },
         {
           method: "GET",
-          path: "/api/v1/dex/pools",
-          description: "Get liquidity pool information",
-          params: ["token?", "chain", "dex?", "min_liquidity?"]
+          path: "/fudSearch",
+          description: "Search for FUD mentions across social platforms",
+          params: ["symbol?", "tokenName?", "chain?", "tokenAddress?"]
+        }
+      ]
+    },
+    {
+      category: "Discovery & Monitoring",
+      description: "New pairs, gas feeds, and real-time events",
+      endpoints: [
+        {
+          method: "GET",
+          path: "/newPairs",
+          description: "Recently created trading pairs/pools",
+          params: ["source?", "limit?"]
+        },
+        {
+          method: "GET",
+          path: "/gasFeed",
+          description: "Current gas prices for EVM chains",
+          params: ["chain?"]
+        },
+        {
+          method: "WS",
+          path: "/ws/launchpadEvents",
+          description: "Real-time launchpad token event stream",
+          params: ["protocol?", "eventType?", "networkId?"]
         }
       ]
     }
   ]
 
   const integrations = [
-    { name: "Dexscreener", category: "Market Data", status: "Live" },
-    { name: "CoinGecko", category: "Market Data", status: "Live" },
-    { name: "DeFiLlama", category: "DeFi", status: "Live" },
+    { name: "Moralis", category: "Infrastructure", status: "Live" },
+    { name: "Birdeye", category: "Market Data", status: "Live" },
+    { name: "DexScreener", category: "Market Data", status: "Live" },
+    { name: "Codex.io", category: "Analytics", status: "Live" },
+    { name: "Etherscan", category: "Infrastructure", status: "Live" },
     { name: "GoPlus", category: "Risk", status: "Live" },
-    { name: "Honeypot.is", category: "Risk", status: "Live" },
-    { name: "Bubblemaps", category: "Risk", status: "Beta" },
+    { name: "CoinGecko", category: "Market Data", status: "Live" },
+    { name: "CoinMarketCap", category: "Market Data", status: "Live" },
+    { name: "GeckoTerminal", category: "Market Data", status: "Live" },
+    { name: "Zerion", category: "Portfolio", status: "Live" },
+    { name: "DeBank", category: "Portfolio", status: "Live" },
+    { name: "Arkham", category: "Analytics", status: "Live" },
+    { name: "Dune Analytics", category: "Analytics", status: "Live" },
+    { name: "Sim by Dune", category: "Analytics", status: "Live" },
+    { name: "LunarCrush", category: "Sentiment", status: "Live" },
+    { name: "Reddit API", category: "Sentiment", status: "Live" },
     { name: "X (Twitter)", category: "Sentiment", status: "Live" },
     { name: "Telegram", category: "Sentiment", status: "Live" },
-    { name: "Reddit", category: "Sentiment", status: "Beta" },
-    { name: "LunarCrush", category: "Sentiment", status: "Beta" },
-    { name: "Moralis", category: "Infrastructure", status: "Live" },
-    { name: "Alchemy", category: "Infrastructure", status: "Live" },
-    { name: "Etherscan", category: "Infrastructure", status: "Live" },
-    { name: "Uniswap V4", category: "DEX", status: "Live" },
-    { name: "PancakeSwap", category: "DEX", status: "Live" },
+    { name: "Bubblemaps", category: "Risk", status: "Live" },
+    { name: "QuickIntel", category: "Risk", status: "Live" },
+    { name: "Honeypot.is", category: "Risk", status: "Live" },
+    { name: "Santiment", category: "Analytics", status: "Live" },
+    { name: "DexTools", category: "Market Data", status: "Live" },
+    { name: "Nansen", category: "Analytics", status: "Live" },
+    { name: "Uniswap V2/V3/V4", category: "DEX", status: "Live" },
+    { name: "PancakeSwap V2/V3", category: "DEX", status: "Live" },
+    { name: "Aerodrome V2/V3", category: "DEX", status: "Live" },
     { name: "Raydium", category: "DEX", status: "Live" },
-    { name: "Nansen", category: "Analytics", status: "Beta" },
-    { name: "Dune Analytics", category: "Analytics", status: "Beta" }
+    { name: "Meteora", category: "DEX", status: "Live" },
+    { name: "Pump.fun", category: "Launchpad", status: "Live" },
+    { name: "Clanker", category: "Launchpad", status: "Live" },
+    { name: "Virtuals Protocol", category: "Launchpad", status: "Live" }
   ]
 
   return (
@@ -129,7 +215,7 @@ const ApiDocs = () => {
           <div className="api-docs-hero">
             <h1 className="api-docs-title">API Documentation</h1>
             <p className="api-docs-subtitle">
-              Unified trading infrastructure API - One endpoint, 100+ data sources
+              Unified crypto intelligence API - 50+ data providers behind clean REST endpoints
             </p>
             <div className="api-base-url">
               <span className="base-url-label">Base URL:</span>
@@ -148,13 +234,22 @@ const ApiDocs = () => {
               <span className="code-language">curl</span>
             </div>
             <pre className="code-block">
-{`curl -X GET "https://api.claw.click/api/v1/market/token" \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "address": "0x...",
-    "chain": "ethereum"
-  }'`}
+{`curl -X GET "https://api.claw.click/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" \\
+  -H "Content-Type: application/json"
+
+# Response:
+{
+  "endpoint": "tokenPoolInfo",
+  "status": "live",
+  "chain": "eth",
+  "name": "USD Coin",
+  "symbol": "USDC",
+  "priceUsd": 1.0001,
+  "marketCapUsd": 32000000000,
+  "liquidityUsd": 150000000,
+  "volume24hUsd": 5000000000,
+  "providers": [...]
+}`}
             </pre>
           </div>
         </div>
@@ -202,9 +297,9 @@ const ApiDocs = () => {
       <section className="integrations-section">
         <div className="api-docs-container">
           <h2 className="section-title">Data Sources & Integrations</h2>
-          <p className="integrations-description">
-            Our API aggregates data from {integrations.length}+ premium sources to provide comprehensive market intelligence.
-          </p>
+            <p className="integrations-description">
+              Our API aggregates data from {integrations.length}+ premium sources to provide comprehensive crypto intelligence and trading infrastructure.
+            </p>
           
           <div className="integrations-grid">
             {integrations.map((integration, index) => (

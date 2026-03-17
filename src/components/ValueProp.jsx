@@ -64,8 +64,7 @@ const ValueProp = () => {
         <div className="description-capsule-black">
           <div className="hero-description">
             <p className="hero-description-text-black">
-              <em>"Our solution is a unified Trading API that aggregates over 100+ trading, analytics, social and risk data sources into a single programmable interface.
-              Instead of managing multiple integrations, Developers and Agents interact with one standardized endpoint, removing friction of juggling API's, hitting rate limits and keeping on top of manual avenues."</em>
+              Our solution is a unified Trading API that aggregates over 100+ trading, analytics, social and risk data sources into a single programmable interface. Instead of managing multiple integrations, Developers and Agents interact with one standardized endpoint, removing friction of juggling API's, hitting rate limits and keeping on top of manual avenues.
             </p>
           </div>
         </div>
@@ -138,6 +137,9 @@ const ValueProp = () => {
         
         <div className="strategy-wrappers-content">
           <h2 className="strategy-wrappers-title">Strategy Wrappers</h2>
+          <div className="wrapper-cta">
+            <button className="wrapper-cta-button">Create Wrapper</button>
+          </div>
           <p className="value-prop-text">
             Introducing Strategy Wrappers. Strategies can be packaged as parameterized API endpoints, allowing bots or applications to call trading logic directly while the underlying strategy remains private, allowing for a novel architecture for copy trading capital and allowing strategy creators to earn revenue while not risking capital all verified by the Click Oracle for Data validation in real time.
           </p>

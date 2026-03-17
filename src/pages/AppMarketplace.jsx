@@ -147,6 +147,10 @@ const AppMarketplace = () => {
                 <span className="stat-label">Avg Win Rate</span>
               </div>
             </div>
+            
+            <div className="hero-cta">
+              <button className="hero-cta-button">Create Wrapper</button>
+            </div>
           </div>
         </div>
       </header>
@@ -281,7 +285,7 @@ const AppMarketplace = () => {
               Use our strategy builder to create custom trading algorithms with our unified API infrastructure.
             </p>
             <div className="cta-buttons">
-              <button className="cta-button primary">Strategy Builder</button>
+              <button className="cta-button primary">Create Wrapper</button>
               <button className="cta-button secondary">Documentation</button>
             </div>
           </div>
