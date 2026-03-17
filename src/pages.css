@@ -10,13 +10,13 @@
 /* API Documentation Sidebar */
 .api-docs-sidebar {
   position: fixed;
-  top: 60px;
+  top: 0;
   left: 0;
   width: 280px;
-  height: calc(100vh - 60px);
+  height: 100vh;
   background: #f8f9fa;
   border-right: 1px solid #e5e5e5;
-  z-index: 100;
+  z-index: 50;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #ccc #f8f9fa;
@@ -36,7 +36,7 @@
 }
 
 .sidebar-content {
-  padding: 2rem 1.5rem;
+  padding: 120px 1.5rem 2rem;
 }
 
 .sidebar-title {
@@ -257,24 +257,6 @@
   color: #000;
 }
 
-.code-block {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 1.5rem;
-  overflow-x: auto;
-}
-
-.code-block pre {
-  margin: 0;
-  font-family: 'SF Mono', Monaco, monospace;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: #495057;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
 /* Chains Grid */
 .chains-grid {
   display: grid;
@@ -427,6 +409,162 @@
   line-height: 1.4;
 }
 
+/* Interactive Quick Start */
+.quick-start-interactive {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.quick-start-example {
+  position: relative;
+}
+
+.run-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #00ff88;
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  z-index: 10;
+}
+
+.run-button:hover:not(:disabled) {
+  background: #00e67a;
+  transform: translateY(-1px);
+}
+
+.run-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.quick-start-response {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.quick-start-response .response-title {
+  margin-bottom: 1rem;
+  color: #00ff88;
+  font-weight: 600;
+}
+
+/* Syntax Highlighting */
+.code-example {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.code-header {
+  background: #2d3748;
+  color: #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px 8px 0 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid #4a5568;
+  border-bottom: none;
+}
+
+.code-block {
+  background: #1a202c;
+  border: 1px solid #4a5568;
+  border-radius: 0 0 8px 8px;
+  padding: 1.5rem;
+  overflow-x: auto;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.code-block pre {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.json-block {
+  background: #1a202c;
+}
+
+.json-block pre {
+  color: #e2e8f0;
+}
+
+/* JSON Syntax Highlighting */
+.language-json .token.property {
+  color: #90cdf4;
+}
+
+.language-json .token.string {
+  color: #68d391;
+}
+
+.language-json .token.number {
+  color: #f6ad55;
+}
+
+.language-json .token.boolean {
+  color: #fc8181;
+}
+
+.language-json .token.null {
+  color: #a0aec0;
+}
+
+.language-json .token.punctuation {
+  color: #e2e8f0;
+}
+
+/* Bash Syntax Highlighting */
+.language-bash .token.function {
+  color: #90cdf4;
+}
+
+.language-bash .token.string {
+  color: #68d391;
+}
+
+.language-bash .token.operator {
+  color: #f6ad55;
+}
+
+.language-bash .token.parameter {
+  color: #fc8181;
+}
+
+/* JavaScript Syntax Highlighting */
+.language-javascript .token.keyword {
+  color: #fc8181;
+}
+
+.language-javascript .token.function {
+  color: #90cdf4;
+}
+
+.language-javascript .token.string {
+  color: #68d391;
+}
+
+.language-javascript .token.comment {
+  color: #a0aec0;
+  font-style: italic;
+}
+
 /* Status Meanings */
 .status-meanings {
   margin-top: 1rem;
@@ -475,6 +613,7 @@
   .api-docs-sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    z-index: 1000;
   }
   
   .api-docs-main {
@@ -504,6 +643,28 @@
   .dex-table th,
   .dex-table td {
     padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .run-button {
+    position: static;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  .quick-start-example {
+    position: static;
+  }
+  
+  .code-header {
+    font-size: 0.7rem;
+  }
+  
+  .code-block {
+    padding: 1rem;
+  }
+  
+  .code-block pre {
     font-size: 0.8rem;
   }
 }

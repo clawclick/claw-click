@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 
 const ApiDocs = () => {
   const [activeSection, setActiveSection] = useState('overview')
+  const [quickStartResponse, setQuickStartResponse] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const navigationSections = [
     { id: 'overview', label: 'Overview' },
@@ -18,7 +20,6 @@ const ApiDocs = () => {
     { id: 'websockets', label: 'WebSockets' },
     { id: 'filters', label: 'Filtering Options' },
     { id: 'error-handling', label: 'Error Handling' },
-    { id: 'environment', label: 'Environment Variables' },
     { id: 'integrations', label: 'Data Providers' }
   ]
 
@@ -57,6 +58,34 @@ const ApiDocs = () => {
     }
   }
 
+  const runQuickStartExample = () => {
+    setIsLoading(true)
+    // Simulate API call with hardcoded response
+    setTimeout(() => {
+      setQuickStartResponse({
+        endpoint: "tokenPoolInfo",
+        status: "live",
+        chain: "eth",
+        tokenAddress: "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        name: "USD Coin",
+        symbol: "USDC",
+        priceUsd: 1.0001,
+        marketCapUsd: 32000000000,
+        fdvUsd: 32000000000,
+        liquidityUsd: 150000000,
+        volume24hUsd: 5000000000,
+        priceChange24hPct: -0.01,
+        pairAddress: "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
+        dex: "uniswap_v3",
+        providers: [
+          { provider: "dexScreener", status: "ok", detail: "Live data" },
+          { provider: "birdeye", status: "ok", detail: "Price confirmed" }
+        ]
+      })
+      setIsLoading(false)
+    }, 1500)
+  }
+
   const supportedChains = [
     { name: "Ethereum", id: "eth / ethereum", chainId: "1", status: "Full support" },
     { name: "Base", id: "base", chainId: "8453", status: "Full support" },
@@ -70,7 +99,7 @@ const ApiDocs = () => {
       path: "/health",
       description: "Health check endpoint",
       parameters: [],
-      example: "GET http://localhost:3001/api/health",
+      example: "GET https://api.claw.click/health",
       response: `{
   "status": "ok",
   "service": "super-api"
@@ -81,7 +110,7 @@ const ApiDocs = () => {
       path: "/providers",
       description: "List all registered providers and their configuration status",
       parameters: [],
-      example: "GET http://localhost:3001/api/providers",
+      example: "GET https://api.claw.click/providers",
       response: `{
   "providers": [
     {
@@ -115,7 +144,7 @@ const ApiDocs = () => {
         { name: "symbol", type: "string", required: false, default: "—", description: "Token symbol hint" },
         { name: "tokenName", type: "string", required: false, default: "—", description: "Token name hint" }
       ],
-      example: "GET http://localhost:3001/api/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      example: "GET https://api.claw.click/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       response: `{
   "endpoint": "tokenPoolInfo",
   "status": "live", 
@@ -129,7 +158,7 @@ const ApiDocs = () => {
   "liquidityUsd": 150000000,
   "volume24hUsd": 5000000000,
   "priceChange24hPct": -0.01,
-  "pairAddress": "0x...",
+  "pairAddress": "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
   "dex": "uniswap_v3",
   "providers": [
     { "provider": "dexScreener", "status": "ok", "detail": "Live data" },
@@ -148,7 +177,7 @@ const ApiDocs = () => {
         { name: "limit", type: "string", required: false, default: "3m", description: "Time range: 1d, 7d, 1m, 3m, 1y" },
         { name: "interval", type: "string", required: false, default: "1d", description: "Candle interval: 5m, 15m, 1h, 4h, 1d" }
       ],
-      example: "GET http://localhost:3001/api/tokenPriceHistory?chain=sol&tokenAddress=So111...&limit=7d&interval=1h",
+      example: "GET https://api.claw.click/tokenPriceHistory?chain=sol&tokenAddress=So111...&limit=7d&interval=1h",
       response: `{
   "endpoint": "tokenPriceHistory",
   "status": "live",
@@ -183,7 +212,7 @@ const ApiDocs = () => {
         { name: "timestamp", type: "number", required: false, default: "—", description: "Optional unix timestamp snapshot" },
         { name: "statsType", type: "string", required: false, default: "UNFILTERED", description: "FILTERED or UNFILTERED" }
       ],
-      example: "GET http://localhost:3001/api/detailedTokenStats?chain=eth&tokenAddress=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&durations=hour1,day1&bucketCount=6",
+      example: "GET https://api.claw.click/detailedTokenStats?chain=eth&tokenAddress=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&durations=hour1,day1&bucketCount=6",
       response: `{
   "endpoint": "detailedTokenStats",
   "status": "live",
@@ -226,7 +255,7 @@ const ApiDocs = () => {
         { name: "chain", type: "string", required: false, default: "eth", description: "Chain" },
         { name: "tokenAddress", type: "string", required: true, default: "—", description: "Token address" }
       ],
-      example: "GET http://localhost:3001/api/isScam?chain=bsc&tokenAddress=0x...",
+      example: "GET https://api.claw.click/isScam?chain=bsc&tokenAddress=0x...",
       response: `{
   "endpoint": "isScam",
   "status": "live",
@@ -248,7 +277,7 @@ const ApiDocs = () => {
         { name: "chain", type: "string", required: false, default: "eth", description: "Chain" },
         { name: "tokenAddress", type: "string", required: true, default: "—", description: "Token address" }
       ],
-      example: "GET http://localhost:3001/api/fullAudit?chain=eth&tokenAddress=0x...",
+      example: "GET https://api.claw.click/fullAudit?chain=eth&tokenAddress=0x...",
       response: `{
   "endpoint": "fullAudit", 
   "status": "live",
@@ -281,7 +310,12 @@ const ApiDocs = () => {
     "isBlacklisted": false,
     "isWhitelisted": false
   },
-  "holders": { "holderCount": 5000, "lpHolderCount": 10, "ownerPercent": 5, "creatorPercent": 2 },
+  "holders": { 
+    "holderCount": 5000, 
+    "lpHolderCount": 10, 
+    "ownerPercent": 5, 
+    "creatorPercent": 2 
+  },
   "simulation": { "buyGas": "150000", "sellGas": "175000" },
   "providers": [...]
 }`
@@ -303,7 +337,7 @@ const ApiDocs = () => {
         { name: "slippageBps", type: "number", required: false, default: "50", description: "Slippage tolerance in basis points (1–5000)" },
         { name: "deadline", type: "number", required: false, default: "now+20min", description: "Unix timestamp deadline (EVM only)" }
       ],
-      example: "GET http://localhost:3001/api/swap?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...&tokenOut=0x...&amountIn=1000000000000000000&slippageBps=100",
+      example: "GET https://api.claw.click/swap?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...&tokenOut=0x...&amountIn=1000000000000000000&slippageBps=100",
       response: `{
   "endpoint": "swap",
   "status": "live",
@@ -360,36 +394,6 @@ const ApiDocs = () => {
     }
   ]
 
-  const requiredEnvVars = [
-    { name: "MORALIS_API_KEY", usage: "walletReview, holderAnalysis, tokenPoolInfo" },
-    { name: "BIRDEYE_API_KEY", usage: "tokenPoolInfo, priceHistory, topTraders, walletReview" },
-    { name: "ETHERSCAN_API_KEY", usage: "gasFeed (single key for ETH/BASE/BSC via Etherscan V2)" },
-    { name: "ETH_RPC_URL", usage: "tokenPoolInfo, holderAnalysis (on-chain calls)" },
-    { name: "BASE_RPC_URL", usage: "tokenPoolInfo, holderAnalysis (on-chain calls)" },
-    { name: "BSC_RPC_URL", usage: "tokenPoolInfo, holderAnalysis (on-chain calls)" }
-  ]
-
-  const optionalEnvVars = [
-    { name: "CODEX_API_KEY", usage: "filterTokens, tokenPoolInfo (backup pair discovery), tokenPriceHistory (OHLCV fallback), holderAnalysis (top10 fallback), detailedTokenStats, ws/launchpadEvents" },
-    { name: "ZERION_API_KEY", usage: "walletReview (PnL fallback)" },
-    { name: "CMC_API_KEY", usage: "tokenPoolInfo, marketOverview" },
-    { name: "GOPLUS_ACCESS_TOKEN", usage: "isScam, fullAudit" },
-    { name: "DEBANK_API_KEY", usage: "walletReview (protocols, approvals)" },
-    { name: "ARKHAM_API_KEY", usage: "walletReview, holderAnalysis" },
-    { name: "DUNE_API_KEY + DUNE_QUERY_ID", usage: "holderAnalysis" },
-    { name: "SIM_API_KEY", usage: "tokenHolders" },
-    { name: "LUNARCRUSH_API_KEY", usage: "marketOverview (sentiment)" },
-    { name: "REDDIT_CLIENT_ID + SECRET + USER_AGENT", usage: "fudSearch, marketOverview" },
-    { name: "X_BEARER_TOKEN", usage: "fudSearch, marketOverview" },
-    { name: "TELEGRAM_BOT_TOKEN", usage: "fudSearch" },
-    { name: "BUBBLEMAPS_API_KEY", usage: "holderAnalysis" },
-    { name: "QUICKINTEL_API_KEY", usage: "isScam, fullAudit" },
-    { name: "SANTIMENT_API_KEY", usage: "marketOverview" },
-    { name: "COINGECKO_PRO_API_KEY", usage: "tokenPoolInfo" },
-    { name: "DEXTOOLS_API_KEY", usage: "tokenPoolInfo" },
-    { name: "NANSEN_API_KEY", usage: "walletReview" }
-  ]
-
   const integrations = [
     { name: "Moralis", category: "Infrastructure", status: "Live" },
     { name: "Birdeye", category: "Market Data", status: "Live" },
@@ -424,6 +428,28 @@ const ApiDocs = () => {
     { name: "Clanker", category: "Launchpad", status: "Live" },
     { name: "Virtuals Protocol", category: "Launchpad", status: "Live" }
   ]
+
+  const CodeBlock = ({ children, language = 'bash' }) => (
+    <div className="code-example">
+      <div className="code-header">
+        <span className="code-language">{language}</span>
+      </div>
+      <div className="code-block">
+        <pre className={`language-${language}`}>{children}</pre>
+      </div>
+    </div>
+  )
+
+  const JsonBlock = ({ children }) => (
+    <div className="code-example">
+      <div className="code-header">
+        <span className="code-language">json</span>
+      </div>
+      <div className="code-block json-block">
+        <pre className="language-json">{children}</pre>
+      </div>
+    </div>
+  )
 
   const EndpointCard = ({ endpoint }) => (
     <div className="endpoint-card">
@@ -463,16 +489,12 @@ const ApiDocs = () => {
       
       <div className="example-section">
         <h4 className="example-title">Example</h4>
-        <div className="code-block">
-          <pre>{endpoint.example}</pre>
-        </div>
+        <CodeBlock language="bash">{endpoint.example}</CodeBlock>
       </div>
       
       <div className="response-section">
         <h4 className="response-title">Response</h4>
-        <div className="code-block">
-          <pre>{endpoint.response}</pre>
-        </div>
+        <JsonBlock>{endpoint.response}</JsonBlock>
       </div>
     </div>
   )
@@ -509,7 +531,7 @@ const ApiDocs = () => {
               </p>
               <div className="api-base-url">
                 <span className="base-url-label">Base URL:</span>
-                <code className="base-url">http://localhost:3001/api</code>
+                <code className="base-url">https://api.claw.click</code>
               </div>
             </div>
           </div>
@@ -519,36 +541,27 @@ const ApiDocs = () => {
         <section className="quick-start-section" id="quickstart">
           <div className="api-docs-container">
             <h2 className="section-title">Quick Start</h2>
-            <div className="code-example">
-              <div className="code-header">
-                <span className="code-language">curl</span>
+            <div className="quick-start-interactive">
+              <div className="quick-start-example">
+                <CodeBlock language="bash">
+                  {`curl -X GET "https://api.claw.click/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" \\
+  -H "Content-Type: application/json"`}
+                </CodeBlock>
+                <button 
+                  className="run-button" 
+                  onClick={runQuickStartExample}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Running...' : 'Run'}
+                </button>
               </div>
-              <pre className="code-block">
-{`curl -X GET "http://localhost:3001/api/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" \\
-  -H "Content-Type: application/json"
-
-# Response:
-{
-  "endpoint": "tokenPoolInfo",
-  "status": "live",
-  "chain": "eth",
-  "tokenAddress": "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  "name": "USD Coin",
-  "symbol": "USDC",
-  "priceUsd": 1.0001,
-  "marketCapUsd": 32000000000,
-  "fdvUsd": 32000000000,
-  "liquidityUsd": 150000000,
-  "volume24hUsd": 5000000000,
-  "priceChange24hPct": -0.01,
-  "pairAddress": "0x...",
-  "dex": "uniswap_v3",
-  "providers": [
-    { "provider": "dexScreener", "status": "ok", "detail": "Live data" },
-    { "provider": "birdeye", "status": "ok", "detail": "Price confirmed" }
-  ]
-}`}
-              </pre>
+              
+              {quickStartResponse && (
+                <div className="quick-start-response">
+                  <h3 className="response-title">Response</h3>
+                  <JsonBlock>{JSON.stringify(quickStartResponse, null, 2)}</JsonBlock>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -579,11 +592,7 @@ const ApiDocs = () => {
             <p className="response-description">
               Every endpoint returns a consistent JSON structure with provider status tracking:
             </p>
-            <div className="code-example">
-              <div className="code-header">
-                <span className="code-language">json</span>
-              </div>
-              <pre className="code-block">
+            <JsonBlock>
 {`{
   "endpoint": "endpointName",
   "status": "live" | "partial",
@@ -596,8 +605,7 @@ const ApiDocs = () => {
   ],
   // ... endpoint-specific data
 }`}
-              </pre>
-            </div>
+            </JsonBlock>
             <ul className="status-meanings">
               <li><strong>live:</strong> All providers returned data successfully</li>
               <li><strong>partial:</strong> Some providers were skipped or errored, but usable data was returned</li>
@@ -692,13 +700,9 @@ const ApiDocs = () => {
             <p className="websocket-description">
               Real-time launchpad events via WebSocket connection:
             </p>
-            <div className="code-example">
-              <div className="code-header">
-                <span className="code-language">javascript</span>
-              </div>
-              <pre className="code-block">
+            <CodeBlock language="javascript">
 {`const WebSocket = require('ws');
-const ws = new WebSocket('ws://localhost:3001/api/ws/launchpadEvents');
+const ws = new WebSocket('wss://api.claw.click/ws/launchpadEvents');
 
 ws.on('message', (data) => {
   const msg = JSON.parse(data);
@@ -711,8 +715,7 @@ ws.on('message', (data) => {
     });
   }
 });`}
-              </pre>
-            </div>
+            </CodeBlock>
           </div>
         </section>
 
@@ -724,48 +727,9 @@ ws.on('message', (data) => {
             {errorExamples.map((error, index) => (
               <div key={index} className="error-example">
                 <h3 className="error-type">{error.type}</h3>
-                <div className="code-example">
-                  <div className="code-header">
-                    <span className="code-language">json</span>
-                  </div>
-                  <pre className="code-block">{error.response}</pre>
-                </div>
+                <JsonBlock>{error.response}</JsonBlock>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Environment Variables */}
-        <section className="environment-section" id="environment">
-          <div className="api-docs-container">
-            <h2 className="section-title">Environment Variables</h2>
-            <p className="environment-description">
-              Copy .env.example to .env and fill in the keys you have. The API works with partial configuration — endpoints gracefully skip providers that aren't configured.
-            </p>
-            
-            <div className="env-vars-section">
-              <h3 className="env-section-title">Required for Core Functionality</h3>
-              <div className="env-vars-table">
-                {requiredEnvVars.map((envVar, index) => (
-                  <div key={index} className="env-var-item">
-                    <code className="env-var-name">{envVar.name}</code>
-                    <span className="env-var-usage">{envVar.usage}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="env-vars-section">
-              <h3 className="env-section-title">Optional — Additional Providers</h3>
-              <div className="env-vars-table">
-                {optionalEnvVars.map((envVar, index) => (
-                  <div key={index} className="env-var-item">
-                    <code className="env-var-name">{envVar.name}</code>
-                    <span className="env-var-usage">{envVar.usage}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 
