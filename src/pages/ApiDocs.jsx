@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const ApiDocs = () => {
   const [activeSection, setActiveSection] = useState('overview')
@@ -6,8 +6,9 @@ const ApiDocs = () => {
   const navigationSections = [
     { id: 'overview', label: 'Overview' },
     { id: 'quickstart', label: 'Quick Start' },
-    { id: 'supported-chains', label: 'Supported Chains' },
-    { id: 'common-response', label: 'Response Format' },
+    { id: 'chains', label: 'Supported Chains' },
+    { id: 'response-format', label: 'Response Format' },
+    { id: 'core-endpoints', label: 'Core Endpoints' },
     { id: 'market-data', label: 'Market Data' },
     { id: 'risk-assessment', label: 'Risk Assessment' },
     { id: 'wallet-analysis', label: 'Wallet Analysis' },
@@ -15,204 +16,378 @@ const ApiDocs = () => {
     { id: 'social-sentiment', label: 'Social & Sentiment' },
     { id: 'discovery-monitoring', label: 'Discovery & Monitoring' },
     { id: 'websockets', label: 'WebSockets' },
+    { id: 'filters', label: 'Filtering Options' },
     { id: 'error-handling', label: 'Error Handling' },
     { id: 'environment', label: 'Environment Variables' },
     { id: 'integrations', label: 'Data Providers' }
   ]
 
-  const endpointCategories = [
-    {
-      category: "Core Endpoints",
-      description: "Essential API endpoints for health checks and provider status",
-      endpoints: [
-        {
-          method: "GET",
-          path: "/health",
-          description: "Health check endpoint",
-          params: ["None"]
-        },
-        {
-          method: "GET",
-          path: "/providers",
-          description: "List all registered providers and their configuration status",
-          params: ["None"]
+  // Scroll tracking to update active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navigationSections.map(section => document.getElementById(section.id))
+      let activeId = 'overview'
+      
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i]
+        if (section && section.offsetTop <= window.scrollY + 100) {
+          activeId = section.id
+          break
         }
-      ]
-    },
-    {
-      category: "Market Data",
-      description: "Real-time and historical market data for tokens and trading pairs",
-      endpoints: [
-        {
-          method: "GET",
-          path: "/tokenPoolInfo",
-          description: "Get token price, market cap, liquidity, volume, and pool info",
-          params: ["chain", "tokenAddress*", "poolAddress", "symbol", "tokenName"]
-        },
-        {
-          method: "GET",
-          path: "/tokenPriceHistory",
-          description: "Historical OHLCV price data for charting",
-          params: ["chain", "tokenAddress*", "asset", "limit", "interval"]
-        },
-        {
-          method: "GET",
-          path: "/detailedTokenStats",
-          description: "Bucketed token stats from Codex, cached for 30 minutes",
-          params: ["chain", "tokenAddress*", "durations", "bucketCount", "timestamp"]
-        },
-        {
-          method: "GET",
-          path: "/gasFeed",
-          description: "Current gas prices for EVM chains",
-          params: ["chain"]
-        }
-      ]
-    },
-    {
-      category: "Risk Assessment",
-      description: "Comprehensive risk analysis and security audits for tokens",
-      endpoints: [
-        {
-          method: "GET",
-          path: "/isScam",
-          description: "Quick scam check with risk score and warnings",
-          params: ["chain", "tokenAddress*"]
-        },
-        {
-          method: "GET",
-          path: "/fullAudit",
-          description: "Deep contract audit - taxes, ownership, trading restrictions",
-          params: ["chain", "tokenAddress*"]
-        }
-      ]
-    },
-    {
-      category: "Wallet Analysis",
-      description: "Comprehensive wallet tracking and portfolio analysis",
-      endpoints: [
-        {
-          method: "GET",
-          path: "/walletReview",
-          description: "Comprehensive wallet analysis - PnL, holdings, protocols, activity",
-          params: ["chain", "walletAddress*", "days", "pageCount"]
-        },
-        {
-          method: "GET",
-          path: "/holderAnalysis",
-          description: "Holder distribution, concentration, top holders, whale tracking",
-          params: ["chain", "tokenAddress*"]
-        },
-        {
-          method: "GET",
-          path: "/tokenHolders",
-          description: "Raw token-holder ledger for EVM tokens via Sim by Dune",
-          params: ["tokenAddress*", "network", "cursor", "limit"]
-        }
-      ]
-    },
-    {
-      category: "Trading & DEX",
-      description: "DEX trading, swaps, approvals, and liquidity management",
-      endpoints: [
-        {
-          method: "GET",
-          path: "/swap",
-          description: "Build an unsigned swap transaction",
-          params: ["chain*", "dex*", "walletAddress*", "tokenIn*", "tokenOut*", "amountIn*", "slippageBps", "deadline"]
-        },
-        {
-          method: "GET",
-          path: "/swapQuote",
-          description: "Get a price quote without building the transaction",
-          params: ["chain*", "dex*", "tokenIn*", "tokenOut*", "amountIn*", "slippageBps"]
-        },
-        {
-          method: "GET",
-          path: "/swapDexes",
-          description: "List available DEXes for a chain",
-          params: ["chain*"]
-        },
-        {
-          method: "GET",
-          path: "/approve",
-          description: "Build unsigned approval transaction steps",
-          params: ["chain*", "dex*", "walletAddress*", "tokenIn*", "tokenOut*", "amount", "approvalMode", "spender"]
-        },
-        {
-          method: "GET",
-          path: "/unwrap",
-          description: "Build an unsigned wrapped-native withdraw transaction",
-          params: ["chain*", "walletAddress*", "amount*"]
-        }
-      ]
-    },
-    {
-      category: "Social & Sentiment",
-      description: "Social media monitoring and sentiment analysis",
-      endpoints: [
-        {
-          method: "GET",
-          path: "/fudSearch",
-          description: "Search for FUD mentions across social platforms",
-          params: ["chain", "tokenAddress", "symbol", "tokenName"]
-        },
-        {
-          method: "GET",
-          path: "/marketOverview",
-          description: "Combined sentiment scoring, social signals, prediction markets",
-          params: ["chain", "tokenAddress", "asset", "poolAddress", "symbol", "tokenName"]
-        }
-      ]
-    },
-    {
-      category: "Discovery & Monitoring",
-      description: "Token discovery, trending analysis, and market monitoring",
-      endpoints: [
-        {
-          method: "GET",
-          path: "/trendingTokens",
-          description: "Currently trending tokens across all chains",
-          params: ["None"]
-        },
-        {
-          method: "GET",
-          path: "/newPairs",
-          description: "Recently created trading pairs/pools",
-          params: ["source", "limit"]
-        },
-        {
-          method: "GET",
-          path: "/topTraders",
-          description: "Top traders for a specific token (multi-chain via Birdeye)",
-          params: ["chain", "tokenAddress*", "timeFrame"]
-        },
-        {
-          method: "GET",
-          path: "/tokenSearch",
-          description: "Search for tokens/pairs by name, symbol, or address",
-          params: ["query*"]
-        },
-        {
-          method: "GET",
-          path: "/filterTokens",
-          description: "Filter and rank tokens by on-chain metrics (Codex.io)",
-          params: ["network", "phrase", "minLiquidity", "minVolume24", "minMarketCap", "maxMarketCap", "sortBy", "limit"]
-        }
-      ]
-    },
-    {
-      category: "WebSockets",
-      description: "Real-time event streaming and live data feeds",
-      endpoints: [
-        {
-          method: "WS",
-          path: "/ws/launchpadEvents",
-          description: "Real-time launchpad token event stream",
-          params: ["protocol", "protocols", "networkId", "launchpadName", "eventType"]
-        }
-      ]
+      }
+      
+      setActiveSection(activeId)
     }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // Set initial active section
+    
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      const offset = 80 // Account for fixed header
+      const elementPosition = element.offsetTop - offset
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  const supportedChains = [
+    { name: "Ethereum", id: "eth / ethereum", chainId: "1", status: "Full support" },
+    { name: "Base", id: "base", chainId: "8453", status: "Full support" },
+    { name: "BSC", id: "bsc / bnb", chainId: "56", status: "Full support" },
+    { name: "Solana", id: "sol / solana", chainId: "Non-EVM", status: "Full support" }
+  ]
+
+  const coreEndpoints = [
+    {
+      method: "GET",
+      path: "/health",
+      description: "Health check endpoint",
+      parameters: [],
+      example: "GET http://localhost:3001/api/health",
+      response: `{
+  "status": "ok",
+  "service": "super-api"
+}`
+    },
+    {
+      method: "GET", 
+      path: "/providers",
+      description: "List all registered providers and their configuration status",
+      parameters: [],
+      example: "GET http://localhost:3001/api/providers",
+      response: `{
+  "providers": [
+    {
+      "id": "moralis",
+      "label": "Moralis", 
+      "folder": "Alpha_Wallet_tracking/Moralis",
+      "category": "walletTracking",
+      "configured": true
+    },
+    {
+      "id": "birdeye",
+      "label": "Birdeye",
+      "folder": "Market_data/LowCaps/Birdeye", 
+      "category": "marketData",
+      "configured": true
+    }
+  ]
+}`
+    }
+  ]
+
+  const marketDataEndpoints = [
+    {
+      method: "GET",
+      path: "/tokenPoolInfo", 
+      description: "Get token price, market cap, liquidity, volume, and pool info. DexScreener is primary; Codex listPairsForToken is used as backup.",
+      parameters: [
+        { name: "chain", type: "string", required: false, default: "eth", description: "Chain to query" },
+        { name: "tokenAddress", type: "string", required: true, default: "—", description: "Token contract address" },
+        { name: "poolAddress", type: "string", required: false, default: "—", description: "Specific pool address" },
+        { name: "symbol", type: "string", required: false, default: "—", description: "Token symbol hint" },
+        { name: "tokenName", type: "string", required: false, default: "—", description: "Token name hint" }
+      ],
+      example: "GET http://localhost:3001/api/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      response: `{
+  "endpoint": "tokenPoolInfo",
+  "status": "live", 
+  "chain": "eth",
+  "tokenAddress": "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  "name": "USD Coin",
+  "symbol": "USDC",
+  "priceUsd": 1.0001,
+  "marketCapUsd": 32000000000,
+  "fdvUsd": 32000000000,
+  "liquidityUsd": 150000000,
+  "volume24hUsd": 5000000000,
+  "priceChange24hPct": -0.01,
+  "pairAddress": "0x...",
+  "dex": "uniswap_v3",
+  "providers": [
+    { "provider": "dexScreener", "status": "ok", "detail": "Live data" },
+    { "provider": "birdeye", "status": "ok", "detail": "Price confirmed" }
+  ]
+}`
+    },
+    {
+      method: "GET",
+      path: "/tokenPriceHistory",
+      description: "Historical OHLCV price data for charting. Supports both token contracts and major assets. Primary sources are GeckoTerminal/Birdeye, with Codex getTokenBars as fallback.",
+      parameters: [
+        { name: "chain", type: "string", required: false, default: "eth", description: "Chain" },
+        { name: "tokenAddress", type: "string", required: true, default: "—", description: "Token address, or major symbol like btc, eth, sol, xrp, bnb" },
+        { name: "asset", type: "string", required: false, default: "—", description: "Optional explicit major asset name/symbol" },
+        { name: "limit", type: "string", required: false, default: "3m", description: "Time range: 1d, 7d, 1m, 3m, 1y" },
+        { name: "interval", type: "string", required: false, default: "1d", description: "Candle interval: 5m, 15m, 1h, 4h, 1d" }
+      ],
+      example: "GET http://localhost:3001/api/tokenPriceHistory?chain=sol&tokenAddress=So111...&limit=7d&interval=1h",
+      response: `{
+  "endpoint": "tokenPriceHistory",
+  "status": "live",
+  "chain": "sol", 
+  "tokenAddress": "So111...",
+  "currency": "usd",
+  "limit": "7d",
+  "interval": "1h",
+  "points": [
+    {
+      "timestamp": 1710000000,
+      "priceUsd": 150.5,
+      "open": 150,
+      "high": 152, 
+      "low": 149,
+      "close": 150.5,
+      "volume": 1000000
+    }
+  ],
+  "providers": [...]
+}`
+    },
+    {
+      method: "GET",
+      path: "/detailedTokenStats",
+      description: "Bucketed token stats from Codex, cached for 30 minutes. Useful for short-window and multi-window volume, price, liquidity, and trader-count deltas.",
+      parameters: [
+        { name: "chain", type: "string", required: false, default: "eth", description: "Chain" },
+        { name: "tokenAddress", type: "string", required: true, default: "—", description: "Token address" },
+        { name: "durations", type: "string", required: false, default: "hour1,day1", description: "Comma-separated durations: min5, hour1, hour4, hour12, day1" },
+        { name: "bucketCount", type: "number", required: false, default: "6", description: "Number of buckets requested from Codex" },
+        { name: "timestamp", type: "number", required: false, default: "—", description: "Optional unix timestamp snapshot" },
+        { name: "statsType", type: "string", required: false, default: "UNFILTERED", description: "FILTERED or UNFILTERED" }
+      ],
+      example: "GET http://localhost:3001/api/detailedTokenStats?chain=eth&tokenAddress=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&durations=hour1,day1&bucketCount=6",
+      response: `{
+  "endpoint": "detailedTokenStats",
+  "status": "live",
+  "chain": "eth",
+  "tokenAddress": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  "cached": false,
+  "bucketCount": 6,
+  "statsType": "UNFILTERED",
+  "lastTransactionAt": 1773694307,
+  "durations": {
+    "hour1": {
+      "duration": "hour1", 
+      "start": 1773690707,
+      "end": 1773694308,
+      "statsUsd": {
+        "volume": { 
+          "currentValue": 13839617.47,
+          "previousValue": 20042545.97, 
+          "change": -0.3094 
+        },
+        "close": { 
+          "currentValue": 2344.03,
+          "previousValue": 2330.46,
+          "change": 0.0058 
+        }
+      }
+    }
+  },
+  "providers": [...]
+}`
+    }
+  ]
+
+  const riskEndpoints = [
+    {
+      method: "GET", 
+      path: "/isScam",
+      description: "Quick scam check — returns risk level and warnings.",
+      parameters: [
+        { name: "chain", type: "string", required: false, default: "eth", description: "Chain" },
+        { name: "tokenAddress", type: "string", required: true, default: "—", description: "Token address" }
+      ],
+      example: "GET http://localhost:3001/api/isScam?chain=bsc&tokenAddress=0x...",
+      response: `{
+  "endpoint": "isScam",
+  "status": "live",
+  "chain": "bsc",
+  "tokenAddress": "0x...",
+  "isScam": false,
+  "risk": "low",
+  "riskLevel": 1,
+  "warnings": [],
+  "cached": true,
+  "providers": [...]
+}`
+    },
+    {
+      method: "GET",
+      path: "/fullAudit",
+      description: "Deep contract audit — taxes, ownership, trading restrictions, holder stats, gas simulation.",
+      parameters: [
+        { name: "chain", type: "string", required: false, default: "eth", description: "Chain" },
+        { name: "tokenAddress", type: "string", required: true, default: "—", description: "Token address" }
+      ],
+      example: "GET http://localhost:3001/api/fullAudit?chain=eth&tokenAddress=0x...",
+      response: `{
+  "endpoint": "fullAudit", 
+  "status": "live",
+  "chain": "eth",
+  "tokenAddress": "0x...",
+  "cached": false,
+  "summary": {
+    "isScam": false,
+    "risk": "medium",
+    "riskLevel": 2,
+    "warnings": ["High sell tax"]
+  },
+  "taxes": { "buyTax": 1, "sellTax": 5, "transferTax": 0 },
+  "contract": {
+    "openSource": true,
+    "isProxy": false,
+    "isMintable": false,
+    "canTakeBackOwnership": false,
+    "hiddenOwner": false,
+    "selfDestruct": false,
+    "ownerAddress": "0x...",
+    "creatorAddress": "0x..."
+  },
+  "trading": {
+    "cannotBuy": false,
+    "cannotSellAll": false,
+    "isAntiWhale": false,
+    "tradingCooldown": false,
+    "transferPausable": false,
+    "isBlacklisted": false,
+    "isWhitelisted": false
+  },
+  "holders": { "holderCount": 5000, "lpHolderCount": 10, "ownerPercent": 5, "creatorPercent": 2 },
+  "simulation": { "buyGas": "150000", "sellGas": "175000" },
+  "providers": [...]
+}`
+    }
+  ]
+
+  const tradingEndpoints = [
+    {
+      method: "GET",
+      path: "/swap",
+      description: "Build an unsigned swap transaction. The caller signs and submits it. Use native, eth, or bnb as native-token sentinel for EVM native in/out.",
+      parameters: [
+        { name: "chain", type: "string", required: true, default: "—", description: "Chain: eth, base, bsc, sol" },
+        { name: "dex", type: "string", required: true, default: "—", description: "DEX name (use /swapDexes to list)" },
+        { name: "walletAddress", type: "string", required: true, default: "—", description: "Wallet that will sign" },
+        { name: "tokenIn", type: "string", required: true, default: "—", description: "Input token address" },
+        { name: "tokenOut", type: "string", required: true, default: "—", description: "Output token address" },
+        { name: "amountIn", type: "string", required: true, default: "—", description: "Amount in raw units (wei/lamports)" },
+        { name: "slippageBps", type: "number", required: false, default: "50", description: "Slippage tolerance in basis points (1–5000)" },
+        { name: "deadline", type: "number", required: false, default: "now+20min", description: "Unix timestamp deadline (EVM only)" }
+      ],
+      example: "GET http://localhost:3001/api/swap?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...&tokenOut=0x...&amountIn=1000000000000000000&slippageBps=100",
+      response: `{
+  "endpoint": "swap",
+  "status": "live",
+  "chain": "eth",
+  "dex": "uniswapV3",
+  "tokenIn": "0x...",
+  "tokenOut": "0x...",
+  "amountIn": "1000000000000000000",
+  "slippageBps": 100,
+  "tx": {
+    "to": "0xRouterAddress",
+    "data": "0xcalldata...",
+    "value": "0x0",
+    "chainId": 1,
+    "from": "0xYourWallet",
+    "gasLimit": "0x30000"
+  },
+  "providers": [...]
+}`
+    }
+  ]
+
+  const errorExamples = [
+    {
+      type: "Validation Errors (400)",
+      response: `{
+  "error": "Validation error",
+  "message": "Invalid query parameters: tokenAddress — Required",
+  "fields": [
+    { "field": "tokenAddress", "message": "Required", "code": "invalid_type" }
+  ]
+}`
+    },
+    {
+      type: "Invalid Chain (400)",
+      response: `{
+  "error": "Invalid chain",
+  "message": "Unsupported chain \\"polygon\\". Valid chains: eth, base, bsc, sol"
+}`
+    },
+    {
+      type: "Not Found (404)",
+      response: `{
+  "error": "Not found",
+  "message": "Route GET /foo does not exist. Available endpoints: /health, /providers, ..."
+}`
+    },
+    {
+      type: "Server Error (500)",
+      response: `{
+  "error": "Internal server error",
+  "message": "Something went wrong processing GET /tokenPoolInfo. Check server logs for details."
+}`
+    }
+  ]
+
+  const requiredEnvVars = [
+    { name: "MORALIS_API_KEY", usage: "walletReview, holderAnalysis, tokenPoolInfo" },
+    { name: "BIRDEYE_API_KEY", usage: "tokenPoolInfo, priceHistory, topTraders, walletReview" },
+    { name: "ETHERSCAN_API_KEY", usage: "gasFeed (single key for ETH/BASE/BSC via Etherscan V2)" },
+    { name: "ETH_RPC_URL", usage: "tokenPoolInfo, holderAnalysis (on-chain calls)" },
+    { name: "BASE_RPC_URL", usage: "tokenPoolInfo, holderAnalysis (on-chain calls)" },
+    { name: "BSC_RPC_URL", usage: "tokenPoolInfo, holderAnalysis (on-chain calls)" }
+  ]
+
+  const optionalEnvVars = [
+    { name: "CODEX_API_KEY", usage: "filterTokens, tokenPoolInfo (backup pair discovery), tokenPriceHistory (OHLCV fallback), holderAnalysis (top10 fallback), detailedTokenStats, ws/launchpadEvents" },
+    { name: "ZERION_API_KEY", usage: "walletReview (PnL fallback)" },
+    { name: "CMC_API_KEY", usage: "tokenPoolInfo, marketOverview" },
+    { name: "GOPLUS_ACCESS_TOKEN", usage: "isScam, fullAudit" },
+    { name: "DEBANK_API_KEY", usage: "walletReview (protocols, approvals)" },
+    { name: "ARKHAM_API_KEY", usage: "walletReview, holderAnalysis" },
+    { name: "DUNE_API_KEY + DUNE_QUERY_ID", usage: "holderAnalysis" },
+    { name: "SIM_API_KEY", usage: "tokenHolders" },
+    { name: "LUNARCRUSH_API_KEY", usage: "marketOverview (sentiment)" },
+    { name: "REDDIT_CLIENT_ID + SECRET + USER_AGENT", usage: "fudSearch, marketOverview" },
+    { name: "X_BEARER_TOKEN", usage: "fudSearch, marketOverview" },
+    { name: "TELEGRAM_BOT_TOKEN", usage: "fudSearch" },
+    { name: "BUBBLEMAPS_API_KEY", usage: "holderAnalysis" },
+    { name: "QUICKINTEL_API_KEY", usage: "isScam, fullAudit" },
+    { name: "SANTIMENT_API_KEY", usage: "marketOverview" },
+    { name: "COINGECKO_PRO_API_KEY", usage: "tokenPoolInfo" },
+    { name: "DEXTOOLS_API_KEY", usage: "tokenPoolInfo" },
+    { name: "NANSEN_API_KEY", usage: "walletReview" }
   ]
 
   const integrations = [
@@ -250,20 +425,64 @@ const ApiDocs = () => {
     { name: "Virtuals Protocol", category: "Launchpad", status: "Live" }
   ]
 
-  const scrollToSection = (sectionId) => {
-    setActiveSection(sectionId)
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
+  const EndpointCard = ({ endpoint }) => (
+    <div className="endpoint-card">
+      <div className="endpoint-header">
+        <span className={`method method-${endpoint.method.toLowerCase()}`}>
+          {endpoint.method}
+        </span>
+        <code className="endpoint-path">{endpoint.path}</code>
+      </div>
+      <p className="endpoint-description">{endpoint.description}</p>
+      
+      {endpoint.parameters && endpoint.parameters.length > 0 && (
+        <div className="parameters-section">
+          <h4 className="parameters-title">Parameters</h4>
+          <div className="parameters-table">
+            <div className="table-header">
+              <span>Parameter</span>
+              <span>Type</span>
+              <span>Required</span>
+              <span>Default</span>
+              <span>Description</span>
+            </div>
+            {endpoint.parameters.map((param, index) => (
+              <div key={index} className="table-row">
+                <code className="param-name">{param.name}</code>
+                <span className="param-type">{param.type}</span>
+                <span className={`param-required ${param.required ? 'required' : 'optional'}`}>
+                  {param.required ? 'Yes' : 'No'}
+                </span>
+                <code className="param-default">{param.default}</code>
+                <span className="param-description">{param.description}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <div className="example-section">
+        <h4 className="example-title">Example</h4>
+        <div className="code-block">
+          <pre>{endpoint.example}</pre>
+        </div>
+      </div>
+      
+      <div className="response-section">
+        <h4 className="response-title">Response</h4>
+        <div className="code-block">
+          <pre>{endpoint.response}</pre>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className="api-docs-page">
       {/* Navigation Sidebar */}
       <aside className="api-docs-sidebar">
         <div className="sidebar-content">
-          <h3 className="sidebar-title">Documentation</h3>
+          <h3 className="sidebar-title">API Documentation</h3>
           <nav className="sidebar-nav">
             {navigationSections.map((section) => (
               <button
@@ -280,31 +499,31 @@ const ApiDocs = () => {
 
       {/* Main Content */}
       <main className="api-docs-main">
-        {/* Header */}
+        {/* Overview */}
         <header className="api-docs-header" id="overview">
-        <div className="api-docs-container">
-          <div className="api-docs-hero">
-            <h1 className="api-docs-title">API Documentation</h1>
-            <p className="api-docs-subtitle">
-              Unified crypto intelligence API - 50+ data providers behind clean REST endpoints
-            </p>
-            <div className="api-base-url">
-              <span className="base-url-label">Base URL:</span>
-              <code className="base-url">http://localhost:3001/api</code>
+          <div className="api-docs-container">
+            <div className="api-docs-hero">
+              <h1 className="api-docs-title">Super API Documentation</h1>
+              <p className="api-docs-subtitle">
+                Unified Crypto Intelligence API — 50+ data providers behind clean REST endpoints
+              </p>
+              <div className="api-base-url">
+                <span className="base-url-label">Base URL:</span>
+                <code className="base-url">http://localhost:3001/api</code>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
         {/* Quick Start */}
         <section className="quick-start-section" id="quickstart">
           <div className="api-docs-container">
             <h2 className="section-title">Quick Start</h2>
-          <div className="code-example">
-            <div className="code-header">
-              <span className="code-language">curl</span>
-            </div>
-            <pre className="code-block">
+            <div className="code-example">
+              <div className="code-header">
+                <span className="code-language">curl</span>
+              </div>
+              <pre className="code-block">
 {`curl -X GET "http://localhost:3001/api/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" \\
   -H "Content-Type: application/json"
 
@@ -329,98 +548,42 @@ const ApiDocs = () => {
     { "provider": "birdeye", "status": "ok", "detail": "Price confirmed" }
   ]
 }`}
-            </pre>
-          </div>
-          </div>
-        </section>
-
-        {/* Endpoints */}
-        <section className="endpoints-section" id="market-data">
-          <div className="api-docs-container">
-            <h2 className="section-title">API Endpoints</h2>
-          
-          {endpointCategories.map((category, categoryIndex) => (
-            <div key={categoryIndex} className="endpoint-category">
-              <div className="category-header">
-                <h3 className="category-title">{category.category}</h3>
-                <p className="category-description">{category.description}</p>
-              </div>
-              
-              <div className="endpoints-list">
-                {category.endpoints.map((endpoint, endpointIndex) => (
-                  <div key={endpointIndex} className="endpoint-item">
-                    <div className="endpoint-summary">
-                      <span className={`method method-${endpoint.method.toLowerCase()}`}>
-                        {endpoint.method}
-                      </span>
-                      <code className="endpoint-path">{endpoint.path}</code>
-                    </div>
-                    <p className="endpoint-description">{endpoint.description}</p>
-                    <div className="endpoint-params">
-                      <span className="params-label">Parameters:</span>
-                      {endpoint.params.map((param, paramIndex) => (
-                        <code key={paramIndex} className="param-item">
-                          {param}
-                        </code>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              </pre>
             </div>
-            ))}
           </div>
         </section>
 
         {/* Supported Chains */}
-        <section className="chains-section" id="supported-chains">
+        <section className="chains-section" id="chains">
           <div className="api-docs-container">
             <h2 className="section-title">Supported Chains</h2>
-          <div className="chains-grid">
-            <div className="chain-item">
-              <div className="chain-header">
-                <span className="chain-name">Ethereum</span>
-                <span className="chain-id">ID: 1</span>
-              </div>
-              <span className="chain-status">Full support</span>
-            </div>
-            <div className="chain-item">
-              <div className="chain-header">
-                <span className="chain-name">Base</span>
-                <span className="chain-id">ID: 8453</span>
-              </div>
-              <span className="chain-status">Full support</span>
-            </div>
-            <div className="chain-item">
-              <div className="chain-header">
-                <span className="chain-name">BSC</span>
-                <span className="chain-id">ID: 56</span>
-              </div>
-              <span className="chain-status">Full support</span>
-            </div>
-            <div className="chain-item">
-              <div className="chain-header">
-                <span className="chain-name">Solana</span>
-                <span className="chain-id">Non-EVM</span>
-              </div>
-              <span className="chain-status">Full support</span>
-            </div>
+            <div className="chains-grid">
+              {supportedChains.map((chain, index) => (
+                <div key={index} className="chain-item">
+                  <div className="chain-header">
+                    <span className="chain-name">{chain.name}</span>
+                    <span className="chain-id">ID: {chain.chainId}</span>
+                  </div>
+                  <span className="chain-alias">({chain.id})</span>
+                  <span className="chain-status">{chain.status}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Response Format */}
-        <section className="response-format-section" id="common-response">
+        <section className="response-format-section" id="response-format">
           <div className="api-docs-container">
             <h2 className="section-title">Common Response Format</h2>
-          <p className="response-description">
-            Every endpoint returns a consistent JSON structure with provider status tracking:
-          </p>
-          <div className="code-example">
-            <div className="code-header">
-              <span className="code-language">json</span>
-            </div>
-            <pre className="code-block">
+            <p className="response-description">
+              Every endpoint returns a consistent JSON structure with provider status tracking:
+            </p>
+            <div className="code-example">
+              <div className="code-header">
+                <span className="code-language">json</span>
+              </div>
+              <pre className="code-block">
 {`{
   "endpoint": "endpointName",
   "status": "live" | "partial",
@@ -433,30 +596,107 @@ const ApiDocs = () => {
   ],
   // ... endpoint-specific data
 }`}
-            </pre>
-          </div>
-          <ul className="status-meanings">
-            <li><strong>live:</strong> All providers returned data successfully</li>
-            <li><strong>partial:</strong> Some providers were skipped or errored, but usable data was returned</li>
-            <li><strong>ok:</strong> Provider contributed data successfully</li>
-            <li><strong>skipped:</strong> Provider was not configured or not applicable</li>
-            <li><strong>error:</strong> Provider encountered an error</li>
+              </pre>
+            </div>
+            <ul className="status-meanings">
+              <li><strong>live:</strong> All providers returned data successfully</li>
+              <li><strong>partial:</strong> Some providers were skipped or errored, but usable data was returned</li>
+              <li><strong>ok:</strong> Provider contributed data successfully</li>
+              <li><strong>skipped:</strong> Provider was not configured or not applicable</li>
+              <li><strong>error:</strong> Provider encountered an error</li>
             </ul>
           </div>
         </section>
 
-        {/* WebSocket Example */}
+        {/* Core Endpoints */}
+        <section className="endpoints-section" id="core-endpoints">
+          <div className="api-docs-container">
+            <h2 className="section-title">Core Endpoints</h2>
+            <p className="section-description">Essential API endpoints for health checks and provider status</p>
+            {coreEndpoints.map((endpoint, index) => (
+              <EndpointCard key={index} endpoint={endpoint} />
+            ))}
+          </div>
+        </section>
+
+        {/* Market Data */}
+        <section className="endpoints-section" id="market-data">
+          <div className="api-docs-container">
+            <h2 className="section-title">Market Data Endpoints</h2>
+            <p className="section-description">Real-time and historical market data for tokens and trading pairs</p>
+            {marketDataEndpoints.map((endpoint, index) => (
+              <EndpointCard key={index} endpoint={endpoint} />
+            ))}
+          </div>
+        </section>
+
+        {/* Risk Assessment */}
+        <section className="endpoints-section" id="risk-assessment">
+          <div className="api-docs-container">
+            <h2 className="section-title">Risk Assessment Endpoints</h2>
+            <p className="section-description">Comprehensive risk analysis and security audits for tokens</p>
+            {riskEndpoints.map((endpoint, index) => (
+              <EndpointCard key={index} endpoint={endpoint} />
+            ))}
+          </div>
+        </section>
+
+        {/* Trading & DEX */}
+        <section className="endpoints-section" id="trading-dex">
+          <div className="api-docs-container">
+            <h2 className="section-title">Trading & DEX Endpoints</h2>
+            <p className="section-description">DEX trading, swaps, approvals, and liquidity management</p>
+            
+            <div className="dex-support-table">
+              <h3>Supported DEXes by Chain</h3>
+              <div className="table-wrapper">
+                <table className="dex-table">
+                  <thead>
+                    <tr>
+                      <th>Chain</th>
+                      <th>Supported DEXes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Ethereum</td>
+                      <td>uniswapV2, uniswapV3, uniswapV4</td>
+                    </tr>
+                    <tr>
+                      <td>Base</td>
+                      <td>uniswapV2, uniswapV3, uniswapV4, aerodromeV2, aerodromeV3</td>
+                    </tr>
+                    <tr>
+                      <td>BSC</td>
+                      <td>pancakeswapV2, pancakeswapV3</td>
+                    </tr>
+                    <tr>
+                      <td>Solana</td>
+                      <td>raydium, meteora, pumpfun</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {tradingEndpoints.map((endpoint, index) => (
+              <EndpointCard key={index} endpoint={endpoint} />
+            ))}
+          </div>
+        </section>
+
+        {/* WebSockets */}
         <section className="websocket-section" id="websockets">
           <div className="api-docs-container">
             <h2 className="section-title">WebSocket Streaming</h2>
-          <p className="websocket-description">
-            Real-time launchpad events via WebSocket connection:
-          </p>
-          <div className="code-example">
-            <div className="code-header">
-              <span className="code-language">javascript</span>
-            </div>
-            <pre className="code-block">
+            <p className="websocket-description">
+              Real-time launchpad events via WebSocket connection:
+            </p>
+            <div className="code-example">
+              <div className="code-header">
+                <span className="code-language">javascript</span>
+              </div>
+              <pre className="code-block">
 {`const WebSocket = require('ws');
 const ws = new WebSocket('ws://localhost:3001/api/ws/launchpadEvents');
 
@@ -471,7 +711,60 @@ ws.on('message', (data) => {
     });
   }
 });`}
-            </pre>
+              </pre>
+            </div>
+          </div>
+        </section>
+
+        {/* Error Handling */}
+        <section className="error-handling-section" id="error-handling">
+          <div className="api-docs-container">
+            <h2 className="section-title">Error Handling</h2>
+            <p className="section-description">Standard HTTP error responses and formats</p>
+            {errorExamples.map((error, index) => (
+              <div key={index} className="error-example">
+                <h3 className="error-type">{error.type}</h3>
+                <div className="code-example">
+                  <div className="code-header">
+                    <span className="code-language">json</span>
+                  </div>
+                  <pre className="code-block">{error.response}</pre>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Environment Variables */}
+        <section className="environment-section" id="environment">
+          <div className="api-docs-container">
+            <h2 className="section-title">Environment Variables</h2>
+            <p className="environment-description">
+              Copy .env.example to .env and fill in the keys you have. The API works with partial configuration — endpoints gracefully skip providers that aren't configured.
+            </p>
+            
+            <div className="env-vars-section">
+              <h3 className="env-section-title">Required for Core Functionality</h3>
+              <div className="env-vars-table">
+                {requiredEnvVars.map((envVar, index) => (
+                  <div key={index} className="env-var-item">
+                    <code className="env-var-name">{envVar.name}</code>
+                    <span className="env-var-usage">{envVar.usage}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="env-vars-section">
+              <h3 className="env-section-title">Optional — Additional Providers</h3>
+              <div className="env-vars-table">
+                {optionalEnvVars.map((envVar, index) => (
+                  <div key={index} className="env-var-item">
+                    <code className="env-var-name">{envVar.name}</code>
+                    <span className="env-var-usage">{envVar.usage}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -483,19 +776,19 @@ ws.on('message', (data) => {
             <p className="integrations-description">
               Our API aggregates data from {integrations.length}+ premium sources to provide comprehensive crypto intelligence and trading infrastructure.
             </p>
-          
-          <div className="integrations-grid">
-            {integrations.map((integration, index) => (
-              <div key={index} className="integration-item">
-                <div className="integration-header">
-                  <span className="integration-name">{integration.name}</span>
-                  <span className={`integration-status status-${integration.status.toLowerCase()}`}>
-                    {integration.status}
-                  </span>
+            
+            <div className="integrations-grid">
+              {integrations.map((integration, index) => (
+                <div key={index} className="integration-item">
+                  <div className="integration-header">
+                    <span className="integration-name">{integration.name}</span>
+                    <span className={`integration-status status-${integration.status.toLowerCase()}`}>
+                      {integration.status}
+                    </span>
+                  </div>
+                  <span className="integration-category">{integration.category}</span>
                 </div>
-                <span className="integration-category">{integration.category}</span>
-              </div>
-            ))}
+              ))}
             </div>
           </div>
         </section>
