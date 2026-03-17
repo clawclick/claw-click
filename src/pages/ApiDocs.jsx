@@ -429,27 +429,56 @@ const ApiDocs = () => {
     { name: "Virtuals Protocol", category: "Launchpad", status: "Live" }
   ]
 
-  const CodeBlock = ({ children, language = 'bash' }) => (
-    <div className="code-example">
-      <div className="code-header">
-        <span className="code-language">{language}</span>
-      </div>
-      <div className="code-block">
-        <pre className={`language-${language}`}>{children}</pre>
-      </div>
-    </div>
-  )
+  const CodeBlock = ({ children, language = 'bash' }) => {
+    const highlightSyntax = (text) => {
+      if (language === 'bash') {
+        return text
+          .replace(/(GET|POST|PUT|DELETE|PATCH)\s+/g, '<span class="method-highlight">$1</span> ')
+          .replace(/(https?:\/\/[^\s\\]+)/g, '<span class="url-highlight">$1</span>')
+      }
+      return text
+    }
 
-  const JsonBlock = ({ children }) => (
-    <div className="code-example">
-      <div className="code-header">
-        <span className="code-language">json</span>
+    return (
+      <div className="code-example">
+        <div className="code-header">
+          <span className="code-language">{language}</span>
+        </div>
+        <div className="code-block">
+          <pre 
+            className={`language-${language}`}
+            dangerouslySetInnerHTML={{ __html: highlightSyntax(children) }}
+          />
+        </div>
       </div>
-      <div className="code-block json-block">
-        <pre className="language-json">{children}</pre>
+    )
+  }
+
+  const JsonBlock = ({ children }) => {
+    const highlightJson = (text) => {
+      return text
+        .replace(/"([^"]+)":/g, '<span class="json-property">"$1":</span>')
+        .replace(/:\s*"([^"]+)"/g, ': <span class="json-string">"$1"</span>')
+        .replace(/:\s*(\d+\.?\d*)/g, ': <span class="json-number">$1</span>')
+        .replace(/:\s*(true|false)/g, ': <span class="json-boolean">$1</span>')
+        .replace(/:\s*(null)/g, ': <span class="json-null">$1</span>')
+        .replace(/([{}[\],])/g, '<span class="json-punctuation">$1</span>')
+    }
+
+    return (
+      <div className="code-example">
+        <div className="code-header">
+          <span className="code-language">json</span>
+        </div>
+        <div className="code-block json-block">
+          <pre 
+            className="language-json"
+            dangerouslySetInnerHTML={{ __html: highlightJson(children) }}
+          />
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   const EndpointCard = ({ endpoint }) => (
     <div className="endpoint-card">
