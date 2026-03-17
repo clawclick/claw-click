@@ -250,10 +250,38 @@ const ApiDocs = () => {
     { name: "Virtuals Protocol", category: "Launchpad", status: "Live" }
   ]
 
+  const scrollToSection = (sectionId) => {
+    setActiveSection(sectionId)
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   return (
     <div className="api-docs-page">
-      {/* Header */}
-      <header className="api-docs-header">
+      {/* Navigation Sidebar */}
+      <aside className="api-docs-sidebar">
+        <div className="sidebar-content">
+          <h3 className="sidebar-title">Documentation</h3>
+          <nav className="sidebar-nav">
+            {navigationSections.map((section) => (
+              <button
+                key={section.id}
+                className={`nav-item ${activeSection === section.id ? 'active' : ''}`}
+                onClick={() => scrollToSection(section.id)}
+              >
+                {section.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="api-docs-main">
+        {/* Header */}
+        <header className="api-docs-header" id="overview">
         <div className="api-docs-container">
           <div className="api-docs-hero">
             <h1 className="api-docs-title">API Documentation</h1>
@@ -268,10 +296,10 @@ const ApiDocs = () => {
         </div>
       </header>
 
-      {/* Quick Start */}
-      <section className="quick-start-section">
-        <div className="api-docs-container">
-          <h2 className="section-title">Quick Start</h2>
+        {/* Quick Start */}
+        <section className="quick-start-section" id="quickstart">
+          <div className="api-docs-container">
+            <h2 className="section-title">Quick Start</h2>
           <div className="code-example">
             <div className="code-header">
               <span className="code-language">curl</span>
@@ -303,13 +331,13 @@ const ApiDocs = () => {
 }`}
             </pre>
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Endpoints */}
-      <section className="endpoints-section">
-        <div className="api-docs-container">
-          <h2 className="section-title">API Endpoints</h2>
+        {/* Endpoints */}
+        <section className="endpoints-section" id="market-data">
+          <div className="api-docs-container">
+            <h2 className="section-title">API Endpoints</h2>
           
           {endpointCategories.map((category, categoryIndex) => (
             <div key={categoryIndex} className="endpoint-category">
@@ -340,14 +368,14 @@ const ApiDocs = () => {
                 ))}
               </div>
             </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* Supported Chains */}
-      <section className="chains-section">
-        <div className="api-docs-container">
-          <h2 className="section-title">Supported Chains</h2>
+        {/* Supported Chains */}
+        <section className="chains-section" id="supported-chains">
+          <div className="api-docs-container">
+            <h2 className="section-title">Supported Chains</h2>
           <div className="chains-grid">
             <div className="chain-item">
               <div className="chain-header">
@@ -377,14 +405,14 @@ const ApiDocs = () => {
               </div>
               <span className="chain-status">Full support</span>
             </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Response Format */}
-      <section className="response-format-section">
-        <div className="api-docs-container">
-          <h2 className="section-title">Common Response Format</h2>
+        {/* Response Format */}
+        <section className="response-format-section" id="common-response">
+          <div className="api-docs-container">
+            <h2 className="section-title">Common Response Format</h2>
           <p className="response-description">
             Every endpoint returns a consistent JSON structure with provider status tracking:
           </p>
@@ -413,14 +441,14 @@ const ApiDocs = () => {
             <li><strong>ok:</strong> Provider contributed data successfully</li>
             <li><strong>skipped:</strong> Provider was not configured or not applicable</li>
             <li><strong>error:</strong> Provider encountered an error</li>
-          </ul>
-        </div>
-      </section>
+            </ul>
+          </div>
+        </section>
 
-      {/* WebSocket Example */}
-      <section className="websocket-section">
-        <div className="api-docs-container">
-          <h2 className="section-title">WebSocket Streaming</h2>
+        {/* WebSocket Example */}
+        <section className="websocket-section" id="websockets">
+          <div className="api-docs-container">
+            <h2 className="section-title">WebSocket Streaming</h2>
           <p className="websocket-description">
             Real-time launchpad events via WebSocket connection:
           </p>
@@ -444,14 +472,14 @@ ws.on('message', (data) => {
   }
 });`}
             </pre>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Integrations */}
-      <section className="integrations-section">
-        <div className="api-docs-container">
-          <h2 className="section-title">Data Sources & Integrations</h2>
+        {/* Integrations */}
+        <section className="integrations-section" id="integrations">
+          <div className="api-docs-container">
+            <h2 className="section-title">Data Sources & Integrations</h2>
             <p className="integrations-description">
               Our API aggregates data from {integrations.length}+ premium sources to provide comprehensive crypto intelligence and trading infrastructure.
             </p>
@@ -468,25 +496,26 @@ ws.on('message', (data) => {
                 <span className="integration-category">{integration.category}</span>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer CTA */}
-      <section className="api-cta-section">
-        <div className="api-docs-container">
-          <div className="api-cta">
-            <h2 className="cta-title">Ready to Build?</h2>
-            <p className="cta-description">
-              Get your API key and start building with unified trading infrastructure.
-            </p>
-            <div className="cta-buttons">
-              <button className="cta-button primary">Get API Key</button>
-              <button className="cta-button secondary">View Examples</button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Footer CTA */}
+        <section className="api-cta-section">
+          <div className="api-docs-container">
+            <div className="api-cta">
+              <h2 className="cta-title">Ready to Build?</h2>
+              <p className="cta-description">
+                Get your API key and start building with unified trading infrastructure.
+              </p>
+              <div className="cta-buttons">
+                <button className="cta-button primary">Get API Key</button>
+                <button className="cta-button secondary">View Examples</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   )
 }
