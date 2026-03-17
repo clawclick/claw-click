@@ -61,6 +61,15 @@ const ValueProp = () => {
   return (
     <section className="value-prop-section">
       <div className="value-prop-container">
+        <div className="description-capsule-black">
+          <div className="hero-description">
+            <p className="hero-description-text-black">
+              <em>"Our solution is a unified Trading API that aggregates over 100+ trading, analytics, social and risk data sources into a single programmable interface.
+              Instead of managing multiple integrations, Developers and Agents interact with one standardized endpoint, removing friction of juggling API's, hitting rate limits and keeping on top of manual avenues."</em>
+            </p>
+          </div>
+        </div>
+        
         <div className="strategy-examples">
           {strategies.map((strategy) => (
             <div key={strategy.id} className="strategy-card-preview">

@@ -1,0 +1,161 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="nodeGradient1" cx="0.5" cy="0.3">
+      <stop offset="0%" stop-color="#333" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#666" stop-opacity="0.4"/>
+    </radialGradient>
+    <radialGradient id="nodeGradient2" cx="0.5" cy="0.3">
+      <stop offset="0%" stop-color="#666" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#999" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="lineGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ccc" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#999" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ccc" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  
+  <!-- Large primary nodes -->
+  <circle r="12" fill="url(#nodeGradient1)">
+    <animateMotion dur="20s" repeatCount="indefinite">
+      <mpath href="#path1"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="10" fill="url(#nodeGradient1)">
+    <animateMotion dur="25s" repeatCount="indefinite">
+      <mpath href="#path2"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="14" fill="url(#nodeGradient1)">
+    <animateMotion dur="18s" repeatCount="indefinite">
+      <mpath href="#path3"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="8" fill="url(#nodeGradient1)">
+    <animateMotion dur="22s" repeatCount="indefinite">
+      <mpath href="#path4"/>
+    </animateMotion>
+  </circle>
+  
+  <!-- Medium nodes -->
+  <circle r="6" fill="url(#nodeGradient2)">
+    <animateMotion dur="15s" repeatCount="indefinite">
+      <mpath href="#path5"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="7" fill="url(#nodeGradient2)">
+    <animateMotion dur="30s" repeatCount="indefinite">
+      <mpath href="#path6"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="5" fill="url(#nodeGradient2)">
+    <animateMotion dur="28s" repeatCount="indefinite">
+      <mpath href="#path7"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="9" fill="url(#nodeGradient2)">
+    <animateMotion dur="16s" repeatCount="indefinite">
+      <mpath href="#path8"/>
+    </animateMotion>
+  </circle>
+  
+  <!-- Small background nodes -->
+  <circle r="3" fill="#ccc" opacity="0.6">
+    <animateMotion dur="35s" repeatCount="indefinite">
+      <mpath href="#path9"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="2" fill="#ddd" opacity="0.4">
+    <animateMotion dur="40s" repeatCount="indefinite">
+      <mpath href="#path10"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="4" fill="#bbb" opacity="0.5">
+    <animateMotion dur="32s" repeatCount="indefinite">
+      <mpath href="#path11"/>
+    </animateMotion>
+  </circle>
+  
+  <circle r="2.5" fill="#ddd" opacity="0.4">
+    <animateMotion dur="38s" repeatCount="indefinite">
+      <mpath href="#path12"/>
+    </animateMotion>
+  </circle>
+
+  <!-- Animated connecting lines -->
+  <g stroke="url(#lineGradient1)" stroke-width="1" fill="none">
+    <line x1="150" y1="100" x2="300" y2="180">
+      <animate attributeName="x1" values="150;250;350;150" dur="20s" repeatCount="indefinite"/>
+      <animate attributeName="y1" values="100;150;120;100" dur="20s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="300;450;400;300" dur="25s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="180;220;180;180" dur="25s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.8;0.4;0.3" dur="15s" repeatCount="indefinite"/>
+    </line>
+    
+    <line x1="400" y1="250" x2="600" y2="180">
+      <animate attributeName="x1" values="400;500;450;400" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="y1" values="250;300;280;250" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="600;700;650;600" dur="22s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="180;200;160;180" dur="22s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.7;0.3;0.4" dur="12s" repeatCount="indefinite"/>
+    </line>
+    
+    <line x1="200" y1="400" x2="450" y2="350">
+      <animate attributeName="x1" values="200;280;220;200" dur="15s" repeatCount="indefinite"/>
+      <animate attributeName="y1" values="400;380;420;400" dur="15s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="450;550;480;450" dur="30s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="350;320;370;350" dur="30s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.6;0.4;0.2" dur="18s" repeatCount="indefinite"/>
+    </line>
+    
+    <line x1="700" y1="300" x2="900" y2="250">
+      <animate attributeName="x1" values="700;800;750;700" dur="28s" repeatCount="indefinite"/>
+      <animate attributeName="y1" values="300;280;320;300" dur="28s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="900;1000;950;900" dur="16s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="250;230;270;250" dur="16s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.9;0.5;0.3" dur="20s" repeatCount="indefinite"/>
+    </line>
+    
+    <line x1="100" y1="300" x2="350" y2="400">
+      <animate attributeName="x1" values="100;180;120;100" dur="35s" repeatCount="indefinite"/>
+      <animate attributeName="y1" values="300;320;280;300" dur="35s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="350;420;380;350" dur="40s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="400;420;380;400" dur="40s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.1;0.5;0.3;0.1" dur="25s" repeatCount="indefinite"/>
+    </line>
+
+    <line x1="500" y1="100" x2="800" y2="150">
+      <animate attributeName="x1" values="500;580;550;500" dur="32s" repeatCount="indefinite"/>
+      <animate attributeName="y1" values="100;120;80;100" dur="32s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="800;900;850;800" dur="38s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="150;170;130;150" dur="38s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.7;0.4;0.2" dur="22s" repeatCount="indefinite"/>
+    </line>
+  </g>
+  
+  <!-- Hidden paths for node movement -->
+  <defs>
+    <path id="path1" d="M 150,100 Q 400,50 650,120 Q 900,180 1100,150 Q 900,200 650,180 Q 400,150 150,100 Z" opacity="0"/>
+    <path id="path2" d="M 300,180 Q 200,300 400,450 Q 600,300 800,400 Q 1000,250 900,100 Q 600,200 300,180 Z" opacity="0"/>
+    <path id="path3" d="M 450,250 Q 700,100 1000,300 Q 800,500 500,450 Q 200,350 100,200 Q 300,100 450,250 Z" opacity="0"/>
+    <path id="path4" d="M 600,180 Q 800,350 400,500 Q 100,400 200,200 Q 500,50 800,150 Q 700,100 600,180 Z" opacity="0"/>
+    <path id="path5" d="M 200,400 Q 500,200 800,380 Q 1000,300 900,500 Q 600,450 300,350 Q 100,300 200,400 Z" opacity="0"/>
+    <path id="path6" d="M 450,350 Q 150,200 350,100 Q 750,150 1100,300 Q 900,450 500,500 Q 300,400 450,350 Z" opacity="0"/>
+    <path id="path7" d="M 280,220 Q 600,400 950,280 Q 800,100 450,150 Q 200,300 350,450 Q 150,250 280,220 Z" opacity="0"/>
+    <path id="path8" d="M 750,300 Q 400,150 200,350 Q 500,550 800,400 Q 1100,200 950,100 Q 850,200 750,300 Z" opacity="0"/>
+    <path id="path9" d="M 100,300 Q 300,100 600,250 Q 900,400 1100,200 Q 800,300 500,350 Q 200,250 100,300 Z" opacity="0"/>
+    <path id="path10" d="M 350,450 Q 700,300 1000,450 Q 850,200 550,100 Q 300,250 150,400 Q 250,500 350,450 Z" opacity="0"/>
+    <path id="path11" d="M 500,500 Q 800,200 1100,400 Q 900,100 600,150 Q 300,300 200,500 Q 400,450 500,500 Z" opacity="0"/>
+    <path id="path12" d="M 150,150 Q 450,300 750,150 Q 1000,350 800,500 Q 500,400 300,500 Q 100,250 150,150 Z" opacity="0"/>
+  </defs>
+</svg>

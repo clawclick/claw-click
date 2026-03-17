@@ -1,0 +1,398 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Black nodes -->
+    <radialGradient id="nodeBlack" cx="0.3" cy="0.3">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.9"/>
+      <stop offset="70%" stop-color="#333" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#666" stop-opacity="0.4"/>
+    </radialGradient>
+    
+    <!-- Dark grey nodes -->
+    <radialGradient id="nodeDarkGrey" cx="0.3" cy="0.3">
+      <stop offset="0%" stop-color="#333" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#555" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#777" stop-opacity="0.3"/>
+    </radialGradient>
+    
+    <!-- Medium grey nodes -->
+    <radialGradient id="nodeMedGrey" cx="0.3" cy="0.3">
+      <stop offset="0%" stop-color="#666" stop-opacity="0.7"/>
+      <stop offset="70%" stop-color="#888" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#aaa" stop-opacity="0.2"/>
+    </radialGradient>
+    
+    <!-- Light grey nodes -->
+    <radialGradient id="nodeLightGrey" cx="0.3" cy="0.3">
+      <stop offset="0%" stop-color="#999" stop-opacity="0.6"/>
+      <stop offset="70%" stop-color="#bbb" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ddd" stop-opacity="0.2"/>
+    </radialGradient>
+    
+    <!-- Very light nodes -->
+    <radialGradient id="nodeVeryLight" cx="0.3" cy="0.3">
+      <stop offset="0%" stop-color="#ccc" stop-opacity="0.5"/>
+      <stop offset="70%" stop-color="#ddd" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#eee" stop-opacity="0.1"/>
+    </radialGradient>
+  </defs>
+  
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+
+  <!-- Dense network of nodes with varied sizes and colors -->
+  <g id="networkNodes">
+    <!-- Large black nodes -->
+    <g id="node1"><circle r="14" fill="url(#nodeBlack)" cx="200" cy="150">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 50,30; 80,60; 50,90; 0,80; -30,50; -50,20; -30,-10; 0,0"
+        dur="18s" repeatCount="indefinite"/>
+    </circle></g>
+    
+    <g id="node2"><circle r="12" fill="url(#nodeBlack)" cx="500" cy="200">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -40,60; -80,40; -60,0; -20,-40; 20,-60; 60,-30; 40,20; 0,0"
+        dur="22s" repeatCount="indefinite"/>
+    </circle></g>
+    
+    <g id="node3"><circle r="16" fill="url(#nodeBlack)" cx="800" cy="180">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 30,-50; 70,-30; 90,10; 60,50; 10,70; -30,40; -60,0; 0,0"
+        dur="20s" repeatCount="indefinite"/>
+    </circle></g>
+    
+    <g id="node4"><circle r="11" fill="url(#nodeBlack)" cx="350" cy="400">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 60,20; 40,60; 0,80; -40,60; -70,20; -50,-20; -10,-50; 0,0"
+        dur="25s" repeatCount="indefinite"/>
+    </circle></g>
+    
+    <g id="node5"><circle r="13" fill="url(#nodeBlack)" cx="950" cy="350">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -50,40; -30,80; 10,60; 50,30; 70,-10; 40,-50; 10,-60; 0,0"
+        dur="19s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <!-- Dark grey nodes -->
+    <g id="node6"><circle r="9" fill="url(#nodeDarkGrey)" cx="150" cy="350">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 40,50; 70,30; 50,0; 20,-30; -10,-50; -40,-30; -30,10; 0,0"
+        dur="16s" repeatCount="indefinite"/>
+    </circle></g>
+    
+    <g id="node7"><circle r="10" fill="url(#nodeDarkGrey)" cx="650" cy="120">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -30,40; -60,20; -40,-10; -10,-40; 20,-50; 50,-20; 30,20; 0,0"
+        dur="24s" repeatCount="indefinite"/>
+    </circle></g>
+    
+    <g id="node8"><circle r="8" fill="url(#nodeDarkGrey)" cx="750" cy="450">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 50,-30; 30,-60; 0,-50; -30,-30; -50,0; -30,40; 10,50; 0,0"
+        dur="21s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node9"><circle r="7" fill="url(#nodeDarkGrey)" cx="1050" cy="250">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -35,25; -50,50; -35,75; 0,60; 35,35; 50,10; 35,-15; 0,0"
+        dur="27s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node10"><circle r="9" fill="url(#nodeDarkGrey)" cx="100" cy="100">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 45,35; 25,65; 0,45; -25,25; -45,5; -25,-25; 0,-35; 0,0"
+        dur="23s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <!-- Medium grey nodes -->
+    <g id="node11"><circle r="6" fill="url(#nodeMedGrey)" cx="320" cy="250">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 30,40; 60,20; 40,-10; 10,-40; -20,-30; -40,-10; -20,20; 0,0"
+        dur="17s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node12"><circle r="7" fill="url(#nodeMedGrey)" cx="580" cy="380">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -25,35; -50,15; -30,-15; 0,-35; 25,-40; 45,-15; 25,15; 0,0"
+        dur="29s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node13"><circle r="5" fill="url(#nodeMedGrey)" cx="420" cy="100">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 40,30; 20,55; 0,40; -20,15; -40,-5; -20,-35; 0,-25; 0,0"
+        dur="31s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node14"><circle r="8" fill="url(#nodeMedGrey)" cx="900" cy="500">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -40,20; -30,50; 0,40; 30,20; 50,0; 30,-30; 0,-40; 0,0"
+        dur="26s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node15"><circle r="6" fill="url(#nodeMedGrey)" cx="250" cy="520">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 35,25; 55,0; 35,-25; 0,-35; -25,-30; -45,-5; -25,20; 0,0"
+        dur="33s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <!-- More medium nodes -->
+    <g id="node16"><circle r="7" fill="url(#nodeMedGrey)" cx="720" cy="320">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -30,45; -60,25; -45,0; -15,-30; 15,-45; 45,-20; 30,25; 0,0"
+        dur="28s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node17"><circle r="5" fill="url(#nodeMedGrey)" cx="180" cy="480">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 25,30; 50,15; 30,-10; 5,-35; -20,-40; -40,-15; -20,15; 0,0"
+        dur="34s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node18"><circle r="6" fill="url(#nodeMedGrey)" cx="480" cy="320">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 40,35; 20,65; 0,45; -25,25; -45,5; -25,-25; 0,-35; 0,0"
+        dur="30s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <!-- Light grey nodes -->
+    <g id="node19"><circle r="4" fill="url(#nodeLightGrey)" cx="370" cy="180">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 20,25; 35,15; 25,-5; 5,-25; -15,-30; -30,-10; -15,10; 0,0"
+        dur="35s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node20"><circle r="5" fill="url(#nodeLightGrey)" cx="820" cy="280">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -20,30; -40,15; -25,-10; 0,-30; 20,-25; 35,-5; 20,20; 0,0"
+        dur="32s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node21"><circle r="3" fill="url(#nodeLightGrey)" cx="120" cy="200">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 15,20; 25,10; 15,-10; 0,-20; -10,-15; -20,0; -10,15; 0,0"
+        dur="36s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node22"><circle r="4" fill="url(#nodeLightGrey)" cx="680" cy="500">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 25,15; 15,30; 0,25; -15,10; -25,-5; -15,-25; 0,-20; 0,0"
+        dur="37s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node23"><circle r="5" fill="url(#nodeLightGrey)" cx="550" cy="50">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -20,25; -35,10; -20,-15; 0,-25; 20,-20; 30,-5; 15,15; 0,0"
+        dur="38s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <!-- Many more light nodes for density -->
+    <g id="node24"><circle r="3" fill="url(#nodeLightGrey)" cx="280" cy="350">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 15,20; 30,10; 20,-10; 0,-20; -15,-15; -25,5; -10,15; 0,0"
+        dur="39s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node25"><circle r="4" fill="url(#nodeLightGrey)" cx="620" cy="250">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -15,25; -30,15; -20,-5; 0,-25; 15,-20; 25,-5; 15,15; 0,0"
+        dur="40s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <!-- Very light nodes for background density -->
+    <g id="node26"><circle r="2" fill="url(#nodeVeryLight)" cx="60" cy="300">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 10,15; 20,8; 15,-8; 0,-15; -10,-12; -18,2; -8,12; 0,0"
+        dur="45s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node27"><circle r="3" fill="url(#nodeVeryLight)" cx="1100" cy="150">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -12,18; -25,10; -18,-8; 0,-20; 12,-15; 22,-3; 12,12; 0,0"
+        dur="42s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node28"><circle r="2" fill="url(#nodeVeryLight)" cx="450" cy="480">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 18,12; 12,25; 0,18; -12,8; -20,-5; -12,-20; 0,-15; 0,0"
+        dur="46s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node29"><circle r="3" fill="url(#nodeVeryLight)" cx="850" cy="80">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -15,20; -28,12; -20,-10; 0,-22; 15,-18; 25,-8; 15,15; 0,0"
+        dur="48s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node30"><circle r="2" fill="url(#nodeVeryLight)" cx="320" cy="50">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 12,16; 22,8; 16,-8; 0,-18; -12,-14; -20,4; -10,14; 0,0"
+        dur="44s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <!-- Additional density nodes -->
+    <g id="node31"><circle r="2" fill="url(#nodeVeryLight)" cx="780" cy="550">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; 14,10; 8,22; 0,16; -10,6; -18,-3; -10,-18; 0,-12; 0,0"
+        dur="50s" repeatCount="indefinite"/>
+    </circle></g>
+
+    <g id="node32"><circle r="4" fill="url(#nodeLightGrey)" cx="520" cy="550">
+      <animateTransform attributeName="transform" type="translate"
+        values="0,0; -22,15; -18,30; 0,22; 18,12; 30,-2; 18,-25; 0,-18; 0,0"
+        dur="41s" repeatCount="indefinite"/>
+    </circle></g>
+  </g>
+
+  <!-- Dense web of connections -->
+  <g id="connections">
+    <!-- Primary thick black connections -->
+    <g stroke="#000" stroke-width="1.8" fill="none" opacity="0.7">
+      <!-- Major backbone connections -->
+      <line x1="200" y1="150" x2="500" y2="200">
+        <animate attributeName="x1" values="200; 250; 280; 250; 200; 170; 150; 170; 200" dur="18s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="150; 180; 210; 240; 230; 200; 170; 140; 150" dur="18s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="500; 460; 420; 440; 480; 520; 560; 540; 500" dur="22s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="200; 260; 240; 200; 160; 140; 170; 220; 200" dur="22s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.5; 0.9; 0.7; 0.5" dur="10s" repeatCount="indefinite"/>
+      </line>
+      
+      <line x1="500" y1="200" x2="800" y2="180">
+        <animate attributeName="x1" values="500; 460; 420; 440; 480; 520; 560; 540; 500" dur="22s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="200; 260; 240; 200; 160; 140; 170; 220; 200" dur="22s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="800; 830; 870; 890; 860; 810; 770; 740; 800" dur="20s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="180; 130; 150; 190; 230; 180; 220; 180; 180" dur="20s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4; 0.8; 0.6; 0.4" dur="12s" repeatCount="indefinite"/>
+      </line>
+      
+      <line x1="800" y1="180" x2="950" y2="350">
+        <animate attributeName="x1" values="800; 830; 870; 890; 860; 810; 770; 740; 800" dur="20s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="180; 130; 150; 190; 230; 180; 220; 180; 180" dur="20s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="950; 900; 920; 960; 1000; 1020; 990; 960; 950" dur="19s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="350; 390; 430; 410; 380; 340; 330; 340; 350" dur="19s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.5; 0.9; 0.6; 0.5" dur="11s" repeatCount="indefinite"/>
+      </line>
+    </g>
+
+    <!-- Secondary dark grey connections -->
+    <g stroke="#333" stroke-width="1.4" fill="none" opacity="0.6">
+      <line x1="150" y1="350" x2="350" y2="400">
+        <animate attributeName="x1" values="150; 190; 220; 200; 170; 140; 110; 120; 150" dur="16s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="350; 400; 380; 350; 320; 340; 320; 330; 350" dur="16s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="350; 410; 390; 350; 310; 280; 300; 340; 350" dur="25s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="400; 420; 460; 480; 460; 420; 380; 350; 400" dur="25s" repeatCount="indefinite"/>
+      </line>
+      
+      <line x1="650" y1="120" x2="800" y2="180">
+        <animate attributeName="x1" values="650; 620; 590; 610; 640; 670; 700; 680; 650" dur="24s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="120; 160; 140; 110; 80; 70; 100; 140; 120" dur="24s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="800; 830; 870; 890; 860; 810; 770; 740; 800" dur="20s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="180; 130; 150; 190; 230; 180; 220; 180; 180" dur="20s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="200" y1="150" x2="100" y2="100">
+        <animate attributeName="x1" values="200; 250; 280; 250; 200; 170; 150; 170; 200" dur="18s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="150; 180; 210; 240; 230; 200; 170; 140; 150" dur="18s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="100; 145; 125; 100; 75; 55; 75; 100; 100" dur="23s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="100; 135; 165; 145; 125; 105; 75; 65; 100" dur="23s" repeatCount="indefinite"/>
+      </line>
+    </g>
+
+    <!-- Medium grey web connections -->
+    <g stroke="#666" stroke-width="1.0" fill="none" opacity="0.5">
+      <line x1="320" y1="250" x2="580" y2="380">
+        <animate attributeName="x1" values="320; 350; 380; 360; 330; 300; 280; 300; 320" dur="17s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="250; 290; 270; 240; 210; 220; 240; 270; 250" dur="17s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="580; 555; 530; 550; 580; 605; 625; 605; 580" dur="29s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="380; 415; 395; 365; 345; 360; 380; 395; 380" dur="29s" repeatCount="indefinite"/>
+      </line>
+      
+      <line x1="420" y1="100" x2="650" y2="120">
+        <animate attributeName="x1" values="420; 460; 440; 420; 400; 380; 400; 420; 420" dur="31s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="100; 130; 155; 140; 115; 95; 65; 75; 100" dur="31s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="650; 620; 590; 610; 640; 670; 700; 680; 650" dur="24s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="120; 160; 140; 110; 80; 70; 100; 140; 120" dur="24s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="900" y1="500" x2="750" y2="450">
+        <animate attributeName="x1" values="900; 860; 870; 900; 930; 950; 930; 900; 900" dur="26s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="500; 520; 550; 540; 520; 500; 470; 460; 500" dur="26s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="750; 800; 780; 750; 720; 700; 720; 760; 750" dur="21s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="450; 420; 390; 400; 420; 450; 490; 500; 450" dur="21s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="320" y1="250" x2="480" y2="320">
+        <animate attributeName="x1" values="320; 350; 380; 360; 330; 300; 280; 300; 320" dur="17s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="250; 290; 270; 240; 210; 220; 240; 270; 250" dur="17s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="480; 520; 500; 480; 455; 435; 455; 480; 480" dur="30s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="320; 355; 385; 365; 345; 325; 295; 285; 320" dur="30s" repeatCount="indefinite"/>
+      </line>
+    </g>
+
+    <!-- Light grey fine web -->
+    <g stroke="#999" stroke-width="0.8" fill="none" opacity="0.4">
+      <line x1="370" y1="180" x2="420" y2="100">
+        <animate attributeName="x1" values="370; 390; 405; 395; 375; 355; 340; 355; 370" dur="35s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="180; 205; 195; 175; 155; 165; 180; 195; 180" dur="35s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="420; 460; 440; 420; 400; 380; 400; 420; 420" dur="31s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="100; 130; 155; 140; 115; 95; 65; 75; 100" dur="31s" repeatCount="indefinite"/>
+      </line>
+      
+      <line x1="820" y1="280" x2="720" y2="320">
+        <animate attributeName="x1" values="820; 800; 780; 795; 820; 840; 855; 840; 820" dur="32s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="280; 310; 295; 270; 250; 260; 280; 300; 280" dur="32s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="720; 690; 630; 645; 690; 735; 765; 750; 720" dur="28s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="320; 365; 345; 320; 295; 305; 320; 345; 320" dur="28s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="120" y1="200" x2="280" y2="350">
+        <animate attributeName="x1" values="120; 135; 145; 135; 120; 110; 100; 110; 120" dur="36s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="200; 220; 210; 190; 180; 185; 195; 215; 200" dur="36s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="280; 295; 310; 300; 285; 265; 255; 265; 280" dur="39s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="350; 370; 360; 340; 330; 335; 345; 365; 350" dur="39s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="680" y1="500" x2="620" y2="250">
+        <animate attributeName="x1" values="680; 705; 695; 680; 665; 655; 665; 680; 680" dur="37s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="500; 515; 530; 525; 510; 500; 475; 485; 500" dur="37s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="620; 605; 570; 585; 600; 635; 650; 635; 620" dur="40s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="250; 275; 265; 240; 225; 235; 250; 265; 250" dur="40s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="550" y1="50" x2="370" y2="180">
+        <animate attributeName="x1" values="550; 530; 515; 530; 550; 570; 585; 565; 550" dur="38s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="50; 75; 60; 35; 25; 35; 50; 65; 50" dur="38s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="370; 390; 405; 395; 375; 355; 340; 355; 370" dur="35s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="180; 205; 195; 175; 155; 165; 180; 195; 180" dur="35s" repeatCount="indefinite"/>
+      </line>
+    </g>
+
+    <!-- Very light background web -->
+    <g stroke="#ccc" stroke-width="0.6" fill="none" opacity="0.3">
+      <line x1="60" y1="300" x2="120" y2="200">
+        <animate attributeName="x1" values="60; 70; 80; 75; 65; 50; 42; 52; 60" dur="45s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="300; 315; 308; 292; 285; 290; 298; 312; 300" dur="45s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="120; 135; 145; 135; 120; 110; 100; 110; 120" dur="36s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="200; 220; 210; 190; 180; 185; 195; 215; 200" dur="36s" repeatCount="indefinite"/>
+      </line>
+      
+      <line x1="1100" y1="150" x2="1050" y2="250">
+        <animate attributeName="x1" values="1100; 1088; 1075; 1082; 1100; 1112; 1122; 1112; 1100" dur="42s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="150; 168; 160; 142; 130; 138; 150; 168; 150" dur="42s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="1050; 1015; 1000; 1015; 1050; 1085; 1100; 1085; 1050" dur="27s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="250; 275; 300; 275; 250; 225; 235; 250; 250" dur="27s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="450" y1="480" x2="520" y2="550">
+        <animate attributeName="x1" values="450; 468; 462; 450; 438; 430; 438; 450; 450" dur="46s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="480; 492; 505; 498; 488; 480; 465; 472; 480" dur="46s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="520; 498; 502; 520; 538; 550; 538; 520; 520" dur="41s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="550; 565; 580; 572; 562; 550; 535; 542; 550" dur="41s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="850" y1="80" x2="780" y2="550">
+        <animate attributeName="x1" values="850; 835; 822; 835; 850; 865; 875; 865; 850" dur="48s" repeatCount="indefinite"/>
+        <animate attributeName="y1" values="80; 100; 92; 70; 58; 68; 80; 100; 80" dur="48s" repeatCount="indefinite"/>
+        <animate attributeName="x2" values="780; 794; 788; 780; 770; 762; 770; 780; 780" dur="50s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="550; 560; 572; 566; 556; 550; 538; 544; 550" dur="50s" repeatCount="indefinite"/>
+      </line>
+    </g>
+  </g>
+</svg>

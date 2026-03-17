@@ -27,20 +27,13 @@ const HeroSection = () => {
         
         <div className="hero-logo-section">
           <img 
-            src="/logo_black.png" 
+            src="/main-logo.png" 
             alt="Claw.Click Logo" 
             className="hero-big-logo"
           />
         </div>
         
-        <div className="description-capsule">
-          <div className="hero-description">
-            <p className="hero-description-text">
-              <em>"Our solution is a unified Trading API that aggregates over 100+ trading, analytics, social and risk data sources into a single programmable interface.
-              Instead of managing multiple integrations, Developers and Agents interact with one standardized endpoint, removing friction of juggling API's, hitting rate limits and keeping on top of manual avenues."</em>
-            </p>
-          </div>
-        </div>
+
       </div>
     </section>
   )
