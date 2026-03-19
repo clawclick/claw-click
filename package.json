@@ -1,5 +1,5 @@
 {
-  "name": "claw-click-homepage",
+  "name": "clawclick",
   "version": "1.0.0",
   "description": "Claw.Click Homepage - Trading Infrastructure Platform",
   "main": "index.js",
@@ -9,7 +9,8 @@
     "build": "vite build",
     "build:homepagev2": "cd homepagev2 && npm run build",
     "preview": "vite preview",
-    "serve": "npx http-server dist -p 3000"
+    "serve": "npx http-server dist -p 3000",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "react": "^18.2.0",

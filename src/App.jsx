@@ -9,6 +9,24 @@ import DeploySession from './pages/DeploySession'
 import MySessions from './pages/MySessions'
 import SessionTerminal from './pages/SessionTerminal'
 import './pages.css'
+import './homepage-styles.css'
+
+function AppContent() {
+  const location = useLocation()
+  const shouldShowFooter = location.pathname !== '/api'
+
+  return (
+    <div className="App">
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/api" element={<ApiDocs />} />
+        <Route path="/app" element={<AppMarketplace />} />
+      </Routes>
+      {shouldShowFooter && <Footer />}
+    </div>
+  )
+}
 
 function AppShell() {
   const location = useLocation()
