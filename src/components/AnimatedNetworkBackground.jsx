@@ -19,6 +19,7 @@ const AnimatedNetworkBackground = () => {
 
     const CONNECTION_DIST = 300
     const PARTICLE_COUNT_BASE = 80
+    const isMobile = window.innerWidth <= 768
 
     // Brand colors from API partner section
     const COLORS = [
@@ -74,7 +75,8 @@ const AnimatedNetworkBackground = () => {
 
     // Initialize particles
     const initParticles = () => {
-      const particleCount = reduced ? PARTICLE_COUNT_BASE / 2 : PARTICLE_COUNT_BASE
+      const base = isMobile ? 20 : PARTICLE_COUNT_BASE
+      const particleCount = reduced ? Math.round(base / 2) : base
       particles = []
       for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle())

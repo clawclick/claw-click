@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 
 const ValueProp = () => {
   const features = [
@@ -6,39 +6,83 @@ const ValueProp = () => {
       title: "Unified API Interface",
       description: "One endpoint to rule them all. Instead of managing 50+ integrations, interact with a single standardized interface.",
       highlight: "50+ Data Sources",
-      highlightColor: "#10b981" // green
+      accentColor: "#10b981"
     },
     {
       title: "Enterprise Security",
       description: "Bank-level security with rate limiting, authentication, and risk management built-in.",
       highlight: "Production Ready",
-      highlightColor: "#06b6d4" // cyan
+      accentColor: "#06b6d4"
     },
     {
       title: "Multi-Chain Support",
       description: "Trade across Ethereum, Solana, Base, and BSC with seamless cross-chain functionality.",
       highlight: "4 Blockchains",
-      highlightColor: "#f59e0b" // amber
+      accentColor: "#f59e0b"
     },
     {
       title: "Real-Time Analytics",
       description: "Access live market data, sentiment analysis, and risk scoring with microsecond latency.",
       highlight: "Live Data",
-      highlightColor: "#3b82f6" // blue
+      accentColor: "#3b82f6"
     },
     {
       title: "AI Agent Ready",
       description: "Purpose-built for AI trading agents with structured responses and predictable schemas.",
       highlight: "Agent Optimized",
-      highlightColor: "#8b5cf6" // purple
+      accentColor: "#8b5cf6"
     },
     {
       title: "Strategy Wrappers",
       description: "Package trading strategies as API endpoints. Monetize your alpha without revealing logic.",
       highlight: "Novel Architecture",
-      highlightColor: "#ef4444" // red
+      accentColor: "#ef4444"
     }
   ]
+
+  const [activeCard, setActiveCard] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+  const touchStartX = useRef(0)
+  const timerRef = useRef(null)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      setActiveCard(prev => (prev + 1) % features.length)
+    }, 4000)
+  }, [features.length])
+
+  useEffect(() => {
+    if (!isMobile) return
+    resetTimer()
+    return () => clearInterval(timerRef.current)
+  }, [isMobile, resetTimer])
+
+  const goTo = (idx) => {
+    setActiveCard(idx)
+    resetTimer()
+  }
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = (e) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 50) {
+      const next = diff > 0
+        ? (activeCard + 1) % features.length
+        : (activeCard - 1 + features.length) % features.length
+      goTo(next)
+    }
+  }
 
   return (
     <section className="value-prop-section">
@@ -53,35 +97,47 @@ const ValueProp = () => {
           </p>
         </header>
         
-        <div className="features-grid">
-          {features.map((feature, index) => (
-            <div key={index} className="feature-card glassy">
-              <div className="feature-content">
-                <div className="feature-header">
-                  <h3 className="feature-title">{feature.title}</h3>
-                  <span 
-                    className="feature-highlight glassy-badge"
-                    style={{ 
-                      '--badge-color': feature.highlightColor,
-                      '--badge-rgb': feature.highlightColor === '#10b981' ? '16, 185, 129' :
-                                     feature.highlightColor === '#06b6d4' ? '6, 182, 212' :
-                                     feature.highlightColor === '#f59e0b' ? '245, 158, 11' :
-                                     feature.highlightColor === '#3b82f6' ? '59, 130, 246' :
-                                     feature.highlightColor === '#8b5cf6' ? '139, 92, 246' :
-                                     '239, 68, 68'
-                    }}
-                  >
-                    {feature.highlight}
-                  </span>
+        {/* Desktop: grid / Mobile: carousel */}
+        {isMobile ? (
+          <div className="features-carousel" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+            <div className="carousel-track" style={{ transform: `translateX(-${activeCard * 100}%)` }}>
+              {features.map((feature, index) => (
+                <div key={index} className="carousel-slide">
+                  <div className="feature-card" style={{ '--accent': feature.accentColor }}>
+                    <span className="feature-accent-line" />
+                    <h3 className="feature-title">{feature.title}</h3>
+                    <span className="feature-tag">{feature.highlight}</span>
+                    <p className="feature-description">{feature.description}</p>
+                  </div>
                 </div>
+              ))}
+            </div>
+            <div className="carousel-dots">
+              {features.map((_, i) => (
+                <button
+                  key={i}
+                  className={`carousel-dot${i === activeCard ? ' active' : ''}`}
+                  onClick={() => goTo(i)}
+                  aria-label={`Go to card ${i + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="features-grid">
+            {features.map((feature, index) => (
+              <div key={index} className="feature-card" style={{ '--accent': feature.accentColor }}>
+                <span className="feature-accent-line" />
+                <h3 className="feature-title">{feature.title}</h3>
+                <span className="feature-tag">{feature.highlight}</span>
                 <p className="feature-description">{feature.description}</p>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         
         <div className="api-showcase">
-          <h3 className="showcase-title">Route Any Strategy, signal and execute via one endpoint</h3>
+          <h3 className="showcase-title">Build any Strategy, Signal or Execution</h3>
           <div className="code-showcase">
             <div className="code-block-showcase">
               <div className="code-header">
@@ -89,21 +145,16 @@ const ValueProp = () => {
                 <span className="status-live">Live Implementation</span>
               </div>
               <div className="code-content">
-                <pre>
-<span className="comment">// Multi-source token discovery</span>
-<span className="keyword">const</span> [<span className="variable">newPairs</span>, <span className="variable">trending</span>, <span className="variable">filtered</span>] = 
-  <span className="keyword">await</span> <span className="function">Promise.all</span>([
-    <span className="function">fetch</span>(<span className="string">"https://api.claw.click/newPairs?source=pumpfun"</span>),
-    <span className="function">fetch</span>(<span className="string">"https://api.claw.click/trendingTokens"</span>),
-    <span className="function">fetch</span>(<span className="string">"https://api.claw.click/filterTokens?network=sol&minLiquidity=10000"</span>)
-  ]);
+                <pre dangerouslySetInnerHTML={{
+                  __html: `<span class="comment">// Multi-source token discovery</span>
+<span class="keyword">const</span> <span class="variable">newPairs</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">"https://api.claw.click/newPairs?source=pumpfun"</span>)
+<span class="keyword">const</span> <span class="variable">trending</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">"https://api.claw.click/trendingTokens"</span>)  
+<span class="keyword">const</span> <span class="variable">filtered</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">"https://api.claw.click/filterTokens?network=sol&minLiquidity=10000"</span>)
 
-<span className="comment">// Enrich with unified data</span>
-<span className="keyword">const</span> <span className="variable">enriched</span> = 
-  <span className="keyword">await</span> <span className="function">processTokens</span>(<span className="variable">addresses</span>);
-<span className="keyword">const</span> <span className="variable">signals</span> = 
-  <span className="function">applyFilters</span>(<span className="variable">enriched</span>);
-                </pre>
+<span class="comment">// Enrich with unified data</span>
+<span class="keyword">const</span> <span class="variable">enriched</span> = <span class="keyword">await</span> <span class="function">processTokens</span>(<span class="variable">addresses</span>)
+<span class="keyword">const</span> <span class="variable">signals</span> = <span class="function">applyFilters</span>(<span class="variable">enriched</span>)`
+                }} />
               </div>
             </div>
             

@@ -1,112 +1,67 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useEthereumWallet } from '../hooks/useEthereumWallet'
+import { fetchAgents } from '../lib/sessionApi'
 
 const AppMarketplace = () => {
-  const strategies = [
-    {
-      id: 1,
-      name: "DeFi Yield Hunter",
-      type: "Liquidity Farming",
-      winRate: 87.3,
-      trades: 142,
-      volume: "$2.4M",
-      chain: "Ethereum",
-      apy: "24.6%",
-      risk: "Medium",
-      tags: ["Uniswap V3", "Compound", "Automated"]
-    },
-    {
-      id: 2,
-      name: "Arbitrage Bot Pro",
-      type: "Cross-DEX Arbitrage", 
-      winRate: 94.1,
-      trades: 2847,
-      volume: "$8.7M",
-      chain: "Multi-Chain",
-      apy: "31.2%",
-      risk: "Low",
-      tags: ["1inch", "Jupiter", "Real-time"]
-    },
-    {
-      id: 3,
-      name: "Alpha Whale Tracker",
-      type: "Copy Trading",
-      winRate: 76.8,
-      trades: 89,
-      volume: "$1.9M", 
-      chain: "Base",
-      apy: "41.7%",
-      risk: "High",
-      tags: ["Smart Money", "Memecoin", "Trend Following"]
-    },
-    {
-      id: 4,
-      name: "Momentum Scalper",
-      type: "Technical Analysis",
-      winRate: 82.5,
-      trades: 573,
-      volume: "$4.2M",
-      chain: "Solana",
-      apy: "28.9%",
-      risk: "Medium",
-      tags: ["RSI", "MACD", "Volume Profile"]
-    },
-    {
-      id: 5,
-      name: "Grid Trading Elite",
-      type: "Market Making",
-      winRate: 91.7,
-      trades: 1256,
-      volume: "$5.8M",
-      chain: "BSC",
-      apy: "19.4%",
-      risk: "Low",
-      tags: ["PancakeSwap", "Range Bound", "Stable"]
-    },
-    {
-      id: 6,
-      name: "New Pair Sniper",
-      type: "Launch Detection",
-      winRate: 68.2,
-      trades: 67,
-      volume: "$892K",
-      chain: "Solana",
-      apy: "67.3%",
-      risk: "Very High",
-      tags: ["Pump.fun", "MEV Protected", "Early Entry"]
-    },
-    {
-      id: 7,
-      name: "Stable Yield Master",
-      type: "Stablecoin Strategy",
-      winRate: 98.9,
-      trades: 387,
-      volume: "$3.1M",
-      chain: "Ethereum",
-      apy: "12.8%",
-      risk: "Very Low",
-      tags: ["USDC", "Curve", "Aave"]
-    },
-    {
-      id: 8,
-      name: "Social Sentiment AI",
-      type: "Sentiment Trading",
-      winRate: 73.4,
-      trades: 234,
-      volume: "$1.6M",
-      chain: "Multi-Chain", 
-      apy: "38.1%",
-      risk: "High",
-      tags: ["X API", "Reddit", "Telegram"]
+  const navigate = useNavigate()
+  const { connect, hasProvider, isConnected, isConnecting } = useEthereumWallet()
+  const [chainFilter, setChainFilter] = useState('All Chains')
+  const [riskFilter, setRiskFilter] = useState('All Risk Levels')
+  const [typeFilter, setTypeFilter] = useState('All Types')
+  const [sortBy, setSortBy] = useState('newest')
+  const [strategies, setStrategies] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [walletActionError, setWalletActionError] = useState('')
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetchAgents()
+      .then((data) => {
+        if (isMounted) {
+          setStrategies(data)
+        }
+      })
+      .catch((agentError) => {
+        if (isMounted) {
+          setError(agentError.message || 'Failed to load agents.')
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      isMounted = false
     }
-  ]
+  }, [])
+
+  const formatCreator = (creator) => {
+    if (!creator) {
+      return 'System'
+    }
+
+    if (creator.startsWith('0x') && creator.length > 10) {
+      return `${creator.slice(0, 6)}...${creator.slice(-4)}`
+    }
+
+    return creator
+  }
 
   const getRiskColor = (risk) => {
     const colors = {
       "Very Low": "#22c55e",
-      "Low": "#84cc16", 
+      "Low": "#84cc16",
       "Medium": "#eab308",
+      "Moderate": "#eab308",
       "High": "#f97316",
-      "Very High": "#ef4444"
+      "Aggressive": "#ef4444",
+      "Very High": "#ef4444",
+      "unrated": "#6b7280"
     }
     return colors[risk] || "#6b7280"
   }
@@ -122,15 +77,84 @@ const AppMarketplace = () => {
     return colors[chain] || "#6b7280"
   }
 
+  const getChainLabel = (chain) => {
+    if (!chain) {
+      return 'Multi-Chain'
+    }
+
+    return String(chain).replace(/_/g, ' ')
+  }
+
+  const chainOptions = useMemo(() => {
+    return ['All Chains', ...new Set(strategies.flatMap((strategy) => strategy.chains || []).map(getChainLabel))]
+  }, [strategies])
+
+  const riskOptions = useMemo(() => {
+    return ['All Risk Levels', ...new Set(strategies.map((strategy) => strategy.risk || 'unrated'))]
+  }, [strategies])
+
+  const typeOptions = useMemo(() => {
+    return ['All Types', ...new Set(strategies.map((strategy) => strategy.type).filter(Boolean))]
+  }, [strategies])
+
+  const filteredStrategies = useMemo(() => {
+    return [...strategies]
+      .filter((strategy) => {
+        if (chainFilter !== 'All Chains' && !(strategy.chains || []).map(getChainLabel).includes(chainFilter)) {
+          return false
+        }
+
+        if (riskFilter !== 'All Risk Levels' && (strategy.risk || 'unrated') !== riskFilter) {
+          return false
+        }
+
+        if (typeFilter !== 'All Types' && strategy.type !== typeFilter) {
+          return false
+        }
+
+        return true
+      })
+      .sort((left, right) => {
+        if (sortBy === 'active') {
+          return Number(Boolean(right.is_active)) - Number(Boolean(left.is_active))
+        }
+
+        if (sortBy === 'type') {
+          return String(left.type || '').localeCompare(String(right.type || ''))
+        }
+
+        return Number(right.id || 0) - Number(left.id || 0)
+      })
+  }, [chainFilter, riskFilter, sortBy, strategies, typeFilter])
+
+  const handleMySessions = async () => {
+    setWalletActionError('')
+
+    if (!hasProvider) {
+      setWalletActionError('MetaMask is required to load your sessions.')
+      return
+    }
+
+    try {
+      if (!isConnected) {
+        await connect()
+      }
+
+      navigate('/sessions')
+    } catch (connectError) {
+      setWalletActionError(connectError.message || 'Wallet connection failed.')
+    }
+  }
+
   return (
     <div className="app-marketplace-page">
       {/* Header */}
       <header className="app-marketplace-header">
         <div className="app-marketplace-container">
           <div className="app-marketplace-hero">
-            <h1 className="app-marketplace-title">Strategy Marketplace</h1>
+            <h1 className="app-marketplace-title">Agent Marketplace</h1>
             <p className="app-marketplace-subtitle">
-              Deploy battle-tested trading strategies with institutional-grade infrastructure
+              Launch live backend agents with payment, provisioning, session resume, and terminal chat now wired into the main app.
             </p>
             
             <div className="marketplace-stats">
@@ -148,9 +172,14 @@ const AppMarketplace = () => {
               </div>
             </div>
             
-            <div className="hero-cta">
+            <div className="hero-cta hero-cta-actions">
               <button className="hero-cta-button">Create Wrapper</button>
+              <button className="hero-secondary-button" type="button" onClick={handleMySessions} disabled={isConnecting}>
+                {isConnecting ? 'Connecting...' : 'My Sessions'}
+              </button>
             </div>
+
+            {walletActionError && <div className="marketplace-message marketplace-message-error">{walletActionError}</div>}
           </div>
         </div>
       </header>
@@ -161,44 +190,37 @@ const AppMarketplace = () => {
           <div className="filters-bar">
             <div className="filter-group">
               <label className="filter-label">Chain:</label>
-              <select className="filter-select">
-                <option>All Chains</option>
-                <option>Ethereum</option>
-                <option>Solana</option>
-                <option>Base</option>
-                <option>BSC</option>
+              <select className="filter-select" value={chainFilter} onChange={(event) => setChainFilter(event.target.value)}>
+                {chainOptions.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
               </select>
             </div>
             
             <div className="filter-group">
               <label className="filter-label">Risk:</label>
-              <select className="filter-select">
-                <option>All Risk Levels</option>
-                <option>Very Low</option>
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
+              <select className="filter-select" value={riskFilter} onChange={(event) => setRiskFilter(event.target.value)}>
+                {riskOptions.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
               </select>
             </div>
             
             <div className="filter-group">
               <label className="filter-label">Type:</label>
-              <select className="filter-select">
-                <option>All Types</option>
-                <option>Arbitrage</option>
-                <option>Market Making</option>
-                <option>Copy Trading</option>
-                <option>Technical Analysis</option>
+              <select className="filter-select" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
+                {typeOptions.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
               </select>
             </div>
             
             <div className="filter-group">
               <label className="filter-label">Sort by:</label>
-              <select className="filter-select">
-                <option>Highest APY</option>
-                <option>Win Rate</option>
-                <option>Volume</option>
-                <option>Recent Activity</option>
+              <select className="filter-select" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
+                <option value="newest">Newest</option>
+                <option value="active">Active First</option>
+                <option value="type">Type</option>
               </select>
             </div>
           </div>
@@ -208,34 +230,40 @@ const AppMarketplace = () => {
       {/* Strategies Grid */}
       <section className="strategies-section">
         <div className="app-marketplace-container">
+          {error && <div className="marketplace-message marketplace-message-error">{error}</div>}
+          {isLoading && <div className="marketplace-message marketplace-message-info">Loading agents...</div>}
+          {!isLoading && !error && filteredStrategies.length === 0 && (
+            <div className="marketplace-message marketplace-message-info">No agents matched the current filters.</div>
+          )}
+
           <div className="strategies-grid">
-            {strategies.map((strategy) => (
+            {filteredStrategies.map((strategy) => (
               <div key={strategy.id} className="strategy-card">
                 <div className="strategy-header">
                   <h3 className="strategy-name">{strategy.name}</h3>
-                  <div className="strategy-type">{strategy.type}</div>
+                  <div className="strategy-type">{strategy.description || strategy.type || 'Backend agent'}</div>
                 </div>
                 
                 <div className="strategy-metrics">
                   <div className="metric-row">
                     <div className="metric">
-                      <span className="metric-label">Win Rate</span>
-                      <span className="metric-value win-rate">{strategy.winRate}%</span>
+                      <span className="metric-label">Agent ID</span>
+                      <span className="metric-value">#{strategy.id}</span>
                     </div>
                     <div className="metric">
-                      <span className="metric-label">APY</span>
-                      <span className="metric-value apy">{strategy.apy}</span>
+                      <span className="metric-label">Status</span>
+                      <span className="metric-value win-rate">{strategy.is_active ? 'Active' : 'Inactive'}</span>
                     </div>
                   </div>
                   
                   <div className="metric-row">
                     <div className="metric">
-                      <span className="metric-label">Trades</span>
-                      <span className="metric-value">{strategy.trades.toLocaleString()}</span>
+                      <span className="metric-label">Type</span>
+                      <span className="metric-value apy">{strategy.type || 'Unknown'}</span>
                     </div>
                     <div className="metric">
-                      <span className="metric-label">Volume</span>
-                      <span className="metric-value">{strategy.volume}</span>
+                      <span className="metric-label">Creator</span>
+                      <span className="metric-value">{formatCreator(strategy.created_by)}</span>
                     </div>
                   </div>
                 </div>
@@ -244,31 +272,33 @@ const AppMarketplace = () => {
                   <div className="strategy-chain">
                     <span 
                       className="chain-badge"
-                      style={{ backgroundColor: getChainColor(strategy.chain) }}
+                      style={{ backgroundColor: getChainColor(getChainLabel(strategy.chains?.[0])) }}
                     >
-                      {strategy.chain}
+                      {getChainLabel(strategy.chains?.[0])}
                     </span>
                   </div>
                   
                   <div className="strategy-risk">
                     <span 
                       className="risk-badge"
-                      style={{ backgroundColor: getRiskColor(strategy.risk) }}
+                      style={{ backgroundColor: getRiskColor(strategy.risk || 'unrated') }}
                     >
-                      {strategy.risk} Risk
+                      {strategy.risk || 'unrated'}
                     </span>
                   </div>
                 </div>
                 
                 <div className="strategy-tags">
-                  {strategy.tags.map((tag, index) => (
+                  {(strategy.chains || []).slice(1, 3).map((tag, index) => (
                     <span key={index} className="strategy-tag">{tag}</span>
                   ))}
+                  {strategy.skill_source_type && <span className="strategy-tag">{strategy.skill_source_type}</span>}
+                  {strategy.defaults?.gpuType && <span className="strategy-tag">{strategy.defaults.gpuType}</span>}
                 </div>
                 
                 <div className="strategy-actions">
-                  <button className="action-button primary">Deploy</button>
-                  <button className="action-button secondary">Details</button>
+                  <button className="action-button primary" onClick={() => navigate(`/deploy?agent=${strategy.id}`)}>Deploy</button>
+                  <button className="action-button secondary" onClick={() => navigate(`/deploy?agent=${strategy.id}`)}>Details</button>
                 </div>
               </div>
             ))}
@@ -286,7 +316,7 @@ const AppMarketplace = () => {
             </p>
             <div className="cta-buttons">
               <button className="cta-button primary">Create Wrapper</button>
-              <button className="cta-button secondary">Documentation</button>
+              <Link to="/api" className="cta-button secondary">Documentation</Link>
             </div>
           </div>
         </div>
