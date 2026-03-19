@@ -471,11 +471,11 @@ const SessionTerminal = () => {
       {session && !isReady && isActive && (
         <div className="st-provision-overlay">
           <div className="st-spinner st-spinner-lg" />
-          <h2>{session.status === 'provisioning' ? 'Starting GPU Instance' : 'Loading Agent Memories'}</h2>
+          <h2>{session.status === 'provisioning' ? 'Starting GPU Instance' : 'Setting Up Agent'}</h2>
           <p className="st-muted">
             {session.status === 'provisioning'
               ? 'A GPU instance is being provisioned. This typically takes 1-5 minutes.'
-              : 'The agent is being bootstrapped with its on-chain memories and IPFS data. Please don\'t close this page.'}
+              : 'The agent is being bootstrapped with its skills and API data. Please don\'t close this page.'}
           </p>
           <div className="st-provision-detail">
             <div><span>Agent</span><strong>{session.agent?.name}</strong></div>
