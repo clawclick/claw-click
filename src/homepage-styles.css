@@ -265,14 +265,21 @@ section {
 
 .feature-content {
   flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .feature-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  width: 100%;
 }
 
 .feature-title {
@@ -280,10 +287,12 @@ section {
   color: #f9fafb;
   font-weight: 600;
   margin: 0;
+  text-align: center;
+  width: 100%;
 }
 
 .feature-highlight.glassy-badge {
-  color: #000000;
+  color: #ffffff !important;
   padding: 0.6rem 1.5rem;
   border-radius: 25px;
   font-size: 0.75rem;
@@ -293,36 +302,36 @@ section {
   letter-spacing: 0.1em;
   position: relative;
   overflow: hidden;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
   
-  /* STUNNING GLASS EFFECT */
+  /* VIBRANT GLASS EFFECT - MUCH MORE COLORFUL */
   background: linear-gradient(145deg, 
-    rgba(255, 255, 255, 0.9) 0%, 
-    rgba(255, 255, 255, 0.7) 50%,
-    rgba(255, 255, 255, 0.9) 100%
+    var(--badge-color, #10b981) 0%, 
+    color-mix(in srgb, var(--badge-color, #10b981) 80%, white 20%) 50%,
+    var(--badge-color, #10b981) 100%
   );
   
   /* MULTIPLE LAYERED SHADOWS FOR DEPTH */
   box-shadow: 
-    /* Main shadow */
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    /* Inner highlight */
-    inset 0 2px 0 rgba(255, 255, 255, 1),
-    /* Inner shadow for depth */
-    inset 0 -2px 0 rgba(0, 0, 0, 0.1),
-    /* Outer glow */
-    0 0 20px rgba(255, 255, 255, 0.2),
-    /* Sharp edge */
-    0 1px 0 rgba(255, 255, 255, 0.8);
+    /* Main shadow with badge color */
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    /* Colored glow */
+    0 0 30px var(--badge-color, #10b981),
+    /* Inner glass highlight */
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    /* Inner depth */
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+    /* Vibrant outer glow */
+    0 0 50px rgba(var(--badge-rgb, 16, 185, 129), 0.6);
     
   /* GLASS BORDERS */
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  border-top: 2px solid rgba(255, 255, 255, 1);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
   
   /* BLUR FOR GLASS EFFECT */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
 }
@@ -361,6 +370,9 @@ section {
   color: #d1d5db;
   line-height: 1.6;
   margin: 0;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
 }
 
 /* API Showcase */
@@ -511,10 +523,9 @@ section {
 }
 
 .api-grid-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .api-grid-container {
@@ -531,7 +542,10 @@ section {
 .api-grid-heading {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #f9fafb;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
 }
 
@@ -548,11 +562,6 @@ section {
   overflow: hidden;
   mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   -webkit-mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
 }
 
 .api-row {
@@ -562,10 +571,6 @@ section {
   animation-duration: 30s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 0 2rem;
 }
 
 .api-row.slide-right {

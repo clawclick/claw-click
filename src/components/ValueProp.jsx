@@ -61,7 +61,15 @@ const ValueProp = () => {
                   <h3 className="feature-title">{feature.title}</h3>
                   <span 
                     className="feature-highlight glassy-badge"
-                    style={{ backgroundColor: feature.highlightColor }}
+                    style={{ 
+                      '--badge-color': feature.highlightColor,
+                      '--badge-rgb': feature.highlightColor === '#10b981' ? '16, 185, 129' :
+                                     feature.highlightColor === '#06b6d4' ? '6, 182, 212' :
+                                     feature.highlightColor === '#f59e0b' ? '245, 158, 11' :
+                                     feature.highlightColor === '#3b82f6' ? '59, 130, 246' :
+                                     feature.highlightColor === '#8b5cf6' ? '139, 92, 246' :
+                                     '239, 68, 68'
+                    }}
                   >
                     {feature.highlight}
                   </span>
@@ -104,7 +112,7 @@ const signals = applyFilters(enriched);`}
               </div>
               <div className="response-content">
                 <pre>
-{`🎯 === TOP NEW SIGNALS ===
+{`=== TOP NEW SIGNALS ===
 {
   ca: "z6eiti618XERFhoB9j5FpbJ7sGf5yTjpw4zp7twpump",
   name: "tinfoil hat cult", 
