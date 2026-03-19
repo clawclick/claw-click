@@ -24,7 +24,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  opacity: 0.1;
+  opacity: 1.0;
   z-index: 0;
 }
 
@@ -62,7 +62,7 @@ body {
 
 .hero-subtitle {
   font-size: 1.4rem;
-  color: #d1d5db;
+  color: #ffffff;
   margin-bottom: 3rem;
   line-height: 1.6;
   max-width: 700px;
@@ -140,6 +140,18 @@ body {
   color: #3b82f6;
 }
 
+.hero-cta-button.browse-strategies {
+  background: rgba(17, 24, 39, 0.8);
+  color: #000000;
+  background: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+.hero-cta-button.browse-strategies:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
 /* Value Prop Section */
 .value-prop-section {
   padding: 6rem 0;
@@ -178,6 +190,8 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
   margin-bottom: 6rem;
+  justify-items: center;
+  align-items: stretch;
 }
 
 .feature-card {
@@ -188,6 +202,9 @@ body {
   transition: all 0.2s ease;
   display: flex;
   gap: 1.5rem;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 450px;
 }
 
 .feature-card:hover {
@@ -196,10 +213,19 @@ body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
-.feature-icon {
-  font-size: 2.5rem;
+.feature-icon-wrapper {
   flex-shrink: 0;
   margin-top: 0.5rem;
+}
+
+.custom-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .feature-content {
@@ -366,6 +392,9 @@ body {
   overflow: hidden;
   mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   -webkit-mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .api-row {
@@ -375,6 +404,8 @@ body {
   animation-duration: 30s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  justify-content: center;
+  align-items: center;
 }
 
 .api-row.slide-right {
@@ -408,7 +439,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(17, 24, 39, 0.8);
+  background: #ffffff;
   border-radius: 8px;
   border: 1px solid rgba(75, 85, 99, 0.3);
   overflow: hidden;

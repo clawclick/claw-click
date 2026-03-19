@@ -8,17 +8,9 @@ const HeroSection = () => {
         <AnimatedNetworkBackground />
       </div>
       <div className="hero-container">
-        <div className="hero-content">
-          <div className="hero-logo-section">
-            <img 
-              src="/main-logo.png" 
-              alt="Claw.Click Logo" 
-              className="hero-big-logo"
-            />
-          </div>
-          
+        <div className="hero-content">          
           <h1 className="hero-title">
-            Unified Trading Infrastructure
+            Universal Router For Agents
           </h1>
           
           <p className="hero-subtitle">
@@ -49,7 +41,7 @@ const HeroSection = () => {
             <a href="/api" className="hero-cta-button primary">
               Explore API
             </a>
-            <a href="/app" className="hero-cta-button secondary">
+            <a href="/app" className="hero-cta-button browse-strategies">
               Browse Strategies
             </a>
           </div>

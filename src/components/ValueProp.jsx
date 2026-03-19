@@ -3,7 +3,7 @@ import React from 'react'
 const ValueProp = () => {
   const features = [
     {
-      icon: "⚡",
+      icon: "🔗",
       title: "Unified API Interface",
       description: "One endpoint to rule them all. Instead of managing 50+ integrations, interact with a single standardized interface.",
       highlight: "50+ Data Sources"
@@ -56,7 +56,9 @@ const ValueProp = () => {
         <div className="features-grid">
           {features.map((feature, index) => (
             <div key={index} className="feature-card">
-              <div className="feature-icon">{feature.icon}</div>
+              <div className="feature-icon-wrapper">
+                <div className="temp-icon">{feature.icon}</div>
+              </div>
               <div className="feature-content">
                 <div className="feature-header">
                   <h3 className="feature-title">{feature.title}</h3>
@@ -69,19 +71,25 @@ const ValueProp = () => {
         </div>
         
         <div className="api-showcase">
-          <h3 className="showcase-title">Unified Trading Infrastructure</h3>
+          <h3 className="showcase-title">Universal Router For Agents</h3>
           <div className="code-showcase">
             <div className="code-block-showcase">
               <div className="code-header">
-                <span className="code-language">curl</span>
-                <span className="status-live">Live API</span>
+                <span className="code-language">Strategy: newPump.js</span>
+                <span className="status-live">Live Implementation</span>
               </div>
               <div className="code-content">
                 <pre>
-{`curl "https://api.claw.click/tokenPoolInfo" \\
-  -H "x-api-key: YOUR_KEY" \\
-  -G -d "chain=eth" \\
-  -d "tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"`}
+{`// Multi-source token discovery
+const [newPairs, trending, filtered] = await Promise.all([
+  fetch("${BASE_URL}/newPairs?source=pumpfun"),
+  fetch("${BASE_URL}/trendingTokens"),
+  fetch("${BASE_URL}/filterTokens?network=sol&minLiquidity=10000")
+]);
+
+// Enrich with unified data
+const enriched = await processTokens(addresses);
+const signals = applyFilters(enriched);`}
                 </pre>
               </div>
             </div>
@@ -90,21 +98,19 @@ const ValueProp = () => {
             
             <div className="response-showcase">
               <div className="response-header">
-                <span>Unified Response</span>
+                <span>Aggregated Intelligence</span>
               </div>
               <div className="response-content">
                 <pre>
-{`{
-  "status": "live",
-  "name": "USD Coin",
-  "symbol": "USDC", 
-  "priceUsd": 1.0001,
-  "marketCapUsd": 32000000000,
-  "liquidityUsd": 150000000,
-  "providers": [
-    {"provider": "dexScreener", "status": "ok"},
-    {"provider": "birdeye", "status": "ok"}
-  ]
+{`🎯 === TOP NEW SIGNALS ===
+{
+  ca: "z6eiti618XERFhoB9j5FpbJ7sGf5yTjpw4zp7twpump",
+  name: "tinfoil hat cult", 
+  volume: 45000,
+  liquidity: 85000,
+  momentum: 0.425,
+  score: 87.3,
+  providers: ["dexScreener", "birdeye", "pumpfun"]
 }`}
                 </pre>
               </div>
