@@ -1133,6 +1133,14 @@
   margin-top: 3rem;
 }
 
+.hero-cta-actions {
+  display: inline-flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .hero-cta-button {
   background: #fff;
   color: #000;
@@ -1152,10 +1160,53 @@
   box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
 }
 
+.hero-secondary-button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-secondary-button:hover:not(:disabled) {
+  background: #fff;
+  color: #000;
+}
+
+.hero-secondary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .filters-section {
   background: #f8f9fa;
   padding: 2rem;
   border-bottom: 1px solid #e5e5e5;
+}
+
+.marketplace-message {
+  margin: 1rem auto 2rem;
+  max-width: 720px;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.marketplace-message-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.marketplace-message-info {
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d1d5db;
 }
 
 .filters-bar {
@@ -1341,6 +1392,654 @@
   margin: 0 auto;
 }
 
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.8rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #1f2937;
+  border-color: #1f2937;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #000;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deploy-session-page,
+.session-terminal-page,
+.my-sessions-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  color: #111827;
+}
+
+.deploy-session-shell,
+.session-terminal-shell,
+.my-sessions-grid-section,
+.my-sessions-hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.deploy-session-topbar,
+.terminal-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.deploy-link-back {
+  color: #111827;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.deploy-link-back:hover {
+  text-decoration: underline;
+}
+
+.deploy-wallet-row,
+.terminal-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.deploy-wallet-chip,
+.deploy-wallet-address,
+.terminal-status-chip {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.deploy-wallet-button {
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.deploy-wallet-button:hover:not(:disabled) {
+  background: #1f2937;
+}
+
+.deploy-wallet-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deploy-session-grid,
+.terminal-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 0 2rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.deploy-panel,
+.terminal-sidebar,
+.terminal-main,
+.my-session-card,
+.terminal-empty-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.deploy-panel {
+  padding: 1.5rem;
+}
+
+.deploy-panel-highlight {
+  background: linear-gradient(180deg, #111827 0%, #000 100%);
+  color: #fff;
+}
+
+.deploy-panel-highlight p,
+.deploy-panel-highlight li,
+.deploy-panel-highlight span {
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.deploy-kicker {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.deploy-panel h1,
+.my-sessions-hero h1,
+.terminal-topbar h1 {
+  margin: 0.3rem 0 0.75rem;
+  font-size: 2rem;
+}
+
+.deploy-strategy-card,
+.deploy-price-card,
+.deploy-estimate-grid,
+.my-sessions-hero-meta > div {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+}
+
+.deploy-strategy-card {
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.deploy-strategy-topline,
+.my-session-card-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.deploy-strategy-tags,
+.deploy-note-list,
+.my-session-card-actions,
+.my-sessions-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.deploy-strategy-tags span,
+.strategy-tags .strategy-tag {
+  word-break: break-word;
+}
+
+.deploy-strategy-tags span {
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.deploy-price-card,
+.deploy-estimate-grid,
+.my-session-stat-grid,
+.terminal-stat-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.deploy-price-card {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.deploy-price-card div,
+.deploy-estimate-grid div,
+.my-session-stat-grid div,
+.terminal-stat-list div,
+.my-sessions-hero-meta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.deploy-note-list {
+  padding-left: 1rem;
+  margin: 1rem 0 0;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.deploy-form-grid-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.deploy-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 0.9rem;
+}
+
+.deploy-section-heading span,
+.deploy-slider-meta strong,
+.deploy-estimate-grid strong,
+.my-session-stat-grid strong,
+.terminal-stat-list strong,
+.my-sessions-hero-meta strong {
+  font-weight: 700;
+}
+
+.deploy-section-heading small,
+.deploy-slider-scale,
+.deploy-subtle-note,
+.my-session-card p,
+.terminal-topbar p {
+  color: #6b7280;
+}
+
+.deploy-grid-select {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.deploy-gpu-grid {
+  grid-template-columns: repeat(3, 1fr);
+  max-height: calc(3 * (4.5rem + 0.9rem));
+  overflow-y: auto;
+}
+
+.deploy-location-grid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.deploy-select-card,
+.deploy-pill-button,
+.terminal-actions-stack button,
+.deploy-toggle {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deploy-select-card {
+  text-align: left;
+  padding: 0.95rem;
+}
+
+.deploy-select-card:hover,
+.deploy-pill-button:hover,
+.terminal-actions-stack button:hover,
+.deploy-toggle:hover {
+  border-color: #111827;
+}
+
+.deploy-select-card.is-active,
+.deploy-pill-button.is-active {
+  border-color: #111827;
+  box-shadow: inset 0 0 0 1px #111827;
+}
+
+.deploy-select-card-title-row,
+.deploy-slider-meta,
+.deploy-chip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.deploy-select-card p,
+.deploy-select-card span,
+.deploy-slider-scale,
+.terminal-message-label,
+.my-session-card span,
+.terminal-stat-list span {
+  font-size: 0.85rem;
+}
+
+.deploy-select-card-footer {
+  margin-top: 0.75rem;
+  font-weight: 700;
+}
+
+.deploy-pill-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.deploy-pill-button {
+  padding: 0.6rem 0.9rem;
+  min-width: 64px;
+}
+
+.deploy-slider-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.deploy-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.deploy-range {
+  width: 100%;
+}
+
+.deploy-slider-scale {
+  display: flex;
+  justify-content: space-between;
+}
+
+.deploy-toggle {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  margin: 1.25rem 0 0.9rem;
+  font-weight: 600;
+}
+
+.deploy-toggle-prominent {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.deploy-toggle-prominent:hover {
+  background: #1f2937;
+  border-color: #1f2937;
+}
+
+.deploy-recommended-badge {
+  display: inline-block;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.deploy-input-field,
+.terminal-compose {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.deploy-input-field input,
+.terminal-compose textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  font: inherit;
+  resize: vertical;
+}
+
+.deploy-error-banner,
+.deploy-status-banner {
+  margin-top: 1rem;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font-weight: 500;
+}
+
+.deploy-error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.deploy-status-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+}
+
+.deploy-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.deploy-main-button,
+.deploy-cancel-link,
+.terminal-send-button,
+.terminal-abort-button,
+.my-session-card-actions .btn-primary,
+.my-session-card-actions .btn-secondary,
+.my-sessions-empty-actions .btn-primary,
+.my-sessions-empty-actions .btn-secondary {
+  flex: 1;
+}
+
+.my-sessions-hero {
+  background: #000;
+  color: #fff;
+  padding: 7rem 0 2rem;
+}
+
+.my-sessions-hero .deploy-link-back,
+.my-sessions-hero p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.my-sessions-hero-inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.my-sessions-hero-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.my-sessions-hero-meta > div {
+  padding: 1rem;
+}
+
+.my-sessions-grid-section {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+.my-sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.my-session-card {
+  padding: 1.25rem;
+}
+
+.my-session-card h2 {
+  margin: 0 0 0.5rem;
+}
+
+.my-session-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.my-session-status-running,
+.my-session-status-starting,
+.my-session-status-bootstrapping,
+.my-session-status-provisioning,
+.my-session-status-retrying {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.my-session-status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.my-session-status-failed,
+.my-session-status-error,
+.my-session-status-terminated,
+.my-session-status-expired {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.my-sessions-empty-shell,
+.session-terminal-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 1.5rem;
+}
+
+.my-sessions-empty-card,
+.terminal-empty-card {
+  max-width: 720px;
+  padding: 2rem;
+}
+
+.my-sessions-loader,
+.terminal-loader {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.terminal-sidebar {
+  padding: 1.25rem;
+}
+
+.terminal-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
+  overflow: hidden;
+}
+
+.terminal-transcript {
+  flex: 1;
+  padding: 1rem;
+  background: #f8fafc;
+  overflow: auto;
+}
+
+.terminal-message {
+  margin-bottom: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+}
+
+.terminal-message-user {
+  background: #e5e7eb;
+}
+
+.terminal-message-assistant {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.terminal-message-system {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.terminal-message-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.terminal-message pre {
+  margin: 0.35rem 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: inherit;
+}
+
+.terminal-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.terminal-actions-stack button {
+  padding: 0.8rem 1rem;
+}
+
+.terminal-danger-button {
+  color: #991b1b;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.terminal-compose {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.terminal-compose textarea {
+  min-height: 120px;
+}
+
+.terminal-compose-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .api-docs-title, .app-marketplace-title {
@@ -1357,6 +2056,42 @@
   
   .strategies-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-cta-actions,
+  .deploy-actions-row,
+  .terminal-compose-actions,
+  .my-sessions-hero-inner,
+  .deploy-session-topbar,
+  .terminal-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .deploy-session-grid,
+  .terminal-grid,
+  .deploy-price-card,
+  .deploy-estimate-grid,
+  .my-sessions-hero-meta,
+  .my-session-stat-grid,
+  .terminal-stat-list {
+    grid-template-columns: 1fr;
+  }
+
+  .deploy-session-shell,
+  .session-terminal-shell,
+  .my-sessions-grid-section,
+  .my-sessions-hero-inner,
+  .deploy-session-topbar,
+  .terminal-topbar {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .deploy-session-grid,
+  .terminal-grid {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   
   .cta-buttons {
