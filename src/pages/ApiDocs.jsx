@@ -555,20 +555,49 @@ const ApiDocs = () => {
                               <CodeBlock language="bash">{endpoint.example}</CodeBlock>
                             </div>
 
-                            {response ? (
-                              <div className="response-section">
-                                <h4>Live Response <span className={`status-code ${response.status === 200 ? 'success' : 'error'}`}>{response.status}</span></h4>
-                                {response.data ? (
+                            <div className="response-section">
+                              <h4>
+                                {response ? (
+                                  <>
+                                    Live Response{' '}
+                                    <span className={`status-code ${response.status === 200 ? 'success' : 'error'}`}>
+                                      {response.status}
+                                    </span>
+                                    {response.cached && <span className="cached-badge">Cached Example</span>}
+                                  </>
+                                ) : (
+                                  'Example Response'
+                                )}
+                              </h4>
+                              {response ? (
+                                response.data ? (
                                   <JsonBlock>{JSON.stringify(response.data, null, 2)}</JsonBlock>
                                 ) : (
                                   <div className="error-response">{response.error}</div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="response-section">
-                                <h4>Example Response</h4>
+                                )
+                              ) : (
                                 <JsonBlock>{JSON.stringify(JSON.parse(endpoint.response), null, 2)}</JsonBlock>
-                              </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Always show response directly below if Run was clicked */}
+                        {response && !isExpanded && (
+                          <div className="endpoint-response-direct">
+                            <div className="response-header">
+                              <h4>
+                                Response{' '}
+                                <span className={`status-code ${response.status === 200 ? 'success' : 'error'}`}>
+                                  {response.status}
+                                </span>
+                                {response.cached && <span className="cached-badge">Cached Example</span>}
+                              </h4>
+                            </div>
+                            {response.data ? (
+                              <JsonBlock>{JSON.stringify(response.data, null, 2)}</JsonBlock>
+                            ) : (
+                              <div className="error-response">{response.error}</div>
                             )}
                           </div>
                         )}
