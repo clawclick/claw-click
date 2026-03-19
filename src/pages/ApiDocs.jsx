@@ -32,6 +32,11 @@ const ApiDocs = () => {
           method: 'GET', path: '/providers', description: 'List all 50+ providers and their config status',
           requiresAuth: false, example: 'GET https://api.claw.click/providers',
           response: '{"providers": [{"id": "moralis", "label": "Moralis", "category": "walletTracking", "configured": true}, {"id": "birdeye", "label": "Birdeye", "category": "marketData", "configured": true}, {"id": "dexScreener", "label": "DexScreener", "category": "marketData", "configured": true}, {"id": "codex", "label": "Codex.io", "category": "analytics", "configured": true}]}'
+        },
+        {
+          method: 'GET', path: '/stats', description: 'Summary daily stats: requests, users, volume (Admin)',
+          requiresAuth: true, example: 'GET https://api.claw.click/stats',
+          response: '{"endpoint": "stats", "dayKey": "2026-03-19", "requests": {"total": 1240}, "users": {"totalGenerated": 12, "activeToday": 4}, "volume": {"buyWei": "1000000000000000000", "sellWei": "500000000000000000", "buyEth": "1", "sellEth": "0.5", "buyCount": 3, "sellCount": 2}}'
         }
       ]
     },
@@ -233,6 +238,26 @@ const ApiDocs = () => {
           ],
           example: 'GET https://api.claw.click/volatilityScanner?chain=sol&minVolume=500000',
           response: '{"endpoint": "volatilityScanner", "chain": "sol", "duration": "hour4", "count": 5, "cached": false, "scanned": 50, "candidates": [{"address": "TokenMint...", "name": "ExampleToken", "symbol": "EX", "priceUsd": "0.00523", "liquidity": "250000", "volume24h": "1200000", "support": 0.0042, "resistance": 0.0068, "swingPct": 18.5, "swingCount": 4, "currentPosition": 0.32, "buyVsSellRatio": 1.15, "swingScore": 85}]}'
+        },
+        {
+          method: 'GET', path: '/topTraders', description: 'Top traders for a token (multi-chain via Birdeye)',
+          requiresAuth: true,
+          params: [
+            { name: 'chain', required: false, default: 'sol', description: 'Chain (sol, eth, base, bsc)' },
+            { name: 'tokenAddress', required: true, default: '—', description: 'Token address' },
+            { name: 'timeFrame', required: false, default: '24h', description: 'Time frame (30m, 1h, 2h, 4h, 8h, 24h)' }
+          ],
+          example: 'GET https://api.claw.click/topTraders?chain=eth&tokenAddress=0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7&timeFrame=24h',
+          response: '{"endpoint": "topTraders", "status": "live", "chain": "eth", "tokenAddress": "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7", "timeFrame": "24h", "traders": [{"address": "0x...", "tradeCount": 4, "volume": 394.10, "buyVolume": 394.10, "sellVolume": 0, "profit": 12.5, "winRate": 0.75}], "providers": [{"provider": "birdeye", "status": "ok"}]}'
+        },
+        {
+          method: 'GET', path: '/gasFeed', description: 'Current gas prices for EVM chains',
+          requiresAuth: true,
+          params: [
+            { name: 'chain', required: false, default: 'eth', description: 'Chain (eth, base, bsc)' }
+          ],
+          example: 'GET https://api.claw.click/gasFeed?chain=eth',
+          response: '{"endpoint": "gasFeed", "status": "live", "chain": "eth", "lastBlock": "23467872", "safeGwei": "0.38", "proposeGwei": "0.38", "fastGwei": "0.42", "baseFeeGwei": "0.38", "providers": [{"provider": "etherscanV2", "status": "ok"}]}'
         }
       ]
     }
