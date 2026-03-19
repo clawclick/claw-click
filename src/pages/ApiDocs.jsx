@@ -400,34 +400,34 @@ const ApiDocs = () => {
     { name: "Birdeye", category: "Market Data", status: "Live" },
     { name: "DexScreener", category: "Market Data", status: "Live" },
     { name: "Codex.io", category: "Analytics", status: "Live" },
-    { name: "Etherscan", category: "Infrastructure", status: "Live" },
+    { name: "Alchemy", category: "Infrastructure", status: "Live" },
     { name: "GoPlus", category: "Risk", status: "Live" },
-    { name: "CoinGecko", category: "Market Data", status: "Live" },
+    { name: "CoinGecko", category: "Market Data", status: "API Key Required" },
     { name: "CoinMarketCap", category: "Market Data", status: "Live" },
     { name: "GeckoTerminal", category: "Market Data", status: "Live" },
     { name: "Zerion", category: "Portfolio", status: "Live" },
-    { name: "DeBank", category: "Portfolio", status: "Live" },
-    { name: "Arkham", category: "Analytics", status: "Live" },
-    { name: "Dune Analytics", category: "Analytics", status: "Live" },
+    { name: "DeBank", category: "Portfolio", status: "API Key Required" },
+    { name: "Arkham", category: "Analytics", status: "API Key Required" },
+    { name: "Dune Analytics", category: "Analytics", status: "API Key Required" },
     { name: "Sim by Dune", category: "Analytics", status: "Live" },
-    { name: "LunarCrush", category: "Sentiment", status: "Live" },
-    { name: "Reddit API", category: "Sentiment", status: "Live" },
-    { name: "X (Twitter)", category: "Sentiment", status: "Live" },
-    { name: "Telegram", category: "Sentiment", status: "Live" },
-    { name: "Bubblemaps", category: "Risk", status: "Live" },
-    { name: "QuickIntel", category: "Risk", status: "Live" },
+    { name: "DefiLlama", category: "DeFi", status: "Live" },
+    { name: "LunarCrush", category: "Sentiment", status: "API Key Required" },
+    { name: "Reddit API", category: "Sentiment", status: "API Key Required" },
+    { name: "X (Twitter)", category: "Sentiment", status: "API Key Required" },
+    { name: "Telegram", category: "Sentiment", status: "API Key Required" },
+    { name: "Bubblemaps", category: "Risk", status: "API Key Required" },
+    { name: "QuickIntel", category: "Risk", status: "API Key Required" },
     { name: "Honeypot.is", category: "Risk", status: "Live" },
-    { name: "Santiment", category: "Analytics", status: "Live" },
-    { name: "DexTools", category: "Market Data", status: "Live" },
-    { name: "Nansen", category: "Analytics", status: "Live" },
+    { name: "Santiment", category: "Analytics", status: "API Key Required" },
+    { name: "DexTools", category: "Market Data", status: "API Key Required" },
+    { name: "Nansen", category: "Analytics", status: "API Key Required" },
     { name: "Uniswap V2/V3/V4", category: "DEX", status: "Live" },
     { name: "PancakeSwap V2/V3", category: "DEX", status: "Live" },
     { name: "Aerodrome V2/V3", category: "DEX", status: "Live" },
     { name: "Raydium", category: "DEX", status: "Live" },
     { name: "Meteora", category: "DEX", status: "Live" },
     { name: "Pump.fun", category: "Launchpad", status: "Live" },
-    { name: "Clanker", category: "Launchpad", status: "Live" },
-    { name: "Virtuals Protocol", category: "Launchpad", status: "Live" }
+    { name: "Polymarket", category: "Prediction Markets", status: "Live" }
   ]
 
   const CodeBlock = ({ children, language = 'bash' }) => {
@@ -785,7 +785,7 @@ ws.on('message', (data) => {
           <div className="api-docs-container">
             <h2 className="section-title">Data Sources & Integrations</h2>
             <p className="integrations-description">
-              Our API aggregates data from {integrations.length}+ premium sources to provide comprehensive crypto intelligence and trading infrastructure.
+              Our API integrates with {integrations.filter(i => i.status === "Live").length}/{integrations.length} premium data sources. Additional providers require API keys for full activation.
             </p>
             
             <div className="integrations-grid">

@@ -23,7 +23,7 @@ const HeroSection = () => {
           </div>
           <div className="stat-box">
             <span className="stat-label-large">Integrated API's</span>
-            <span className="stat-value-large stat-purple">45</span>
+            <span className="stat-value-large stat-purple">24/52</span>
           </div>
         </div>
         

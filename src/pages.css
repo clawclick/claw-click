@@ -1227,6 +1227,11 @@
   color: #d97706;
 }
 
+.status-api-key-required {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
 .integration-category {
   font-size: 0.85rem;
   color: #666;
