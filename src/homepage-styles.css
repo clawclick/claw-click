@@ -7,14 +7,34 @@ body {
   min-height: 100vh;
 }
 
-/* Hero Section */
+/* FORCE ALL SECTIONS TO HAVE DARK GRADIENT - NO WHITE ANYWHERE */
+html {
+  background: linear-gradient(135deg, #0a0f1c 0%, #1a1d2e 100%) !important;
+}
+
+#root {
+  background: linear-gradient(135deg, #0a0f1c 0%, #1a1d2e 100%) !important;
+  min-height: 100vh;
+}
+
+.App {
+  background: linear-gradient(135deg, #0a0f1c 0%, #1a1d2e 100%) !important;
+  min-height: 100vh;
+}
+
+/* Make sure no section has white background */
+section {
+  background: transparent !important;
+}
+
+/* Hero Section - PURPLE/GREY/NAVY GRADIENT LIKE API DOCS */
 .hero-section {
   position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0a0f1c 0%, #1a1d2e 100%);
+  background: linear-gradient(135deg, #0a0f1c 0%, #1a1d2e 100%) !important;
   overflow: hidden;
 }
 
@@ -155,7 +175,7 @@ body {
 /* Value Prop Section */
 .value-prop-section {
   padding: 6rem 0;
-  background: rgba(17, 24, 39, 0.6);
+  background: linear-gradient(135deg, rgb(10, 15, 28), rgb(26, 29, 46));
   border-top: 1px solid rgba(75, 85, 99, 0.3);
 }
 
@@ -194,50 +214,72 @@ body {
   align-items: stretch;
 }
 
-.feature-card {
-  background: rgba(17, 24, 39, 0.8);
-  border-radius: 12px;
-  padding: 2rem;
-  border: 1px solid rgba(75, 85, 99, 0.3);
-  transition: all 0.2s ease;
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
+.feature-card.glassy {
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
   width: 100%;
   max-width: 450px;
+  box-shadow: 
+    /* Main depth shadow */
+    0 12px 40px rgba(0, 0, 0, 0.8),
+    /* Inner glass highlight */
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    /* Subtle outer glow */
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    /* Premium depth */
+    0 4px 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
 }
 
-.feature-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+/* Add subtle glass texture */
+.feature-card.glassy::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
-.feature-icon-wrapper {
-  flex-shrink: 0;
-  margin-top: 0.5rem;
-}
-
-.custom-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.feature-card.glassy:hover {
+  transform: translateY(-12px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.95) !important;
 }
 
 .feature-content {
   flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .feature-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  width: 100%;
 }
 
 .feature-title {
@@ -245,22 +287,92 @@ body {
   color: #f9fafb;
   font-weight: 600;
   margin: 0;
+  text-align: center;
+  width: 100%;
 }
 
-.feature-highlight {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.feature-highlight.glassy-badge {
+  color: #ffffff !important;
+  padding: 0.6rem 1.5rem;
+  border-radius: 25px;
+  font-size: 0.75rem;
+  font-weight: 900;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  
+  /* VIBRANT GLASS EFFECT - MUCH MORE COLORFUL */
+  background: linear-gradient(145deg, 
+    var(--badge-color, #10b981) 0%, 
+    color-mix(in srgb, var(--badge-color, #10b981) 80%, white 20%) 50%,
+    var(--badge-color, #10b981) 100%
+  );
+  
+  /* MULTIPLE LAYERED SHADOWS FOR DEPTH */
+  box-shadow: 
+    /* Main shadow with badge color */
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    /* Colored glow */
+    0 0 30px var(--badge-color, #10b981),
+    /* Inner glass highlight */
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    /* Inner depth */
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+    /* Vibrant outer glow */
+    0 0 50px rgba(var(--badge-rgb, 16, 185, 129), 0.6);
+    
+  /* GLASS BORDERS */
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  
+  /* BLUR FOR GLASS EFFECT */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+/* GLASS SHINE EFFECT */
+.feature-highlight.glassy-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%
+  );
+  transition: left 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.feature-card.glassy:hover .feature-highlight.glassy-badge::before {
+  left: 100%;
+}
+
+.feature-highlight.glassy-badge:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    inset 0 3px 0 rgba(255, 255, 255, 1),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.1),
+    0 0 30px rgba(255, 255, 255, 0.4),
+    0 2px 0 rgba(255, 255, 255, 0.9);
 }
 
 .feature-description {
   color: #d1d5db;
   line-height: 1.6;
   margin: 0;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
 }
 
 /* API Showcase */
@@ -332,6 +444,55 @@ body {
   color: #e5e7eb;
 }
 
+.response-showcase {
+  background: #10b981 !important;
+  border: 1px solid #059669 !important;
+}
+
+.response-content pre {
+  color: #000000 !important;
+  font-weight: 600;
+}
+
+.response-header {
+  background: #059669 !important;
+  color: #000000 !important;
+  font-weight: 700;
+}
+
+/* Add typing animation */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #10b981;
+  }
+}
+
+.response-content pre {
+  overflow: hidden;
+  border-right: 2px solid #10b981;
+  white-space: pre-wrap;
+  animation: typing 4s steps(60, end), blink-caret 1s step-end infinite;
+  animation-delay: 2s;
+  animation-fill-mode: forwards;
+  width: 0;
+}
+
+.response-content pre:hover {
+  animation-play-state: paused;
+}
+
 .arrow-showcase {
   font-size: 2rem;
   color: #3b82f6;
@@ -367,6 +528,12 @@ body {
   padding: 0 2rem;
 }
 
+.api-grid-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
 .api-grid-header {
   text-align: center;
   margin-bottom: 4rem;
@@ -375,7 +542,10 @@ body {
 .api-grid-heading {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #f9fafb;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
 }
 
@@ -392,9 +562,6 @@ body {
   overflow: hidden;
   mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   -webkit-mask: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .api-row {
@@ -404,8 +571,6 @@ body {
   animation-duration: 30s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  justify-content: center;
-  align-items: center;
 }
 
 .api-row.slide-right {

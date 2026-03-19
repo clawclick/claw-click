@@ -1,67 +1,44 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { fetchAgents } from '../lib/sessionApi'
+import React from 'react'
 
 const ValueProp = () => {
-  const navigate = useNavigate()
-  const [strategies, setStrategies] = useState([])
-
-  useEffect(() => {
-    let isMounted = true
-
-    fetchAgents()
-      .then((data) => {
-        if (isMounted) {
-          setStrategies(data.slice(0, 3))
-        }
-      })
-      .catch(() => {})
-
-    return () => {
-      isMounted = false
+  const features = [
+    {
+      title: "Unified API Interface",
+      description: "One endpoint to rule them all. Instead of managing 50+ integrations, interact with a single standardized interface.",
+      highlight: "50+ Data Sources",
+      highlightColor: "#10b981" // green
+    },
+    {
+      title: "Enterprise Security",
+      description: "Bank-level security with rate limiting, authentication, and risk management built-in.",
+      highlight: "Production Ready",
+      highlightColor: "#06b6d4" // cyan
+    },
+    {
+      title: "Multi-Chain Support",
+      description: "Trade across Ethereum, Solana, Base, and BSC with seamless cross-chain functionality.",
+      highlight: "4 Blockchains",
+      highlightColor: "#f59e0b" // amber
+    },
+    {
+      title: "Real-Time Analytics",
+      description: "Access live market data, sentiment analysis, and risk scoring with microsecond latency.",
+      highlight: "Live Data",
+      highlightColor: "#3b82f6" // blue
+    },
+    {
+      title: "AI Agent Ready",
+      description: "Purpose-built for AI trading agents with structured responses and predictable schemas.",
+      highlight: "Agent Optimized",
+      highlightColor: "#8b5cf6" // purple
+    },
+    {
+      title: "Strategy Wrappers",
+      description: "Package trading strategies as API endpoints. Monetize your alpha without revealing logic.",
+      highlight: "Novel Architecture",
+      highlightColor: "#ef4444" // red
     }
-  }, [])
-
-  const formatCreator = (creator) => {
-    if (!creator) {
-      return 'System'
-    }
-
-    if (creator.startsWith('0x') && creator.length > 10) {
-      return `${creator.slice(0, 6)}...${creator.slice(-4)}`
-    }
-
-    return creator
-  }
-
-  const getRiskColor = (risk) => {
-    const colors = {
-      "Low": "#84cc16",
-      "Medium": "#eab308",
-      "Moderate": "#eab308",
-      "High": "#f97316",
-      "Aggressive": "#ef4444",
-      "unrated": "#6b7280"
-    }
-    return colors[risk] || "#6b7280"
-  }
-
-  const getChainColor = (chain) => {
-    const colors = {
-      "Ethereum": "#627eea",
-      "Base": "#0052ff",
-      "Multi-Chain": "#6b7280"
-    }
-    return colors[chain] || "#6b7280"
-  }
-
-  const getChainLabel = (chain) => {
-    if (!chain) {
-      return 'Multi-Chain'
-    }
-
-    return String(chain).replace(/_/g, ' ')
-  }
+  ]
 
   return (
     <section className="value-prop-section">
@@ -76,68 +53,28 @@ const ValueProp = () => {
           </p>
         </header>
         
-        <div className="strategy-examples">
-          {strategies.map((strategy) => (
-            <div key={strategy.id} className="strategy-card-preview">
-              <div className="strategy-header">
-                <h3 className="strategy-name">{strategy.name}</h3>
-                <div className="strategy-type">{strategy.description || 'Backend agent ready to deploy'}</div>
-              </div>
-              
-              <div className="strategy-metrics">
-                <div className="metric-row">
-                  <div className="metric">
-                    <span className="metric-label">Agent ID</span>
-                    <span className="metric-value">#{strategy.id}</span>
-                  </div>
-                  <div className="metric">
-                    <span className="metric-label">Status</span>
-                    <span className="metric-value win-rate">{strategy.is_active ? 'Active' : 'Inactive'}</span>
-                  </div>
-                </div>
-                
-                <div className="metric-row">
-                  <div className="metric">
-                    <span className="metric-label">Type</span>
-                    <span className="metric-value apy">{strategy.type || 'Unknown'}</span>
-                  </div>
-                  <div className="metric">
-                    <span className="metric-label">Creator</span>
-                    <span className="metric-value">{formatCreator(strategy.created_by)}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="strategy-details">
-                <div className="strategy-chain">
+        <div className="features-grid">
+          {features.map((feature, index) => (
+            <div key={index} className="feature-card glassy">
+              <div className="feature-content">
+                <div className="feature-header">
+                  <h3 className="feature-title">{feature.title}</h3>
                   <span 
-                    className="chain-badge"
-                    style={{ backgroundColor: getChainColor(getChainLabel(strategy.chains?.[0])) }}
+                    className="feature-highlight glassy-badge"
+                    style={{ 
+                      '--badge-color': feature.highlightColor,
+                      '--badge-rgb': feature.highlightColor === '#10b981' ? '16, 185, 129' :
+                                     feature.highlightColor === '#06b6d4' ? '6, 182, 212' :
+                                     feature.highlightColor === '#f59e0b' ? '245, 158, 11' :
+                                     feature.highlightColor === '#3b82f6' ? '59, 130, 246' :
+                                     feature.highlightColor === '#8b5cf6' ? '139, 92, 246' :
+                                     '239, 68, 68'
+                    }}
                   >
-                    {getChainLabel(strategy.chains?.[0])}
+                    {feature.highlight}
                   </span>
                 </div>
-                
-                <div className="strategy-risk">
-                  <span 
-                    className="risk-badge"
-                    style={{ backgroundColor: getRiskColor(strategy.risk || 'unrated') }}
-                  >
-                    {strategy.risk || 'unrated'}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="strategy-tags">
-                {(strategy.chains || []).slice(1, 3).map((tag, index) => (
-                  <span key={index} className="strategy-tag">{tag}</span>
-                ))}
-                {strategy.defaults?.gpuType && <span className="strategy-tag">{strategy.defaults.gpuType}</span>}
-              </div>
-              
-              <div className="strategy-actions">
-                <button className="action-button primary" onClick={() => navigate(`/deploy?agent=${strategy.id}`)}>Deploy</button>
-                <button className="action-button secondary" onClick={() => navigate('/app')}>See More</button>
+                <p className="feature-description">{feature.description}</p>
               </div>
             </div>
           ))}
@@ -175,7 +112,7 @@ const signals = applyFilters(enriched);`}
               </div>
               <div className="response-content">
                 <pre>
-{`🎯 === TOP NEW SIGNALS ===
+{`=== TOP NEW SIGNALS ===
 {
   ca: "z6eiti618XERFhoB9j5FpbJ7sGf5yTjpw4zp7twpump",
   name: "tinfoil hat cult", 
