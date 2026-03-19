@@ -742,22 +742,41 @@ section {
   }
 
   .value-prop-title {
-    font-size: 1.75rem;
+    font-size: 1.4rem;
   }
 
   .value-prop-subtitle {
     font-size: 1rem;
   }
 
-  /* Feature Cards */
+  /* Feature Cards - 2 columns on mobile */
   .features-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
     margin-bottom: 3rem;
   }
 
   .feature-card {
-    padding: 1.75rem 1.5rem 1.5rem;
+    padding: 1.5rem 1rem 1.25rem;
+  }
+
+  .feature-accent-line {
+    left: 1rem;
+    right: 1rem;
+  }
+
+  .feature-title {
+    font-size: 0.95rem;
+  }
+
+  .feature-tag {
+    font-size: 0.55rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .feature-description {
+    font-size: 0.8rem;
+    line-height: 1.5;
   }
 
   /* API Showcase */
@@ -885,18 +904,23 @@ section {
   }
 
   .value-prop-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .feature-card {
-    padding: 1.5rem 1.25rem 1.25rem;
+    padding: 1.25rem 0.85rem 1rem;
   }
 
   .feature-title {
-    font-size: 1.05rem;
+    font-size: 0.85rem;
+  }
+
+  .feature-tag {
+    font-size: 0.5rem;
+    padding: 0.18rem 0.5rem;
   }
 
   .feature-description {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 }

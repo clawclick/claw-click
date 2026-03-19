@@ -705,7 +705,7 @@ body {
 /* Footer */
 .footer {
   background: #000;
-  padding: 3rem 2rem 1rem;
+  padding: 2.5rem 1.5rem 1rem;
 }
 
 .footer-container {
@@ -817,7 +817,23 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-container {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .brand-text {
+    font-size: 1.05rem;
+  }
+
+  .logo-image {
+    height: 26px;
+  }
+
+  .nav-menu {
+    gap: 1.25rem;
+  }
+
+  .nav-link {
+    font-size: 0.9rem;
   }
   
   .hero-section {
@@ -851,8 +867,34 @@ body {
   
   .footer-content {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
     text-align: center;
+  }
+
+  .footer-tagline {
+    margin: 0 auto;
+    max-width: 260px;
+  }
+
+  .footer-logo-image {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer-animated-logo {
+    justify-content: center;
+  }
+
+  .footer-heading {
+    font-size: 0.9rem;
+  }
+
+  .footer-link {
+    font-size: 0.85rem;
+  }
+
+  .copyright {
+    font-size: 0.8rem;
   }
 }
 
@@ -957,5 +999,6 @@ body {
   .api-carousel {
     margin: 0 -1rem;
   }
-} 
+}
+ 
  
