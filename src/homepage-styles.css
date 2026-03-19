@@ -676,42 +676,227 @@ section {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  /* Hero */
+  .hero-section {
+    min-height: calc(100vh - 56px);
+    padding: 0 1.25rem;
+  }
+
+  .hero-container {
+    padding: 0;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
   }
-  
+
+  .hero-subtitle {
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+    line-height: 1.55;
+  }
+
   .hero-stats {
-    gap: 2rem;
+    gap: 1.5rem 2.5rem;
+    margin-bottom: 2rem;
   }
-  
+
   .hero-stat-number {
     font-size: 2rem;
   }
-  
+
+  .hero-stat-label {
+    font-size: 0.8rem;
+  }
+
   .hero-actions {
     flex-direction: column;
     align-items: center;
+    gap: 0.75rem;
   }
-  
+
+  .hero-cta-button {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* Value Prop */
+  .value-prop-section {
+    padding: 3.5rem 0;
+  }
+
+  .value-prop-container {
+    padding: 0 1.25rem;
+  }
+
+  .value-prop-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .value-prop-title {
+    font-size: 1.75rem;
+  }
+
+  .value-prop-subtitle {
+    font-size: 1rem;
+  }
+
+  /* Feature Cards */
   .features-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 3rem;
   }
-  
+
+  .feature-card {
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+
+  /* API Showcase */
+  .api-showcase {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .showcase-title {
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+
   .code-showcase {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
   }
-  
+
   .arrow-showcase {
     transform: rotate(90deg);
+    font-size: 1.5rem;
   }
-  
+
+  .code-content, .response-content {
+    padding: 1rem;
+  }
+
+  .code-content pre, .response-content pre {
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .showcase-button {
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+    display: inline-block;
+  }
+
+  /* API Grid */
+  .api-grid-section {
+    padding: 3.5rem 0;
+  }
+
+  .api-grid-heading {
+    font-size: 1.75rem;
+  }
+
+  .api-grid-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .api-grid-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .api-carousel {
+    margin: 0 -1rem 2.5rem;
+    gap: 1rem;
+  }
+
+  .api-logo-item {
+    min-width: 120px;
+    padding: 0.65rem 1rem;
+  }
+
+  .api-logo-image {
+    max-height: 28px;
+    max-width: 90px;
+  }
+
   .integration-stats {
-    gap: 2rem;
+    gap: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
   }
-  
+
+  .integration-number {
+    font-size: 1.8rem;
+  }
+
+  .integration-label {
+    font-size: 0.75rem;
+  }
+
+  /* CTA */
+  .api-cta {
+    padding: 2rem 1.25rem;
+  }
+
+  .api-cta-title {
+    font-size: 1.4rem;
+  }
+
+  .api-cta-text {
+    font-size: 0.95rem;
+  }
+
   .api-cta-buttons {
     flex-direction: column;
     align-items: center;
+  }
+
+  .api-cta-button {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* Small phones */
+@media (max-width: 420px) {
+  .hero-title {
+    font-size: 1.85rem;
+  }
+
+  .hero-stats {
+    gap: 1.25rem 1.5rem;
+  }
+
+  .hero-stat-number {
+    font-size: 1.6rem;
+  }
+
+  .hero-stat-label {
+    font-size: 0.7rem;
+  }
+
+  .value-prop-title {
+    font-size: 1.5rem;
+  }
+
+  .feature-card {
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
+
+  .feature-title {
+    font-size: 1.05rem;
+  }
+
+  .feature-description {
+    font-size: 0.85rem;
   }
 }
