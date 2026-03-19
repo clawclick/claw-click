@@ -164,10 +164,11 @@
 }
 
 .stat-label {
-  color: #9ca3af;
+  color: #f9fafb;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-weight: 700;
 }
 
 .api-base-url {
@@ -897,6 +898,29 @@
 .cta-button.secondary:hover {
   border-color: #3b82f6;
   color: #3b82f6;
+}
+
+.api-footer {
+  margin-top: 3rem;
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+.footer-text {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.footer-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #93c5fd;
 }
 
 /* Responsive Design */

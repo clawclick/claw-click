@@ -25,13 +25,13 @@ const ApiDocs = () => {
       items: [
         {
           method: 'GET', path: '/health', description: 'Health check',
-          requiresAuth: false, example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/health',
+          requiresAuth: false, example: 'GET https://api.claw.click/health',
           response: '{"status": "ok", "service": "super-api"}'
         },
         {
           method: 'GET', path: '/providers', description: 'List all 50+ providers and their config status',
-          requiresAuth: false, example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/providers',
-          response: '{"providers": [{"id": "moralis", "label": "Moralis", "category": "walletTracking", "configured": true}]}'
+          requiresAuth: false, example: 'GET https://api.claw.click/providers',
+          response: '{"providers": [{"id": "moralis", "label": "Moralis", "category": "walletTracking", "configured": true}, {"id": "birdeye", "label": "Birdeye", "category": "marketData", "configured": true}, {"id": "dexScreener", "label": "DexScreener", "category": "marketData", "configured": true}, {"id": "codex", "label": "Codex.io", "category": "analytics", "configured": true}]}'
         }
       ]
     },
@@ -48,8 +48,8 @@ const ApiDocs = () => {
             { name: 'symbol', required: false, default: '—', description: 'Token symbol hint' },
             { name: 'tokenName', required: false, default: '—', description: 'Token name hint' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-          response: '{"endpoint": "tokenPoolInfo", "status": "live", "chain": "eth", "name": "USD Coin", "symbol": "USDC", "priceUsd": 1.0001, "marketCapUsd": 32000000000}'
+          example: 'GET https://api.claw.click/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          response: '{"endpoint": "tokenPoolInfo", "status": "live", "chain": "eth", "tokenAddress": "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "name": "USD Coin", "symbol": "USDC", "priceUsd": 1.0001, "marketCapUsd": 32000000000, "fdvUsd": 32000000000, "liquidityUsd": 150000000, "volume24hUsd": 5000000000, "priceChange24hPct": -0.01, "pairAddress": "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640", "dex": "uniswap_v3", "providers": [{"provider": "dexScreener", "status": "ok", "detail": "Live data"}, {"provider": "birdeye", "status": "ok", "detail": "Price confirmed"}]}'
         },
         {
           method: 'GET', path: '/tokenPriceHistory', description: 'Historical OHLCV price data for charting',
@@ -60,7 +60,7 @@ const ApiDocs = () => {
             { name: 'limit', required: false, default: '3m', description: 'Time range: 1d, 7d, 1m, 3m, 1y' },
             { name: 'interval', required: false, default: '1d', description: 'Candle interval: 5m, 15m, 1h, 4h, 1d' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/tokenPriceHistory?chain=sol&tokenAddress=So111...&limit=7d&interval=1h',
+          example: 'GET https://api.claw.click/tokenPriceHistory?chain=sol&tokenAddress=So111...&limit=7d&interval=1h',
           response: '{"endpoint": "tokenPriceHistory", "status": "live", "chain": "sol", "points": [{"timestamp": 1710000000, "priceUsd": 150.5, "open": 150, "high": 152, "low": 149, "close": 150.5, "volume": 1000000}]}'
         },
         {
@@ -72,7 +72,7 @@ const ApiDocs = () => {
             { name: 'durations', required: false, default: 'hour1,day1', description: 'Comma-separated: min5, hour1, hour4, hour12, day1' },
             { name: 'bucketCount', required: false, default: '6', description: 'Number of buckets from Codex' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/detailedTokenStats?chain=eth&tokenAddress=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+          example: 'GET https://api.claw.click/detailedTokenStats?chain=eth&tokenAddress=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
           response: '{"endpoint": "detailedTokenStats", "status": "live", "durations": {"hour1": {"statsUsd": {"volume": {"currentValue": 13839617.47, "change": -0.3094}}}}}'
         },
         {
@@ -304,14 +304,15 @@ const ApiDocs = () => {
     setLoading(prev => ({ ...prev, [endpointKey]: true }))
     
     try {
-      // Simulate API call with realistic delay
-      await new Promise(resolve => setTimeout(resolve, 1200))
+      // Show cached response with realistic delay
+      await new Promise(resolve => setTimeout(resolve, 800))
       
       setResponses(prev => ({
         ...prev,
         [endpointKey]: {
           status: 200,
-          data: JSON.parse(endpoint.response)
+          data: JSON.parse(endpoint.response),
+          cached: true
         }
       }))
     } catch (error) {
@@ -319,7 +320,7 @@ const ApiDocs = () => {
         ...prev,
         [endpointKey]: {
           status: 500,
-          error: 'Failed to execute request'
+          error: 'Failed to parse example response'
         }
       }))
     } finally {
@@ -441,7 +442,7 @@ const ApiDocs = () => {
               </div>
               <div className="api-base-url">
                 <span className="base-url-label">Base URL:</span>
-                <code className="base-url">https://claw-click-trading-api-e4dd6024c857.herokuapp.com</code>
+                <code className="base-url">https://api.claw.click</code>
               </div>
             </div>
           </div>
@@ -455,19 +456,19 @@ const ApiDocs = () => {
               <div className="quick-start-card">
                 <h3>1. Get Token Info</h3>
                 <CodeBlock language="bash">
-                  curl "https://claw-click-trading-api-e4dd6024c857.herokuapp.com/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+                  curl "https://api.claw.click/tokenPoolInfo?chain=eth&tokenAddress=0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
                 </CodeBlock>
               </div>
               <div className="quick-start-card">
                 <h3>2. Check Risk</h3>
                 <CodeBlock language="bash">
-                  curl "https://claw-click-trading-api-e4dd6024c857.herokuapp.com/isScam?chain=eth&tokenAddress=0x..."
+                  curl "https://api.claw.click/isScam?chain=eth&tokenAddress=0x..."
                 </CodeBlock>
               </div>
               <div className="quick-start-card">
                 <h3>3. Build Swap</h3>
                 <CodeBlock language="bash">
-                  curl "https://claw-click-trading-api-e4dd6024c857.herokuapp.com/swap?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...&tokenOut=0x...&amountIn=1000000000000000000"
+                  curl "https://api.claw.click/swap?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...&tokenOut=0x...&amountIn=1000000000000000000"
                 </CodeBlock>
               </div>
             </div>
@@ -598,7 +599,7 @@ const ApiDocs = () => {
                 <p>Include API key in headers</p>
                 <CodeBlock language="bash">
                   {`curl -H "x-api-key: YOUR_API_KEY" \\
-  "https://claw-click-trading-api-e4dd6024c857.herokuapp.com/tokenPoolInfo?..."`}
+  "https://api.claw.click/tokenPoolInfo?..."`}
                 </CodeBlock>
               </div>
             </div>
@@ -637,7 +638,7 @@ const ApiDocs = () => {
               <p>Connect to our WebSocket for live token launches and updates</p>
               <CodeBlock language="javascript">
 {`const WebSocket = require('ws');
-const ws = new WebSocket('wss://claw-click-trading-api-e4dd6024c857.herokuapp.com/ws/launchpadEvents');
+const ws = new WebSocket('wss://api.claw.click/ws/launchpadEvents');
 
 ws.on('message', (data) => {
   const msg = JSON.parse(data);
@@ -689,7 +690,7 @@ ws.on('message', (data) => {
           <div className="api-docs-container">
             <h2 className="section-title">Data Sources & Integrations</h2>
             <p className="integrations-description">
-              Our API integrates with {integrations.filter(i => i.status === "live").length}/{integrations.length} premium data sources
+              Our API integrates with 24/52 premium data sources. Additional providers require API keys for full activation.
             </p>
             
             <div className="integrations-grid">
@@ -718,8 +719,18 @@ ws.on('message', (data) => {
               </p>
               <div className="cta-buttons">
                 <button className="cta-button primary">Get API Key</button>
-                <button className="cta-button secondary">View GitHub</button>
+                <a href="https://github.com/clawclick" target="_blank" rel="noopener noreferrer" className="cta-button secondary">
+                  View GitHub
+                </a>
               </div>
+            </div>
+            <div className="api-footer">
+              <p className="footer-text">
+                Open source API infrastructure by{' '}
+                <a href="https://github.com/clawclick" target="_blank" rel="noopener noreferrer" className="footer-link">
+                  Claw.Click
+                </a>
+              </p>
             </div>
           </div>
         </section>
