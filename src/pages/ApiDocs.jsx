@@ -78,8 +78,8 @@ const ApiDocs = () => {
         {
           method: 'GET', path: '/trendingTokens', description: 'Currently trending tokens across all chains',
           requiresAuth: true,
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/trendingTokens',
-          response: '{"endpoint": "trendingTokens", "status": "live", "tokens": [{"chainId": "solana", "name": "PepeCoin", "symbol": "PEPE", "priceUsd": 0.0001, "volume24hUsd": 50000000}]}'
+          example: 'GET https://api.claw.click/trendingTokens',
+          response: '{"endpoint": "trendingTokens", "status": "live", "tokens": [{"chainId": "solana", "name": "PepeCoin", "symbol": "PEPE", "priceUsd": 0.0001, "volume24hUsd": 50000000, "marketCapUsd": 5000000, "liquidityUsd": 2000000, "priceChange24hPct": 150, "boostAmount": 500, "source": "dexScreener"}]}'
         },
         {
           method: 'GET', path: '/newPairs', description: 'Recently created trading pairs/pools',
@@ -88,8 +88,8 @@ const ApiDocs = () => {
             { name: 'source', required: false, default: 'all', description: 'Filter: all, dexscreener, pumpfun, raydium, uniswap' },
             { name: 'limit', required: false, default: '10', description: 'Results per source (1–50)' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/newPairs?source=pumpfun&limit=5',
-          response: '{"endpoint": "newPairs", "status": "live", "pairs": [{"source": "pumpfun", "chainId": "solana", "name": "NewToken", "symbol": "NEW", "marketCap": 50000}]}'
+          example: 'GET https://api.claw.click/newPairs?source=pumpfun&limit=5',
+          response: '{"endpoint": "newPairs", "status": "live", "source": "pumpfun", "pairs": [{"source": "pumpfun", "chainId": "solana", "pairAddress": null, "tokenAddress": "GmD5J8...", "name": "NewToken", "symbol": "NEW", "description": "A new meme token", "createdAt": 1710000000, "marketCap": 50000, "url": "https://pump.fun/..."}]}'
         }
       ]
     },
@@ -103,8 +103,8 @@ const ApiDocs = () => {
             { name: 'chain', required: false, default: 'eth', description: 'Chain' },
             { name: 'tokenAddress', required: true, default: '—', description: 'Token address' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/isScam?chain=bsc&tokenAddress=0x...',
-          response: '{"endpoint": "isScam", "status": "live", "isScam": false, "risk": "low", "riskLevel": 1, "warnings": []}'
+          example: 'GET https://api.claw.click/isScam?chain=bsc&tokenAddress=0x...',
+          response: '{"endpoint": "isScam", "status": "live", "chain": "bsc", "tokenAddress": "0x...", "isScam": false, "risk": "low", "riskLevel": 1, "warnings": [], "cached": true, "providers": [{"provider": "goplus", "status": "ok"}, {"provider": "honeypot", "status": "ok"}]}'
         },
         {
           method: 'GET', path: '/fullAudit', description: 'Deep contract audit (taxes, ownership, trading flags)',
@@ -113,8 +113,8 @@ const ApiDocs = () => {
             { name: 'chain', required: false, default: 'eth', description: 'Chain' },
             { name: 'tokenAddress', required: true, default: '—', description: 'Token address' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/fullAudit?chain=eth&tokenAddress=0x...',
-          response: '{"endpoint": "fullAudit", "status": "live", "summary": {"risk": "medium", "warnings": ["High sell tax"]}, "taxes": {"buyTax": 1, "sellTax": 5}}'
+          example: 'GET https://api.claw.click/fullAudit?chain=eth&tokenAddress=0x...',
+          response: '{"endpoint": "fullAudit", "status": "live", "chain": "eth", "tokenAddress": "0x...", "summary": {"isScam": false, "risk": "medium", "riskLevel": 2, "warnings": ["High sell tax"]}, "taxes": {"buyTax": 1, "sellTax": 5, "transferTax": 0}, "contract": {"openSource": true, "isProxy": false, "isMintable": false}, "trading": {"cannotBuy": false, "cannotSellAll": false}, "holders": {"holderCount": 5000, "ownerPercent": 5}, "simulation": {"buyGas": "150000", "sellGas": "175000"}}'
         }
       ]
     },
@@ -133,8 +133,8 @@ const ApiDocs = () => {
             { name: 'amountIn', required: true, default: '—', description: 'Amount in raw units (wei/lamports)' },
             { name: 'slippageBps', required: false, default: '50', description: 'Slippage tolerance in basis points' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/swap?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...&tokenOut=0x...&amountIn=1000000000000000000',
-          response: '{"endpoint": "swap", "status": "live", "tx": {"to": "0xRouterAddress", "data": "0xcalldata...", "value": "0x0", "chainId": 1}}'
+          example: 'GET https://api.claw.click/swap?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...&tokenOut=0x...&amountIn=1000000000000000000',
+          response: '{"endpoint": "swap", "status": "live", "chain": "eth", "dex": "uniswapV3", "tokenIn": "0x...", "tokenOut": "0x...", "amountIn": "1000000000000000000", "slippageBps": 100, "tx": {"to": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "data": "0x414bf389000...", "value": "0x0", "chainId": 1, "from": "0xYourWallet", "gasLimit": "0x30000"}}'
         },
         {
           method: 'GET', path: '/swapQuote', description: 'Get swap quote without building transaction',
@@ -146,8 +146,8 @@ const ApiDocs = () => {
             { name: 'tokenOut', required: true, default: '—', description: 'Output token' },
             { name: 'amountIn', required: true, default: '—', description: 'Raw amount in' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/swapQuote?chain=eth&dex=uniswapV3&tokenIn=0x...&tokenOut=0x...&amountIn=1000000',
-          response: '{"endpoint": "swapQuote", "status": "live", "amountOut": "997000", "amountOutMin": "992000"}'
+          example: 'GET https://api.claw.click/swapQuote?chain=eth&dex=uniswapV3&tokenIn=0x...&tokenOut=0x...&amountIn=1000000',
+          response: '{"endpoint": "swapQuote", "status": "live", "chain": "eth", "dex": "uniswapV3", "amountOut": "997000", "amountOutMin": "992000", "priceImpact": 0.15, "providers": [{"provider": "uniswapV3", "status": "ok"}]}'
         },
         {
           method: 'GET', path: '/swapDexes', description: 'List available DEXes for a chain',
@@ -155,8 +155,8 @@ const ApiDocs = () => {
           params: [
             { name: 'chain', required: true, default: '—', description: 'Chain' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/swapDexes?chain=eth',
-          response: '{"endpoint": "swapDexes", "chain": "eth", "dexes": [{"id": "uniswapV2", "label": "Uniswap V2"}, {"id": "uniswapV3", "label": "Uniswap V3"}]}'
+          example: 'GET https://api.claw.click/swapDexes?chain=eth',
+          response: '{"endpoint": "swapDexes", "chain": "eth", "dexes": [{"id": "uniswapV2", "label": "Uniswap V2"}, {"id": "uniswapV3", "label": "Uniswap V3"}, {"id": "uniswapV4", "label": "Uniswap V4"}]}'
         },
         {
           method: 'GET', path: '/approve', description: 'Build unsigned approval transaction steps',
@@ -167,8 +167,8 @@ const ApiDocs = () => {
             { name: 'walletAddress', required: true, default: '—', description: 'Wallet that will sign' },
             { name: 'tokenIn', required: true, default: '—', description: 'Token to approve' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/approve?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...',
-          response: '{"endpoint": "approve", "status": "live", "steps": [{"kind": "erc20", "spender": "0x...", "tx": {...}}]}'
+          example: 'GET https://api.claw.click/approve?chain=eth&dex=uniswapV3&walletAddress=0x...&tokenIn=0x...',
+          response: '{"endpoint": "approve", "status": "live", "chain": "eth", "dex": "uniswapV3", "tokenIn": "0x...", "approvalMode": "auto", "resolvedMode": "erc20", "spender": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "steps": [{"kind": "erc20", "label": "Approve Uniswap V3 Router", "spender": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "tx": {"to": "0xTokenAddress", "data": "0x095ea7b3...", "value": "0x0", "chainId": 1, "from": "0xYourWallet"}}]}'
         }
       ]
     },
@@ -183,8 +183,8 @@ const ApiDocs = () => {
             { name: 'walletAddress', required: true, default: '—', description: 'Wallet address' },
             { name: 'days', required: false, default: '30', description: 'Lookback period' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/walletReview?chain=sol&walletAddress=8X35r...&days=30',
-          response: '{"endpoint": "walletReview", "status": "live", "summary": {"totalNetWorthUsd": 125000, "realizedProfitUsd": 15000, "profitable": true}}'
+          example: 'GET https://api.claw.click/walletReview?chain=sol&walletAddress=8X35r...&days=30',
+          response: '{"endpoint": "walletReview", "status": "live", "chain": "sol", "walletAddress": "8X35r...", "days": "30", "summary": {"totalNetWorthUsd": 125000, "chainNetWorthUsd": 80000, "realizedProfitUsd": 15000, "realizedProfitPct": 23.5, "totalTradeVolumeUsd": 500000, "totalTrades": 150, "profitable": true, "tokenCount": 15, "protocolCount": 5, "activeChains": ["sol", "eth"]}, "topHoldings": [{"tokenAddress": "So111...", "chain": "sol", "symbol": "SOL", "amount": 500, "priceUsd": 160, "valueUsd": 80000}]}'
         },
         {
           method: 'GET', path: '/holders', description: 'Top holder rows for a token',
@@ -194,8 +194,8 @@ const ApiDocs = () => {
             { name: 'tokenAddress', required: true, default: '—', description: 'Token contract or mint address' },
             { name: 'limit', required: false, default: '150', description: 'Maximum rows returned (1–150)' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/holders?chain=sol&tokenAddress=Dz9mQ...&limit=5',
-          response: '{"endpoint": "holders", "status": "live", "holderCount": 36547, "holders": [{"address": "u6PJ8...", "balance": "66226101364616", "percentOfSupply": 6.6286}]}'
+          example: 'GET https://api.claw.click/holders?chain=sol&tokenAddress=Dz9mQ...&limit=5',
+          response: '{"endpoint": "holders", "status": "live", "cached": false, "chain": "sol", "tokenAddress": "Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk", "limit": 5, "holderCount": 36547, "totalSupplyRaw": "999111158353621", "totalSupplyFormatted": "999111158.353621", "holders": [{"address": "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w", "label": null, "entity": null, "balance": "66226101364616", "balanceFormatted": "66226101.364616", "percentOfSupply": 6.6286}]}'
         }
       ]
     },
@@ -208,8 +208,8 @@ const ApiDocs = () => {
           params: [
             { name: 'query', required: true, default: '—', description: 'Search term' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/tokenSearch?query=pepe',
-          response: '{"endpoint": "tokenSearch", "status": "live", "results": [{"chainId": "ethereum", "name": "Pepe", "symbol": "PEPE", "priceUsd": 0.00001}]}'
+          example: 'GET https://api.claw.click/tokenSearch?query=pepe',
+          response: '{"endpoint": "tokenSearch", "status": "live", "query": "pepe", "results": [{"chainId": "ethereum", "pairAddress": "0x...", "tokenAddress": "0x6982508145454ce325ddbe47a25d4ec3d2311933", "name": "Pepe", "symbol": "PEPE", "priceUsd": 0.00001, "volume24hUsd": 200000000, "liquidityUsd": 50000000, "priceChange24hPct": 5.2, "fdvUsd": 4000000000, "dex": "uniswap"}]}'
         },
         {
           method: 'GET', path: '/filterTokens', description: 'Filter tokens by metrics (Codex, cached 5 min)',
@@ -220,8 +220,8 @@ const ApiDocs = () => {
             { name: 'minVolume24', required: false, default: '—', description: 'Minimum 24h volume' },
             { name: 'sortBy', required: false, default: 'trendingScore24', description: 'Sort field' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/filterTokens?network=sol&minLiquidity=50000&sortBy=trendingScore24',
-          response: '{"endpoint": "filterTokens", "status": "live", "tokens": [{"address": "...", "name": "MemeToken", "symbol": "MEME", "priceUsd": "0.0001"}]}'
+          example: 'GET https://api.claw.click/filterTokens?network=sol&minLiquidity=50000&sortBy=trendingScore24',
+          response: '{"endpoint": "filterTokens", "status": "live", "cached": true, "count": 10, "page": 0, "tokens": [{"address": "TokenMint...", "name": "MemeToken", "symbol": "MEME", "priceUsd": "0.0001", "liquidity": "65000", "marketCap": "500000", "volume24h": "12000000", "change24h": "0.15", "holders": 4500, "sniperCount": 5, "devHeldPct": 1.5, "top10HoldersPct": 28, "launchpad": {"name": "Pump", "completed": true}}]}'
         },
         {
           method: 'GET', path: '/volatilityScanner', description: 'Swing-trade volatility scanner (cached 5 min)',
@@ -231,8 +231,8 @@ const ApiDocs = () => {
             { name: 'minVolume', required: false, default: '100000', description: 'Minimum 24h volume (USD)' },
             { name: 'minSwingPct', required: false, default: '10', description: 'Minimum median swing size (%)' }
           ],
-          example: 'GET https://claw-click-trading-api-e4dd6024c857.herokuapp.com/volatilityScanner?chain=sol&minVolume=500000',
-          response: '{"endpoint": "volatilityScanner", "candidates": [{"address": "...", "swingPct": 18.5, "swingCount": 4, "swingScore": 85}]}'
+          example: 'GET https://api.claw.click/volatilityScanner?chain=sol&minVolume=500000',
+          response: '{"endpoint": "volatilityScanner", "chain": "sol", "duration": "hour4", "count": 5, "cached": false, "scanned": 50, "candidates": [{"address": "TokenMint...", "name": "ExampleToken", "symbol": "EX", "priceUsd": "0.00523", "liquidity": "250000", "volume24h": "1200000", "support": 0.0042, "resistance": 0.0068, "swingPct": 18.5, "swingCount": 4, "currentPosition": 0.32, "buyVsSellRatio": 1.15, "swingScore": 85}]}'
         }
       ]
     }
