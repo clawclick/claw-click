@@ -485,19 +485,19 @@ const DeploySession = () => {
               </div>
             </div>
 
-            <button className="deploy-toggle deploy-toggle-prominent" onClick={() => setShowApiKeys((value) => !value)}>
-              {showApiKeys ? 'Hide AI API keys' : '🔑 Add AI API Key'}
+            <button className="deploy-toggle" onClick={() => setShowApiKeys((value) => !value)}>
+              {showApiKeys ? 'Hide model API keys' : 'Attach model API keys'}
             </button>
 
             {showApiKeys && (
               <div className="deploy-form-grid deploy-api-grid deploy-form-grid-stack">
                 <label className="deploy-field deploy-field-full deploy-input-field">
-                  <span>Anthropic key <span className="deploy-recommended-badge">RECOMMENDED</span></span>
-                  <input value={anthropicKey} onChange={(event) => setAnthropicKey(event.target.value)} placeholder="sk-ant-..." />
-                </label>
-                <label className="deploy-field deploy-field-full deploy-input-field">
                   <span>OpenAI key</span>
                   <input value={openaiKey} onChange={(event) => setOpenaiKey(event.target.value)} placeholder="sk-..." />
+                </label>
+                <label className="deploy-field deploy-field-full deploy-input-field">
+                  <span>Anthropic key</span>
+                  <input value={anthropicKey} onChange={(event) => setAnthropicKey(event.target.value)} placeholder="sk-ant-..." />
                 </label>
               </div>
             )}
