@@ -35,14 +35,14 @@ const features = [
     icon: 'risk-intelligence',
     title: 'Risk Intelligence',
     slug: 'risk-intelligence',
-    desc: 'On-chain risk scoring, contract auditing signals, and rug-pull detection baked into every response.',
+    desc: 'Holder distribution analysis, momentum fading signals, social FUD scanner, liquidity trap detection, and whale movement patterns — comprehensive risk intelligence beyond basic rug-pull scoring.',
     gradient: 'linear-gradient(135deg, #006699 0%, #0a7868 100%)',
   },
   {
     icon: 'strategy-wrappers',
     title: 'Strategy Wrappers',
     slug: 'strategy-wrappers',
-    desc: 'Pre-built trading strategies as API endpoints. Yield hunting, arbitrage, and momentum — deploy in one call.',
+    desc: 'Package trading strategies as monetizable API endpoints. Novel copytrading architecture where investors call your logic directly while strategy IP stays private — earn revenue without risking capital.',
     gradient: 'linear-gradient(135deg, #0d9e8a 0%, #0b8a78 100%)',
   },
 ]
