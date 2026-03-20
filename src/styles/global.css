@@ -4537,3 +4537,90 @@ button:focus-visible {
 .signal-chart polyline {
   filter: drop-shadow(0 0 2px currentColor);
 }
+
+/* Enhanced chart line animations */
+.chart-line {
+  filter: drop-shadow(0 0 3px currentColor);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 3px currentColor); }
+  50% { filter: drop-shadow(0 0 8px currentColor); }
+}
+
+.signal-chart polyline {
+  transition: all 0.3s ease;
+}
+
+/* ---------------------------------------
+   HOLOGRAPHIC EFFECT
+--------------------------------------- */
+.holographic-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease;
+  background: #111 !important;
+}
+
+.holographic-card h2 {
+  position: relative;
+  z-index: 2;
+}
+
+.holographic-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    0deg, 
+    transparent, 
+    transparent 30%, 
+    rgba(0,255,255,0.3)
+  );
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+  z-index: 1;
+}
+
+.holographic-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(0,255,255,0.5), 0 0 40px rgba(13, 158, 138, 0.3);
+}
+
+.holographic-card:hover::before {
+  opacity: 1;
+  transform: rotate(-45deg) translateY(100%);
+}
+
+.holographic-card .cta-card-inner {
+  position: relative;
+  z-index: 2;
+}
+
+.holographic-card .text-gradient {
+  background: linear-gradient(135deg, #00ffff 0%, #0d9e8a 50%, #5cd4be 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(0,255,255,0.5);
+}
+
+.holographic-card:hover .text-gradient {
+  animation: holographic-text 2s ease-in-out infinite;
+}
+
+@keyframes holographic-text {
+  0%, 100% { 
+    filter: hue-rotate(0deg);
+    text-shadow: 0 0 20px rgba(0,255,255,0.5);
+  }
+  50% { 
+    filter: hue-rotate(180deg);
+    text-shadow: 0 0 30px rgba(0,255,255,0.8);
+  }
+}

@@ -2,16 +2,44 @@ import React, { useState } from 'react'
 
 const InteractiveChart = () => {
   const [tooltip, setTooltip] = useState(null)
+  const [animationProgress, setAnimationProgress] = useState(0)
+  const [animationComplete, setAnimationComplete] = useState(false)
+
+  useEffect(() => {
+    const duration = 4000 // 4 seconds
+    const startTime = Date.now()
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      
+      setAnimationProgress(progress)
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      } else {
+        setAnimationComplete(true)
+      }
+    }
+    
+    const timer = setTimeout(() => {
+      animate()
+    }, 500) // Start animation after 500ms
+    
+    return () => clearTimeout(timer)
+  }, [])
   
-  // Mock data points for the 4 metrics
+  // Hill pattern data - starts low, peaks middle, ends low
   const chartData = [
-    { x: 20, liquidity: 65, volume: 78, buyRatio: 82, holderGrowth: 45 },
-    { x: 40, liquidity: 72, volume: 85, buyRatio: 76, holderGrowth: 62 },
-    { x: 60, liquidity: 68, volume: 92, buyRatio: 88, holderGrowth: 71 },
-    { x: 80, liquidity: 85, volume: 96, buyRatio: 94, holderGrowth: 79 },
-    { x: 100, liquidity: 91, volume: 89, buyRatio: 91, holderGrowth: 85 },
-    { x: 120, liquidity: 88, volume: 84, buyRatio: 87, holderGrowth: 88 },
-    { x: 140, liquidity: 93, volume: 91, buyRatio: 92, holderGrowth: 91 },
+    { x: 20, liquidity: 25, volume: 30, buyRatio: 28, holderGrowth: 20 },
+    { x: 35, liquidity: 45, volume: 52, buyRatio: 48, holderGrowth: 40 },
+    { x: 50, liquidity: 68, volume: 75, buyRatio: 72, holderGrowth: 65 },
+    { x: 65, liquidity: 85, volume: 92, buyRatio: 89, holderGrowth: 82 },
+    { x: 80, liquidity: 95, volume: 98, buyRatio: 96, holderGrowth: 93 }, // PEAK
+    { x: 95, liquidity: 88, volume: 85, buyRatio: 82, holderGrowth: 79 },
+    { x: 110, liquidity: 72, volume: 68, buyRatio: 65, holderGrowth: 62 },
+    { x: 125, liquidity: 55, volume: 48, buyRatio: 45, holderGrowth: 42 },
+    { x: 140, liquidity: 35, volume: 32, buyRatio: 28, holderGrowth: 25 },
   ]
 
   const handleMouseMove = (e, dataPoint) => {
@@ -61,37 +89,58 @@ const InteractiveChart = () => {
         </defs>
         <rect width="100%" height="100%" fill="url(#grid)" />
         
-        {/* Liquidity line */}
+        {/* Animated lines with distinct colors */}
+        {/* Liquidity line - Green */}
         <polyline
           fill="none"
-          stroke="#0d9e8a"
-          strokeWidth="2"
-          points={chartData.map(d => `${d.x},${160 - d.liquidity}`).join(' ')}
+          stroke="#00ff41"
+          strokeWidth="2.5"
+          points={chartData.slice(0, Math.ceil(chartData.length * animationProgress)).map(d => `${d.x},${160 - d.liquidity}`).join(' ')}
+          className="chart-line"
         />
         
-        {/* Volume line */}
+        {/* Volume line - Blue */}
         <polyline
           fill="none"
-          stroke="#5cd4be"
-          strokeWidth="2"
-          points={chartData.map(d => `${d.x},${160 - d.volume}`).join(' ')}
+          stroke="#00a8ff"
+          strokeWidth="2.5"
+          points={chartData.slice(0, Math.ceil(chartData.length * animationProgress)).map(d => `${d.x},${160 - d.volume}`).join(' ')}
+          className="chart-line"
         />
         
-        {/* Buy/Sell Ratio line */}
+        {/* Buy/Sell Ratio line - Purple */}
         <polyline
           fill="none"
-          stroke="#00e6b8"
-          strokeWidth="2"
-          points={chartData.map(d => `${d.x},${160 - d.buyRatio}`).join(' ')}
+          stroke="#9c88ff"
+          strokeWidth="2.5"
+          points={chartData.slice(0, Math.ceil(chartData.length * animationProgress)).map(d => `${d.x},${160 - d.buyRatio}`).join(' ')}
+          className="chart-line"
         />
         
-        {/* Holder Growth line */}
+        {/* Holder Growth line - Orange */}
         <polyline
           fill="none"
-          stroke="#66ffe8"
-          strokeWidth="2"
-          points={chartData.map(d => `${d.x},${160 - d.holderGrowth}`).join(' ')}
+          stroke="#ffa502"
+          strokeWidth="2.5"
+          points={chartData.slice(0, Math.ceil(chartData.length * animationProgress)).map(d => `${d.x},${160 - d.holderGrowth}`).join(' ')}
+          className="chart-line"
         />
+
+        {/* BUY tag at start */}
+        {animationProgress > 0.1 && (
+          <g>
+            <rect x="15" y="140" width="28" height="16" fill="#00ff41" rx="3" />
+            <text x="29" y="151" fill="#000" fontSize="8" fontWeight="700" textAnchor="middle">BUY</text>
+          </g>
+        )}
+
+        {/* SELL tag at peak */}
+        {animationProgress > 0.6 && (
+          <g>
+            <rect x="67" y="45" width="30" height="16" fill="#ff4757" rx="3" />
+            <text x="82" y="56" fill="#fff" fontSize="8" fontWeight="700" textAnchor="middle">SELL</text>
+          </g>
+        )}
         
         {/* Interactive points */}
         {chartData.map((point, i) => (
@@ -109,19 +158,19 @@ const InteractiveChart = () => {
       {/* Chart Legend */}
       <div className="chart-legend">
         <div className="legend-item">
-          <span className="legend-color" style={{backgroundColor: '#0d9e8a'}}></span>
+          <span className="legend-color" style={{backgroundColor: '#00ff41'}}></span>
           <span>Liquidity</span>
         </div>
         <div className="legend-item">
-          <span className="legend-color" style={{backgroundColor: '#5cd4be'}}></span>
+          <span className="legend-color" style={{backgroundColor: '#00a8ff'}}></span>
           <span>Volume</span>
         </div>
         <div className="legend-item">
-          <span className="legend-color" style={{backgroundColor: '#00e6b8'}}></span>
+          <span className="legend-color" style={{backgroundColor: '#9c88ff'}}></span>
           <span>Buy/Sell</span>
         </div>
         <div className="legend-item">
-          <span className="legend-color" style={{backgroundColor: '#66ffe8'}}></span>
+          <span className="legend-color" style={{backgroundColor: '#ffa502'}}></span>
           <span>Holders</span>
         </div>
       </div>
