@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchAgents } from '../lib/sessionApi'
-import AnimatedCube from './AnimatedCube'
 
 function formatCreator(creator) {
   if (!creator) {
@@ -132,7 +131,6 @@ const ValueProp = () => {
             <span className="section-label">Strategy Wrappers</span>
             <h2 className="section-title">Package. Share. Earn.</h2>
           </div>
-          <AnimatedCube />
           <p className="valueprop-text">
             Strategies can be packaged as parameterized API endpoints, allowing bots or applications to call trading logic directly while the underlying strategy remains private, allowing for a novel architecture for copy trading capital and allowing strategy creators to earn revenue while not risking capital — all verified by the Click Oracle for data validation in real time.
           </p>

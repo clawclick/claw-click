@@ -1,29 +1,34 @@
 # Dependencies
-node_modules/
-package-lock.json
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Build outputs
-dist/
-build/
+dist
+build
 
-# Development
-.vite/
-.cache/
+# Vercel
+.vercel
 
 # Environment variables
 .env
 .env.local
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local
 
-# IDE
-.vscode/
-.idea/
-
-# OS
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Logs
-logs/
-*.log
-.vercel
+# Temporary files
+*.tmp
+*.temp

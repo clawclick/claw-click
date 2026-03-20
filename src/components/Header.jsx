@@ -21,10 +21,10 @@ const Header = () => {
         <span>Claw.Click</span>
       </Link>
       <nav className="header-nav">
-        <a href="https://x.com/claw_click_" target="_blank" rel="noopener noreferrer" className="header-social-icon" aria-label="X">
+        <a href="https://x.com/clawclick" target="_blank" rel="noopener noreferrer" className="header-social-icon" aria-label="X">
           <IconX />
         </a>
-        <a href="https://t.me/claw_click" target="_blank" rel="noopener noreferrer" className="header-social-icon" aria-label="Telegram">
+        <a href="https://t.me/clawclick" target="_blank" rel="noopener noreferrer" className="header-social-icon" aria-label="Telegram">
           <IconTelegram />
         </a>
         <Link to="/api">API</Link>
